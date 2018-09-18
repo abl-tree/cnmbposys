@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'access_id',
     ];
 
     /**
@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'access_id',
     ];
 
     /*
@@ -55,9 +55,15 @@ class User extends Authenticatable
     | Attributes
     |------------------------------------------------------------------------------------
     */
-    public function setPasswordAttribute($value='')
+    public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
+    }
+
+    
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
     }
    /* 
     public function getAvatarAttribute($value)
@@ -89,5 +95,13 @@ class User extends Authenticatable
                 $user->attributes['password'] = $original['password'];
             }
         });
+    }
+
+    public function info() {
+        return $this->hasOne('\App\UserInfo', 'uid', 'id');
+    }
+
+    public function access() {
+        return $this->hasOne('\App\AccessLevel', 'id', 'access_id');
     }
 }

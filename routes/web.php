@@ -9,7 +9,6 @@ Auth::routes();
 |------------------------------------------------------------------------------------
 */
 Route::group([ 'middleware'=>['auth']], function () {
-    Route::get('/', 'DashboardController@index')->name('dash');
+    Route::get('/', 'DashboardController@index')->name('dashboard');
     Route::resource('users', 'UserController');
-   
 });
