@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\UserBenefit;
 use App\AccessLevel;
 use App\UserInfo;
+use App\User;
 use Yajra\Datatables\Datatables;
 
 class ProfileController extends Controller
@@ -32,12 +33,18 @@ class ProfileController extends Controller
         $hierarchy = AccessLevel::find($user);
         $profile = UserBenefit::with('info', 'benefit')->get();
 
-        return view('admin.dashboard.profile', compact('profile', 'hierarchy'));
+        $accessLevel = auth()->user()->access_id;
+        $user2 = User::where('access_id', '>', $accessLevel)->get();
+
+        
+        $employeeList = UserInfo::with('user')->get();
+        $employeeList2 = $employeeList;
+        return view('admin.dashboard.profile', compact('profile', 'hierarchy', 'employeeList2'));
     }
 
     public function refreshEmployeeList(){
-        $employeeList = UserInfo::all();
-        return Datatables::of(UserInfo::query())
+        $employeeList = UserInfo::where('id', '>', 0)->get();
+        return Datatables::of($employeeList)
         ->editColumn('name', function ($data){
             return $data->firstname." ".$data->middlename." ".$data->lastname;
         })

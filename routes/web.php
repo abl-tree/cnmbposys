@@ -22,7 +22,7 @@ Route::group([ 'middleware'=>['auth']], function () {
     //PROFILE -- START
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
-    Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList')->name('refreshEmployeeList');
+    Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList');
 
     //PROFILE -- END
 

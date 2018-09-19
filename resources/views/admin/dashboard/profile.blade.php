@@ -48,4 +48,9 @@
         </div>
     </div>
 </div>
+
+<script>
+console.log({!! $employeeList2 !!})
+</script>
+
 @endsection
