@@ -39,7 +39,7 @@ class ProfileController extends Controller
         $employeeList = UserInfo::all();
         return Datatables::of(UserInfo::query())
         ->editColumn('name', function ($data){
-            return $employeeList->firstname." ".$employeeList->middlename." ".$employeeList->lastname;
+            return $data->firstname." ".$data->middlename." ".$data->lastname;
         })
         ->make(true);
     }

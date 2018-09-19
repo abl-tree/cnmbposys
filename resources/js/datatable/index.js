@@ -16,7 +16,7 @@ export default (function () {
 	$('#employee').DataTable({
 		processing: true,
 		serverSide: true,
-		ajax: "{{ route('refreshEmployeeList') }}",
+		ajax: "/refreshEmployeeList",
 		columns: [
 			{data: 'uid', name: 'uid'},
 			{data: 'name', name: 'name'},
@@ -26,8 +26,6 @@ export default (function () {
 			{data: 'salary_rate', name: 'salary_rate'}
 		]
 	});
-	
-
 	//PROFILE EMPLOYEE LIST -- END
 
 
