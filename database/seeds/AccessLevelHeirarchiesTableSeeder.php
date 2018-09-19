@@ -42,16 +42,8 @@ class AccessLevelHeirarchiesTableSeeder extends Seeder
                 'child_id' => 8, 
             ),
             array(
-                'parent_id' => 1, 
-                'child_id' => 9, 
-            ),
-            array(
                 'parent_id' => 7, 
                 'child_id' => 8, 
-            ),
-            array(
-                'parent_id' => 7, 
-                'child_id' => 9, 
             ),
             array(
                 'parent_id' => 8, 

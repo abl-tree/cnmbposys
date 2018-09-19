@@ -20,9 +20,10 @@ class CreateUserInfosTable extends Migration
             $table->string('firstname');
             $table->string('middlename')->nullable();
             $table->string('lastname');
-            $table->integer('age');
-            $table->enum('gender', ['M', 'F']);
+            $table->date('birthdate');
+            $table->char('gender');
             $table->string('contact_number');
+            $table->string('address');
             $table->binary('image')->nullable();
             $table->double('salary_rate', 8, 2)->nullable();
             $table->timestamps();
