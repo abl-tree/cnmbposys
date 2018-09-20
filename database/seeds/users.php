@@ -79,10 +79,10 @@ class users extends Seeder
                     'password' => bcrypt('123456'),
                     'access_id' => 9,
             ),
-            );
-            
-            foreach ($data as $key => $value) {
-                User::create($value);
-            }
+        );
+        
+        foreach ($data as $key => $value) {
+            User::create($value);
+        }
     }
 }
