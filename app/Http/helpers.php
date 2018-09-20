@@ -37,3 +37,10 @@ if (! function_exists('move_file')) {
         return $full_name;
     }
 }
+
+function topBarName(){
+    $id = Auth::id();
+    $userinfo = \App\UserInfo::find($id);
+
+    return $userinfo;
+}
