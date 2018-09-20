@@ -13,7 +13,7 @@
                                 <img src="images/user.png">
                             </div>
                             <h2>{{ $profile[0]->info->firstname." ".$profile[0]->info->middlename." ".$profile[0]->info->lastname }}<br><span>{{ $hierarchy->name }}</span></h2>
-                            <span>Age: {{$profile[0]->info->age}}</span>
+                            <span>Birthday: {{$profile[0]->info->birthdate}}</span>
                             <br>
                             <span>Gender: {{$profile[0]->info->gender}}</span>
                             <br>
@@ -26,6 +26,7 @@
                             <span>{{ $profile[1]->benefit->name.': '.$profile[1]->id_number}}</span>
                             <br>
                             <span>{{ $profile[2]->benefit->name.': '.$profile[2]->id_number}}</span>
+                            <br>
                             <br>
                             <button type="submit" class="btn cur-p btn-dark"><span class="ti-pencil-alt"></span> Edit</button>
                         </div>
@@ -45,9 +46,10 @@
                         <tr>
                             <th>User ID No.</th>
                             <th>Name</th>
-                            <th>Age</th>
+                            <th>Birthday</th>
                             <th>Gender</th>
                             <th>Contact No.</th>
+                            <th>Address</th>
                             <th>Rate</th>
                         </tr>
                     </thead>

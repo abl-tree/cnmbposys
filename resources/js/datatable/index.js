@@ -20,9 +20,10 @@ export default (function () {
 		columns: [
 			{data: 'uid', name: 'uid'},
 			{data: 'name', name: 'name'},
-			{data: 'age', name: 'age'},
+			{data: 'birthdate', name: 'birthdate'},
 			{data: 'gender', name: 'gender'},
 			{data: 'contact_number', name: 'contact_number'},
+			{data: 'address', name: 'address'},
 			{data: 'salary_rate', name: 'salary_rate'}
 		]
 	});

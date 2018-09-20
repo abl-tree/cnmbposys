@@ -12,7 +12,7 @@ class UserInfo extends Model
      * @var array
      */
     protected $fillable = [
-        'uid', 'firstname', 'middlename', 'lastname', 'age', 'gender', 'contact_number', 'image', 'salary_rate',
+        'uid', 'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate',
     ];
     
     /**
