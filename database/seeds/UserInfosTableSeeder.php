@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use App\UserInfo;
-use Carbon\Carbon;
 
 class UserInfosTableSeeder extends Seeder
 {

@@ -84,6 +84,5 @@ class users extends Seeder
             foreach ($data as $key => $value) {
                 User::create($value);
             }
-        
     }
 }
