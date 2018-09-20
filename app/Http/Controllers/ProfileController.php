@@ -29,21 +29,16 @@ class ProfileController extends Controller
 
     public function index()
     {
+        $id = auth()->user()->id;
         $user = auth()->user()->access_id;
         $hierarchy = AccessLevel::find($user);
-        $profile = UserBenefit::with('info', 'benefit')->get();
+        $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
 
-        $accessLevel = auth()->user()->access_id;
-        $user2 = User::where('access_id', '>', $accessLevel)->get();
-
-        
-        $employeeList = UserInfo::with('user')->get();
-        $employeeList2 = $employeeList;
-        return view('admin.dashboard.profile', compact('profile', 'hierarchy', 'employeeList2'));
+        return view('admin.dashboard.profile', compact('profile', 'hierarchy'));
     }
 
     public function refreshEmployeeList(){
-        $employeeList = UserInfo::where('id', '>', 0)->get();
+        $employeeList = UserInfo::all();
         return Datatables::of($employeeList)
         ->editColumn('name', function ($data){
             return $data->firstname." ".$data->middlename." ".$data->lastname;

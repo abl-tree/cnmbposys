@@ -12,7 +12,15 @@
                             <div class="img">
                                 <img src="images/user.png">
                             </div>
-                            <h2>{{ auth()->user()->name }}<br><span>{{ $hierarchy->name }}</span></h2>
+                            <h2>{{ $profile[0]->info->firstname." ".$profile[0]->info->middlename." ".$profile[0]->info->lastname }}<br><span>{{ $hierarchy->name }}</span></h2>
+                            <span>Age: {{$profile[0]->info->age}}</span>
+                            <br>
+                            <span>Gender: {{$profile[0]->info->gender}}</span>
+                            <br>
+                            <span>Contact: {{$profile[0]->info->contact_number}}</span>
+                            <br>
+                            <br>
+
                             <span>{{ $profile[0]->benefit->name.': '.$profile[0]->id_number}}</span>
                             <br>
                             <span>{{ $profile[1]->benefit->name.': '.$profile[1]->id_number}}</span>
@@ -48,9 +56,4 @@
         </div>
     </div>
 </div>
-
-<script>
-console.log({!! $employeeList2 !!})
-</script>
-
 @endsection
