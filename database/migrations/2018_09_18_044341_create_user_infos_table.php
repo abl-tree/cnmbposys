@@ -14,19 +14,19 @@ class CreateUserInfosTable extends Migration
     public function up()
     {
         Schema::create('user_infos', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('uid');
-            $table->foreign('uid')->references('id')->on('users')->onDelete('cascade');
-            $table->string('firstname');
-            $table->string('middlename')->nullable();
-            $table->string('lastname');
-            $table->date('birthdate');
-            $table->char('gender');
-            $table->string('contact_number');
-            $table->string('address');
-            $table->binary('image')->nullable();
-            $table->double('salary_rate', 8, 2)->nullable();
-            $table->timestamps();
+            $table->increments('id'); 
+            $table->unsignedInteger('uid'); 
+            $table->foreign('uid')->references('id')->on('users')->onDelete('cascade'); 
+            $table->string('firstname'); 
+            $table->string('middlename')->nullable(); 
+            $table->string('lastname'); 
+            $table->date('birthdate'); 
+            $table->char('gender'); 
+            $table->string('contact_number'); 
+            $table->string('address'); 
+            $table->binary('image')->nullable(); 
+            $table->double('salary_rate', 8, 2)->nullable(); 
+            $table->timestamps(); 
         });
     }
 
