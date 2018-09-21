@@ -13,18 +13,50 @@ class UserInfosTableSeeder extends Seeder
      */
     public function run()
     {
-        $data = array(
+        $data = [
+            [
             'uid' => 1, 
-            'firstname' => 'hadji',
-            'middlename' => 'cool',
-            'lastname' => 'kouceyla',
-            'birthdate' => Carbon::now(),
+            'firstname' => 'HRM',
+            'lastname' => 'kouceyla', 
+            'middlename' => 'Cool', 
+            'birthdate' => '12-12-12', 
+            'address' => 'bario ugok',
             'gender' => 'M', 
             'contact_number' => '0000000000',
-            'salary_rate' => 500,
-            'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-        );
-
-        UserInfo::create($data);
+            ],
+            [
+            'uid' => 2, 
+            'firstname' => 'HRA',
+            'lastname' => 'kouceyla', 
+            'middlename' => 'Cool', 
+            'birthdate' => '12-12-12', 
+            'address' => 'bario ugok',
+            'gender' => 'M', 
+            'contact_number' => '0000000000',
+            ],
+            [
+            'uid' => 3, 
+            'firstname' => 'OM',
+            'lastname' => 'kouceyla', 
+            'middlename' => 'Cool', 
+            'birthdate' => '12-12-12', 
+            'address' => 'bario ugok',
+            'gender' => 'M', 
+            'contact_number' => '0000000000',
+            ],
+            [
+            'uid' => 4, 
+            'firstname' => 'TL',
+            'lastname' => 'kouceyla', 
+            'middlename' => 'Cool', 
+            'birthdate' => '12-12-12', 
+            'address' => 'bario ugok',
+            'gender' => 'M', 
+            'contact_number' => '0000000000',
+            ]];
+       
+            foreach($data as $datum){
+                UserInfo::create($datum);
+            }
     }
 }

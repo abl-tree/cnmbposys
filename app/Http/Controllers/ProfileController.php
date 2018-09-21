@@ -34,7 +34,12 @@ class ProfileController extends Controller
         $hierarchy = AccessLevel::find($user);
         $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
 
-        return view('admin.dashboard.profile', compact('profile', 'hierarchy'));
+        $userInfo = AccessLevel::all();
+
+
+        //edited by EJEL
+
+        return view('admin.dashboard.profile', compact('profile', 'hierarchy','userInfo'));
     }
 
     public function refreshEmployeeList(){

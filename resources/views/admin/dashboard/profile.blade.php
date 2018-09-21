@@ -39,7 +39,7 @@
             <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20">Employee list</h4>
              
-                <button type="submit" class="btn cur-p btn-dark reposition"><span class="ti-pencil-alt"></span> Add</button>
+                <button type="submit" class="btn cur-p btn-dark reposition" data-toggle="modal" data-backdrop="static" data-target="#employee-form-modal"><span class="ti-pencil-alt"></span> Add</button>
                
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
@@ -54,6 +54,160 @@
                         </tr>
                     </thead>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal  -->
+<!-- emman update -->
+<div id="employee-form-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><small>Add Employee</small></h4>
+            </div>
+            <div class="modal-body">
+            <div class="alert alert-danger" style="display:none"></div>
+                <form method="POST" id='employee-form' class="needs-validation" enctype="multipart/form-data">
+                {{ csrf_field()}}
+                    <div class="row" style='padding:10px'>
+                        <div class="col-md-4">
+                            <h6 class="c-grey-900">Basic Info</h6>
+                            <div class="mT-30">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs pad0">First Name</label>
+                                    <div class="col-sm-8">
+                                        <input name="first_name" id="first_name" type="text" class="form-control font-xs" placeholder="First Name">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs pad0">Last Name</label>
+                                    <div class="col-sm-8">
+                                        <input name="last_name" id="last_name" id="last_name" type="text" class="form-control font-xs" placeholder="Last Name">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs pad0">Middle Name</label>
+                                    <div class="col-sm-8">
+                                        <input name="middle_name" id="middle_name" type="text" class="form-control font-xs" placeholder="Middle Name">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Address</label>
+                                    <div class="col-sm-8">
+                                        <input name="address" id="address" type="text" class="form-control font-xs" placeholder="Address">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Birthdate</label>
+                                    <div class="timepicker-input col-sm-8">
+                                        <input name="birthdate" id="birthdate" type="text" class="form-control bdc-black start-date font-xs" placeholder="MM/DD/YY" data-provide="datepicker">
+                                    </div>
+                                </div>
+                                <div class="form-group row" style="border-top:3px;">
+                                    <label class="col-sm-4 col-form-label font-xs">Gender</label>
+                                    <div class="col-sm-8">
+                                        <select name="gender" id="gender" class="form-control font-xs">
+                                            <option selected>Male</option>
+                                            <option>Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" style='border-left:1px solid #ccc'>
+                            <h6 class="c-grey-900">Additional Information</h6>
+                            <div class="mT-30">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">SSS</label>
+                                    <div class="col-sm-8">
+                                        <input name="sss" id="sss" type="text" class="form-control font-xs" placeholder="SSS">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">PhilHealth</label>
+                                    <div class="col-sm-8">
+                                        <input name="phil_health" id="phil_health" type="text" class="form-control font-xs" placeholder="PhilHealth">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Pag-Ibig</label>
+                                    <div class="col-sm-8">
+                                        <input name="pag_ibig" id="pag_ibig" type="text" class="form-control font-xs" placeholder="Pag-Ibig">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">TIN</label>
+                                    <div class="col-sm-8">
+                                        <input name="tin" id="tin" type="text" class="form-control font-xs" placeholder="TIN">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Contact</label>
+                                    <div class="col-sm-8">
+                                        <input name="contact" id="contact" type="text" class="form-control font-xs" placeholder="Contact">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Email</label>
+                                    <div class="col-sm-8">
+                                        <input name="email" id="email" type="email" class="form-control font-xs" placeholder="Email">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4" style='border-left:1px solid #ccc'>
+                            <h6 class="c-grey-900">Company Details</h6>
+                            <div class="mT-30">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs" >Position</label>
+                                    <div class="col-sm-8">
+                                        <select name="position" id="position" class="form-control font-xs">
+                                            @foreach($userInfo as $datum)
+                                                <option value="{{$datum->id}}">{{$datum->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs" style="padding=0px;">Designation</label>
+                                    <div class="col-sm-8">
+                                        <select name="designation" class="form-control font-xs" id="designation">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs" >Salary</label>
+                                    <div class="col-sm-8">
+                                        <input name="salary" id="salary" type="number" class="form-control font-xs" placeholder="Salary">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="image-upload" style="height:137px;margin:0 auto;">
+                                        <label for="photo" style="cursor:pointer">
+                                            
+                                                <img src="/images/12.jpg" alt="profile Pic" id="upload-image-display" width="100px"/>
+                                            
+                                        </label>
+                                        <input name="photo" id="photo" type="file" style="display:none"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>           
+                <form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-4">
+                     <div class="pull-right">
+                        <a href="" class="btn btn-default" data-dismiss="modal">Cancel</a>
+                        <a id="employee-form-submit" class="btn btn-danger push-right" style="color:white">Confirm</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

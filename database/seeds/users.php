@@ -13,16 +13,30 @@ class users extends Seeder
     public function run()
     {
         
-        $data = [];
-        
-        for ($i = 1; $i <= 1 ; $i++) {
-            array_push($data, [
-                'email' => 'test@gmail.com',
-                'password' => bcrypt('123456'),
-                'access_id' => 1,
-            ]);
-        }
-        
-        User::insert($data);
+         $data = [
+            [
+            'email' => 'test@gmail.com',
+            'password' => '123456',
+            'access_id' => 1,
+            ],
+            [
+            'email' => 'testhra@gmail.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
+            [
+            'email' => 'testom@gmail.com',
+            'password' => '123456',
+            'access_id' => 3,
+            ],
+            [
+            'email' => 'testtl@gmail.com',
+            'password' => '123456',
+            'access_id' => 4,
+            ]];
+       
+            foreach($data as $datum){
+                User::create($datum);
+            }
     }
 }

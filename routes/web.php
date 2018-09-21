@@ -26,4 +26,11 @@ Route::group([ 'middleware'=>['auth']], function () {
 
     //PROFILE -- END
 
+    //CU EMPLOYEE -- START
+
+    Route::resource('employee','EmployeeController');
+    Route::post('employee/fetch','EmployeeController@fetch');
+
+    //CU EMPLOYEE -- END
+
 });
