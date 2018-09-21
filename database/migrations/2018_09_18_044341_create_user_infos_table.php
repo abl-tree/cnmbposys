@@ -20,14 +20,15 @@ class CreateUserInfosTable extends Migration
             $table->string('firstname');
             $table->string('middlename')->nullable();
             $table->string('lastname');
-            $table->date('birthdate');
+            $table->string('birthdate');
             $table->char('gender');
             $table->string('contact_number');
             $table->string('address');
-            $table->binary('image')->nullable();
             $table->double('salary_rate', 8, 2)->nullable();
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE user_infos ADD image LONGBLOB");
     }
 
     /**
