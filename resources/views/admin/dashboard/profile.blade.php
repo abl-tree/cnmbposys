@@ -36,6 +36,7 @@
         </div>
         <div class="email-wrapper ">
             <!-- Content -->
+            
             <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20">Employee list</h4>
              
@@ -44,17 +45,16 @@
                 <table id="employee" class="table  table-striped table-bordered" style="margin-bottom:0;" cellspacing="0" width="100">
                     <thead>
                         <tr>
-                            <th width="50">User ID No.</th>
-                            <th width="100">Name</th>
-                            <th width="100">Birthday</th>
-                            <th width="100">Gender</th>
-                            <th width="100">Contact No.</th>
-                            <th width="100">Address</th>
-                            <th width="100">Rate</th>
-                            <th width="50">Action</th>
+                            <th >User ID No.</th>
+                            <th >Name</th>
+                            <th>Birthday</th>
+                            <th>Gender</th>
+                            <th >Contact No.</th>
+                            <th >Address</th>
+                            <th>Rate</th>
+                            <th >Action</th>
                         </tr>
                     </thead>
-                </table>
                 </table>
             
         </div>

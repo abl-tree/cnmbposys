@@ -12,10 +12,22 @@ export default (function () {
 	});*/
 
 	//PROFILE EMPLOYEE LIST -- START
+	
+	$( document ).ready(function() {
+		$($.fn.dataTable.tables(true)).DataTable()
+		.columns.adjust();
+		
+	});
 
-	$('#employee').DataTable({
+	$(window).on('resize', function () {
+		employee.fnAdjustColumnSizing();
+	});
+	
+	var employee = $('#employee').DataTable({
 		processing: true,
 		serverSide: true,
+		autoWidth: true,
+		responsive:true,
 		scrollY:        '40vh',
         scrollCollapse: true,
 
