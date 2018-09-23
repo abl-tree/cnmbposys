@@ -168,7 +168,9 @@
                                     <div class="col-sm-8">
                                         <select name="position" id="position" class="form-control font-xs">
                                             @foreach($userInfo as $datum)
-                                                <option value="{{$datum->id}}">{{$datum->name}}</option>
+                                                @if($datum->id>1)
+                                                    <option value="{{$datum->id}}">{{$datum->name}}</option>
+                                                @endif
                                             @endforeach
                                         </select>
                                     </div>
@@ -177,6 +179,10 @@
                                     <label class="col-sm-4 col-form-label font-xs" style="padding=0px;">Designation</label>
                                     <div class="col-sm-8">
                                         <select name="designation" class="form-control font-xs" id="designation">
+                                            <option value="">Select HR Manager</option>
+                                            @foreach($hr as $datum)
+                                                <option value="{{$datum->id}}">{{$datum->lastname.", ".$datum->firstname." ".$datum->middlename}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -204,8 +210,8 @@
             <div class="modal-footer">
                 <div class="col-md-4">
                      <div class="pull-right">
-                        <a href="" class="btn btn-default" data-dismiss="modal">Cancel</a>
-                        <a id="employee-form-submit" class="btn btn-danger push-right" style="color:white">Confirm</a>
+                        <a class="btn btn-default" id="employee-modal-cancel">Cancel</a>
+                        <button id="employee-form-submit" class="btn btn-danger push-right" style="color:white">Confirm</button>
                     </div>
                 </div>
             </div>

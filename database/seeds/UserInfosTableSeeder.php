@@ -15,7 +15,6 @@ class UserInfosTableSeeder extends Seeder
     {
         $data = [
             [
-            'uid' => 1, 
             'firstname' => 'HRM',
             'lastname' => 'kouceyla', 
             'middlename' => 'Cool', 
@@ -25,7 +24,6 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             ],
             [
-            'uid' => 2, 
             'firstname' => 'HRA',
             'lastname' => 'kouceyla', 
             'middlename' => 'Cool', 
@@ -35,7 +33,6 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             ],
             [
-            'uid' => 3, 
             'firstname' => 'OM',
             'lastname' => 'kouceyla', 
             'middlename' => 'Cool', 
@@ -45,7 +42,6 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             ],
             [
-            'uid' => 4, 
             'firstname' => 'TL',
             'lastname' => 'kouceyla', 
             'middlename' => 'Cool', 

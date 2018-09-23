@@ -18,7 +18,7 @@ export default (function () {
 		serverSide: true,
 		ajax: "/refreshEmployeeList",
 		columns: [
-			{data: 'uid', name: 'uid'},
+			{data: 'id', name: 'id'},
 			{data: 'name', name: 'name'},
 			{data: 'birthdate', name: 'birthdate'},
 			{data: 'gender', name: 'gender'},

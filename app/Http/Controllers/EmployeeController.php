@@ -52,6 +52,10 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
+
+        $validation_message = [
+            'email.unique'=> 'This email is already used.',
+        ];
         $validator = Validator::make($request->all(), [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -60,10 +64,11 @@ class EmployeeController extends Controller
             'birthdate' => 'required',
             'gender' => 'required',
             'contact' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|unique:users|email',
             'position' => 'required',
             'salary' => 'required',
-        ]);
+            'designation'=>'required',
+        ],$validation_message);
 
 
         if ($validator->fails())
@@ -71,71 +76,62 @@ class EmployeeController extends Controller
             return response()->json(['errors'=>$validator->errors()]);
         }
 
-            
 
-            $user = new User;
-            $user->email = $request->email;
-            $user->password = '123456';
-            $user->access_id = $request->position;
-            $user->save();
-            
-
-            $userinfo = new UserInfo;
-            $userinfo->uid= $user->id;
-            $userinfo->firstname=$request->first_name;
-            $userinfo->lastname=$request->last_name;
-            $userinfo->middlename=$request->middle_name;
-            $userinfo->address=$request->address;
-            $userinfo->birthdate=$request->birthdate;
-            $userinfo->gender=$request->gender;
-            $userinfo->salary_rate=$request->salary;
-            $userinfo->contact_number=$request->contact;
-            if($request->hasFile('photo')){
-                $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
-                $userinfo->image = base64_encode($binaryfile);
-                $userinfo->save();
-
-            }
-
-
+        $userinfo = new UserInfo;
+        $userinfo->firstname=$request->first_name;
+        $userinfo->lastname=$request->last_name;
+        $userinfo->middlename=$request->middle_name;
+        $userinfo->address=$request->address;
+        $userinfo->birthdate=$request->birthdate;
+        $userinfo->gender=$request->gender;
+        $userinfo->salary_rate=$request->salary;
+        $userinfo->contact_number=$request->contact;
+        if($request->hasFile('photo')){
+            $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
+            $userinfo->image = base64_encode($binaryfile);
             $userinfo->save();
+        }
+        $userinfo->save();
 
-            $obj_benefit[]=array();
-            $obj_benefit = [[
-                'user_info_id'=>$userinfo->id,
-                'benefit_id'=>1,
-                'id_number'=>$request->sss,
-                ],
-                [
-                'user_info_id'=>$userinfo->id,
-                'benefit_id'=>2,
-                'id_number'=>$request->phil_health,
-                ],
-                [
-                'user_info_id'=>$userinfo->id,
-                'benefit_id'=>3,
-                'id_number'=>$request->pag_ibig,
-                ],
-                [
-                'user_info_id'=>$userinfo->id,
-                'benefit_id'=>4,
-                'id_number'=>$request->tin,
-                ]];
+        $user = new User;
+        $user->uid= $userinfo->id;
+        $user->email = $request->email;
+        $user->password = '123456';
+        $user->access_id = $request->position;
+        $user->save();
 
-
-            UserBenefit::insert($obj_benefit);
-
-            $access_level_heirarchy = new AccessLevelHeirarchy;
-            $access_level_heirarchy->child_id = $request->position;
-            $access_level_heirarchy->parent_id = $request->designation;
-            $access_level_heirarchy->save();
-
-
-
+        $obj_benefit[]=array();
+        $obj_benefit = [[
+            'user_info_id'=>$userinfo->id,
+            'benefit_id'=>1,
+            'id_number'=>$request->sss,
+            ],
+            [
+            'user_info_id'=>$userinfo->id,
+            'benefit_id'=>2,
+            'id_number'=>$request->phil_health,
+            ],
+            [
+            'user_info_id'=>$userinfo->id,
+            'benefit_id'=>3,
+            'id_number'=>$request->pag_ibig,
+            ],
+            [
+            'user_info_id'=>$userinfo->id,
+            'benefit_id'=>4,
+            'id_number'=>$request->tin,
+            ]];
 
 
-        // return redirect()->route('profile');
-        // ->with('success','Item created successfully');
+        UserBenefit::insert($obj_benefit);
+
+        $access_level_heirarchy = new AccessLevelHeirarchy;
+        $access_level_heirarchy->child_id = $request->position;
+        $access_level_heirarchy->parent_id = $request->designation;
+        $check = $access_level_heirarchy->save();
+        if($check){
+            return response()->json(['success'=>'Record is successfully added']);
+        }
 
     }
 
@@ -200,7 +196,7 @@ class EmployeeController extends Controller
 
         $data = DB::table('users')
                     ->join('access_levels','users.access_id','=','access_levels.id')
-                    ->join('user_infos','user_infos.uid','=','users.id')
+                    ->join('user_infos','user_infos.id','=','users.uid')
                     ->select('user_infos.id','user_infos.firstname','user_infos.lastname','user_infos.middlename','access_levels.name as accesslevelname')
                     ->where('access_levels.id','=',$val)
                     ->get();

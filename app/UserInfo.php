@@ -12,7 +12,7 @@ class UserInfo extends Model
      * @var array
      */
     protected $fillable = [
-        'uid', 'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate',
+        'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate',
     ];
     
     /**
@@ -49,7 +49,7 @@ class UserInfo extends Model
     }
 
     public function user() {
-        return $this->hasOne('\App\User', 'id', 'uid');
+        return $this->hasOne('\App\User', 'uid', 'id');
     }
 
     public function benefits() {
