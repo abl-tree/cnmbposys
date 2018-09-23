@@ -26,8 +26,9 @@ export default (function () {
 	var employee = $('#employee').DataTable({
 		processing: true,
 		serverSide: true,
-		autoWidth: true,
+		autoWidth: false,
 		responsive:true,
+		
 		scrollY:        '40vh',
         scrollCollapse: true,
 
@@ -52,6 +53,7 @@ export default (function () {
 
 		]
 	});
+	
 	//PROFILE EMPLOYEE LIST -- END
 
 

@@ -42,7 +42,7 @@
              
                 <button type="submit" class="btn cur-p btn-dark reposition" data-toggle="modal" data-backdrop="static" data-target="#employee-form-modal"><span class="ti-pencil-alt"></span> Add</button>
              
-                <table id="employee" class="table  table-striped table-bordered" style="margin-bottom:0;" cellspacing="0" width="100">
+                <table id="employee" class="table  table-striped table-bordered" style="margin-bottom:0;" cellspacing="0" style="width:100%">
                     <thead>
                         <tr>
                             <th >User ID No.</th>
