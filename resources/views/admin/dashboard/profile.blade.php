@@ -51,6 +51,7 @@
                             <th>Contact No.</th>
                             <th>Address</th>
                             <th>Rate</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                 </table>
