@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\UserBenefit;
 use App\AccessLevel;
 use App\UserInfo;
@@ -35,11 +36,17 @@ class ProfileController extends Controller
         $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
 
         $userInfo = AccessLevel::all();
+        $hr = DB::table('users')
+        ->join('access_levels','access_levels.id','=','users.access_id')
+        ->join('user_infos','user_infos.id','=','users.id')
+        ->select('user_infos.firstname','user_infos.lastname','user_infos.middlename','user_infos.id')
+        ->where('access_levels.id','=',1)
+        ->get();
 
 
         //edited by EJEL
 
-        return view('admin.dashboard.profile', compact('profile', 'hierarchy','userInfo'));
+        return view('admin.dashboard.profile', compact('profile', 'hierarchy','userInfo','hr'));
     }
 
     public function refreshEmployeeList(){
