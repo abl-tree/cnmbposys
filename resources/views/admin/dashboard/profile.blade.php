@@ -34,28 +34,29 @@
                 </div>
             </div>
         </div>
-        <div class="email-wrapper row remain-height bgc-white ov-h">
+        <div class="email-wrapper ">
             <!-- Content -->
             <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20">Employee list</h4>
              
                 <button type="submit" class="btn cur-p btn-dark reposition" data-toggle="modal" data-backdrop="static" data-target="#employee-form-modal"><span class="ti-pencil-alt"></span> Add</button>
-               
-                <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
+             
+                <table id="employee" class="table  table-striped table-bordered" style="margin-bottom:0;" cellspacing="0" width="100">
                     <thead>
                         <tr>
-                            <th>User ID No.</th>
-                            <th>Name</th>
-                            <th>Birthday</th>
-                            <th>Gender</th>
-                            <th>Contact No.</th>
-                            <th>Address</th>
-                            <th>Rate</th>
-                            <th>Action</th>
+                            <th width="50">User ID No.</th>
+                            <th width="100">Name</th>
+                            <th width="100">Birthday</th>
+                            <th width="100">Gender</th>
+                            <th width="100">Contact No.</th>
+                            <th width="100">Address</th>
+                            <th width="100">Rate</th>
+                            <th width="50">Action</th>
                         </tr>
                     </thead>
                 </table>
-            </div>
+                </table>
+            
         </div>
     </div>
 </div>

@@ -9,7 +9,6 @@ window.$ = jQuery;
 
 require('./bootstrap');
 window.swal = require('sweetalert2');
-window.datatable = require('datatables.net');
 
 // window.Vue = require('vue');
 
@@ -119,13 +118,8 @@ window.datatable = require('datatables.net');
 	              	}
 	              	else
 	              	{
-	              		$('.alert-danger').hide();
-	              		swal({
-						  type: 'success',
-						  title: 'Your work has been saved',
-						  showConfirmButton: false,
-						  timer: 1500
-						});
+	              	
+						swal("Success!", "Your work has been saved", "success")
 	              		$('#employee-form-modal').modal('hide');
 	              		$('.alert-danger').html('');
 	              		$('#employee-form')[0].reset();

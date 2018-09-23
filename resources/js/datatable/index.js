@@ -16,6 +16,17 @@ export default (function () {
 	$('#employee').DataTable({
 		processing: true,
 		serverSide: true,
+		scrollY:        '40vh',
+        scrollCollapse: true,
+
+		columnDefs: [
+			{
+				"targets": "_all", // your case first column
+			   "className": "text-center",
+				
+		   }
+		  ],
+		
 		ajax: "/refreshEmployeeList",
 		columns: [
 			{data: 'id', name: 'id'},
@@ -25,7 +36,7 @@ export default (function () {
 			{data: 'contact_number', name: 'contact_number'},
 			{data: 'address', name: 'address'},
 			{data: 'salary_rate', name: 'salary_rate'},
-			{defaultContent:'<a class="btn btn-secondary ti-pencil-alt2" style="color:white"></a>    <a class="btn btn-danger ti-face-sad" style="color:white"></a>'}
+			{defaultContent:'<div class="btn-group mr-2" role="group" > <button type="button" class="btn btn-secondary ti-pencil-alt2" style="color:white"></button><button type="button" class="btn btn-danger ti-face-sad" style="color:white"></button></div>'}
 
 		]
 	});
