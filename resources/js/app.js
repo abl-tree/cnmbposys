@@ -9,7 +9,7 @@ window.$ = jQuery;
 
 require('./bootstrap');
 window.swal = require('sweetalert2');
-
+window.datatable = require('datatables.net');
 
 // window.Vue = require('vue');
 
