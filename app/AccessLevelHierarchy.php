@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AccessLevelHeirarchy extends Model
+class AccessLevelHierarchy extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -16,10 +16,10 @@ class AccessLevelHeirarchy extends Model
     ];
 
     public function childInfo() {
-        return $this->hasOne('App\AccessLevel', 'id', 'child_id');
+        return $this->hasOne('\App\UserInfo', 'id', 'child_id');
     }
 
     public function parentInfo() {
-        return $this->hasOne('App\AccessLevel', 'id', 'parent_id');
+        return $this->hasOne('\App\UserInfo', 'id', 'parent_id');
     }
 }

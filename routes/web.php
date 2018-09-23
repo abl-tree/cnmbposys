@@ -23,6 +23,8 @@ Route::group([ 'middleware'=>['auth']], function () {
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
     Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList');
+    Route::get('/updateEmployeeList', 'ProfileController@updateEmployeeList');
+    Route::get('/viewProfile', 'ProfileController@viewProfile');
 
     //PROFILE -- END
 

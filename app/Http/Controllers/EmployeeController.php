@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\UserInfo;
 use App\UserBenefit;
-use App\AccessLevelHeirarchy;
+use App\AccessLevelHierarchy;
 
 
 class EmployeeController extends Controller
@@ -125,14 +125,13 @@ class EmployeeController extends Controller
 
         UserBenefit::insert($obj_benefit);
 
-        $access_level_heirarchy = new AccessLevelHeirarchy;
-        $access_level_heirarchy->child_id = $request->position;
-        $access_level_heirarchy->parent_id = $request->designation;
-        $check = $access_level_heirarchy->save();
+        $access_level_hierarchy = new AccessLevelHierarchy;
+        $access_level_hierarchy->child_id = $userinfo->id;
+        $access_level_hierarchy->parent_id = $request->designation;
+        $check = $access_level_hierarchy->save();
         if($check){
             return response()->json(['success'=>'Record is successfully added']);
         }
-
     }
 
     /**
