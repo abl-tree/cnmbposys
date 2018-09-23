@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\AccessLevelHeirarchy;
+use App\AccessLevelHierarchy;
 
-class AccessLevelHeirarchiesTableSeeder extends Seeder
+class AccessLevelHierarchiesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,11 +17,10 @@ class AccessLevelHeirarchiesTableSeeder extends Seeder
                 'parent_id' => 1, 
                 'child_id' => 2, 
             ),
-            
         );
 
         foreach ($data as $key => $value) {
-            AccessLevelHeirarchy::create($value);
+            AccessLevelHierarchy::create($value);
         }
     }
 }

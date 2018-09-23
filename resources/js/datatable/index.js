@@ -11,25 +11,5 @@ export default (function () {
 		aaSorting: []
 	});*/
 
-	//PROFILE EMPLOYEE LIST -- START
-
-	$('#employee').DataTable({
-		processing: true,
-		serverSide: true,
-		ajax: "/refreshEmployeeList",
-		columns: [
-			{data: 'id', name: 'id'},
-			{data: 'name', name: 'name'},
-			{data: 'birthdate', name: 'birthdate'},
-			{data: 'gender', name: 'gender'},
-			{data: 'contact_number', name: 'contact_number'},
-			{data: 'address', name: 'address'},
-			{data: 'salary_rate', name: 'salary_rate'},
-			{defaultContent:'<a class="btn btn-secondary ti-pencil-alt2" style="color:white"></a>    <a class="btn btn-danger ti-face-sad" style="color:white"></a>'}
-
-		]
-	});
-	//PROFILE EMPLOYEE LIST -- END
-
-
+	
 }());

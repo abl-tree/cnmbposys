@@ -33,10 +33,10 @@ class AccessLevel extends Model
     }
 
     public function children() {
-        return $this->hasMany('\App\AccessLevelHeirarchy', 'parent_id', 'id');
+        return $this->hasMany('\App\AccessLevelHierarchy', 'parent_id', 'id');
     }
 
     public function parents() {
-        return $this->hasMany('\App\AccessLevelHeirarchy', 'child_id', 'id');
+        return $this->hasMany('\App\AccessLevelHierarchy', 'child_id', 'id');
     }
 }

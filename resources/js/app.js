@@ -10,7 +10,6 @@ window.$ = jQuery;
 require('./bootstrap');
 window.swal = require('sweetalert2');
 
-
 // window.Vue = require('vue');
 
 /**
@@ -29,7 +28,7 @@ window.swal = require('sweetalert2');
 
 
 
-//EJEL -- START
+//ADD FORM -- START
 //form reset
 	$(document).on('click','#employee-modal-cancel',function(e){
 		e.preventDefault();
@@ -61,6 +60,7 @@ window.swal = require('sweetalert2');
 	});
 //request for form submition
 	// function bindButton() {
+	
 
 	var clicked = false;
     $(document).on("click","#employee-form-submit", function(e) {
@@ -121,16 +121,17 @@ window.swal = require('sweetalert2');
 	              	{
 	              		$('.alert-danger').hide();
 	              		swal({
-						  type: 'success',
-						  title: 'Your work has been saved',
-						  showConfirmButton: false,
-						  timer: 1500
+							type: 'success',
+							title: 'Your work has been saved',
+							showConfirmButton: false,
+							timer: 1500
 						});
 	              		$('#employee-form-modal').modal('hide');
 	              		$('.alert-danger').html('');
 	              		$('#employee-form')[0].reset();
 	              		$('.is-invalid').removeClass('is-invalid');
-	              		clicked='true';
+						clicked='true';
+						refresh_employee_table();
 	              	}
 	            }
 	        });
@@ -159,6 +160,77 @@ window.swal = require('sweetalert2');
 	  readURL(this);
 	});
 
+//ADD FORM -- END
 
-	//EJEL -- END
+//PROFILE EMPLOYEE LIST -- START
 
+	var employeetable = $('#employee').DataTable({
+		processing: true,
+		serverSide: true,
+		ajax: "/refreshEmployeeList",
+		columns: [
+			{data: 'child_info.id', name: 'id'},
+			{data: 'name', name: 'name'},
+			{data: 'child_info.birthdate', name: 'birthdate'},
+			{data: 'child_info.gender', name: 'gender'},
+			{data: 'child_info.contact_number', name: 'contact_number'},
+			{data: 'child_info.address', name: 'address'},
+			{data: 'child_info.salary_rate', name: 'salary_rate'},
+			{data: "action", orderable:false,searchable:false}
+		]
+	});
+
+	function refresh_employee_table(){
+		employeetable.ajax.reload(); //reload datatable ajax
+	}
+
+
+//PROFILE EMPLOYEE LIST -- END
+
+//DYNAMIC PROFILE -- START
+
+	$(document).on("click", ".view-employee", function(){
+		id = $(this).attr("id");
+		$.ajax({
+			url: "/viewProfile",
+			method: 'get',
+			dataType: 'json',
+			data:{id:id},
+			success:function(data){
+				$("#name_P").html(data.profile[0].info.firstname + " " + data.profile[0].info.middlename + " " + data.profile[0].info.lastname)
+				$("#role_P").html(data.role.name);
+				$("#birth_P").html(data.profile[0].info.birthdate);
+				$("#gender_P").html(data.profile[0].info.gender);
+				$("#contact_P").html(data.profile[0].info.contact_number);
+				$("#sss_P").html(!!data.profile[0].id_number? data.profile[0].id_number : 'N/A');
+				$("#philhealth_P").html(!!data.profile[1].id_number ? data.profile[1].id_number : 'N/A');
+				$("#pagibig_P").html(!!data.profile[2].id_number? data.profile[2].id_number : 'N/A');
+				$("#tin_P").html(!!data.profile[3].id_number ? data.profile[3].id_number : 'N/A');
+				
+
+				employeetable = $('#employee').DataTable({
+					destroy: true,
+					processing: true,
+					serverSide: true,
+					ajax: {
+						"url": "/updateEmployeeList",
+						"data": function(d){
+							d.id = id;	
+						}
+					},
+					columns: [
+						{data: 'child_info.id', name: 'id'},
+						{data: 'name', name: 'name'},
+						{data: 'child_info.birthdate', name: 'birthdate'},
+						{data: 'child_info.gender', name: 'gender'},
+						{data: 'child_info.contact_number', name: 'contact_number'},
+						{data: 'child_info.address', name: 'address'},
+						{data: 'child_info.salary_rate', name: 'salary_rate'},
+						{data: "action", orderable:false,searchable:false}
+					]
+				});
+			}
+		})
+	})
+
+//DYNAMIC PROFILE -- END

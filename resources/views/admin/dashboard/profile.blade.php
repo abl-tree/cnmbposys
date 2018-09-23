@@ -9,23 +9,27 @@
                 <div class="p-20 bgc-grey-100 layer w-100">
                     <div class="card">
                         <div class="box">
+                            <!-- an ID that has _P at the end means that it is for the profile of a specific person being outputted on the left -->
                             <div class="img">
                                 <img src="images/user.png">
                             </div>
-                            <h2>{{ $profile[0]->info->firstname." ".$profile[0]->info->middlename." ".$profile[0]->info->lastname }}<br><span>{{ $hierarchy->name }}</span></h2>
-                            <span>Birthday: {{$profile[0]->info->birthdate}}</span>
+                            <h2><span id="name_P">{{ $profile[0]->info->firstname." ".$profile[0]->info->middlename." ".$profile[0]->info->lastname }}</span><br>
+                            <span id="role_P">{{ $role->name }}</span>
+                            </h2>
+                            Birthday:&nbsp;<span id="birth_P"> {{ $profile[0]->info->birthdate }}</span>
                             <br>
-                            <span>Gender: {{$profile[0]->info->gender}}</span>
+                            Gender:&nbsp;<span id="gender_P">{{ $profile[0]->info->gender }}</span>
                             <br>
-                            <span>Contact: {{$profile[0]->info->contact_number}}</span>
+                            Contact:&nbsp;<span id="contact_P">{{ $profile[0]->info->contact_number}}</span>
                             <br>
                             <br>
-
-                            <span>{{ $profile[0]->benefit->name.': '.$profile[0]->id_number}}</span>
+                            SSS:&nbsp;<span id="sss_P">{{ !empty($profile[0]->id_number) ? $profile[0]->id_number : 'N/A' }}</span>
                             <br>
-                            <span>{{ $profile[1]->benefit->name.': '.$profile[1]->id_number}}</span>
+                            Philhealth:&nbsp;<span id="philhealth_P">{{ !empty($profile[1]->id_number) ? $profile[1]->id_number : 'N/A' }}</span>
                             <br>
-                            <span>{{ $profile[2]->benefit->name.': '.$profile[2]->id_number}}</span>
+                            Pag-ibig:&nbsp;<span id="pagibig_P">{{ !empty($profile[2]->id_number) ? $profile[2]->id_number : 'N/A' }}</span>
+                            <br>
+                            TIN:&nbsp;<span id="tin_P">{{ !empty($profile[3]->id_number) ? $profile[3]->id_number : 'N/A' }}</span>
                             <br>
                             <br>
                             <button type="submit" class="btn cur-p btn-dark"><span class="ti-pencil-alt"></span> Edit</button>

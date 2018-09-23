@@ -27,32 +27,15 @@ class UserInfosTableSeeder extends Seeder
             'firstname' => 'HRA',
             'lastname' => 'kouceyla', 
             'middlename' => 'Cool', 
-            'birthdate' => '12-12-12', 
+            'birthdate' => '12-2-12', 
             'address' => 'bario ugok',
             'gender' => 'M', 
             'contact_number' => '0000000000',
-            ],
-            [
-            'firstname' => 'OM',
-            'lastname' => 'kouceyla', 
-            'middlename' => 'Cool', 
-            'birthdate' => '12-12-12', 
-            'address' => 'bario ugok',
-            'gender' => 'M', 
-            'contact_number' => '0000000000',
-            ],
-            [
-            'firstname' => 'TL',
-            'lastname' => 'kouceyla', 
-            'middlename' => 'Cool', 
-            'birthdate' => '12-12-12', 
-            'address' => 'bario ugok',
-            'gender' => 'M', 
-            'contact_number' => '0000000000',
-            ]];
+            ]
+        ];
        
-            foreach($data as $datum){
-                UserInfo::create($datum);
-            }
+        foreach($data as $datum){
+            UserInfo::create($datum);
+        }
     }
 }

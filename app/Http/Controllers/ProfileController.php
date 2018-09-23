@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\UserBenefit;
 use App\AccessLevel;
+use App\AccessLevelHierarchy;
 use App\UserInfo;
 use App\User;
 use Yajra\Datatables\Datatables;
@@ -31,8 +32,8 @@ class ProfileController extends Controller
     public function index()
     {
         $id = auth()->user()->id;
-        $user = auth()->user()->access_id;
-        $hierarchy = AccessLevel::find($user);
+        $access_level = auth()->user()->access_id;
+        $role = AccessLevel::find($access_level);
         $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
 
         $userInfo = AccessLevel::all();
@@ -43,17 +44,54 @@ class ProfileController extends Controller
         ->where('access_levels.id','=',1)
         ->get();
 
-
-        //edited by EJEL
-
-        return view('admin.dashboard.profile', compact('profile', 'hierarchy','userInfo','hr'));
+        return view('admin.dashboard.profile', compact('profile', 'role','userInfo','hr'));
     }
 
     public function refreshEmployeeList(){
-        $employeeList = UserInfo::all();
+        $id = auth()->user()->id;
+
+        $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
         return Datatables::of($employeeList)
+        ->addColumn('action', function($employeeList){
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2" id="'.$employeeList->child_id.'"></button>
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
+        })
         ->editColumn('name', function ($data){
-            return $data->firstname." ".$data->middlename." ".$data->lastname;
+            return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
+        })
+        ->make(true);
+    }
+
+    public function refreshEmployeeDatatable(){
+        
+    }
+
+    public function viewProfile(Request $request){
+        $id = $request->get('id');
+        $user = User::find($id);
+        $access_level = $user->access_id;
+        $role = AccessLevel::find($access_level);
+        $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
+
+        $output = array(
+            'profile' => $profile,
+            'role' => $role
+        );
+        echo json_encode($output);
+
+    }
+
+    public function updateEmployeeList(Request $request){
+        $id = $request->get('id');
+        
+        $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
+        return Datatables::of($employeeList)
+        ->addColumn('action', function($employeeList){
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2" id="'.$employeeList->child_id.'"></button>
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
+        })
+        ->editColumn('name', function ($data){
+            return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
         ->make(true);
     }

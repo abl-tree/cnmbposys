@@ -25,22 +25,11 @@ class users extends Seeder
             'email' => 'testhra@gmail.com',
             'password' => '123456',
             'access_id' => 2,
-            ],
-            [
-            'uid'=>3,
-            'email' => 'testom@gmail.com',
-            'password' => '123456',
-            'access_id' => 3,
-            ],
-            [
-            'uid'=>4,
-            'email' => 'testtl@gmail.com',
-            'password' => '123456',
-            'access_id' => 4,
-            ]];
+            ]
+        ];
        
-            foreach($data as $datum){
-                User::create($datum);
-            }
+        foreach($data as $datum){
+            User::create($datum);
+        }
     }
 }
