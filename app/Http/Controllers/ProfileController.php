@@ -37,14 +37,7 @@ class ProfileController extends Controller
         $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
 
         $userInfo = AccessLevel::all();
-        $hr = DB::table('users')
-        ->join('access_levels','access_levels.id','=','users.access_id')
-        ->join('user_infos','user_infos.id','=','users.id')
-        ->select('user_infos.firstname','user_infos.lastname','user_infos.middlename','user_infos.id')
-        ->where('access_levels.id','=',1)
-        ->get();
-
-        return view('admin.dashboard.profile', compact('profile', 'role','userInfo','hr'));
+        return view('admin.dashboard.profile', compact('profile', 'role','userInfo'));
     }
 
     public function refreshEmployeeList(){
@@ -53,8 +46,8 @@ class ProfileController extends Controller
         $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
         return Datatables::of($employeeList)
         ->addColumn('action', function($employeeList){
-            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2" id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+            <button class="btn btn-xs btn-info ti-eye view-employee" data.id="'.$employeeList->child_id.'"></button>';
         })
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
