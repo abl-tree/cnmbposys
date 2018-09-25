@@ -35,17 +35,17 @@ class UserBenefitsTableSeeder extends Seeder
             ),
             array(
                 'user_info_id' => 2, 
-                'benefit_id' => 4, 
+                'benefit_id' => 1, 
                 'id_number' => 123123123, 
             ),
             array(
                 'user_info_id' => 2, 
-                'benefit_id' => 4, 
+                'benefit_id' => 2, 
                 'id_number' => 321321321, 
             ),
             array(
                 'user_info_id' => 2, 
-                'benefit_id' => 4, 
+                'benefit_id' => 3, 
                 'id_number' => 432432432, 
             ),
             array(

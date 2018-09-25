@@ -23,6 +23,7 @@ class CreateUserInfosTable extends Migration
             $table->string('contact_number');
             $table->string('address');
             $table->double('salary_rate', 8, 2)->nullable();
+            $table->string('image_ext')->nullable();
             $table->timestamps();
         });
 
