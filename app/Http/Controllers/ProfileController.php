@@ -47,7 +47,7 @@ class ProfileController extends Controller
         return Datatables::of($employeeList)
         ->addColumn('action', function($employeeList){
             return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" data.id="'.$employeeList->child_id.'"></button>';
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
         })
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
