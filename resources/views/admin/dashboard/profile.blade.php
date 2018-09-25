@@ -38,8 +38,9 @@
                 </div>
             </div>
         </div>
-        <div class="email-wrapper row remain-height bgc-white ov-h">
+        <div class="email-wrapper ">
             <!-- Content -->
+            
             <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20">Employee list</h4>
              
@@ -48,18 +49,18 @@
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>User ID No.</th>
-                            <th>Name</th>
+                            <th >User ID No.</th>
+                            <th >Name</th>
                             <th>Birthday</th>
                             <th>Gender</th>
-                            <th>Contact No.</th>
-                            <th>Address</th>
+                            <th >Contact No.</th>
+                            <th >Address</th>
                             <th>Rate</th>
-                            <th>Action</th>
+                            <th >Action</th>
                         </tr>
                     </thead>
                 </table>
-            </div>
+            
         </div>
     </div>
 </div>
