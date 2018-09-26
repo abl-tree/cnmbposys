@@ -192,7 +192,7 @@ Modal  -->
                 <div class="col-md-4">
                      <div class="pull-right">
                         <button type="button" data-dismiss="modal" class="btn btn-danger" >Cancel</button>
-                        <button type="button" id="add_IR" class="btn btn-success push-right">Confirm</button>
+                        <button type="button" id="add_IR" class="btn btn-success push-right">Save</button>
                     </div>
                 </div>
             </div>

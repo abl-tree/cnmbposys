@@ -232,7 +232,7 @@ $(document).on('click','#add_IR',function(event){
         var input = $(this);
         var button =this;
         button.disabled = true;
-        input.html('SAVING...'); 
+        input.html('Saving...'); 
        // $('#add_IR_form').serialize();
        description = $('#description').val();
        console.log(description);
@@ -245,20 +245,26 @@ $(document).on('click','#add_IR',function(event){
             dataType:'json',
             data: {id:ir_id,description:description},
             success:function(data){
-                console.log(data);
-                button.disabled = false;
-                input.html('SAVE CHANGES');
-                $("#button_action").val('').trigger('change');
-                $("#ir_id").val('').trigger('change');
-                $("#description").val('').trigger('change');
-                swal("Success!", "Report has been added", "success")
-                $('#nod_modal').modal('hide');
-                //refresh_sales_table();
+                if(data=="Error"){
+                    swal("Input Missing!", "Please Enter Description.", "error")
+                    button.disabled = false;
+                    input.html('Save'); 
+                }else{
+                    button.disabled = false;
+                    input.html('Save');
+                    $("#button_action").val('').trigger('change');
+                    $("#ir_id").val('').trigger('change');
+                    $("#description").val('').trigger('change');
+                    swal("Success!", "Report has been added", "success")
+                    $('#nod_modal').modal('hide');
+                    refresh_employee_table();  
+                }
+                
             },
             error: function(data){
                 swal("Oh no!", "Something went wrong, try again.", "error")
                 button.disabled = false;
-                input.html('Confirm');
+                input.html('Save');
             }
         })
 });
