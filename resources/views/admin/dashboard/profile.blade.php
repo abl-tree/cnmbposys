@@ -49,15 +49,15 @@
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th >User ID No.</th>
-                            <th >Name</th>
+                            <th>User ID No.</th>
+                            <th>Name</th>
                             <th>Birthday</th>
                             <th>Gender</th>
-                            <th >Contact No.</th>
-                            <th >Address</th>
+                            <th>Contact No.</th>
+                            <th>Address</th>
                             <th>Rate</th>
                             <th>Status</th>
-                            <th >Action</th> 
+                            <th>Action</th> 
                         </tr>
                     </thead>
                 </table>

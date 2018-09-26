@@ -50,7 +50,7 @@ var employeetable = $('#employee').DataTable({
         {data: 'child_info.contact_number', name: 'contact_number'},
         {data: 'child_info.address', name: 'address'},
         {data: 'child_info.salary_rate', name: 'salary_rate'},
-        {data: "status"},
+        {data: "employee_status"},
         {data: "action", orderable:false,searchable:false}
     ]
 });
@@ -98,7 +98,7 @@ $(document).on("click", ".view-employee", function(){
                     {data: 'child_info.contact_number', name: 'contact_number'},
                     {data: 'child_info.address', name: 'address'},
                     {data: 'child_info.salary_rate', name: 'salary_rate'},
-                    {data: "status"},
+                    {data: "employee_status"},
                     {data: "action", orderable:false,searchable:false}
                 ]
             });
@@ -263,6 +263,56 @@ $(document).on('click','#add_IR',function(event){
         })
 });
 
+//UPDATE EMPLOYEE STATUS
+$(document).on('click','#submit_status',function(event){
+    event.preventDefault();
+
+    var status_id = $('#status_id').val();
+    var status_data = $('#status_data').val();
+    
+    $.ajax({
+        method: "POST",
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: "/update_status",
+        dataType: "text",
+        data: {status_id:status_id,status_data:status_data},
+        success: function (data) {
+            $('#update_status_modal').modal('hide');
+            refresh_employee_table();
+            swal("Success!", "Status has been updated", "success");
+        },
+        error: function (data) {
+            swal("Oh no!", "Something went wrong, try again.", "error");
+            console.log(data)
+        }
+    });
+});
+
+$(document).on('click','.update_status',function(event){
+    event.preventDefault();
+    var id = $(this).attr('id');
+    $.ajax({
+        method: "GET",
+        url: "/get_status",
+        dataType: "text",
+        data: {id:id},
+        success: function (value) {
+            var data = JSON.parse(value);
+            $('#update_status_modal').modal('show');
+            $('#status_id').val(data[0].id);
+            $('#status_data').val(data[0].status);
+            $('#employee_status_name').html(data[0].firstname + ' ' + data[0].middlename + ' ' + data[0].lastname);
+            console.log(data);
+        },
+        error: function (data) {
+            swal("Oh no!", "Something went wrong, try again.", "error")
+        }
+    });
+});
+
+////////////////////////////////////////////////////////////////////////////////////
 
 
 ////////////////////////////////////////////////////////////////////////////////////

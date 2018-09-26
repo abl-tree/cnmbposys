@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\User;
 
 class LoginController extends Controller
 {
@@ -35,5 +38,30 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public  function login(Request $request)
+    {
+        $email = $request->email;
+        $password = $request->password;
+
+        $user = User::where('email', $email)->first();
+        if($user){
+            $status = $user->info->status;
+        }
+
+        if (Auth::attempt(['email' => $email, 'password' => $password])) {
+            // Authentication passed
+                if($status == NULL){
+                    return redirect()->to('/profile');
+                }else{
+                    // User is terminated, redirect back to login
+                    Auth::logout();
+                    return redirect()->to('/login')->withErrors(['email'=>'You have been terminated.']);;
+                }
+        }else{
+            // User is not valid, redirect back to login here
+            return redirect()->to('/login')->withErrors(['email'=>'These credentials do not match our records.']);
+        }
     }
 }
