@@ -1,7 +1,7 @@
 @extends('admin.default')
 
 @section('content')
-<!-- ### $App Screen Content ### -->
+<!-- ### $App Screen Content ### --> 
 <div class="full-container">
     <div class="email-app">
         <div class="email-side-nav remain-height ov-h">
@@ -56,7 +56,8 @@
                             <th >Contact No.</th>
                             <th >Address</th>
                             <th>Rate</th>
-                            <th >Action</th>
+                            <th>Status</th>
+                            <th >Action</th> 
                         </tr>
                     </thead>
                 </table>
