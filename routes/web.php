@@ -41,6 +41,12 @@ Route::group([ 'middleware'=>['auth']], function () {
     //Incident Report
     Route::post('/add_IR', 'UserController@add_IR')->name('add_IR');
     // end of Incident Report routes
+    
     //Email Route
     Route::get('sendEmail','UserController@sendMail')->name('sendMail');
+
+    //UPDATE STATUS -- START
+    Route::post('/update_status', 'EmployeeController@update_status');
+    Route::get('/get_status', 'EmployeeController@get_status');
+    //UPDATE STATUS -- END
 });

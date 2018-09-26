@@ -227,7 +227,7 @@ class EmployeeController extends Controller
     function fetch_employee_data(Request $request){
         $id = $request->id;
         $data=[];
-        $data['userinfo'] = UserInfo::select('id','firstname','middlename','lastname','birthdate','gender','address','contact_number','salary_rate')->find($id);
+        $data['userinfo'] = UserInfo::select('id','firstname','middlename','lastname','birthdate','gender','address','contact_number','salary_rate', 'status')->find($id);
         $data['user'] = User::where('uid','=',$id)->get();
         $data['userbenefit'] = UserBenefit::where('user_info_id','=',$id)->get();
         $data['accesslevelhierarchy'] = AccessLevelHierarchy::where('child_id','=',$id)->get();
@@ -242,6 +242,17 @@ class EmployeeController extends Controller
         }else{
             echo 'no result';
         }
+    }
+
+    public function update_status(Request $request){
+        $user = UserInfo::where('id', $request->status_id)->first();
+        $user->status = $request->status_data;
+        $user->save();
+    }
+
+    public function get_status(Request $request){
+        $user = UserInfo::where('id', $request->id)->get();
+        return $user;
     }
     
     

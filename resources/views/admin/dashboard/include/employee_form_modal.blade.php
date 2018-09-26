@@ -155,7 +155,7 @@ Modal  -->
         </div>
     </div>
 </div>
-<!-- <!-- Add Incedent Report MODAL  -->
+<!-- Add Incident Report MODAL  -->
 <div id="nod_modal" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
     <!-- Modal content-->
@@ -199,4 +199,41 @@ Modal  -->
         </div>
     </div>
 </div>
-   <!--  end of nod modal -->
+<!--  end of IR modal -->
+
+<!-- START UPDATE STATUS MODAL  -->
+<div id="update_status_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="employee_status_name"><small></small></h4>
+            </div>
+            <div class="modal-body">
+                <form action="#" method="POST" id='update_status_form'>
+                {{ csrf_field()}}
+                <input type="hidden" name="status_id" id="status_id" value="">
+                    <div class="row" style='padding:10px'>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="status_data"><h4 class="c-grey-900">Update Employee Status</h4></label>
+                                <select class="form-control" id="status_data" name="status_data" required>
+                                    <option value="Active">Active</option>
+                                    <option value="Terminated">Terminated</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>           
+                <form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-4">
+                     <div class="pull-right">
+                        <button type="button" data-dismiss="modal" class="btn btn-danger btn-sm" >Cancel</button>
+                        <button type="button" id="submit_status" class="btn btn-success btn-sm">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+   <!-- END UPDATE STATUS MODAL -->

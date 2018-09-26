@@ -45,15 +45,14 @@ class ProfileController extends Controller
 
         $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
         return Datatables::of($employeeList)
-         ->addColumn('status', function($employeeList){
-            if($employeeList->childInfo->status=="Terminated"){
-                return $employeeList->childInfo->status;
-            }else if($employeeList->childInfo->status=="Active"){
-                return $employeeList->childInfo->status;
-            }else if($employeeList->childInfo->status=="In-Active"){
-                return $employeeList->childInfo->status;
+         ->addColumn('employee_status', function($data){
+            if($data->childInfo->status=='Terminated'){
+                return '<button class="btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+            }else if($data->childInfo->status=='Active'){
+                return '<button class="btn-sm btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+            }else{
+                return 'AMBOT';
             }
-            
         })
         ->addColumn('action', function($employeeList){
             return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
@@ -63,6 +62,7 @@ class ProfileController extends Controller
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
+        ->rawColumns(['employee_status', 'action'])
         ->make(true);
     }
 
@@ -90,6 +90,15 @@ class ProfileController extends Controller
         
         $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
         return Datatables::of($employeeList)
+         ->addColumn('employee_status', function($data){
+            if($data->childInfo->status=='Terminated'){
+                return '<button class="btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+            }else if($data->childInfo->status=='Active'){
+                return '<button class="btn-sm btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+            }else{
+                return 'AMBOT';
+            }
+        })
         ->addColumn('action', function($employeeList){
             return '<button class="btn btn-xs btn-secondary ti-pencil-alt2" id="'.$employeeList->child_id.'"></button>
             <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
@@ -97,6 +106,7 @@ class ProfileController extends Controller
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
+        ->rawColumns(['employee_status', 'action'])
         ->make(true);
     }
  
