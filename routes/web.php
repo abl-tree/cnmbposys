@@ -37,4 +37,10 @@ Route::group([ 'middleware'=>['auth']], function () {
 
     //CU EMPLOYEE -- END
 
+
+    //Incident Report
+    Route::post('/add_IR', 'UserController@add_IR')->name('add_IR');
+    // end of Incident Report routes
+    //Email Route
+    Route::get('sendEmail','UserController@sendMail')->name('sendMail');
 });

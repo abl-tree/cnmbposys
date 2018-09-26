@@ -102,6 +102,7 @@ class EmployeeController extends Controller
         $userinfo->birthdate=$request->birthdate;
         $userinfo->gender=$request->gender;
         $userinfo->salary_rate=$request->salary;
+        $userinfo->status="Active";
         $userinfo->contact_number=$request->contact;
         if($request->hasFile('photo')){
             $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);

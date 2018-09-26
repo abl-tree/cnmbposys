@@ -27,12 +27,15 @@ window.swal = require('sweetalert2');
 
 
 
-// include CU employee form JS by EJEL
+// include CU employee form JS by EJEL 
 // -- START
 
 
 // -- END
-
+//global variables
+ var ir_id;
+ var description;
+ //end of global variables
 //PROFILE EMPLOYEE LIST -- START
 
 var employeetable = $('#employee').DataTable({
@@ -47,6 +50,7 @@ var employeetable = $('#employee').DataTable({
         {data: 'child_info.contact_number', name: 'contact_number'},
         {data: 'child_info.address', name: 'address'},
         {data: 'child_info.salary_rate', name: 'salary_rate'},
+        {data: "status"},
         {data: "action", orderable:false,searchable:false}
     ]
 });
@@ -94,12 +98,13 @@ $(document).on("click", ".view-employee", function(){
                     {data: 'child_info.contact_number', name: 'contact_number'},
                     {data: 'child_info.address', name: 'address'},
                     {data: 'child_info.salary_rate', name: 'salary_rate'},
+                    {data: "status"},
                     {data: "action", orderable:false,searchable:false}
                 ]
             });
         }
     })
-})
+}) 
 
 //DYNAMIC PROFILE -- END
 
@@ -212,6 +217,52 @@ $(document).on('click','.form-action-button',function(){
     $('#employee-form-modal').modal('show');
 });
 
+//OPEN MODAL for Incident Report
+$(document).on('click','.add_nod',function(event){
+    event.preventDefault();
+    ir_id = $(this).attr("id");
+    $('#button_action').val('add');
+    $('#ir_id').val(ir_id);
+    $('#nod_modal').modal('show');
+});//end for OPEN MODAL for Incident Report
+
+//ADD Incident Report
+$(document).on('click','#add_IR',function(event){
+    event.preventDefault();
+        var input = $(this);
+        var button =this;
+        button.disabled = true;
+        input.html('SAVING...'); 
+       // $('#add_IR_form').serialize();
+       description = $('#description').val();
+       console.log(description);
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:"/add_IR",
+            method: 'POST',
+            dataType:'json',
+            data: {id:ir_id,description:description},
+            success:function(data){
+                console.log(data);
+                button.disabled = false;
+                input.html('SAVE CHANGES');
+                $("#button_action").val('').trigger('change');
+                $("#ir_id").val('').trigger('change');
+                $("#description").val('').trigger('change');
+                swal("Success!", "Report has been added", "success")
+                $('#nod_modal').modal('hide');
+                //refresh_sales_table();
+            },
+            error: function(data){
+                swal("Oh no!", "Something went wrong, try again.", "error")
+                button.disabled = false;
+                input.html('Confirm');
+            }
+        })
+});
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -292,7 +343,7 @@ function fetch_edit_data(id){
 
 function refresh_employee_table(){
     employeetable.ajax.reload(); //reload datatable ajax
-}
+} 
 
 function fetch_blob_image(id){
     $.ajax({

@@ -45,10 +45,21 @@ class ProfileController extends Controller
 
         $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
         return Datatables::of($employeeList)
+         ->addColumn('status', function($employeeList){
+            if($employeeList->childInfo->status=="Terminated"){
+                return $employeeList->childInfo->status;
+            }else if($employeeList->childInfo->status=="Active"){
+                return $employeeList->childInfo->status;
+            }else if($employeeList->childInfo->status=="In-Active"){
+                return $employeeList->childInfo->status;
+            }
+            
+        })
         ->addColumn('action', function($employeeList){
             return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
         })
+
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
@@ -88,7 +99,7 @@ class ProfileController extends Controller
         })
         ->make(true);
     }
-
+ 
     /**
      * Show the form for creating a new resource.
      *

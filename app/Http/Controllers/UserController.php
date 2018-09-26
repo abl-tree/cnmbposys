@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
+use App\UserReport;
+use App\UserInfo;
+use Mail;
 
 class UserController extends Controller
 {
@@ -44,6 +47,39 @@ class UserController extends Controller
 
         return back()->withSuccess(trans('app.success_store'));
     }
+
+
+    //Add IR START
+
+     public function add_IR(Request $request)
+    {
+        $IR = new UserReport;
+        $IR->user_reports_id = $request->id;
+        $IR->description = $request->description;
+        $IR->save(); 
+        $IRcount = UserReport::where('user_reports_id','=',$request->id)->count();
+        $user = User::where('uid', '=',$request->id)
+               ->first(); 
+        $userInfo =  UserInfo::where('id', '=',$request->id)
+               ->first(); 
+        $data = array(
+           'name' => $userInfo->firstname,
+           'email' => $user->email
+                );
+        if($IRcount==5){
+         $userInfo->status = "Terminated";
+         $userInfo->save();  
+
+          Mail::send(['text'=>'mail'],$data,function($message) use ($data){
+            $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Termination Mail of Mr/Mrs '.$data['name']);
+            $message->from('bfjax5@gmail.com','CNM BPO');
+         });         
+        }
+
+        return json_encode($data['email']);
+    }
+
+    //Add IR END
 
     /**
      * Display the specified resource.

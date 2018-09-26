@@ -24,7 +24,7 @@
                         <label for="inputCall1" class=" peers peer-greed js-sb ai-c">
                           <span class="peer peer-greed">Call John for Dinner</span>
                         </label>
-                      </div>
+                      </div> 
                       <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                   </div>
