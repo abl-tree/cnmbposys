@@ -106,9 +106,7 @@ Modal  -->
                                     <div class="col-sm-8">
                                         <select name="position" id="position" class="form-control font-xs">
                                             @foreach($userInfo as $datum)
-                                                @if($datum->id>1)
                                                     <option value="{{$datum->id}}">{{$datum->name}}</option>
-                                                @endif
                                             @endforeach
                                         </select>
                                     </div>
@@ -141,6 +139,7 @@ Modal  -->
                         </div>
                         <input type="hidden" name="id" id="employee-id">
                         <input type="hidden" name="action" id="action">
+                        <input type="hidden" name="portion" id="portion">
                     </div>           
                 <form>
             </div>

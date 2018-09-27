@@ -11,7 +11,7 @@
                         <div class="box">
                             <!-- an ID that has _P at the end means that it is for the profile of a specific person being outputted on the left -->
                             <div class="img">
-                                <img src="images/user.png">
+                                <img id="profile-image-display" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.base64_encode($profile->image) : '/images/nobody.jpg'}}">
                             </div>
                             <h2><span id="name_P">{{ $profile->firstname." ".$profile->middlename." ".$profile->lastname }}</span><br>
                             <span id="role_P">{{ $role->name }}</span>
@@ -33,7 +33,7 @@
                             <br>
                             <br>
                             <button type="button" class="btn cur-p btn-primary" id="PrevProfile" disabled>← Prev</button>
-                            <button type="submit" class="btn cur-p btn-dark"><span class="ti-pencil-alt"></span> Edit</button>
+                            <button type="submit" class="btn cur-p btn-dark form-action-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt"></span> Edit</button>
                         </div>
                     </div>
                 </div>
