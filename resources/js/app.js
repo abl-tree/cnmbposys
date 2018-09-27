@@ -41,7 +41,11 @@ window.swal = require('sweetalert2');
 
 var employeetable = $('#employee').DataTable({
     processing: true,
-    serverSide: true,
+    columnDefs: [{
+        "targets": "_all", // your case first column
+        "className": "text-center",
+
+    }],
     ajax: "/refreshEmployeeList",
     columns: [
         {data: 'child_info.id', name: 'id'},
@@ -95,7 +99,11 @@ $(document).on("click", ".view-employee", function(){
             employeetable = $('#employee').DataTable({
                 destroy: true,
                 processing: true,
-                serverSide: true,
+                columnDefs: [{
+                    "targets": "_all", // your case first column
+                    "className": "text-center",
+        
+                }],
                 ajax: {
                     "url": "/updateEmployeeList",
                     "data": function(d){
@@ -141,7 +149,11 @@ $(document).on("click", "#PrevProfile", function(){
                 employeetable = $('#employee').DataTable({
                     destroy: true,
                     processing: true,
-                    serverSide: true,
+                    columnDefs: [{
+                        "targets": "_all", // your case first column
+                        "className": "text-center",
+            
+                    }],
                     ajax: {
                         "url": "/updateEmployeeList",
                         "data": function(d){

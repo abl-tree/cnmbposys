@@ -47,16 +47,16 @@ class ProfileController extends Controller
         return Datatables::of($employeeList)
          ->addColumn('employee_status', function($data){
             if($data->childInfo->status=='Terminated'){
-                return '<button class="btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+                return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
             }else if($data->childInfo->status=='Active'){
-                return '<button class="btn-sm btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
             }else{
                 return 'AMBOT';
             }
         })
         ->addColumn('action', function($employeeList){
-            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
+            return '<div class="btn-group" role="group" aria-label="Third group"><button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button><button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button></div>';
         })
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
@@ -87,16 +87,16 @@ class ProfileController extends Controller
         return Datatables::of($employeeList)
          ->addColumn('employee_status', function($data){
             if($data->childInfo->status=='Terminated'){
-                return '<button class="btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+                return '<button class="btn btn-xs btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
             }else if($data->childInfo->status=='Active'){
-                return '<button class="btn-sm btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                return '<button class="btn btn-xs btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
             }else{
                 return 'AMBOT';
             }
         })
         ->addColumn('action', function($employeeList){
             return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button><button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
         })
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;

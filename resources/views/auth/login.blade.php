@@ -39,18 +39,18 @@
                     </div>
                 </div>
                 <div class="peer">
-                    <button class="btn btn-primary">Login</button>
+                    <button class="btn btn-secondary">Login</button>
                 </div>
             </div>
         </div>
         <div class="peers ai-c jc-sb fxw-nw">
             <div class="peer">
-                <a class="btn btn-link" href="{{ route('password.request') }}">
+                <a class="btn  btn-link" href="{{ route('password.request') }}">
                     Forgot Your Password?
                 </a>
             </div>
             <div class="peer">
-                <a href="/register" class="btn btn-link">Create new account</a>
+                <a href="/register" class="btn btn-link secondary" >Create new account</a>
             </div>
         </div>
     </form>
