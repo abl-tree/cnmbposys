@@ -14,6 +14,10 @@ class AccessLevelHierarchiesTableSeeder extends Seeder
     {
         $data = array(
             array(
+                'parent_id' => null, 
+                'child_id' => 1, 
+            ),
+            array(
                 'parent_id' => 1, 
                 'child_id' => 2, 
             ),

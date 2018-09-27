@@ -140,6 +140,10 @@ $("#photo").change(function() {
 //ajax request for CU action on from submission
 $(document).on("click","#employee-form-submit", function(e) {
     e.preventDefault();
+    var input = $(this);
+    var button =input[0];
+    button.disabled = true;
+    input.html('Saving...'); 
         var formData = new FormData($('#employee-form')[0]);
         $("#employee-form input").removeClass('is-invalid');
             $.ajax({
@@ -157,7 +161,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                     var compact_req_msg='false'; //compact required message
                     var unique_email_msg='false';
                     var email_error='false';
-
+                    var image_file='false';
                     $.each(result.errors, function(key, value){
                         $('#'+key).addClass("is-invalid");
                         value = ""+value;
@@ -173,20 +177,29 @@ $(document).on("click","#employee-form-submit", function(e) {
                                 email_error='true';
                             }
                         }
+                        if(key=='photo'){
+                            image_file='true';
+                        }
                     });
 
                     if(compact_req_msg=='true'){
-                            $('.alert-danger').append('<li style="font-size:0.8em"> Please fill the required fields. </li>');
+                        $('.alert-danger').append('<li style="font-size:0.8em"> Please fill the required fields. </li>');
                     }
                     if(unique_email_msg=='true'){
-                            $('.alert-danger').append('<li style="font-size:0.8em"> Your email is already in use. </li>');
+                        $('.alert-danger').append('<li style="font-size:0.8em"> Your email is already in use. </li>');
                     }
                     if(email_error=='true'){
-                            $('.alert-danger').append('<li style="font-size:0.8em"> Please enter valid email. </li>');
+                        $('.alert-danger').append('<li style="font-size:0.8em"> Please enter valid email. </li>');
+                    }
+                    if(image_file=='true'){
+                        $('.alert-danger').append('<li style="font-size:0.8em"> Please upload valid image file with 2MB max size. </li>');
+                        $('#upload-image-display').attr('src','/images/nobody.jpg').css('border','3px solid red');
+
                     }
                     
                     $('.alert-danger').show();
-                    clicked=false;
+                    button.disabled=false;
+                    input.html('Confirm'); 
                 }else{
                     swal({
                         type: 'success',
@@ -197,6 +210,8 @@ $(document).on("click","#employee-form-submit", function(e) {
                     
                     employee_form_reset();
                     refresh_employee_table(); // ben
+                    button.disabled=false;
+                    input.html('Confirm'); 
                 }
             }
         });
@@ -206,12 +221,18 @@ $(document).on("click","#employee-form-submit", function(e) {
 //preload data on employee form on action add/update button click
 $(document).on('click','.form-action-button',function(){
     $('#action').val($(this).data('action'));
-    $('#url').val($(this).data('url'));
     if($(this).data('action')=='edit'){
+        $('#employee-form-submit')[0].disabled=true;
+        $('#employee-form-submit').html('Loading...');
         $('#employee-id').val($(this).data('id'));
         fetch_edit_data($(this).data('id'));
-    }else{
-        fetch(2);
+        var edit_profile_disable= function(){
+            // $('#position')[0].disabled=true;
+            // $('#salary')[0].disabled=true;
+            // $('#designation')[0].disabled=true;
+            // $('#position')[0].disabled=true;
+        };
+        setTimeout(edit_profile_disable,2000);
     }
     $('#employee-form-modal-header-title').html(ucword($(this).data('action')));
     $('#employee-form-modal').modal('show');
@@ -331,6 +352,7 @@ function employee_form_reset(){
     $('#designation').html('');
     $('.is-invalid').removeClass('is-invalid');
     $('.alert-danger').hide();
+    $('#upload-image-display').attr('src','/images/nobody.jpg').css('border','');
 }
 //display photo before upload
 function readURL(input) {
@@ -365,6 +387,9 @@ function fetch(pos_id){
 
 //fetchdata for edit form
 function fetch_edit_data(id){
+    var input = $('#employee-form-submit');
+    input.disabled = true;
+    input.html('Loading...');
     $.ajax({
         url:"employee/fetch_employee_data",
         method:"POST",
@@ -388,11 +413,12 @@ function fetch_edit_data(id){
              $('#salary').val(result.userinfo.salary_rate);
             fetch(result.user[0].access_id)
             var designation = function(){
-                console.log('delay');
+                fetch_blob_image(result.userinfo.id);
                 $('#designation option[value="'+result.accesslevelhierarchy[0].parent_id+'"]').prop('selected',true);
+                $('#employee-form-submit')[0].disabled=false;
+                $('#employee-form-submit').html('Confirm');
             };
             setTimeout(designation,1000);
-            fetch_blob_image(result.userinfo.id);
         }
     })
 }

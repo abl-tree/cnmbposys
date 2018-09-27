@@ -72,6 +72,7 @@ class EmployeeController extends Controller
             'position' => 'required',
             'salary' => 'required',
             'designation'=>'required',
+            'photo'=>'image|max:2000',
         ],$validation_message);
 
 
@@ -237,7 +238,7 @@ class EmployeeController extends Controller
     function fetch_blob_image(Request $request){
         $id = $request->id;
         $data = UserInfo::select('image','image_ext')->find($id);
-        if($data->count()>0){
+        if($data->image_ext!=""){
             echo 'data:image/'.$data->image_ext.';base64, '.base64_encode($data->image);
         }else{
             echo 'no result';

@@ -11,7 +11,7 @@
                         <div class="box">
                             <!-- an ID that has _P at the end means that it is for the profile of a specific person being outputted on the left -->
                             <div class="img">
-                                <img src="images/user.png">
+                                <img id="profile-image-display" src="{{ ($profile[0]->info->image_ext != '')? 'data:image/'.$profile->info->image_ext.';base64,'.base64_encode($profile[0]->info->image) : '/images/nobody.jpg'}}">
                             </div>
                             <h2><span id="name_P">{{ $profile[0]->info->firstname." ".$profile[0]->info->middlename." ".$profile[0]->info->lastname }}</span><br>
                             <span id="role_P">{{ $role->name }}</span>
@@ -32,7 +32,7 @@
                             TIN:&nbsp;<span id="tin_P">{{ !empty($profile[3]->id_number) ? $profile[3]->id_number : 'N/A' }}</span>
                             <br>
                             <br>
-                            <button type="submit" class="btn cur-p btn-dark"><span class="ti-pencil-alt"></span> Edit</button>
+                            <button type="submit" class="btn cur-p btn-dark form-action-button" data-portion="profile" data-action="edit" data-id="{{$profile[0]->info->id}}"><span class="ti-pencil-alt"></span> Edit</button>
                         </div>
                     </div>
                 </div>

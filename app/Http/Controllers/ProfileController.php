@@ -55,7 +55,7 @@ class ProfileController extends Controller
             }
         })
         ->addColumn('action', function($employeeList){
-            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
             <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
         })
 
@@ -100,7 +100,7 @@ class ProfileController extends Controller
             }
         })
         ->addColumn('action', function($employeeList){
-            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2" id="'.$employeeList->child_id.'"></button>
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
             <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
         })
         ->editColumn('name', function ($data){

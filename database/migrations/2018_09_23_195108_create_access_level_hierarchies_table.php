@@ -15,7 +15,7 @@ class CreateAccessLevelHierarchiesTable extends Migration
     {
         Schema::create('access_level_hierarchies', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('parent_id');
+            $table->unsignedInteger('parent_id')->nullable();
             $table->foreign('parent_id')->references('id')->on('user_infos')->onDelete('cascade');
             $table->unsignedInteger('child_id');
             $table->foreign('child_id')->references('id')->on('user_infos')->onDelete('cascade');
