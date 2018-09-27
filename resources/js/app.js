@@ -36,6 +36,7 @@ window.swal = require('sweetalert2');
  var ir_id;
  var description;
  //end of global variables
+
 //PROFILE EMPLOYEE LIST -- START
 
 var employeetable = $('#employee').DataTable({
@@ -55,31 +56,42 @@ var employeetable = $('#employee').DataTable({
     ]
 });
 
-
-
 //PROFILE EMPLOYEE LIST -- END
 
 //DYNAMIC PROFILE -- START
 
+//store history of profiles
+var prevProfiles = [];
+var prevButton = $("#PrevProfile");
+
+//get id of current profile
+$.ajax({
+    url: "/getCurrentProfile",
+    method: 'get',
+    success:function(data){
+        prevProfiles.push(data);
+    }
+});
+
 $(document).on("click", ".view-employee", function(){
     id = $(this).attr("id");
+    prevProfiles.push(id);
     $.ajax({
         url: "/viewProfile",
         method: 'get',
         dataType: 'json',
         data:{id:id},
         success:function(data){
-            $("#name_P").html(data.profile[0].info.firstname + " " + data.profile[0].info.middlename + " " + data.profile[0].info.lastname)
+            $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
             $("#role_P").html(data.role.name);
-            $("#birth_P").html(data.profile[0].info.birthdate);
-            $("#gender_P").html(data.profile[0].info.gender);
-            $("#contact_P").html(data.profile[0].info.contact_number);
-            $("#sss_P").html(!!data.profile[0].id_number? data.profile[0].id_number : 'N/A');
-            $("#philhealth_P").html(!!data.profile[1].id_number ? data.profile[1].id_number : 'N/A');
-            $("#pagibig_P").html(!!data.profile[2].id_number? data.profile[2].id_number : 'N/A');
-            $("#tin_P").html(!!data.profile[3].id_number ? data.profile[3].id_number : 'N/A');
+            $("#birth_P").html(data.profile.birthdate);
+            $("#gender_P").html(data.profile.gender);
+            $("#contact_P").html(data.profile.contact_number);
+            $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+            $("#philhealth_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+            $("#pagibig_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+            $("#tin_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
             
-
             employeetable = $('#employee').DataTable({
                 destroy: true,
                 processing: true,
@@ -102,9 +114,60 @@ $(document).on("click", ".view-employee", function(){
                     {data: "action", orderable:false,searchable:false}
                 ]
             });
+            prevButton.prop('disabled', false);
         }
     })
 }) 
+
+$(document).on("click", "#PrevProfile", function(){
+    id = prevProfiles[prevProfiles.length-2];
+    if(prevProfiles.length > 1){
+        $.ajax({
+            url: "/viewProfile",
+            method: 'get',
+            dataType: 'json',
+            data:{id:id},
+            success:function(data){
+                $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
+                $("#role_P").html(data.role.name);
+                $("#birth_P").html(data.profile.birthdate);
+                $("#gender_P").html(data.profile.gender);
+                $("#contact_P").html(data.profile.contact_number);
+                $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+                $("#philhealth_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+                $("#pagibig_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+                $("#tin_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+                
+                employeetable = $('#employee').DataTable({
+                    destroy: true,
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        "url": "/updateEmployeeList",
+                        "data": function(d){
+                            d.id = id;	
+                        }
+                    },
+                    columns: [
+                        {data: 'child_info.id', name: 'id'},
+                        {data: 'name', name: 'name'},
+                        {data: 'child_info.birthdate', name: 'birthdate'},
+                        {data: 'child_info.gender', name: 'gender'},
+                        {data: 'child_info.contact_number', name: 'contact_number'},
+                        {data: 'child_info.address', name: 'address'},
+                        {data: 'child_info.salary_rate', name: 'salary_rate'},
+                        {data: "employee_status"},
+                        {data: "action", orderable:false,searchable:false}
+                    ]
+                });
+                prevProfiles.pop();
+                if(prevProfiles.length == 1){
+                    prevButton.prop('disabled', true);
+                }
+            }
+        })
+    }
+})
 
 //DYNAMIC PROFILE -- END
 

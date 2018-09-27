@@ -34,7 +34,7 @@ class ProfileController extends Controller
         $id = auth()->user()->id;
         $access_level = auth()->user()->access_id;
         $role = AccessLevel::find($access_level);
-        $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
+        $profile = UserInfo::with('benefits')->find($id);
 
         $userInfo = AccessLevel::all();
         return view('admin.dashboard.profile', compact('profile', 'role','userInfo'));
@@ -58,7 +58,6 @@ class ProfileController extends Controller
             return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
             <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
         })
-
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
@@ -66,16 +65,12 @@ class ProfileController extends Controller
         ->make(true);
     }
 
-    public function refreshEmployeeDatatable(){
-        
-    }
-
     public function viewProfile(Request $request){
         $id = $request->get('id');
         $user = User::find($id);
         $access_level = $user->access_id;
         $role = AccessLevel::find($access_level);
-        $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
+        $profile = UserInfo::with('benefits')->find($id);
 
         $output = array(
             'profile' => $profile,
@@ -100,14 +95,20 @@ class ProfileController extends Controller
             }
         })
         ->addColumn('action', function($employeeList){
-            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2" id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>';
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
         })
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
         ->rawColumns(['employee_status', 'action'])
         ->make(true);
+    }
+
+    public function getCurrentProfile(){
+        $id = auth()->user()->id;
+
+        return $id;
     }
  
     /**
