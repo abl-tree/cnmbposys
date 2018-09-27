@@ -10,6 +10,7 @@ use App\User;
 use App\UserInfo;
 use App\UserBenefit;
 use App\AccessLevelHierarchy;
+use Mail;
 
 
 class EmployeeController extends Controller
@@ -248,6 +249,27 @@ class EmployeeController extends Controller
         $user = UserInfo::where('id', $request->status_id)->first();
         $user->status = $request->status_data;
         $user->save();
+        $account = User::where('uid', '=',$request->status_id)
+                   ->first(); 
+        $userInfo = UserInfo::where('id', '=',$request->status_id)
+                   ->first(); 
+        $data = array(
+               'name' => $userInfo->firstname,
+               'email' => $account->email
+                    );
+        if($request->status_data=="Active"){
+         Mail::send([],[],function($message) use ($data){
+                $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Activation Of Account of Mr/Mrs '.$data['name'])
+                ->setBody('Hello Mr/Mrs '.$data['name'].', This is to inform you that your account has been activated by the HR. Thank You!. ');
+                $message->from('bfjax5@gmail.com','CNM BPO');
+                 });     
+        }else{
+         Mail::send([],[],function($message) use ($data){
+                $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Termination Mail of Mr/Mrs '.$data['name'])
+                ->setBody('Hello Mr/Mrs '.$data['name'].', This is to inform you that your account has been terminated by the HR');
+                $message->from('bfjax5@gmail.com','CNM BPO');
+                 }); 
+        }
     }
 
     public function get_status(Request $request){
