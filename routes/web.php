@@ -50,4 +50,9 @@ Route::group([ 'middleware'=>['auth']], function () {
     Route::post('/update_status', 'EmployeeController@update_status');
     Route::get('/get_status', 'EmployeeController@get_status');
     //UPDATE STATUS -- END
+
+    //IMPORT EXPORT EXCEL -- START
+    Route::get('/profile/excel_export','excelController@export')->name('excel.export');
+    Route::post('/profile/excel_import','excelController@import')->name('excel.import');
+    //IMPORT EXPORT EXCEL -- END
 });

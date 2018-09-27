@@ -33,6 +33,16 @@ class UserInfosTableSeeder extends Seeder
             'gender' => 'M', 
             'contact_number' => '0000000000',
             'status' => 'Active',
+            ],
+            [
+            'firstname' => 'HRB',
+            'lastname' => 'kouceyla', 
+            'middlename' => 'Cool', 
+            'birthdate' => '12-2-12', 
+            'address' => 'bario ugok',
+            'gender' => 'M', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
             ]
         ];
        

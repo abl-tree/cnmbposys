@@ -12,6 +12,7 @@
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "^5.7",
+        "maatwebsite/excel": "~2.1.23",
         "yajra/laravel-datatables-oracle": "~8.0"
     },
     "require-dev": {

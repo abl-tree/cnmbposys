@@ -75,6 +75,7 @@ $.ajax({
 
 $(document).on("click", ".view-employee", function(){
     id = $(this).attr("id");
+    $('#profile-edit-button').attr('data-id',id);
     prevProfiles.push(id);
     $.ajax({
         url: "/viewProfile",
@@ -91,6 +92,9 @@ $(document).on("click", ".view-employee", function(){
             $("#philhealth_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
             $("#pagibig_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
             $("#tin_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+           
+            fetch_blob_image(data.profile.id,'profile-image-display');
+            
             
             employeetable = $('#employee').DataTable({
                 destroy: true,
@@ -138,6 +142,7 @@ $(document).on("click", "#PrevProfile", function(){
                 $("#pagibig_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
                 $("#tin_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
                 
+                fetch_blob_image(data.profile.id,'profile-image-display');
                 employeetable = $('#employee').DataTable({
                     destroy: true,
                     processing: true,
@@ -169,6 +174,8 @@ $(document).on("click", "#PrevProfile", function(){
     }
 })
 
+
+
 //DYNAMIC PROFILE -- END
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +199,8 @@ $(document).on('click','#employee-modal-cancel',function(e){
 //get group leaders on position change
 $(document).on('change','#position',function(){
         var value = $(this).val();
-        fetch(value);
+        var id = $('#employee-id').val();
+        fetch(value,id);
 });
 
 //display input file image before upload on change
@@ -285,17 +293,21 @@ $(document).on("click","#employee-form-submit", function(e) {
 $(document).on('click','.form-action-button',function(){
     $('#action').val($(this).data('action'));
     if($(this).data('action')=='edit'){
+        var id = $(this).attr('data-id');
         $('#employee-form-submit')[0].disabled=true;
         $('#employee-form-submit').html('Loading...');
-        $('#employee-id').val($(this).data('id'));
-        fetch_edit_data($(this).data('id'));
-        var edit_profile_disable= function(){
-            // $('#position')[0].disabled=true;
-            // $('#salary')[0].disabled=true;
-            // $('#designation')[0].disabled=true;
-            // $('#position')[0].disabled=true;
-        };
-        setTimeout(edit_profile_disable,2000);
+        $('#employee-id').val(id);
+        fetch_edit_data(id);
+        if($(this).data('portion')=='table'){
+            $('#position option[value="1"]').css('display','none');
+        }else if($(this).data('portion')=='profile'){
+            if($('#logged-access-id').val()>1){
+                $('#position option[value="1"]').css('display','none');
+            }
+        }
+    }else if($(this).data('action')=='add'){
+        $('#position option[value="1"]').css('display','none');
+        $('#position option[value="2"]')[0].selected=true;
     }
     $('#employee-form-modal-header-title').html(ucword($(this).data('action')));
     $('#employee-form-modal').modal('show');
@@ -410,6 +422,38 @@ $(document).on('click','.update_status',function(event){
     });
 });
 
+$(document).on('click','.excel-action-button', function(){
+    if($(this).attr('data-action')=='import'){
+        $('#import-excel-modal').modal('show');
+    }
+});
+
+$(document).on('click','#excel-form-submit',function(e){
+    e.preventDefault();
+    var formData = new FormData($('#import-excel-form')[0]);
+    $.ajax({
+        url:"/profile/excel_import",
+        method:"POST",
+        data:formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success:function(result)
+        {
+            console.log(result);
+            swal({
+                type: 'success',
+                title: 'Your work has been saved',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    })
+});
+
+$(document).on('click','#excel-modal-cancel',function(){
+    $('#import-excel-modal').modal('hide');
+});
 ////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -424,6 +468,7 @@ function employee_form_reset(){
     $('.is-invalid').removeClass('is-invalid');
     $('.alert-danger').hide();
     $('#upload-image-display').attr('src','/images/nobody.jpg').css('border','');
+    $('#position option').css('display','block');
 }
 //display photo before upload
 function readURL(input) {
@@ -444,14 +489,17 @@ function ucword(str){
 }
   
 //fetch
-function fetch(pos_id){
+function fetch(pos_id,id){
     $.ajax({
         url:"employee/fetch",
         method:"POST",
         data:{value:pos_id},
         success:function(result)
         {
-             $('#designation').html(result);
+            $('#designation').html(result);
+            if($('#action').val()=='edit'){
+                $('#designation option[value="'+id+'"]').css('display','none');
+            }
         }
     })
 }
@@ -480,11 +528,16 @@ function fetch_edit_data(id){
              $('#tin').val(result.userbenefit[3].id_number);
              $('#contact').val(result.userinfo.contact_number);
              $('#email').val(result.user[0].email);
-             $('#position option[value="'+result.user.access_id+'"]').prop('selected',true);
+             $('#position option[value="'+result.user[0].access_id+'"]')[0].selected=true;
              $('#salary').val(result.userinfo.salary_rate);
-            fetch(result.user[0].access_id)
+             
+            if(result.user[0].access_id>1){
+                fetch(result.user[0].access_id,result.userinfo.id);
+            }else if(result.user[0].access_id==1){
+                $('#designation').html('<option value="null" selected>N/A</option>');
+            }
             var designation = function(){
-                fetch_blob_image(result.userinfo.id);
+                fetch_blob_image(result.userinfo.id,'upload-image-display');
                 $('#designation option[value="'+result.accesslevelhierarchy[0].parent_id+'"]').prop('selected',true);
                 $('#employee-form-submit')[0].disabled=false;
                 $('#employee-form-submit').html('Confirm');
@@ -498,7 +551,7 @@ function refresh_employee_table(){
     employeetable.ajax.reload(); //reload datatable ajax
 } 
 
-function fetch_blob_image(id){
+function fetch_blob_image(id,element){
     $.ajax({
         url:"employee/fetch_blob_image",
         method:"POST",
@@ -510,7 +563,7 @@ function fetch_blob_image(id){
             if(result!='no result'){
                 img = result;
             }
-            $('#upload-image-display').attr('src',img);
+            $('#'+element).attr('src',img);
         }
     })
 }
