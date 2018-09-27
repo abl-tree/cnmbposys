@@ -52,7 +52,7 @@ class LoginController extends Controller
 
         if (Auth::attempt(['email' => $email, 'password' => $password])) {
             // Authentication passed
-                if($status == NULL){
+                if($status == 'Active'){
                     return redirect()->to('/profile');
                 }else{
                     // User is terminated, redirect back to login

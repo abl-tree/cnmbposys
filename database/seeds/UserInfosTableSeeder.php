@@ -22,6 +22,7 @@ class UserInfosTableSeeder extends Seeder
             'address' => 'bario ugok',
             'gender' => 'M', 
             'contact_number' => '0000000000',
+            'status' => 'Active',
             ],
             [
             'firstname' => 'HRA',
@@ -31,6 +32,7 @@ class UserInfosTableSeeder extends Seeder
             'address' => 'bario ugok',
             'gender' => 'M', 
             'contact_number' => '0000000000',
+            'status' => 'Active',
             ]
         ];
        
