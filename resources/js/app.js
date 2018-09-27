@@ -338,6 +338,10 @@ $(document).on('click','#submit_status',function(event){
 
     var status_id = $('#status_id').val();
     var status_data = $('#status_data').val();
+    var input = $(this);
+    var button =this;
+    button.disabled = true;
+    input.html('Saving..'); 
     
     $.ajax({
         method: "POST",
@@ -351,10 +355,14 @@ $(document).on('click','#submit_status',function(event){
             $('#update_status_modal').modal('hide');
             refresh_employee_table();
             swal("Success!", "Status has been updated", "success");
+            button.disabled = false;
+            input.html('Confirm');
         },
         error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error");
             console.log(data)
+            button.disabled = false;
+            input.html('Confirm');
         }
     });
 });
