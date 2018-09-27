@@ -32,6 +32,7 @@
                             TIN:&nbsp;<span id="tin_P">{{ !empty($profile->benefits[3]->id_number) ? $profile->benefits[3]->id_number : 'N/A' }}</span>
                             <br>
                             <br>
+                            
                             <button type="button" class="btn cur-p btn-primary" id="PrevProfile" disabled>← Prev</button>
                             <button type="submit" class="btn cur-p btn-dark form-action-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt"></span> Edit</button>
                         </div>
@@ -46,7 +47,7 @@
                 <h4 class="c-grey-900 mB-20">Employee list</h4> 
 
                 @if(isHR())
-                <button type="submit" class="btn cur-p btn-dark reposition form-action-button" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span> Add</button>
+                <button type="submit" class="btn cur-p btn-dark reposition form-action-button" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span></button>
                 @endif
 
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
