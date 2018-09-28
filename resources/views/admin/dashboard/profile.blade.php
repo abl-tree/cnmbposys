@@ -32,9 +32,12 @@
                             TIN:&nbsp;<span id="tin_P">{{ !empty($profile->benefits[3]->id_number) ? $profile->benefits[3]->id_number : 'N/A' }}</span>
                             <br>
                             <br>
+                            <input type="hidden" id="logged-access-id" value="{{ $role->id }}">
                             
                             <button type="button" class="btn cur-p btn-primary" id="PrevProfile" disabled>← Prev</button>
-                            <button type="submit" class="btn cur-p btn-dark form-action-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt"></span> Edit</button>
+                            @if(isHR())
+                            <button type="submit" class="btn cur-p btn-dark form-action-button" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -47,7 +50,14 @@
                 <h4 class="c-grey-900 mB-20">Employee list</h4> 
 
                 @if(isHR())
-                <button type="submit" class="btn cur-p btn-dark reposition form-action-button" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span></button>
+                <div class="form-group reposition">
+                    <div class="btn-group">
+                    <button type="input" class="btn cur-p btn-info excel-action-button" data-action="import"><span class="ti-upload"></span></button>
+                    <a href="{{route('excel.export')}}" class="btn cur-p btn-info excel-action-button" data-action="export"><span class="ti-download"></span></a>
+                    </div>
+
+                    <button type="submit" class="btn cur-p btn-dark form-action-button" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span> Add</button>
+                </div>
                 @endif
 
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">

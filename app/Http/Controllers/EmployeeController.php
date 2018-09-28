@@ -60,7 +60,6 @@ class EmployeeController extends Controller
         $user="";
         $userinfo="";
         $access_level_hierarchy="";
-        $email = "";   
         $validator = Validator::make($request->all(), [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -69,7 +68,7 @@ class EmployeeController extends Controller
             'birthdate' => 'required',
             'gender' => 'required',
             'contact' => 'required',
-            'email' => $email,
+            'email' => 'required|email',
             'position' => 'required',
             'salary' => 'required',
             'designation'=>'required',
@@ -137,8 +136,12 @@ class EmployeeController extends Controller
             }
             $access_level_hierarchy->child_id = $request->id;
         }
+        if($request->position>1){
+            $access_level_hierarchy->parent_id = $request->designation;
+        }else if($request->position==1){
+            $access_level_hierarchy->parent_id = null;
+        }
         
-        $access_level_hierarchy->parent_id = $request->designation;
         $check = $access_level_hierarchy->save();
         if($check){
             return response()->json(['success'=>'Record is successfully added']);

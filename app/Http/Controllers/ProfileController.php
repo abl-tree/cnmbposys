@@ -42,7 +42,8 @@ class ProfileController extends Controller
 
     public function refreshEmployeeList(){
         $id = auth()->user()->id;
-
+        $access_level =  auth()->user()->access_id;
+        
         $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
         return Datatables::of($employeeList)
          ->addColumn('employee_status', function($data){
@@ -70,7 +71,7 @@ class ProfileController extends Controller
         $user = User::find($id);
         $access_level = $user->access_id;
         $role = AccessLevel::find($access_level);
-        $profile = UserInfo::with('benefits')->find($id);
+        $profile = UserInfo::with('benefits')->select('id','firstname','middlename','lastname','birthdate','address','contact_number')->find($id);
 
         $output = array(
             'profile' => $profile,

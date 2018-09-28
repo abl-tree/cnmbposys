@@ -141,7 +141,7 @@ Modal  -->
                         <input type="hidden" name="action" id="action">
                         <input type="hidden" name="portion" id="portion">
                     </div>           
-                <form>
+                </form>
             </div>
             <div class="modal-footer">
                 <div class="col-md-4">
@@ -185,7 +185,7 @@ Modal  -->
                         <input type="hidden" name="ir_id" id="ir_id" value="">
                         <input type="hidden" name="button_action" id="button_action" value="">
                     </div>           
-                <form>
+                </form>
             </div>
             <div class="modal-footer">
                 <div class="col-md-4">
@@ -222,7 +222,7 @@ Modal  -->
                             </div>
                         </div>
                     </div>           
-                <form>
+                </form>
             </div>
             <div class="modal-footer">
                 <div class="col-md-4">
@@ -236,3 +236,32 @@ Modal  -->
     </div>
 </div>
    <!-- END UPDATE STATUS MODAL -->
+
+   <!-- UPLOAD EXCEL MODAL START -->
+   <div id="import-excel-modal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><small>Import Excel</small></h4>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id='import-excel-form'>
+                {{ csrf_field()}}
+                    <center>
+                        <label for="excel_file" class="btn btn-info">Select excel file.</label>
+                        <input type="file" name='excel_file' id="excel_file" style="display:none;">       
+                    </center>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-6">
+                     <div class="pull-right">
+                        <a class="btn btn-default" id="excel-modal-cancel">Cancel</a>
+                        <button id="excel-form-submit" class="btn btn-danger push-right" style="color:white">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+   <!-- UPLOAD EXCEL MODAL END -->

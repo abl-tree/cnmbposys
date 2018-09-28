@@ -25,7 +25,7 @@ class users extends Seeder
             'email' => 'testhra@gmail.com',
             'password' => '123456',
             'access_id' => 2,
-            ]
+            ],
         ];
        
         foreach($data as $datum){
