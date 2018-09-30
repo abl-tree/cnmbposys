@@ -16,10 +16,10 @@ class UserBenefit extends Model
     ];
 
     public function info() {
-        return $this->hasOne('\App\UserInfo', 'id', 'user_info_id');
+        return $this->belongsTo('\App\UserInfo', 'id', 'user_info_id')->with('id_number','benefit_id');
     }
 
     public function benefit() {
-        return $this->hasOne('\App\Benefit', 'id', 'benefit_id');
+        return $this->belongsTo('\App\Benefit', 'id', 'benefit_id');
     }
 }

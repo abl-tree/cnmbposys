@@ -16,13 +16,13 @@ class users extends Seeder
          $data = [
             [
             'uid'=>1,
-            'email' => 'test@gmail.com',
+            'email' => 'admin@cnm.com',
             'password' => '123456',
             'access_id' => 1,
             ],
             [
             'uid'=>2,
-            'email' => 'testhra@gmail.com',
+            'email' => 'test@gmail.com',
             'password' => '123456',
             'access_id' => 2,
             ],

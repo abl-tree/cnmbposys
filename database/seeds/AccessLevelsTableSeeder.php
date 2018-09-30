@@ -15,24 +15,48 @@ class AccessLevelsTableSeeder extends Seeder
         $data = array(
             array(
                 'code' => 'superadmin', 
-                'name' => 'HR Manager', 
+                'name' => 'Admin', 
             ),
             array(
-                'code' => 'hra', 
-                'name' => 'HR Associates', 
+                'code' => 'hrm', 
+                'name' => 'HR Manager', 
             ),
             array(
                 'code' => 'om', 
                 'name' => 'Operations Manager', 
             ),
             array(
+                'code' => 'accm', 
+                'name' => 'Accounts Manager', 
+            ),
+            array(
+                'code' => 'rtam', 
+                'name' => 'RTA Manager', 
+            ),
+            array(
+                'code' => 'hrs', 
+                'name' => 'HR Specialist', 
+            ),
+            array(
+                'code' => 'hra', 
+                'name' => 'HR Associate', 
+            ),
+            array(
                 'code' => 'tl', 
                 'name' => 'Team Leader', 
             ),
             array(
+                'code' => 'rtaa', 
+                'name' => 'RTA Analyst', 
+            ),
+            array(
+                'code' => 'qa', 
+                'name' => 'Quality Assurance', 
+            ),
+            array(
                 'code' => 'agent', 
                 'name' => 'Agent', 
-            )
+            ),
         );
 
         AccessLevel::insert($data);

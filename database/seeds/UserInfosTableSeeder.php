@@ -15,35 +15,27 @@ class UserInfosTableSeeder extends Seeder
     {
         $data = [
             [
-            'firstname' => 'HRM',
-            'lastname' => 'kouceyla', 
-            'middlename' => 'Cool', 
-            'birthdate' => '12-12-12', 
-            'address' => 'bario ugok',
+            'firstname' => 'F.Admin',
+            'lastname' => 'L.Admin', 
+            'middlename' => 'M.Admin', 
+            'birthdate' => '12/12/12', 
+            'address' => 'Davao City',
             'gender' => 'M', 
             'contact_number' => '0000000000',
             'status' => 'Active',
+            'hired_date' => '09/10/17',
             ],
             [
-            'firstname' => 'HRA',
-            'lastname' => 'kouceyla', 
-            'middlename' => 'Cool', 
-            'birthdate' => '12-2-12', 
-            'address' => 'bario ugok',
+            'firstname' => 'F.HRM',
+            'lastname' => 'L.HRM', 
+            'middlename' => 'M.HRM', 
+            'birthdate' => '12/02/12', 
+            'address' => 'Davao City',
             'gender' => 'M', 
             'contact_number' => '0000000000',
             'status' => 'Active',
+            'hired_date' => '09/10/17',
             ],
-            [
-            'firstname' => 'HRB',
-            'lastname' => 'kouceyla', 
-            'middlename' => 'Cool', 
-            'birthdate' => '12-2-12', 
-            'address' => 'bario ugok',
-            'gender' => 'M', 
-            'contact_number' => '0000000000',
-            'status' => 'Active',
-            ]
         ];
        
         foreach($data as $datum){

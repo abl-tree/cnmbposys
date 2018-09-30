@@ -11,7 +11,8 @@
                         <div class="box">
                             <!-- an ID that has _P at the end means that it is for the profile of a specific person being outputted on the left -->
                             <div class="img">
-                                <img id="profile-image-display" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.base64_encode($profile->image) : '/images/nobody.jpg'}}">
+                                <img id="profile-image-display" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.$profile->image : '/images/nobody.jpg'}}">
+                                
                             </div>
                             <h2><span id="name_P">{{ $profile->firstname." ".$profile->middlename." ".$profile->lastname }}</span><br>
                             <span id="role_P">{{ $role->name }}</span>
