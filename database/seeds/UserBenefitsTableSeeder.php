@@ -12,48 +12,50 @@ class UserBenefitsTableSeeder extends Seeder
      */
     public function run()
     {
-        $data = array(
-            array(
-                'user_info_id' => 1, 
-                'benefit_id' => 1, 
-                'id_number' => 0, 
-            ), 
-            array(
-                'user_info_id' => 1, 
-                'benefit_id' => 2, 
-                'id_number' => 0, 
-            ), 
-            array(
-                'user_info_id' => 1, 
-                'benefit_id' => 3, 
-                'id_number' => 0, 
-            ),
-            array(
-                'user_info_id' => 1, 
-                'benefit_id' => 4, 
-                'id_number' => 0, 
-            ),
-            array(
-                'user_info_id' => 2, 
-                'benefit_id' => 1, 
-                'id_number' => 123123123, 
-            ),
-            array(
-                'user_info_id' => 2, 
-                'benefit_id' => 2, 
-                'id_number' => 321321321, 
-            ),
-            array(
-                'user_info_id' => 2, 
-                'benefit_id' => 3, 
-                'id_number' => 432432432, 
-            ),
-            array(
-                'user_info_id' => 2, 
-                'benefit_id' => 4, 
-                'id_number' => 543543543, 
-            )
-        );
+        $data[] = ['user_info_id' => 1,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 1,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 1,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 1,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 2,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 2,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 2,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 2,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 3,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 3,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 3,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 3,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 4,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 4,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 4,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 4,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 5,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 5,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 5,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 5,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 6,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 6,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 6,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 6,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 7,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 7,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 7,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 7,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 8,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 8,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 8,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 8,'benefit_id' => 4,'id_number' =>1000,];
+        
+        $data[] = ['user_info_id' => 9,'benefit_id' => 1,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 9,'benefit_id' => 2,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 9,'benefit_id' => 3,'id_number' =>1000,];
+        $data[] = ['user_info_id' => 9,'benefit_id' => 4,'id_number' =>1000,];
 
         foreach ($data as $key => $value) {
             UserBenefit::create($value);

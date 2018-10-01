@@ -23,7 +23,6 @@ class CreateExcelFunctions extends Migration
             array(
                 'formula1' => '"=INDEX(Position!$D$2:$D$100,MATCH([Position],Position!$C$2:$C$100,0),0)',
                 'formula2' => '"=INDEX(Position!$B$2:B$100,MATCH([Position ID],Position!$A$2:$A$100,0),0)',
-                'formula3' => '"=INDEX(Position!$B$2:B$100,MATCH([Position ID],Position!$A$2:$A$100,0),0)',
 
             )
         );

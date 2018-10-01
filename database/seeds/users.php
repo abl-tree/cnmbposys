@@ -26,6 +26,48 @@ class users extends Seeder
             'password' => '123456',
             'access_id' => 2,
             ],
+            [
+            'uid'=>3,
+            'email' => 'hrs@cnm.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
+            [
+            'uid'=>4,
+            'email' => 'hra@cnm.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
+            [
+            'uid'=>5,
+            'email' => 'om@cnm.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
+            [
+            'uid'=>6,
+            'email' => 'tl@cnm.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
+            [
+            'uid'=>7,
+            'email' => 'tl1@cnm.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
+            [
+            'uid'=>8,
+            'email' => 'tl2@cnm.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
+            [
+            'uid'=>9,
+            'email' => 'agent@cnm.com',
+            'password' => '123456',
+            'access_id' => 2,
+            ],
         ];
        
         foreach($data as $datum){
