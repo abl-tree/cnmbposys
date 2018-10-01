@@ -319,6 +319,8 @@ $(document).on('click','.form-action-button',function(){
             }
         }
     }else if($(this).data('action')=='add'){
+        console.log($('#position').val());
+        fetch($('#position').val());
     }
     $('#employee-form-modal-header-title').html(ucword($(this).data('action')));
     $('#employee-form-modal').modal('show');
