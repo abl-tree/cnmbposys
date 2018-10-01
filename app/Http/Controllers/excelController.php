@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use Excel;
 use App\UserInfo;
 use DateTime;
-use App\Exports\employeeExport;
+use App\Exports\exportSheets;
 class excelController extends Controller
 {
     function export(){
-        return (new employeeExport)->download('userInfo.xlsx');
+        return (new exportSheets)->download('userInfo.xlsx');
     }
 
     function import(Request $request){

@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use App\UserInfo;
 
-class employeeExport implements FromQuery,ShouldAutoSize,WithHeadings,WithTitle
+class templateExport implements FromQuery,WithHeadings,WithTitle
 {
     use Exportable;
 
@@ -18,17 +18,15 @@ class employeeExport implements FromQuery,ShouldAutoSize,WithHeadings,WithTitle
     public function query()
     {
         $userInfo = new UserInfo;
-        return $userInfo->getAllEmployee();
+        return $userInfo->getExcelTemplate();
     }
 
     public function headings(): array
     {
         return [
-            'SID',
             'First Name',
             'Middle Name',
             'Last Name',
-            'Status',
             'Gender',
             'Birth Date',
             'Address',
@@ -39,13 +37,17 @@ class employeeExport implements FromQuery,ShouldAutoSize,WithHeadings,WithTitle
             'PagIbig',
             'TIN',
             'Position',
+            'Parent Name',
+            'Salary',
             'Hired Date',
-            'Separation Date',
+            'Position ID',
+            'Parent Code',
+            'Parent ID',
         ];
     }
     public function title(): string
     {
-        return 'Employee';
+        return 'Template';
     }
 
 }
