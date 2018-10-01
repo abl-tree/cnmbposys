@@ -14,7 +14,7 @@ class AccessLevel extends Model
      * @var array
      */
     protected $fillable = [
-        'code', 'name',
+        'code', 'name','parent',
     ];
     
     /**
@@ -38,5 +38,10 @@ class AccessLevel extends Model
 
     public function parents() {
         return $this->hasMany('\App\AccessLevelHierarchy', 'child_id', 'id');
+    }
+
+    public function getParentLevel($position){
+        $parent = AccessLevel::where('id','=',$position)->select('parent')->first();
+        return $parent->parent;
     }
 }

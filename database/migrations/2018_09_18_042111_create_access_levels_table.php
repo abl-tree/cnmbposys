@@ -17,6 +17,7 @@ class CreateAccessLevelsTable extends Migration
             $table->increments('id');
             $table->char('code', 20);
             $table->string('name');
+            $table->integer('parent')->nullable();
         });
     }
 
