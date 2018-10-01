@@ -10,6 +10,7 @@ use App\User;
 use App\UserInfo;
 use App\UserBenefit;
 use App\AccessLevelHierarchy;
+use App\AccessLevel;
 use Mail;
 
 
@@ -72,6 +73,7 @@ class EmployeeController extends Controller
             'position' => 'required',
             'salary' => 'required',
             'designation'=>'required',
+            'hired_date'=>'required',
             'photo'=>'image|max:2000',
         ],$validation_message);
 
@@ -105,10 +107,11 @@ class EmployeeController extends Controller
         $userinfo->salary_rate=$request->salary;
         $userinfo->status="Active";
         $userinfo->contact_number=$request->contact;
+        $userinfo->hired_date=$request->hired_date;
         if($request->hasFile('photo')){
             $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
             $userinfo->image_ext= explode(".", strtolower($_FILES['photo']['name']))[1];
-            $userinfo->image = $binaryfile;
+            $userinfo->image = base64_encode($binaryfile);
             $userinfo->save();
         }
         $userinfo->save();
@@ -201,17 +204,17 @@ class EmployeeController extends Controller
 
     function fetch(Request $request)
     {
-        $val= $request->get('value');
-
-        if($val>1){
-           $val = $val - 1;
-        }
-
+        $position = $request->get('applicant_position');
+        $userposition = $request->get('user_position'); 
+        $accesslevel = new AccessLevel;
+        $parentLevel = $accesslevel->getParentLevel($position);
+        
+        // echo '<option>here'.$position.'</option>';
         $data = DB::table('users')
                     ->join('access_levels','users.access_id','=','access_levels.id')
                     ->join('user_infos','user_infos.id','=','users.uid')
                     ->select('user_infos.id','user_infos.firstname','user_infos.lastname','user_infos.middlename','access_levels.name as accesslevelname')
-                    ->where('access_levels.id','=',$val)
+                    ->where('access_levels.id','=',$parentLevel)
                     ->get();
         $output="";
         if($data->count()>0){
@@ -232,7 +235,7 @@ class EmployeeController extends Controller
     function fetch_employee_data(Request $request){
         $id = $request->id;
         $data=[];
-        $data['userinfo'] = UserInfo::select('id','firstname','middlename','lastname','birthdate','gender','address','contact_number','salary_rate', 'status')->find($id);
+        $data['userinfo'] = UserInfo::select('id','firstname','middlename','lastname','birthdate','gender','address','contact_number','salary_rate', 'status','hired_date')->find($id);
         $data['user'] = User::where('uid','=',$id)->get();
         $data['userbenefit'] = UserBenefit::where('user_info_id','=',$id)->get();
         $data['accesslevelhierarchy'] = AccessLevelHierarchy::where('child_id','=',$id)->get();
@@ -243,7 +246,7 @@ class EmployeeController extends Controller
         $id = $request->id;
         $data = UserInfo::select('image','image_ext')->find($id);
         if($data->image_ext!=""){
-            echo 'data:image/'.$data->image_ext.';base64, '.base64_encode($data->image);
+            echo 'data:image/'.$data->image_ext.';base64, '.$data->image;
         }else{
             echo 'no result';
         }

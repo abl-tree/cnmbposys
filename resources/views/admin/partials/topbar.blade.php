@@ -176,7 +176,9 @@
             <li class="dropdown">
                 <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
                     <div class="peer mR-10">
-                        <img class="w-2r bdrs-50p" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.base64_encode($profile->image) : '/images/nobody.jpg'}}" alt="">
+                        <img class="w-2r bdrs-50p" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.$profile->image : '/images/nobody.jpg'}}" alt="">
+                        <input type="hidden" id="logged-position" value="{{$role->id}}">
+                        <input type="hidden" id="logged-position" value="{{$profile->id}}">
                     </div>
                     <div class="peer">
                         <span class="fsz-sm c-grey-900">{!! topBarName()->firstname." ".topBarName()->middlename." ".topBarName()->lastname !!}</span>

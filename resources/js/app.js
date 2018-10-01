@@ -210,9 +210,10 @@ $(document).on('click','#employee-modal-cancel',function(e){
 
 //get group leaders on position change
 $(document).on('change','#position',function(){
-        var value = $(this).val();
-        var id = $('#employee-id').val();
-        fetch(value,id);
+        var a_position = $(this).val(); //applicant positon a_position
+        var u_position = $('#user-access-level').val(); //logged position
+        // var u_id = 
+        fetch(a_position,u_position,);
 });
 
 //display input file image before upload on change
@@ -318,8 +319,8 @@ $(document).on('click','.form-action-button',function(){
             }
         }
     }else if($(this).data('action')=='add'){
-        $('#position option[value="1"]').css('display','none');
-        $('#position option[value="2"]')[0].selected=true;
+        console.log($('#position').val());
+        fetch($('#position').val());
     }
     $('#employee-form-modal-header-title').html(ucword($(this).data('action')));
     $('#employee-form-modal').modal('show');
@@ -480,7 +481,6 @@ function employee_form_reset(){
     $('.is-invalid').removeClass('is-invalid');
     $('.alert-danger').hide();
     $('#upload-image-display').attr('src','/images/nobody.jpg').css('border','');
-    $('#position option').css('display','block');
 }
 //display photo before upload
 function readURL(input) {
@@ -501,17 +501,14 @@ function ucword(str){
 }
   
 //fetch
-function fetch(pos_id,id){
+function fetch(a_position,u_position,uid){
     $.ajax({
         url:"employee/fetch",
         method:"POST",
-        data:{value:pos_id},
+        data:{applicant_position:a_position,user_position:u_position,user_id:uid},
         success:function(result)
         {
             $('#designation').html(result);
-            if($('#action').val()=='edit'){
-                $('#designation option[value="'+id+'"]').css('display','none');
-            }
         }
     })
 }
@@ -542,12 +539,9 @@ function fetch_edit_data(id){
              $('#email').val(result.user[0].email);
              $('#position option[value="'+result.user[0].access_id+'"]')[0].selected=true;
              $('#salary').val(result.userinfo.salary_rate);
-             
-            if(result.user[0].access_id>1){
-                fetch(result.user[0].access_id,result.userinfo.id);
-            }else if(result.user[0].access_id==1){
-                $('#designation').html('<option value="null" selected>N/A</option>');
-            }
+             $('#hired_date').val(result.userinfo.hired_date);
+             fetch(result.user[0].access_id,"","");
+            console.log(result.user[0].access_id);
             var designation = function(){
                 fetch_blob_image(result.userinfo.id,'upload-image-display');
                 $('#designation option[value="'+result.accesslevelhierarchy[0].parent_id+'"]').prop('selected',true);

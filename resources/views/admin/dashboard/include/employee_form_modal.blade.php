@@ -42,7 +42,7 @@ Modal  -->
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs">Birthdate</label>
                                     <div class="timepicker-input col-sm-8">
-                                        <input name="birthdate" id="birthdate" type="text" class="form-control bdc-black start-date font-xs" placeholder="MM/DD/YY" data-provide="datepicker">
+                                        <input name="birthdate" id="birthdate" type="text" class="form-control bdc-black start-date font-xs" placeholder="MM/DD/YYYY" data-provide="datepicker">
                                     </div>
                                 </div>
                                 <div class="form-group row" style="border-top:3px;">
@@ -106,8 +106,21 @@ Modal  -->
                                     <div class="col-sm-8">
                                         <select name="position" id="position" class="form-control font-xs">
                                             @foreach($userInfo as $datum)
+                                                @if($role->id==1)
+                                                    @if($datum->id>1)
                                                     <option value="{{$datum->id}}">{{$datum->name}}</option>
+                                                    @endif
+                                                @elseif($role->id==2)
+                                                    @if($datum->id>2)
+                                                    <option value="{{$datum->id}}">{{$datum->name}}</option>
+                                                    @endif
+                                                @elseif($role->id==6||$role->id==7)
+                                                    @if($datum->id>2)
+                                                        <option value="{{$datum->id}}">{{$datum->name}}</option>
+                                                    @endif
+                                                @endif
                                             @endforeach
+
                                         </select>
                                     </div>
                                 </div>
@@ -120,12 +133,18 @@ Modal  -->
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Date Hired</label>
+                                    <div class="timepicker-input col-sm-8">
+                                        <input name="hired_date" id='hired_date' type="text" class="form-control bdc-black start-date font-xs" placeholder="MM/DD/YYYY" data-provide="datepicker">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs" >Salary</label>
                                     <div class="col-sm-8">
                                         <input name="salary" id="salary" type="number" class="form-control font-xs" placeholder="Salary">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row" style='padding-bottom:0px;margin-bottom:0px;'>
                                     <div class="image-upload" style="height:137px;margin:0 auto;">
                                         <label id="form-image-container" for="photo" style="cursor:pointer">
                                             
@@ -166,7 +185,7 @@ Modal  -->
             <div class="alert alert-danger" style="display:none"></div>
                 <form method="POST"  id='add_IR_form'  enctype="multipart/form-data">
                      {{ csrf_field()}}
-                    <div class="row" style='padding:10px'>
+                    <div class="row" style='padding-left:10px;padding-right:10px'>
                         <div class="col-md-12">
                             <h6 class="c-grey-900">Incident Report</h6>
                             <div class="mT-30">

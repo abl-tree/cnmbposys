@@ -11,7 +11,8 @@
                         <div class="box">
                             <!-- an ID that has _P at the end means that it is for the profile of a specific person being outputted on the left -->
                             <div class="img">
-                                <img id="profile-image-display" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.base64_encode($profile->image) : '/images/nobody.jpg'}}">
+                                <img id="profile-image-display" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.$profile->image : '/images/nobody.jpg'}}">
+                                
                             </div>
                             <h2><span id="name_P">{{ $profile->firstname." ".$profile->middlename." ".$profile->lastname }}</span><br>
                             <span id="role_P">{{ $role->name }}</span>
@@ -32,11 +33,10 @@
                             TIN:&nbsp;<span id="tin_P">{{ !empty($profile->benefits[3]->id_number) ? $profile->benefits[3]->id_number : 'N/A' }}</span>
                             <br>
                             <br>
-                            <input type="hidden" id="logged-access-id" value="{{ $role->id }}">
                             
                             <button type="button" class="btn cur-p btn-primary" id="PrevProfile" disabled>← Prev</button>
                             @if(isHR())
-                            <button type="submit" class="btn cur-p btn-dark form-action-button" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
+                            <!-- <button type="submit" class="btn cur-p btn-dark form-action-button" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button> -->
                             @endif
                         </div>
                     </div>
@@ -49,7 +49,7 @@
             <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20">Employee list</h4> 
 
-                @if(isHR())
+                @if($role->id==1||$role->id==2||$role->id==6||$role->id==7)
                 <div class="form-group reposition">
                     <div class="btn-group">
                     <button type="input" class="btn cur-p btn-info excel-action-button" data-action="import"><span class="ti-upload"></span></button>

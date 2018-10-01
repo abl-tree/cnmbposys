@@ -25,6 +25,8 @@ class CreateUserInfosTable extends Migration
             $table->double('salary_rate', 8, 2)->nullable();
             $table->string('image_ext')->nullable();
             $table->string('status')->nullable();
+            $table->string('hired_date');
+            $table->string('separation_date');
             $table->timestamps();
         });
 
@@ -40,4 +42,5 @@ class CreateUserInfosTable extends Migration
     {
         Schema::dropIfExists('user_infos');
     }
+
 }
