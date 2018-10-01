@@ -67,15 +67,34 @@ var employeetable = $('#employee').DataTable({
 //store history of profiles
 var prevProfiles = [];
 var prevButton = $("#PrevProfile");
+var currentTab;
 
-//get id of current profile
 $.ajax({
-    url: "/getCurrentProfile",
+    url: "/getCurrentTab",
     method: 'get',
     success:function(data){
-        prevProfiles.push(data);
+        if(data == 'showAll'){
+            currentTab = 'showAll';
+        }
+        else{
+            currentTab = 'childView';
+        }
     }
 });
+
+
+//get id of current profile
+function getCurrentProfile(){
+    $.ajax({
+        url: "/getCurrentProfile",
+        method: 'get',
+        success:function(data){
+            prevProfiles.push(data);
+        }
+    });
+}
+
+getCurrentProfile();
 
 $(document).on("click", ".view-employee", function(){
     id = $(this).attr("id");
@@ -93,12 +112,11 @@ $(document).on("click", ".view-employee", function(){
             $("#gender_P").html(data.profile.gender);
             $("#contact_P").html(data.profile.contact_number);
             $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-            $("#philhealth_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-            $("#pagibig_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-            $("#tin_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+            $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
+            $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
+            $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
            
             fetch_blob_image(data.profile.id,'profile-image-display');
-            
             
             employeetable = $('#employee').DataTable({
                 destroy: true,
@@ -145,38 +163,70 @@ $(document).on("click", "#PrevProfile", function(){
                 $("#birth_P").html(data.profile.birthdate);
                 $("#gender_P").html(data.profile.gender);
                 $("#contact_P").html(data.profile.contact_number);
+                $("#contact_P").html(data.profile.address);
                 $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-                $("#philhealth_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-                $("#pagibig_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-                $("#tin_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+                $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
+                $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
+                $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
                 
                 fetch_blob_image(data.profile.id,'profile-image-display');
-                employeetable = $('#employee').DataTable({
-                    destroy: true,
-                    processing: true,
-                    columnDefs: [{
-                        "targets": "_all", // your case first column
-                        "className": "text-center",
-            
-                    }],
-                    ajax: {
-                        "url": "/updateEmployeeList",
-                        "data": function(d){
-                            d.id = id;	
-                        }
-                    },
-                    columns: [
-                        {data: 'child_info.id', name: 'id'},
-                        {data: 'name', name: 'name'},
-                        {data: 'child_info.birthdate', name: 'birthdate'},
-                        {data: 'child_info.gender', name: 'gender'},
-                        {data: 'child_info.contact_number', name: 'contact_number'},
-                        {data: 'child_info.address', name: 'address'},
-                        {data: 'child_info.salary_rate', name: 'salary_rate'},
-                        {data: "employee_status"},
-                        {data: "action", orderable:false,searchable:false}
-                    ]
-                });
+                if(prevProfiles.length-2 == 0 && currentTab == 'showAll'){
+                    employeetable = $('#employee').DataTable({
+                        destroy: true,
+                        processing: true,
+                        columnDefs: [{
+                            "targets": "_all", // your case first column
+                            "className": "text-center",
+                
+                        }],
+                        ajax: {
+                            "url": "/refreshEmployeeList",
+                            "data": function(d){
+                                d.id = id;	
+                            }
+                        },
+                        columns: [
+                            {data: 'child_info.id', name: 'id'},
+                            {data: 'name', name: 'name'},
+                            {data: 'child_info.birthdate', name: 'birthdate'},
+                            {data: 'child_info.gender', name: 'gender'},
+                            {data: 'child_info.contact_number', name: 'contact_number'},
+                            {data: 'child_info.address', name: 'address'},
+                            {data: 'child_info.salary_rate', name: 'salary_rate'},
+                            {data: "employee_status"},
+                            {data: "action", orderable:false,searchable:false}
+                        ]
+                    });
+                }
+                else{//childView
+                    employeetable = $('#employee').DataTable({
+                        destroy: true,
+                        processing: true,
+                        columnDefs: [{
+                            "targets": "_all", // your case first column
+                            "className": "text-center",
+                
+                        }],
+                        ajax: {
+                            "url": "/updateEmployeeList",
+                            "data": function(d){
+                                d.id = id;	
+                            }
+                        },
+                        columns: [
+                            {data: 'child_info.id', name: 'id'},
+                            {data: 'name', name: 'name'},
+                            {data: 'child_info.birthdate', name: 'birthdate'},
+                            {data: 'child_info.gender', name: 'gender'},
+                            {data: 'child_info.contact_number', name: 'contact_number'},
+                            {data: 'child_info.address', name: 'address'},
+                            {data: 'child_info.salary_rate', name: 'salary_rate'},
+                            {data: "employee_status"},
+                            {data: "action", orderable:false,searchable:false}
+                        ]
+                    });
+                }
+                
                 prevProfiles.pop();
                 if(prevProfiles.length == 1){
                     prevButton.prop('disabled', true);
@@ -186,7 +236,90 @@ $(document).on("click", "#PrevProfile", function(){
     }
 })
 
+$(document).on("click", "#showAll", function(){
+    $('#employee').DataTable({
+        destroy: true,
+        processing: true,
+        columnDefs: [{
+            "targets": "_all", // your case first column
+            "className": "text-center",
+        }],
+        ajax: "/refreshEmployeeList",
+        columns: [
+            {data: 'child_info.id', name: 'id'},
+            {data: 'name', name: 'name'},
+            {data: 'child_info.birthdate', name: 'birthdate'},
+            {data: 'child_info.gender', name: 'gender'},
+            {data: 'child_info.contact_number', name: 'contact_number'},
+            {data: 'child_info.address', name: 'address'},
+            {data: 'child_info.salary_rate', name: 'salary_rate'},
+            {data: "employee_status"},
+            {data: "action", orderable:false,searchable:false}
+        ]
+    });
 
+    currentTab = 'showAll';
+    resetPrevButton();
+})
+
+$(document).on("click", "#showChild", function(){
+    $('#employee').DataTable({
+        destroy: true,
+        processing: true,
+        columnDefs: [{
+            "targets": "_all", // your case first column
+            "className": "text-center",
+        }],
+        ajax: "/childView",
+        columns: [
+            {data: 'child_info.id', name: 'id'},
+            {data: 'name', name: 'name'},
+            {data: 'child_info.birthdate', name: 'birthdate'},
+            {data: 'child_info.gender', name: 'gender'},
+            {data: 'child_info.contact_number', name: 'contact_number'},
+            {data: 'child_info.address', name: 'address'},
+            {data: 'child_info.salary_rate', name: 'salary_rate'},
+            {data: "employee_status"},
+            {data: "action", orderable:false,searchable:false}
+        ]
+    });
+
+    currentTab = 'childView';
+    resetPrevButton();
+})
+
+$(document).on("click", "#showTerminated", function(){
+    $('#employee').DataTable({
+        destroy: true,
+        processing: true,
+        columnDefs: [{
+            "targets": "_all", // your case first column
+            "className": "text-center",
+        }],
+        ajax: "/terminatedView",
+        columns: [
+            {data: 'id', name: 'id'},
+            {data: 'name', name: 'name'},
+            {data: 'birthdate', name: 'birthdate'},
+            {data: 'gender', name: 'gender'},
+            {data: 'contact_number', name: 'contact_number'},
+            {data: 'address', name: 'address'},
+            {data: 'salary_rate', name: 'salary_rate'},
+            {data: "employee_status", name: 'status'},
+            {data: "action", orderable:false,searchable:false}
+        ]
+    });
+
+    currentTab = 'childView';
+    resetPrevButton();
+})
+
+
+function resetPrevButton(){
+    prevProfiles = [];
+    prevButton.prop('disabled', true);
+    getCurrentProfile();
+}
 
 //DYNAMIC PROFILE -- END
 
@@ -225,7 +358,7 @@ $("#photo").change(function() {
 $(document).on("click","#employee-form-submit", function(e) {
     e.preventDefault();
     var input = $(this);
-    var button =input[0];
+    var button = input[0];
     button.disabled = true;
     input.html('Saving...'); 
         var formData = new FormData($('#employee-form')[0]);
