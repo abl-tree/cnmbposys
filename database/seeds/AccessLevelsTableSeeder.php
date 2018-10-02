@@ -15,40 +15,64 @@ class AccessLevelsTableSeeder extends Seeder
         $data = array(
             array(
                 'code' => 'superadmin', 
-                'name' => 'HR Manager', 
+                'name' => 'Admin', 
+                'parent'=>null,
             ),
             array(
-                'code' => 'hr1', 
-                'name' => 'HR Associates 1', 
-            ),
-            array(
-                'code' => 'hr2', 
-                'name' => 'HR associates 2', 
-            ),
-            array(
-                'code' => 'hr3', 
-                'name' => 'HR Associates 3', 
-            ),
-            array(
-                'code' => 'hr4', 
-                'name' => 'HR Associates 4', 
-            ),
-            array(
-                'code' => 'hr5', 
-                'name' => 'HR Associates 5', 
+                'code' => 'hrm', 
+                'name' => 'HR Manager',
+                'parent' => 1,
             ),
             array(
                 'code' => 'om', 
                 'name' => 'Operations Manager', 
+                'parent' => 1,
+            ),
+            array(
+                'code' => 'accm', 
+                'name' => 'Accounts Manager', 
+                'parent' => 1,
+            ),
+            array(
+                'code' => 'rtam', 
+                'name' => 'RTA Manager', 
+                'parent' => 1,
+            ),
+            array(
+                'code' => 'tqm', 
+                'name' => 'TQ Manager', 
+                'parent' => 1,
+            ),
+            array(
+                'code' => 'hrs', 
+                'name' => 'HR Specialist', 
+                'parent' => 2,
+            ),
+            array(
+                'code' => 'hra', 
+                'name' => 'HR Associate', 
+                'parent' => 2,
             ),
             array(
                 'code' => 'tl', 
                 'name' => 'Team Leader', 
+                'parent' => 3,
+            ),
+            array(
+                'code' => 'rtaa', 
+                'name' => 'RTA Analyst', 
+                'parent' => 5,
+            ),
+            array(
+                'code' => 'qa', 
+                'name' => 'Quality Assurance', 
+                'parent' => 6,
             ),
             array(
                 'code' => 'agent', 
                 'name' => 'Agent', 
-            )
+                'parent' => 9,
+            ),
         );
 
         AccessLevel::insert($data);

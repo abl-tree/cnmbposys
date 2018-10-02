@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\UserInfo;
+use Carbon\Carbon;
 
 class UserInfosTableSeeder extends Seeder
 {
@@ -12,110 +13,110 @@ class UserInfosTableSeeder extends Seeder
      */
     public function run()
     {
-        $data = array(
-            array(
-                'uid' => 1, 
-                'firstname' => 'HR',
-                'lastname' => 'God', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 2, 
-                'firstname' => 'HR',
-                'lastname' => 'Associate 1', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 3, 
-                'firstname' => 'HR',
-                'lastname' => 'Associate 2', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 4, 
-                'firstname' => 'HR',
-                'lastname' => 'Associate 3', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 5, 
-                'firstname' => 'HR',
-                'lastname' => 'Associate 4', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 6, 
-                'firstname' => 'HR',
-                'lastname' => 'Associate 5', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 7, 
-                'firstname' => 'Operations',
-                'lastname' => 'Manager', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 8, 
-                'firstname' => 'Team',
-                'lastname' => 'Leader', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 9, 
-                'firstname' => 'Agent',
-                'lastname' => 'One', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 10, 
-                'firstname' => 'Agent',
-                'lastname' => 'Two', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-            array(
-                'uid' => 11, 
-                'firstname' => 'Agent',
-                'lastname' => 'Three', 
-                'birthdate' => Carbon::now(), 
-                'gender' => 'M', 
-                'contact_number' => '0000000000',
-                'address' => 'Davao City, Davao del Sur, 8000, Philippines',
-            ),
-        );
-
-        foreach ($data as $key => $value) {
-            UserInfo::create($value);
+        $data = [
+            [
+            'firstname' => 'F.Admin',
+            'lastname' => 'L.Admin', 
+            'middlename' => 'M.Admin', 
+            'birthdate' => '12/12/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.HRM',
+            'lastname' => 'L.HRM', 
+            'middlename' => 'M.HRM', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.HRS',
+            'lastname' => 'L.HRS', 
+            'middlename' => 'M.HRS', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Feale', 
+            'contact_number' => '0000000001',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.HRA',
+            'lastname' => 'L.HRA', 
+            'middlename' => 'M.HRA', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.OM',
+            'lastname' => 'L.OM', 
+            'middlename' => 'M.OM', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.TL',
+            'lastname' => 'L.TL', 
+            'middlename' => 'M.TL', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.TL1',
+            'lastname' => 'L.TL1', 
+            'middlename' => 'M.TL1', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.TL2',
+            'lastname' => 'L.TL2', 
+            'middlename' => 'M.TL2', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+            [
+            'firstname' => 'F.agent1',
+            'lastname' => 'L.agent1', 
+            'middlename' => 'M.agent1', 
+            'birthdate' => '12/02/2012', 
+            'address' => 'Davao City',
+            'gender' => 'Male', 
+            'contact_number' => '0000000000',
+            'status' => 'Active',
+            'hired_date' => '09/10/2017',
+            ],
+        ];
+       
+        foreach($data as $datum){
+            UserInfo::create($datum);
         }
     }
 }

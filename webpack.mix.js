@@ -19,6 +19,7 @@ mix.webpackConfig(webpack => {
                 jQuery: 'jquery',
                 'window.jQuery': 'jquery',
                 Popper: ['popper.js', 'default'],
+                Modal: 'exports-loader?Modal!bootstrap/js/dist/modal',
             })
         ]
     };

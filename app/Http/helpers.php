@@ -37,3 +37,32 @@ if (! function_exists('move_file')) {
         return $full_name;
     }
 }
+
+function topBarName(){
+    $id = Auth::id();
+    $userinfo = \App\UserInfo::find($id);
+
+    return $userinfo;
+}
+
+function isAdminHR(){
+    $access_level = auth()->user()->access_id;
+
+    if($access_level == 1 || $access_level == 2 || $access_level == 7 || $access_level == 8){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function canIR(){
+    $access_level = auth()->user()->access_id;
+
+    if($access_level == 2 || $access_level == 3 || $access_level == 6 || $access_level == 7 || $access_level == 8){
+        return true;
+    }
+    else{
+        return false;
+    }
+}

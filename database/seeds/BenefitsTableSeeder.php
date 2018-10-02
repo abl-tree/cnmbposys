@@ -22,6 +22,9 @@ class BenefitsTableSeeder extends Seeder
             array(
                 'name' => 'Pag-ibig Funds', 
             ), 
+            array(
+                'name' => 'TIN', 
+            ), 
         );
 
         foreach ($data as $key => $value) {
