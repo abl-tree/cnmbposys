@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "afe9fc7b1e8a32d0f8527768d16db29c",
+    "content-hash": "b1a9632ce69c1ae31e685c46667c167c",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -1463,16 +1463,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "125f462a718956f37d81305ca0df4f17cef0f3b9"
+                "reference": "57404f43742a8164b5eac3ab03b962d8740885c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/125f462a718956f37d81305ca0df4f17cef0f3b9",
-                "reference": "125f462a718956f37d81305ca0df4f17cef0f3b9",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/57404f43742a8164b5eac3ab03b962d8740885c1",
+                "reference": "57404f43742a8164b5eac3ab03b962d8740885c1",
                 "shasum": ""
             },
             "require": {
@@ -1505,7 +1505,7 @@
                 "dompdf/dompdf": "Option for rendering PDF with PDF Writer",
                 "jpgraph/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
-                "tecnick.com/tcpdf": "Option for rendering PDF with PDF Writer"
+                "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
             },
             "type": "library",
             "autoload": {
@@ -1546,7 +1546,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2018-08-06T02:58:06+00:00"
+            "time": "2018-09-30T03:57:24+00:00"
         },
         {
             "name": "psr/container",

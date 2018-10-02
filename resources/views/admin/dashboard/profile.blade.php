@@ -66,7 +66,7 @@
                     @if(isAdminHR())
                     <div class="btn-group">
                     <button type="input" class="btn cur-p btn-info excel-action-button" data-action="import"><span class="ti-upload"></span></button>
-                    <a href="{{route('excel.export')}}" class="btn cur-p btn-info excel-action-button" data-action="export"><span class="ti-download"></span></a>
+                    <button type="input" class="btn cur-p btn-info excel-action-button" data-action="export"><span class="ti-download"></span></button>
                     </div>
 
                     <button type="submit" class="btn cur-p btn-dark form-action-button" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span> Add</button>

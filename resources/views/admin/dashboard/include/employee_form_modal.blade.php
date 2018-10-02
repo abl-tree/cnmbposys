@@ -63,25 +63,25 @@ Modal  -->
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs">SSS</label>
                                     <div class="col-sm-8">
-                                        <input name="id_number[]" id="sss" type="text" class="form-control font-xs" placeholder="SSS">
+                                        <input name="id_number[]" id="sss" type="number" class="form-control font-xs" placeholder="SSS">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs">PhilHealth</label>
                                     <div class="col-sm-8">
-                                        <input name="id_number[]" id="phil_health" type="text" class="form-control font-xs" placeholder="PhilHealth">
+                                        <input name="id_number[]" id="phil_health" type="number" class="form-control font-xs" placeholder="PhilHealth">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs">Pag-Ibig</label>
                                     <div class="col-sm-8">
-                                        <input name="id_number[]" id="pag_ibig" type="text" class="form-control font-xs" placeholder="Pag-Ibig">
+                                        <input name="id_number[]" id="pag_ibig" type="number" class="form-control font-xs" placeholder="Pag-Ibig">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs">TIN</label>
                                     <div class="col-sm-8">
-                                        <input name="id_number[]" id="tin" type="text" class="form-control font-xs" placeholder="TIN">
+                                        <input name="id_number[]" id="tin" type="number" class="form-control font-xs" placeholder="TIN">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -257,18 +257,25 @@ Modal  -->
    <!-- END UPDATE STATUS MODAL -->
 
    <!-- UPLOAD EXCEL MODAL START -->
-   <div id="import-excel-modal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+   <div id="excel-modal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title"><small>Import Excel</small></h4>
+                <h4 class="modal-title"><small id="excel-modal-header">Import<span></span> Excel</small></h4>
             </div>
             <div class="modal-body">
                 <form method="POST" id='import-excel-form'>
                 {{ csrf_field()}}
                     <center>
-                        <label for="excel_file" class="btn btn-info">Select excel file.</label>
-                        <input type="file" name='excel_file' id="excel_file" style="display:none;">       
+                        <div id="action-import">
+                            <label for="excel_file" class="btn btn-info">Select excel file.</label>
+                            <input type="file" name='excel_file' id="excel_file" style="display:none;">
+                        </div>
+                        <div id="action-export">
+                            <a href="/profile/excel_exportreport" class="btn btn-info" >Report File</a>
+                            <a href="/profile/excel_exporttemplate" class="btn btn-info">Template File</a>
+                        </div>
+
                     </center>
                 </form>
             </div>

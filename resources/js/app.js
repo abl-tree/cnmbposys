@@ -569,8 +569,18 @@ $(document).on('click','.update_status',function(event){
 });
 
 $(document).on('click','.excel-action-button', function(){
+    $('#action-import').show();
+    $('#action-export').show();
+    $('#excel-form-submit').show();
+    
+    $('#excel-modal').modal('show');
     if($(this).attr('data-action')=='import'){
-        $('#import-excel-modal').modal('show');
+       $('#action-export').hide();
+       $('#excel-modal-header').html('Import');
+    }else{
+        $('#action-import').hide();
+        $('#excel-form-submit').hide();
+        $('#excel-modal-header').html('Export');
     }
 });
 
@@ -581,6 +591,7 @@ $(document).on('click','#excel-form-submit',function(e){
         url:"/profile/excel_import",
         method:"POST",
         data:formData,
+        dataType:'json',
         cache: false,
         contentType: false,
         processData: false,
@@ -598,7 +609,7 @@ $(document).on('click','#excel-form-submit',function(e){
 });
 
 $(document).on('click','#excel-modal-cancel',function(){
-    $('#import-excel-modal').modal('hide');
+    $('#excel-modal').modal('hide');
 });
 ////////////////////////////////////////////////////////////////////////////////////
 

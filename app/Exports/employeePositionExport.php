@@ -22,19 +22,12 @@ class employeePositionExport implements FromQuery,ShouldAutoSize,WithHeadings,Wi
     public function headings(): array
     {
         return [
-            'id',
-            'admin',
-            'id',
+            'superadmin',
             'hrm',
-            'id',
             'om',
-            'id',
             'tl',
-            'id',
             'accm',
-            'id',
             'rtam',
-            'id',
             'tqm',
         ];
     }

@@ -14,7 +14,7 @@ class UserInfo extends Model
      * @var array
      */
     protected $fillable = [
-        'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate','image_ext', 'status'
+        'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate','image_ext', 'status','excel_hash'
     ];
     /**
      * Set the user's firstname.
@@ -76,8 +76,17 @@ class UserInfo extends Model
 
         $query = DB::table('excel_functions')
         ->where('id','=',1)
-        ->select(DB::raw($dbraw),'formula1','formula2')
+        ->select(DB::raw($dbraw),'formula1','formula2','formula3')
         ->orderBy('id','asc');
+        return $query;
+    }
+
+    public function getParentsWithId(){
+        $query = DB::table('users')
+        ->join('user_infos', 'user_infos.id','=','users.uid')
+        ->join('access_levels', 'access_levels.id','=','users.access_id')
+        ->select('user_infos.id',DB::raw('CONCAT_WS(" ",user_infos.firstname,user_infos.lastname)'))
+        ->orderBy('user_infos.id','asc');
         return $query;
     }
 }

@@ -55,7 +55,8 @@ Route::group([ 'middleware'=>['auth']], function () {
     //UPDATE STATUS -- END
 
     //IMPORT EXPORT EXCEL -- START
-    Route::get('/profile/excel_export','excelController@export')->name('excel.export');
+    Route::get('/profile/excel_exportreport','excelController@report')->name('excel.exportreport');
+    Route::get('/profile/excel_exporttemplate','excelController@template')->name('excel.exporttemplate');
     Route::post('/profile/excel_import','excelController@import')->name('excel.import');
     //IMPORT EXPORT EXCEL -- END
 });
