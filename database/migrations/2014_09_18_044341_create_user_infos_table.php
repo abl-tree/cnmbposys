@@ -26,7 +26,11 @@ class CreateUserInfosTable extends Migration
             $table->string('image_ext')->nullable();
             $table->string('status')->nullable();
             $table->string('hired_date');
+<<<<<<< HEAD:database/migrations/2014_09_18_044341_create_user_infos_table.php
             $table->string('separation_date')->nullable();
+=======
+            $table->string('separation_date');
+>>>>>>> origin/status_trigger:database/migrations/2014_09_18_044341_create_user_infos_table.php
             $table->timestamps();
         });
 

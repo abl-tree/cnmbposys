@@ -58,10 +58,6 @@ var employeetable = $('#employee').DataTable({
     ]
 }); 
 
-
- 
-
-
 //PROFILE EMPLOYEE LIST -- END
 
 //DYNAMIC PROFILE -- START
