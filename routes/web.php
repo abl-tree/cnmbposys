@@ -25,6 +25,7 @@ Route::group([ 'middleware'=>['auth']], function () {
     Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList');
     Route::get('/updateEmployeeList', 'ProfileController@updateEmployeeList');
     Route::get('/viewProfile', 'ProfileController@viewProfile');
+    Route::get('/backToProfile', 'ProfileController@backToProfile');
     Route::get('/getCurrentProfile', 'ProfileController@getCurrentProfile');
     Route::get('/getCurrentTab', 'ProfileController@getCurrentTab');
     Route::get('/childView', 'ProfileController@childView');

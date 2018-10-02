@@ -23,7 +23,9 @@
                             <br>
                             Contact:&nbsp;<span id="contact_P">{{ $profile->contact_number}}</span>
                             <br>
-                            Address:&nbsp;<span id="contact_P">{{ $profile->address}}</span>
+                            Address:&nbsp;<span id="address_P">{{ $profile->address}}</span>
+                            <br>
+                            Email:&nbsp;<span id="email_P">{{ $user->email}}</span>
                             <br>
                             <br>
                             SSS:&nbsp;<span id="sss_P">{{ !empty($profile->benefits[0]->id_number) ? $profile->benefits[0]->id_number : 'N/A' }}</span>
@@ -78,11 +80,11 @@
                         <tr>
                             <th>User ID No.</th>
                             <th>Name</th>
+                            <th>Position</th>
                             <th>Birthday</th>
                             <th>Gender</th>
                             <th>Contact No.</th>
                             <th>Address</th>
-                            <th>Rate</th>
                             <th>Status</th>
                             <th>Action</th> 
                         </tr>

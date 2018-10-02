@@ -44,17 +44,16 @@ var employeetable = $('#employee').DataTable({
     columnDefs: [{
         "targets": "_all", // your case first column
         "className": "text-center",
-
     }],
     ajax: "/refreshEmployeeList",
     columns: [
         {data: 'child_info.id', name: 'id'},
         {data: 'name', name: 'name'},
+        {data: 'child_info.user.access.name', name: 'position'},
         {data: 'child_info.birthdate', name: 'birthdate'},
         {data: 'child_info.gender', name: 'gender'},
         {data: 'child_info.contact_number', name: 'contact_number'},
         {data: 'child_info.address', name: 'address'},
-        {data: 'child_info.salary_rate', name: 'salary_rate'},
         {data: "employee_status"},
         {data: "action", orderable:false,searchable:false}
     ]
@@ -111,6 +110,9 @@ $(document).on("click", ".view-employee", function(){
             $("#birth_P").html(data.profile.birthdate);
             $("#gender_P").html(data.profile.gender);
             $("#contact_P").html(data.profile.contact_number);
+            $("#address_P").html(data.profile.address);
+            $("#email_P").html(data.user.email);
+
             $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
             $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
             $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
@@ -135,11 +137,11 @@ $(document).on("click", ".view-employee", function(){
                 columns: [
                     {data: 'child_info.id', name: 'id'},
                     {data: 'name', name: 'name'},
+                    {data: 'child_info.user.access.name', name: 'position'},
                     {data: 'child_info.birthdate', name: 'birthdate'},
                     {data: 'child_info.gender', name: 'gender'},
                     {data: 'child_info.contact_number', name: 'contact_number'},
                     {data: 'child_info.address', name: 'address'},
-                    {data: 'child_info.salary_rate', name: 'salary_rate'},
                     {data: "employee_status"},
                     {data: "action", orderable:false,searchable:false}
                 ]
@@ -163,7 +165,9 @@ $(document).on("click", "#PrevProfile", function(){
                 $("#birth_P").html(data.profile.birthdate);
                 $("#gender_P").html(data.profile.gender);
                 $("#contact_P").html(data.profile.contact_number);
-                $("#contact_P").html(data.profile.address);
+                $("#address_P").html(data.profile.address);
+                $("#email_P").html(data.user.email);
+
                 $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
                 $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
                 $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
@@ -188,11 +192,11 @@ $(document).on("click", "#PrevProfile", function(){
                         columns: [
                             {data: 'child_info.id', name: 'id'},
                             {data: 'name', name: 'name'},
+                            {data: 'child_info.user.access.name', name: 'position'},
                             {data: 'child_info.birthdate', name: 'birthdate'},
                             {data: 'child_info.gender', name: 'gender'},
                             {data: 'child_info.contact_number', name: 'contact_number'},
                             {data: 'child_info.address', name: 'address'},
-                            {data: 'child_info.salary_rate', name: 'salary_rate'},
                             {data: "employee_status"},
                             {data: "action", orderable:false,searchable:false}
                         ]
@@ -216,11 +220,11 @@ $(document).on("click", "#PrevProfile", function(){
                         columns: [
                             {data: 'child_info.id', name: 'id'},
                             {data: 'name', name: 'name'},
+                            {data: 'child_info.user.access.name', name: 'position'},
                             {data: 'child_info.birthdate', name: 'birthdate'},
                             {data: 'child_info.gender', name: 'gender'},
                             {data: 'child_info.contact_number', name: 'contact_number'},
                             {data: 'child_info.address', name: 'address'},
-                            {data: 'child_info.salary_rate', name: 'salary_rate'},
                             {data: "employee_status"},
                             {data: "action", orderable:false,searchable:false}
                         ]
@@ -236,7 +240,33 @@ $(document).on("click", "#PrevProfile", function(){
     }
 })
 
+function backToProfile(){
+    $.ajax({
+        url: "/backToProfile",
+        method: 'get',
+        dataType: 'json',
+        success:function(data){
+            $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
+            $("#role_P").html(data.role.name);
+            $("#birth_P").html(data.profile.birthdate);
+            $("#gender_P").html(data.profile.gender);
+            $("#contact_P").html(data.profile.contact_number);
+            $("#address_P").html(data.profile.address);
+            $("#email_P").html(data.user.email);
+
+            $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+            $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
+            $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
+            $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
+            
+            fetch_blob_image(data.profile.id,'profile-image-display');
+        }
+    })
+}
+
 $(document).on("click", "#showAll", function(){
+    backToProfile();
+
     $('#employee').DataTable({
         destroy: true,
         processing: true,
@@ -248,11 +278,11 @@ $(document).on("click", "#showAll", function(){
         columns: [
             {data: 'child_info.id', name: 'id'},
             {data: 'name', name: 'name'},
+            {data: 'child_info.user.access.name', name: 'position'},
             {data: 'child_info.birthdate', name: 'birthdate'},
             {data: 'child_info.gender', name: 'gender'},
             {data: 'child_info.contact_number', name: 'contact_number'},
             {data: 'child_info.address', name: 'address'},
-            {data: 'child_info.salary_rate', name: 'salary_rate'},
             {data: "employee_status"},
             {data: "action", orderable:false,searchable:false}
         ]
@@ -263,6 +293,8 @@ $(document).on("click", "#showAll", function(){
 })
 
 $(document).on("click", "#showChild", function(){
+    backToProfile();
+    
     $('#employee').DataTable({
         destroy: true,
         processing: true,
@@ -274,11 +306,11 @@ $(document).on("click", "#showChild", function(){
         columns: [
             {data: 'child_info.id', name: 'id'},
             {data: 'name', name: 'name'},
+            {data: 'child_info.user.access.name', name: 'position'},
             {data: 'child_info.birthdate', name: 'birthdate'},
             {data: 'child_info.gender', name: 'gender'},
             {data: 'child_info.contact_number', name: 'contact_number'},
             {data: 'child_info.address', name: 'address'},
-            {data: 'child_info.salary_rate', name: 'salary_rate'},
             {data: "employee_status"},
             {data: "action", orderable:false,searchable:false}
         ]
@@ -289,6 +321,8 @@ $(document).on("click", "#showChild", function(){
 })
 
 $(document).on("click", "#showTerminated", function(){
+    backToProfile();
+
     $('#employee').DataTable({
         destroy: true,
         processing: true,
@@ -300,17 +334,17 @@ $(document).on("click", "#showTerminated", function(){
         columns: [
             {data: 'id', name: 'id'},
             {data: 'name', name: 'name'},
+            {data: 'user.access.name', name: 'position'},
             {data: 'birthdate', name: 'birthdate'},
             {data: 'gender', name: 'gender'},
             {data: 'contact_number', name: 'contact_number'},
             {data: 'address', name: 'address'},
-            {data: 'salary_rate', name: 'salary_rate'},
             {data: "employee_status", name: 'status'},
             {data: "action", orderable:false,searchable:false}
         ]
     });
 
-    currentTab = 'childView';
+    currentTab = 'showTerminated';
     resetPrevButton();
 })
 

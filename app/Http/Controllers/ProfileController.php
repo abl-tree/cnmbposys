@@ -35,19 +35,20 @@ class ProfileController extends Controller
         $access_level = auth()->user()->access_id;
         $role = AccessLevel::find($access_level);
         $profile = UserInfo::with('benefits')->find($id);
+        $user = User::find($id);
 
         $userInfo = AccessLevel::all();
-        return view('admin.dashboard.profile', compact('profile', 'role','userInfo'));
+        return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo'));
     }
 
     public function refreshEmployeeList(){//Used when loading default datatable and in showAll f or Admin/HRs
         $id = auth()->user()->id;
 
         if(isAdminHR()){
-            $employeeList = AccessLevelHierarchy::with('childInfo')->get();
+            $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->get();
         }
         else{
-            $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
+            $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
         }
 
         return $this->reloadDatatable($employeeList);
@@ -55,12 +56,12 @@ class ProfileController extends Controller
 
     public function childView(){
         $id = auth()->user()->id;
-        $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
+        $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
         return $this->reloadDatatable($employeeList);
     }
 
     public function terminatedView(){
-        $employeeList = UserInfo::where('status', 'Terminated')->get();
+        $employeeList = UserInfo::with('user.access')->where('status', 'Terminated')->get();
 
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
@@ -69,7 +70,7 @@ class ProfileController extends Controller
             }else if($data->status=='Active'){
                 return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">ACTIVE</button>';
             }else{
-                return 'AMBOT';
+                return 'IDLE';
             }
         })
         ->addColumn('action', function($employeeList){
@@ -90,7 +91,7 @@ class ProfileController extends Controller
             }else if($data->childInfo->status=='Active'){
                 return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
             }else{
-                return 'AMBOT';
+                return 'IDLE';
             }
         })
         ->addColumn('action', function($employeeList){
@@ -122,11 +123,30 @@ class ProfileController extends Controller
         $user = User::find($id);
         $access_level = $user->access_id;
         $role = AccessLevel::find($access_level);
+        $user = User::find($id);
         $profile = UserInfo::with('benefits')->select('id','firstname','middlename','lastname','birthdate','address','contact_number')->find($id);
 
         $output = array(
             'profile' => $profile,
-            'role' => $role
+            'role' => $role,
+            'user' => $user
+        );
+        echo json_encode($output);
+    }
+
+    public function backToProfile(){
+        $id = auth()->user()->id;
+        $access_level = auth()->user()->access_id;
+        $role = AccessLevel::find($access_level);
+        $profile = UserInfo::with('benefits')->find($id);
+        $user = User::find($id);
+
+        $userInfo = AccessLevel::all();
+
+        $output = array(
+            'profile' => $profile,
+            'role' => $role,
+            'user' => $user,
         );
         echo json_encode($output);
     }
@@ -134,7 +154,7 @@ class ProfileController extends Controller
     public function updateEmployeeList(Request $request){
         $id = $request->get('id');
         
-        $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
+        $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
         return $this->reloadDatatable($employeeList);
     }
 
