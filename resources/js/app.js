@@ -597,13 +597,25 @@ $(document).on('click','#excel-form-submit',function(e){
         processData: false,
         success:function(result)
         {
-            console.log(result);
+            
             swal({
-                type: 'success',
-                title: 'Your work has been saved',
-                showConfirmButton: false,
-                timer: 2000
-            });
+                title: '<strong>Import Report</strong>',
+                type: 'info',
+                html:
+                '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
+                // '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
+                '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
+                
+                focusConfirm: false,
+                confirmButtonText:
+                '<i class="fa fa-thumbs-up"></i> Noted!',
+                confirmButtonAriaLabel: 'Thumbs up, great!',
+            
+            })
+            $('#excel-modal').modal('hide');
+        },
+        error: function (data) {
+            swal("Error","Please upload xlsx or xls file.")
         }
     })
 });
