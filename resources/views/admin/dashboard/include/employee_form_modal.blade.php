@@ -271,7 +271,7 @@ Modal  -->
                     <div class="row" style='padding:10px'>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="status_data"><h4 class="c-grey-900">Update Employee Status</h4></label>
+                                <label for="status_data"><h5 class="c-grey-900">Update Employee Status</h5></label>
                                 <select class="form-control" id="status_data" name="status_data" required>
                                     <option value="Active">Active</option>
                                     <option value="Terminated">Terminated</option>

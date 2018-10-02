@@ -9,7 +9,7 @@ Auth::routes();
 |------------------------------------------------------------------------------------
 */
 Route::group([ 'middleware'=>['auth']], function () {
-    Route::get('/', 'DashboardController@index')->name('dashboard');
+    Route::get('/', 'ProfileController@index')->name('dashboard');
     Route::resource('users', 'UserController');
     /*Route::get('/email', function () {
         return view('admin.dashboard.email');

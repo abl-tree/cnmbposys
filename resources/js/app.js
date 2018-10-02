@@ -450,14 +450,8 @@ $(document).on("click","#employee-form-submit", function(e) {
                     $('.alert-danger').show();
                     button.disabled=false;
                     input.html('Confirm'); 
-                }else{
-                    swal({
-                        type: 'success',
-                        title: 'Your work has been saved',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
-                    
+                }else{ 
+                    swal("Success!", "Your work has been saved", "success")
                     employee_form_reset();
                     refresh_employee_table(); // ben
                     button.disabled=false;

@@ -59,10 +59,10 @@
 
                     <div class="btn-group">
                         @if(isAdminHR())
-                        <button class="btn cur-p ti-menu" id="showAll"></button>
+                        <button class="btn cur-p " id="showAll"><span class="ti-menu"></span></button>
                         @endif
-                        <button class="btn cur-p ti-menu-alt" id="showChild"></button>
-                        <button class="btn cur-p ti-na" id="showTerminated"></button>
+                        <button class="btn cur-p " id="showChild"><span class="ti-menu-alt"></span></button>
+                        <button class="btn cur-p " id="showTerminated"><span class="ti-na"></span></button>
                     </div>
 
                     @if(isAdminHR())
