@@ -69,7 +69,7 @@ class ProfileController extends Controller
             }else if($data->status=='Active'){
                 return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">ACTIVE</button>';
             }else{
-                return 'AMBOT';
+                return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">ACTIVE</button>';
             }
         })
         ->addColumn('action', function($employeeList){
@@ -90,7 +90,7 @@ class ProfileController extends Controller
             }else if($data->childInfo->status=='Active'){
                 return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
             }else{
-                return 'AMBOT';
+                return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">ACTIVE</button>';
             }
         })
         ->addColumn('action', function($employeeList){
