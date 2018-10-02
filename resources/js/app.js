@@ -501,35 +501,33 @@ $('#nod_modal').on('hidden.bs.modal', function (e) {
 //OPEN MODAL for Incident Report
 $(document).on('click','.add_nod',function(event){
     event.preventDefault();
-     $('.nav-tabs a[href="#ir_list"]').tab('show')
+    $('.nav-tabs a[href="#ir_list"]').tab('show')
     ir_id = $(this).attr("id");
     $('#button_action').val('add');
     $('#ir_id').val(ir_id);
     $('#nod_modal').modal('show');
-     $.ajax({
-          url: "/get_ir",
-          method: 'get',
-          data:{id:ir_id},
-          dataType: 'json',
-          success:function(data){
-                console.log(data);
-                //Incident Repots View List Datatable
-   ir_list = $('#ir_table_list').DataTable({
-        processing: true,
-        columnDefs: [{
-            "targets": "_all", // your case first column
-            "className": "text-center",
-
-        }],
-        serverside:true,
-        data: data.data,
-        columns: [
-            {data: 'description',name:'description'},
-            {data: 'date_filed',name:'date_filed'},
-            {data:'filed_by',
-                                render: function(data, type, full, meta){
-                                     return full.firstname +" "+ full.middlename+" "+full.lastname;
-                                }
+    $.ajax({
+        url: "/get_ir",
+        method: 'get',
+        data:{id:ir_id},
+        dataType: 'json',
+        success:function(data){
+            //Incident Repots View List Datatable
+            ir_list = $('#ir_table_list').DataTable({
+            processing: true,
+            columnDefs: [{
+                "targets": "_all", // your case first column
+                "className": "text-center",
+            }],
+            serverside:true,
+            data: data.data,
+            columns: [
+                {data: 'description',name:'description'},
+                {data: 'date_filed',name:'date_filed'},
+                {data:'filed_by',
+                render: function(data, type, full, meta){
+                        return full.firstname +" "+ full.middlename+" "+full.lastname;
+                }
             }
         ]
     }); 
@@ -553,7 +551,6 @@ $(document).on('click','#add_IR',function(event){
         input.html('Saving...'); 
        // $('#add_IR_form').serialize();
        description = $('#description').val();
-       console.log(description);
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -636,7 +633,6 @@ $(document).on('click','.update_status',function(event){
             $('#status_id').val(data[0].id);
             $('#status_data').val(data[0].status);
             $('#employee_status_name').html(data[0].firstname + ' ' + data[0].middlename + ' ' + data[0].lastname);
-            console.log(data);
         },
         error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error")
@@ -662,7 +658,6 @@ $(document).on('click','#excel-form-submit',function(e){
         processData: false,
         success:function(result)
         {
-            console.log(result);
             swal({
                 type: 'success',
                 title: 'Your work has been saved',
@@ -750,7 +745,6 @@ function fetch_edit_data(id){
              $('#salary').val(result.userinfo.salary_rate);
              $('#hired_date').val(result.userinfo.hired_date);
              fetch(result.user[0].access_id,"","");
-            console.log(result.user[0].access_id);
             var designation = function(){
                 fetch_blob_image(result.userinfo.id,'upload-image-display');
                 $('#designation option[value="'+result.accesslevelhierarchy[0].parent_id+'"]').prop('selected',true);
@@ -773,7 +767,6 @@ function fetch_blob_image(id,element){
         data:{id:id},
         success:function(result)
         {
-            console.log(result);
             var img ="/images/nobody.jpg";
             if(result!='no result'){
                 img = result;
