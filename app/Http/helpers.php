@@ -37,3 +37,21 @@ if (! function_exists('move_file')) {
         return $full_name;
     }
 }
+
+function topBarName(){
+    $id = Auth::id();
+    $userinfo = \App\UserInfo::find($id);
+
+    return $userinfo;
+}
+
+function isHR(){
+    $access_level = auth()->user()->access_id;
+
+    if($access_level == 1 || $access_level == 2){
+        return true;
+    }
+    else{
+        return false;
+    }
+}

@@ -18,24 +18,8 @@ class AccessLevelsTableSeeder extends Seeder
                 'name' => 'HR Manager', 
             ),
             array(
-                'code' => 'hr1', 
-                'name' => 'HR Associates 1', 
-            ),
-            array(
-                'code' => 'hr2', 
-                'name' => 'HR associates 2', 
-            ),
-            array(
-                'code' => 'hr3', 
-                'name' => 'HR Associates 3', 
-            ),
-            array(
-                'code' => 'hr4', 
-                'name' => 'HR Associates 4', 
-            ),
-            array(
-                'code' => 'hr5', 
-                'name' => 'HR Associates 5', 
+                'code' => 'hra', 
+                'name' => 'HR Associates', 
             ),
             array(
                 'code' => 'om', 

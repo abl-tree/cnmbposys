@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\UserBenefit;
 use App\AccessLevel;
+use App\AccessLevelHierarchy;
 use App\UserInfo;
 use App\User;
 use Yajra\Datatables\Datatables;
@@ -30,22 +32,85 @@ class ProfileController extends Controller
     public function index()
     {
         $id = auth()->user()->id;
-        $user = auth()->user()->access_id;
-        $hierarchy = AccessLevel::find($user);
-        $profile = UserBenefit::with('info', 'benefit')->where('user_info_id', $id)->get();
+        $access_level = auth()->user()->access_id;
+        $role = AccessLevel::find($access_level);
+        $profile = UserInfo::with('benefits')->find($id);
 
-        return view('admin.dashboard.profile', compact('profile', 'hierarchy'));
+        $userInfo = AccessLevel::all();
+        return view('admin.dashboard.profile', compact('profile', 'role','userInfo'));
     }
 
     public function refreshEmployeeList(){
-        $employeeList = UserInfo::all();
+        $id = auth()->user()->id;
+
+        $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
         return Datatables::of($employeeList)
-        ->editColumn('name', function ($data){
-            return $data->firstname." ".$data->middlename." ".$data->lastname;
+         ->addColumn('employee_status', function($data){
+            if($data->childInfo->status=='Terminated'){
+                return '<button class="btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+            }else if($data->childInfo->status=='Active'){
+                return '<button class="btn-sm btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+            }else{
+                return 'AMBOT';
+            }
         })
+        ->addColumn('action', function($employeeList){
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
+        })
+        ->editColumn('name', function ($data){
+            return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
+        })
+        ->rawColumns(['employee_status', 'action'])
         ->make(true);
     }
 
+    public function viewProfile(Request $request){
+        $id = $request->get('id');
+        $user = User::find($id);
+        $access_level = $user->access_id;
+        $role = AccessLevel::find($access_level);
+        $profile = UserInfo::with('benefits')->find($id);
+
+        $output = array(
+            'profile' => $profile,
+            'role' => $role
+        );
+        echo json_encode($output);
+
+    }
+
+    public function updateEmployeeList(Request $request){
+        $id = $request->get('id');
+        
+        $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
+        return Datatables::of($employeeList)
+         ->addColumn('employee_status', function($data){
+            if($data->childInfo->status=='Terminated'){
+                return '<button class="btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+            }else if($data->childInfo->status=='Active'){
+                return '<button class="btn-sm btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+            }else{
+                return 'AMBOT';
+            }
+        })
+        ->addColumn('action', function($employeeList){
+            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>&nbsp<button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
+        })
+        ->editColumn('name', function ($data){
+            return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
+        })
+        ->rawColumns(['employee_status', 'action'])
+        ->make(true);
+    }
+
+    public function getCurrentProfile(){
+        $id = auth()->user()->id;
+
+        return $id;
+    }
+ 
     /**
      * Show the form for creating a new resource.
      *

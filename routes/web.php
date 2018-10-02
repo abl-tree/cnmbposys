@@ -23,7 +23,31 @@ Route::group([ 'middleware'=>['auth']], function () {
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
     Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList');
+    Route::get('/updateEmployeeList', 'ProfileController@updateEmployeeList');
+    Route::get('/viewProfile', 'ProfileController@viewProfile');
+    Route::get('/getCurrentProfile', 'ProfileController@getCurrentProfile');
 
     //PROFILE -- END
 
+    //CU EMPLOYEE -- START
+
+    Route::resource('employee','EmployeeController');
+    Route::post('employee/fetch','EmployeeController@fetch');
+    Route::post('employee/fetch_employee_data','EmployeeController@fetch_employee_data');
+    Route::post('employee/fetch_blob_image','EmployeeController@fetch_blob_image');
+
+    //CU EMPLOYEE -- END
+
+
+    //Incident Report
+    Route::post('/add_IR', 'UserController@add_IR')->name('add_IR');
+    // end of Incident Report routes
+    
+    //Email Route
+    Route::get('sendEmail','UserController@sendMail')->name('sendMail');
+
+    //UPDATE STATUS -- START
+    Route::post('/update_status', 'EmployeeController@update_status');
+    Route::get('/get_status', 'EmployeeController@get_status');
+    //UPDATE STATUS -- END
 });
