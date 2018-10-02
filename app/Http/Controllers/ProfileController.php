@@ -73,15 +73,7 @@ class ProfileController extends Controller
             }
         })
         ->addColumn('action', function($employeeList){
-            if(isAdminHR()){
-                return '<div class="btn-group" role="group" aria-label="Third group">
-                <button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->id.'"></button>
-                </div>';
-            }
-            else{
-                return '<div class="btn-group" role="group" aria-label="Third group">
-                </div>';
-            }
+            return '<h6>No Valid Action</h6>';
         })
         ->editColumn('name', function ($data){
             return $data->firstname." ".$data->middlename." ".$data->lastname;
@@ -102,6 +94,9 @@ class ProfileController extends Controller
             }
         })
         ->addColumn('action', function($employeeList){
+            if($employeeList->childInfo->status == 'Terminated'){
+                return '<h6>No Valid Action</h6>';
+            }
             if(isAdminHR()){
                 return '<div class="btn-group" role="group" aria-label="Third group">
                 <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>
