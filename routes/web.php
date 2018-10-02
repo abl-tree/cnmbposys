@@ -45,6 +45,7 @@ Route::group([ 'middleware'=>['auth']], function () {
 
     //Incident Report
     Route::post('/add_IR', 'UserController@add_IR')->name('add_IR');
+    Route::get('/get_ir', 'UserController@get_ir')->name('get_ir');
     // end of Incident Report routes
     
     //Email Route

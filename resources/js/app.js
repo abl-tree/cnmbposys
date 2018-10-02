@@ -25,8 +25,7 @@ window.swal = require('sweetalert2');
 // });
 
 
-
-
+ 
 // include CU employee form JS by EJEL 
 // -- START
 
@@ -57,7 +56,11 @@ var employeetable = $('#employee').DataTable({
         {data: "employee_status"},
         {data: "action", orderable:false,searchable:false}
     ]
-});
+}); 
+
+
+ 
+
 
 //PROFILE EMPLOYEE LIST -- END
 
@@ -492,14 +495,57 @@ $(document).on('click','.form-action-button',function(){
     $('#employee-form-modal-header-title').html(ucword($(this).data('action')));
     $('#employee-form-modal').modal('show');
 });
+ 
+ var ir_list;
+
+$('#nod_modal').on('hidden.bs.modal', function (e) {
+    ir_list.destroy();
+});
 
 //OPEN MODAL for Incident Report
 $(document).on('click','.add_nod',function(event){
     event.preventDefault();
+     $('.nav-tabs a[href="#ir_list"]').tab('show')
     ir_id = $(this).attr("id");
     $('#button_action').val('add');
     $('#ir_id').val(ir_id);
     $('#nod_modal').modal('show');
+     $.ajax({
+          url: "/get_ir",
+          method: 'get',
+          data:{id:ir_id},
+          dataType: 'json',
+          success:function(data){
+                console.log(data);
+                //Incident Repots View List Datatable
+   ir_list = $('#ir_table_list').DataTable({
+        processing: true,
+        columnDefs: [{
+            "targets": "_all", // your case first column
+            "className": "text-center",
+
+        }],
+        serverside:true,
+        data: data.data,
+        columns: [
+            {data: 'description',name:'description'},
+            {data: 'date_filed',name:'date_filed'},
+            {data:'filed_by',
+                                render: function(data, type, full, meta){
+                                     return full.firstname +" "+ full.middlename+" "+full.lastname;
+                                }
+            }
+        ]
+    }); 
+      
+    },
+    error: function(data){
+        swal("Oh no!", "Something went wrong, try again.", "error");
+        button.disabled = false;
+        input.html('SAVE CHANGES');
+    }
+});
+    
 });//end for OPEN MODAL for Incident Report
 
 //ADD Incident Report

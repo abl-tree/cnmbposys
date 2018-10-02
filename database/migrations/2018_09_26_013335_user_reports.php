@@ -17,6 +17,8 @@ class UserReports extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_reports_id');
             $table->foreign('user_reports_id')->references('id')->on('user_infos')->onDelete('cascade');
+            $table->unsignedInteger('filed_by');
+            $table->foreign('filed_by')->references('id')->on('user_infos')->onDelete('cascade');
             $table->longText('description');
             $table->timestamps();
         });
