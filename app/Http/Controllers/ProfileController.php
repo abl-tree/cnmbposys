@@ -40,13 +40,51 @@ class ProfileController extends Controller
         return view('admin.dashboard.profile', compact('profile', 'role','userInfo'));
     }
 
-    public function refreshEmployeeList(){
+    public function refreshEmployeeList(){//Used when loading default datatable and in showAll f or Admin/HRs
         $id = auth()->user()->id;
-        $access_level =  auth()->user()->access_id;
-        
+
+        if(isAdminHR()){
+            $employeeList = AccessLevelHierarchy::with('childInfo')->get();
+        }
+        else{
+            $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
+        }
+
+        return $this->reloadDatatable($employeeList);
+    }
+
+    public function childView(){
+        $id = auth()->user()->id;
         $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
+        return $this->reloadDatatable($employeeList);
+    }
+
+    public function terminatedView(){
+        $employeeList = UserInfo::where('status', 'Terminated')->get();
+
         return Datatables::of($employeeList)
-         ->addColumn('employee_status', function($data){
+        ->addColumn('employee_status', function($data){
+            if($data->status=='Terminated'){
+                return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->id.'">TERMINATED</button>';
+            }else if($data->status=='Active'){
+                return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">ACTIVE</button>';
+            }else{
+                return 'AMBOT';
+            }
+        })
+        ->addColumn('action', function($employeeList){
+            return '<h6>No Valid Action</h6>';
+        })
+        ->editColumn('name', function ($data){
+            return $data->firstname." ".$data->middlename." ".$data->lastname;
+        })
+        ->rawColumns(['employee_status', 'action'])
+        ->make(true);
+    }
+
+    public function reloadDatatable($employeeList){
+        return Datatables::of($employeeList)
+        ->addColumn('employee_status', function($data){
             if($data->childInfo->status=='Terminated'){
                 return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
             }else if($data->childInfo->status=='Active'){
@@ -56,8 +94,21 @@ class ProfileController extends Controller
             }
         })
         ->addColumn('action', function($employeeList){
-            return '<div class="btn-group" role="group" aria-label="Third group"><button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button><button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button></div>';
+            if($employeeList->childInfo->status == 'Terminated'){
+                return '<h6>No Valid Action</h6>';
+            }
+            if(isAdminHR()){
+                return '<div class="btn-group" role="group" aria-label="Third group">
+                <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>
+                <button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+                <button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>
+                </div>';
+            }
+            else{
+                return '<div class="btn-group" role="group" aria-label="Third group">
+                <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>
+                </div>';
+            }
         })
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
@@ -78,38 +129,30 @@ class ProfileController extends Controller
             'role' => $role
         );
         echo json_encode($output);
-
     }
 
     public function updateEmployeeList(Request $request){
         $id = $request->get('id');
         
         $employeeList = AccessLevelHierarchy::with('childInfo')->where('parent_id', $id)->get();
-        return Datatables::of($employeeList)
-         ->addColumn('employee_status', function($data){
-            if($data->childInfo->status=='Terminated'){
-                return '<button class="btn btn-xs btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
-            }else if($data->childInfo->status=='Active'){
-                return '<button class="btn btn-xs btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
-            }else{
-                return 'AMBOT';
-            }
-        })
-        ->addColumn('action', function($employeeList){
-            return '<button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-url="/employee/'.$employeeList->child_id.'" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
-            <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button><button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>';
-        })
-        ->editColumn('name', function ($data){
-            return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
-        })
-        ->rawColumns(['employee_status', 'action'])
-        ->make(true);
+        return $this->reloadDatatable($employeeList);
     }
 
     public function getCurrentProfile(){
         $id = auth()->user()->id;
 
         return $id;
+    }
+
+    public function getCurrentTab(){
+        //Default Tab will depend on user's position
+        //Only the Admin and HRs can have access to show all tab
+        if(isAdminHR()){
+            return 'showAll';
+        }
+        else{
+            return 'childView';
+        }
     }
  
     /**
