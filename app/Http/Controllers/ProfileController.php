@@ -44,7 +44,7 @@ class ProfileController extends Controller
     public function refreshEmployeeList(){//Used when loading default datatable and in showAll f or Admin/HRs
         $id = auth()->user()->id;
 
-        if(isAdminHR()){
+        if(isAdminHRM()){
             $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->get();
         }
         else{
@@ -98,10 +98,17 @@ class ProfileController extends Controller
             if($employeeList->childInfo->status == 'Terminated'){
                 return '<h6>No Valid Action</h6>';
             }
-            if(isAdminHR()){
+
+            if(canIR() && isAdminHR()){
                 return '<div class="btn-group" role="group" aria-label="Third group">
                 <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>
                 <button class="btn btn-xs btn-secondary ti-pencil-alt2 form-action-button" data-portion="table" data-action="edit" data-id="'.$employeeList->child_id.'"></button>
+                <button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>
+                </div>';
+            }
+            else if(canIR()){
+                return '<div class="btn-group" role="group" aria-label="Third group">
+                <button class="btn btn-xs btn-info ti-eye view-employee" id="'.$employeeList->child_id.'"></button>
                 <button class="btn btn-xs btn-danger ti-plus add_nod" id="'.$employeeList->child_id.'"></button>
                 </div>';
             }
