@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="btn-group">
-                        @if(isAdminHR())
+                        @if(isAdminHRM())
                         <button class="btn cur-p " id="showAll"><span class="ti-menu"></span></button>
                         @endif
                         <button class="btn cur-p " id="showChild"><span class="ti-menu-alt"></span></button>
