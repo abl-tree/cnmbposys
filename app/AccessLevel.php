@@ -46,17 +46,25 @@ class AccessLevel extends Model
         return $parent->parent;
     }
     public function getAllParentEmployee(){
-        $dbraw = 'max(case when users.access_id = 1 then user_infos.id end) as adminid, max(case when users.access_id = 1 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as admin';
-        $dbraw.= ',max(case when users.access_id = 2 then user_infos.id end) as hrmid, max(case when users.access_id = 2 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as hrm';
-        $dbraw.= ',max(case when users.access_id = 3 then user_infos.id end) as omid, max(case when users.access_id = 3 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as om';
-        $dbraw.= ',max(case when users.access_id = 9 then user_infos.id end) as tlid, max(case when users.access_id = 9 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as tl';
-        $dbraw.= ',max(case when users.access_id = 5 then user_infos.id end) as rtamid, max(case when users.access_id = 5 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as rtam';
-        $dbraw.= ',max(case when users.access_id = 6 then user_infos.id end) as tqmid, max(case when users.access_id = 6 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as tqm';
+        // $dbraw = 'max(case when users.access_id = 1 then user_infos.id end) as adminid, max(case when users.access_id = 1 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as admin';
+        // $dbraw.= ',max(case when users.access_id = 2 then user_infos.id end) as hrmid, max(case when users.access_id = 2 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as hrm';
+        // $dbraw.= ',max(case when users.access_id = 3 then user_infos.id end) as omid, max(case when users.access_id = 3 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as om';
+        // $dbraw.= ',max(case when users.access_id = 9 then user_infos.id end) as tlid, max(case when users.access_id = 9 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as tl';
+        // $dbraw.= ',max(case when users.access_id = 5 then user_infos.id end) as rtamid, max(case when users.access_id = 5 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as rtam';
+        // $dbraw.= ',max(case when users.access_id = 6 then user_infos.id end) as tqmid, max(case when users.access_id = 6 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end) as tqm';
+        $dbraw = 'case when users.access_id = 1 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end as admin';
+        $dbraw.= ',case when users.access_id = 2 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end as hrm';
+        $dbraw.= ',case when users.access_id = 3 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end as om';
+        $dbraw.= ',case when users.access_id = 9 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end as tl';
+        $dbraw.= ',case when users.access_id = 5 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end as rtam';
+        $dbraw.= ',case when users.access_id = 6 then CONCAT_WS(" ",user_infos.firstname,user_infos.lastname) end as tqm';
+        
         $parent = DB::table('user_infos')
         ->join('users','users.uid','=','user_infos.id')
         ->join('access_levels','access_levels.id','=','users.access_id')
         ->select(DB::raw($dbraw))
-        ->orderBy('user_infos.id');
+        ->groupBy('user_infos.id')
+        ->orderBy('users.access_id','asc');
 
 
 

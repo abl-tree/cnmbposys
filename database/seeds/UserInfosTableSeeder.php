@@ -24,6 +24,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.AdminM.AdminL.Admin',
             ],
             [
             'firstname' => 'F.HRM',
@@ -35,6 +36,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.HRMM.HRML.HRM',
             ],
             [
             'firstname' => 'F.HRS',
@@ -42,10 +44,12 @@ class UserInfosTableSeeder extends Seeder
             'middlename' => 'M.HRS', 
             'birthdate' => '12/02/2012', 
             'address' => 'Davao City',
-            'gender' => 'Feale', 
+            'gender' => 'Female', 
             'contact_number' => '0000000001',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.HRSM.HRSL.HRS',
+
             ],
             [
             'firstname' => 'F.HRA',
@@ -57,6 +61,8 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.HRAM.HRAL.HRA',
+
             ],
             [
             'firstname' => 'F.OM',
@@ -68,6 +74,8 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.OMM.OML.OM',
+
             ],
             [
             'firstname' => 'F.TL',
@@ -79,6 +87,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.TLM.TLL.TL',
             ],
             [
             'firstname' => 'F.TL1',
@@ -90,6 +99,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.TL1M.TL1L.TL1',
             ],
             [
             'firstname' => 'F.TL2',
@@ -101,6 +111,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.TL2M.TL2L.TL2',
             ],
             [
             'firstname' => 'F.agent1',
@@ -112,6 +123,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
+            'excel_hash' =>'F.agent1M.agentL.agent1',
             ],
         ];
        

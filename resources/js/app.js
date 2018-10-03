@@ -635,8 +635,18 @@ $(document).on('click','.update_status',function(event){
 });
 
 $(document).on('click','.excel-action-button', function(){
+    $('#action-import').show();
+    $('#action-export').show();
+    $('#excel-form-submit').show();
+    
+    $('#excel-modal').modal('show');
     if($(this).attr('data-action')=='import'){
-        $('#import-excel-modal').modal('show');
+       $('#action-export').hide();
+       $('#excel-modal-header').html('Import');
+    }else{
+        $('#action-import').hide();
+        $('#excel-form-submit').hide();
+        $('#excel-modal-header').html('Export');
     }
 });
 
@@ -647,23 +657,36 @@ $(document).on('click','#excel-form-submit',function(e){
         url:"/profile/excel_import",
         method:"POST",
         data:formData,
+        dataType:'json',
         cache: false,
         contentType: false,
         processData: false,
         success:function(result)
         {
             swal({
-                type: 'success',
-                title: 'Your work has been saved',
-                showConfirmButton: false,
-                timer: 2000
-            });
+                title: '<strong>Import Report</strong>',
+                type: 'info',
+                html:
+                '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
+                // '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
+                '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
+                
+                focusConfirm: false,
+                confirmButtonText:
+                '<i class="fa fa-thumbs-up"></i> Noted!',
+                confirmButtonAriaLabel: 'Thumbs up, great!',
+            
+            })
+            $('#excel-modal').modal('hide');
+        },
+        error: function (data) {
+            swal("Error","Please upload xlsx or xls file.")
         }
     })
 });
 
 $(document).on('click','#excel-modal-cancel',function(){
-    $('#import-excel-modal').modal('hide');
+    $('#excel-modal').modal('hide');
 });
 ////////////////////////////////////////////////////////////////////////////////////
 

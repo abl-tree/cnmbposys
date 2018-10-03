@@ -148,7 +148,6 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-
         /*
          * Package Service Providers...
          */
@@ -161,7 +160,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Yajra\Datatables\DataTablesServiceProvider::class
+        Yajra\Datatables\DataTablesServiceProvider::class,
 
 
     ],
@@ -214,7 +213,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'DataTables' => Yajra\Datatables\Facades\DataTables::class,
         'Image' => Intervention\Image\Facades\Image::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'phpSpreadSheet'=>PhpOffice\PhpSpreadsheet\IOFactory::class
 
     ],
 

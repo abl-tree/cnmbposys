@@ -54,13 +54,29 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        $validation_message = [
-            'email.unique'=> 'This email is already used.',
-        ];
-
         $user="";
         $userinfo="";
         $access_level_hierarchy="";
+        $email="";
+        
+        ////////////////////////if
+                if($request->action=='add'){
+                    $userinfo = new UserInfo;
+                    $user = new User;
+                    $access_level_hierarchy = new AccessLevelHierarchy;
+                    $email = 'required|unique:users|email';
+                }else if($request->action=='edit'){
+                    $userinfo = UserInfo::find($request->id);
+                    $user = User::find($request->id);
+                    $access_level_hierarchy = AccessLevelHierarchy::where('child_id','=',$request->id)->first();
+                    if($user->email == $request->email){
+                        $email = 'required|email';
+                    }else{
+                        $email = 'required|unique:users|email';
+                    }
+                }
+        ////////////////////////endif
+
         $validator = Validator::make($request->all(), [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -69,35 +85,20 @@ class EmployeeController extends Controller
             'birthdate' => 'required',
             'gender' => 'required',
             'contact' => 'required',
-            'email' => 'required|email',
+            'email' => $email,
             'position' => 'required',
             'salary' => 'required',
             'designation'=>'required',
             'hired_date'=>'required',
             'photo'=>'image|max:2000',
-        ],$validation_message);
+        ]);
 
 
         if ($validator->fails())
         {
             return response()->json(['errors'=>$validator->errors()]);
         }
-        
-        
-////////////////////////if
-        if($request->action=='add'){
-            $userinfo = new UserInfo;
-            $user = new User;
-            $access_level_hierarchy = new AccessLevelHierarchy;
-            $email = 'required|unique:users|email';
-        }else if($request->action=='edit'){
-            $userinfo = UserInfo::find($request->id);
-            $user = User::find($request->id);
-            $access_level_hierarchy = AccessLevelHierarchy::where('child_id','=',$request->id)->first();
-            $email = 'required|email';
-        }
-////////////////////////endif
-        
+
         $userinfo->firstname=$request->first_name;
         $userinfo->lastname=$request->last_name;
         $userinfo->middlename=$request->middle_name;
@@ -119,7 +120,7 @@ class EmployeeController extends Controller
         
         $user->uid= $userinfo->id;
         $user->email = $request->email;
-        $user->password = '123456';
+        $user->password = $userinfo->firstname.$userinfo->lastname;
         $user->access_id = $request->position;
         $user->save();
 
