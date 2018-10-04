@@ -14,7 +14,7 @@ class UserInfo extends Model
      * @var array
      */
     protected $fillable = [
-        'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate','image_ext', 'status','excel_hash'
+        'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate','image_ext', 'status', 'hired_date', 'separation_date', 'excel_hash'
     ];
     /**
      * Set the user's firstname.

@@ -104,6 +104,7 @@ $(document).on("click", ".view-employee", function(){
         dataType: 'json',
         data:{id:id},
         success:function(data){
+            console.log(data);
             $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
             $("#role_P").html(data.role.name);
             $("#birth_P").html(data.profile.birthdate);
@@ -111,6 +112,7 @@ $(document).on("click", ".view-employee", function(){
             $("#contact_P").html(data.profile.contact_number);
             $("#address_P").html(data.profile.address);
             $("#email_P").html(data.user.email);
+            $("#hired_P").html(data.profile.hired_date);
 
             $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
             $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
@@ -166,6 +168,7 @@ $(document).on("click", "#PrevProfile", function(){
                 $("#contact_P").html(data.profile.contact_number);
                 $("#address_P").html(data.profile.address);
                 $("#email_P").html(data.user.email);
+                $("#hired_P").html(data.profile.hired_date);
 
                 $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
                 $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
@@ -252,6 +255,7 @@ function backToProfile(){
             $("#contact_P").html(data.profile.contact_number);
             $("#address_P").html(data.profile.address);
             $("#email_P").html(data.user.email);
+            $("#hired_P").html(data.profile.hired_date);
 
             $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
             $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');

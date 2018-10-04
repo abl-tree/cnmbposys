@@ -43,9 +43,11 @@ class ProfileController extends Controller
 
     public function refreshEmployeeList(){//Used when loading default datatable and in showAll f or Admin/HRs
         $id = auth()->user()->id;
+        $access_level = auth()->user()->access_id;
 
         if(isAdminHRM()){
-            $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->get();
+            $emp = AccessLevelHierarchy::with('childInfo.user.access')->get();
+            $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level);
         }
         else{
             $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
@@ -65,12 +67,23 @@ class ProfileController extends Controller
 
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
-            if($data->status=='Terminated'){
-                return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->id.'">TERMINATED</button>';
-            }else if($data->status=='Active'){
-                return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">ACTIVE</button>';
-            }else{
-                return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">ACTIVE</button>';
+            if(isAdminHRM()){
+                if($data->status=='Terminated'){
+                    return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->id.'">TERMINATED</button>';
+                }else if($data->status=='Active'){
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">ACTIVE</button>';
+                }else{
+                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">ACTIVE</button>';
+                }
+            }
+            else{
+                if($data->status=='Terminated'){
+                    return '<button class=" btn btn-sm btn-danger" disabled>TERMINATED</button>';
+                }else if($data->status=='Active'){
+                    return '<button class="btn btn-sm  btn-success" disabled>ACTIVE</button>';
+                }else{
+                    return '<button class="btn btn-sm  btn-warning" disabled>ACTIVE</button>';
+                }
             }
         })
         ->addColumn('action', function($employeeList){
@@ -86,12 +99,23 @@ class ProfileController extends Controller
     public function reloadDatatable($employeeList){
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
-            if($data->childInfo->status=='Terminated'){
-                return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
-            }else if($data->childInfo->status=='Active'){
-                return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
-            }else{
-                return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">ACTIVE</button>';
+            if(isAdminHRM()){
+                if($data->childInfo->status=='Terminated'){
+                    return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+                }else if($data->childInfo->status=='Active'){
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                }else{
+                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                }
+            }
+            else{
+                if($data->childInfo->status=='Terminated'){
+                    return '<button class=" btn btn-sm btn-danger" disabled>TERMINATED</button>';
+                }else if($data->childInfo->status=='Active'){
+                    return '<button class="btn btn-sm  btn-success" disabled>ACTIVE</button>';
+                }else{
+                    return '<button class="btn btn-sm  btn-warning" disabled>ACTIVE</button>';
+                }
             }
         })
         ->addColumn('action', function($employeeList){
@@ -131,7 +155,7 @@ class ProfileController extends Controller
         $access_level = $user->access_id;
         $role = AccessLevel::find($access_level);
         $user = User::find($id);
-        $profile = UserInfo::with('benefits')->select('id','firstname','middlename','lastname','birthdate','address','contact_number')->find($id);
+        $profile = UserInfo::with('benefits')->find($id);
 
         $output = array(
             'profile' => $profile,

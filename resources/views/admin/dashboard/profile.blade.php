@@ -21,11 +21,13 @@
                             <br>
                             Gender:&nbsp;<span id="gender_P">{{ $profile->gender }}</span>
                             <br>
-                            Contact:&nbsp;<span id="contact_P">{{ $profile->contact_number}}</span>
+                            Contact:&nbsp;<span id="contact_P">{{ $profile->contact_number }}</span>
                             <br>
-                            Address:&nbsp;<span id="address_P">{{ $profile->address}}</span>
+                            Address:&nbsp;<span id="address_P">{{ $profile->address }}</span>
                             <br>
-                            Email:&nbsp;<span id="email_P">{{ $user->email}}</span>
+                            Email:&nbsp;<span id="email_P">{{ $user->email }}</span>
+                            <br>
+                            Date Hired:&nbsp;<span id="hired_P">{{ $profile->hired_date }}</span>
                             <br>
                             <br>
                             SSS:&nbsp;<span id="sss_P">{{ !empty($profile->benefits[0]->id_number) ? $profile->benefits[0]->id_number : 'N/A' }}</span>
@@ -38,8 +40,8 @@
                             <br>
                             <br>
                             
-                            @if(isAdminHR())
-                            <!-- <button type="submit" class="btn cur-p btn-dark form-action-button" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button> -->
+                            @if(isAdmin())
+                            <button type="submit" class="btn cur-p btn-dark form-action-button" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
                             @endif
                         </div>
                     </div>
@@ -59,10 +61,10 @@
 
                     <div class="btn-group">
                         @if(isAdminHRM())
-                        <button class="btn cur-p " id="showAll"><span class="ti-menu"></span></button>
+                        <button class="btn cur-p" id="showAll"><span class="ti-menu"></span></button>
                         @endif
-                        <button class="btn cur-p " id="showChild"><span class="ti-menu-alt"></span></button>
-                        <button class="btn cur-p " id="showTerminated"><span class="ti-na"></span></button>
+                        <button class="btn cur-p" id="showChild"><span class="ti-menu-alt"></span></button>
+                        <button class="btn cur-p" id="showTerminated"><span class="ti-na"></span></button>
                     </div>
 
                     @if(isAdminHR())
