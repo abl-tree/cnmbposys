@@ -57,7 +57,51 @@ var employeetable = $('#employee').DataTable({
         {data: "action", orderable:false,searchable:false}
     ]
 }); 
+ 
+$( document ).ready(function() {
+  
+    $.ajax({
+        url: "/logstat",
+        method: 'get',
+        dataType: 'json',
+        success:function(data){
+            if(data.flagerino == 0){
+            $('#update_password_modal').modal('show');
+            }
+           // alert( data.flagerino ); 
+        }
+    });
+});
 
+$(document).on("click", ".submit_pass", function(){
+    var input = $(this);
+    var button =this;
+    button.disabled = true;
+    input.text('Saving'); 
+    
+    
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url:"/updatePass",
+        method: 'POST',
+        dataType:'text',
+        data: $('#update_password_form').serialize(),
+        success:function(data){
+            button.disabled = false;
+            input.html('Confirm');
+            swal("Success!", "Password Changed.", "success")
+            $('#update_password_modal').modal('hide');
+          
+        },
+        error: function(data){
+            swal("Oh no!", "Something went wrong, try again.", "error")
+            button.disabled = false;
+            input.html('SAVE CHANGES');
+        }
+    })
+});
 //PROFILE EMPLOYEE LIST -- END
 
 //DYNAMIC PROFILE -- START
@@ -67,18 +111,6 @@ var prevProfiles = [];
 var prevButton = $("#PrevProfile");
 var currentTab;
 
-$.ajax({
-    url: "/getCurrentTab",
-    method: 'get',
-    success:function(data){
-        if(data == 'showAll'){
-            currentTab = 'showAll';
-        }
-        else{
-            currentTab = 'childView';
-        }
-    }
-});
 
 
 //get id of current profile
