@@ -299,7 +299,7 @@ Modal  -->
     <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" >Mandatory password update </h5> 
+            <h6 class="modal-title" >Mandatory password update </h6> 
             </div>
             <div class="modal-body">
                 <form action="#" method="POST" id='update_password_form'>
@@ -343,8 +343,11 @@ Modal  -->
                             <input type="file" name='excel_file' id="excel_file" style="display:none;">
                         </div>
                         <div id="action-export">
-                            <a href="/profile/excel_exportreport" class="btn btn-info" >Report File</a>
-                            <a href="/profile/excel_exporttemplate" class="btn btn-info">Template File</a>
+                            
+                            <a href="/profile/excel_exportreport" class="btn btn-sq-lg btn-outline-primary" ><br><i class="fa fa-address-book-o fa-5x"></i><br/>
+                            Report File  </a>
+                            <a href="/profile/excel_exporttemplate" class="btn btn-sq-lg btn-outline-primary" ><br><i class="fa fa-newspaper-o fa-5x"></i><br/>
+                             Template File</a>
                         </div>
 
                     </center>
