@@ -56,7 +56,7 @@
 
                 <div class="form-group reposition">
                     <div class="btn-group">
-                        <button type="button cur-p ti-arrow-left" class="btn cur-p btn-primary" id="PrevProfile" disabled>← Prev</button>
+                        <button type="button cur-p ti-arrow-left" class="btn cur-p btn-primary" id="prevProfile" disabled>← Prev</button>
                     </div>
 
                     <div class="btn-group">

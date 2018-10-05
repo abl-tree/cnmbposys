@@ -210,8 +210,8 @@ class ProfileController extends Controller
 
     public function getCurrentTab(){
         //Default Tab will depend on user's position
-        //Only the Admin and HRs can have access to show all tab
-        if(isAdminHR()){
+        //Only the Admin and HRM can have access to show all tab
+        if(isAdminHRM()){
             return 'showAll';
         }
         else{

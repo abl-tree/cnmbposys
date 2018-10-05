@@ -32,9 +32,9 @@ window.swal = require('sweetalert2');
 
 // -- END
 //global variables
- var ir_id;
- var description;
- //end of global variables
+var ir_id;
+var description;
+//end of global variables
 
 //PROFILE EMPLOYEE LIST -- START
 
@@ -108,10 +108,8 @@ $(document).on("click", ".submit_pass", function(){
 
 //store history of profiles
 var prevProfiles = [];
-var prevButton = $("#PrevProfile");
+var prevButton = $("#prevProfile");
 var currentTab;
-
-
 
 //get id of current profile
 function getCurrentProfile(){
@@ -119,12 +117,41 @@ function getCurrentProfile(){
         url: "/getCurrentProfile",
         method: 'get',
         success:function(data){
-            prevProfiles.push(data);
+            prevProfiles.push(data);//data of current user considered as first profile in history
+        }
+    });
+}
+
+function getCurrentTab(){
+    $.ajax({
+        url: "/getCurrentTab",
+        method: 'get',
+        success:function(data){
+            currentTab = data;
         }
     });
 }
 
 getCurrentProfile();
+getCurrentTab();
+
+function replaceProfile(data){
+    $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
+    $("#role_P").html(data.role.name);
+    $("#birth_P").html(data.profile.birthdate);
+    $("#gender_P").html(data.profile.gender);
+    $("#contact_P").html(data.profile.contact_number);
+    $("#address_P").html(data.profile.address);
+    $("#email_P").html(data.user.email);
+    $("#hired_P").html(data.profile.hired_date);
+
+    $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+    $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
+    $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
+    $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
+
+    fetch_blob_image(data.profile.id,'profile-image-display');
+}
 
 $(document).on("click", ".view-employee", function(){
     id = $(this).attr("id");
@@ -136,22 +163,7 @@ $(document).on("click", ".view-employee", function(){
         dataType: 'json',
         data:{id:id},
         success:function(data){
-            console.log(data);
-            $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
-            $("#role_P").html(data.role.name);
-            $("#birth_P").html(data.profile.birthdate);
-            $("#gender_P").html(data.profile.gender);
-            $("#contact_P").html(data.profile.contact_number);
-            $("#address_P").html(data.profile.address);
-            $("#email_P").html(data.user.email);
-            $("#hired_P").html(data.profile.hired_date);
-
-            $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-            $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
-            $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
-            $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
-           
-            fetch_blob_image(data.profile.id,'profile-image-display');
+            replaceProfile(data);
             
             employeetable = $('#employee').DataTable({
                 destroy: true,
@@ -184,7 +196,7 @@ $(document).on("click", ".view-employee", function(){
     })
 }) 
 
-$(document).on("click", "#PrevProfile", function(){
+$(document).on("click", "#prevProfile", function(){
     id = prevProfiles[prevProfiles.length-2];
     if(prevProfiles.length > 1){
         $.ajax({
@@ -193,21 +205,7 @@ $(document).on("click", "#PrevProfile", function(){
             dataType: 'json',
             data:{id:id},
             success:function(data){
-                $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
-                $("#role_P").html(data.role.name);
-                $("#birth_P").html(data.profile.birthdate);
-                $("#gender_P").html(data.profile.gender);
-                $("#contact_P").html(data.profile.contact_number);
-                $("#address_P").html(data.profile.address);
-                $("#email_P").html(data.user.email);
-                $("#hired_P").html(data.profile.hired_date);
-
-                $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-                $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
-                $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
-                $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
-                
-                fetch_blob_image(data.profile.id,'profile-image-display');
+                replaceProfile(data);
                 if(prevProfiles.length-2 == 0 && currentTab == 'showAll'){
                     employeetable = $('#employee').DataTable({
                         destroy: true,
@@ -215,7 +213,6 @@ $(document).on("click", "#PrevProfile", function(){
                         columnDefs: [{
                             "targets": "_all", // your case first column
                             "className": "text-center",
-                
                         }],
                         ajax: {
                             "url": "/refreshEmployeeList",
@@ -280,21 +277,7 @@ function backToProfile(){
         method: 'get',
         dataType: 'json',
         success:function(data){
-            $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
-            $("#role_P").html(data.role.name);
-            $("#birth_P").html(data.profile.birthdate);
-            $("#gender_P").html(data.profile.gender);
-            $("#contact_P").html(data.profile.contact_number);
-            $("#address_P").html(data.profile.address);
-            $("#email_P").html(data.user.email);
-            $("#hired_P").html(data.profile.hired_date);
-
-            $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-            $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
-            $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
-            $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
-            
-            fetch_blob_image(data.profile.id,'profile-image-display');
+            replaceProfile(data);
         }
     })
 }
@@ -556,7 +539,7 @@ $(document).on('click','.add_nod',function(event){
                 {data: 'date_filed',name:'date_filed'},
                 {data:'filed_by',
                 render: function(data, type, full, meta){
-                        return full.firstname +" "+ full.middlename+" "+full.lastname;
+                    return full.firstname +" "+ full.middlename+" "+full.lastname;
                 }
             }
         ]
