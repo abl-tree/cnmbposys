@@ -47,10 +47,11 @@ class ProfileController extends Controller
 
         if(isAdminHRM()){
             $emp = AccessLevelHierarchy::with('childInfo.user.access')->get();
-            $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level);
+            $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level)->where('childInfo.status', '<>', 'Terminated');
         }
         else{
-            $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
+            $emp = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
+            $employeeList = $emp->where('childInfo.status', '<>', 'Terminated');
         }
 
         return $this->reloadDatatable($employeeList);
