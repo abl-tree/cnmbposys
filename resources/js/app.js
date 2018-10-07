@@ -397,8 +397,9 @@ $(document).on('click','#employee-modal-cancel',function(e){
 $(document).on('change','#position',function(){
         var a_position = $(this).val(); //applicant positon a_position
         var u_position = $('#user-access-level').val(); //logged position
-        // var u_id = 
-        fetch(a_position,u_position,);
+        var eid = $('#employee-id').val();
+        fetch(a_position,u_position,eid);
+        
 });
 
 //display input file image before upload on change
@@ -429,6 +430,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                     console.log(result.errors);
                     var compact_req_msg='false'; //compact required message
                     var unique_email_msg='false';
+                    var unique_name_msg='false';
                     var email_error='false';
                     var image_file='false';
                     $.each(result.errors, function(key, value){
@@ -444,6 +446,11 @@ $(document).on("click","#employee-form-submit", function(e) {
                                 unique_email_msg='true';
                             }else{
                                 email_error='true';
+                            }
+                        }
+                        if(key=='first_name'){
+                            if(value=='Name Already Exist.'){
+                                unique_name_msg='true';
                             }
                         }
                         if(key=='photo'){
@@ -463,6 +470,13 @@ $(document).on("click","#employee-form-submit", function(e) {
                     if(image_file=='true'){
                         $('.alert-danger').append('<li style="font-size:0.8em"> Please upload valid image file with 2MB max size. </li>');
                         $('#upload-image-display').attr('src','/images/nobody.jpg').css('border','3px solid red');
+
+                    }
+                    if(unique_name_msg=='true'){
+                        $('.alert-danger').append('<li style="font-size:0.8em"> Applicant name already Exists. </li>');
+                        // $.each(result.errors, function(key, value){
+                        //     $('#'+key).addClass("is-invalid");
+                        // });
 
                     }
                     
@@ -687,7 +701,7 @@ $(document).on('click','#excel-form-submit',function(e){
                 type: 'info',
                 html:
                 '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
-                // '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
+                '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
                 '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
                 
                 focusConfirm: false,
@@ -741,14 +755,16 @@ function ucword(str){
 }
   
 //fetch
-function fetch(a_position,u_position,uid){
+function fetch(a_position,u_position,eid){
     $.ajax({
         url:"employee/fetch",
         method:"POST",
-        data:{applicant_position:a_position,user_position:u_position,user_id:uid},
+        data:{applicant_position:a_position,user_position:u_position,employee_id:eid},
         success:function(result)
         {
             $('#designation').html(result);
+           console.log(eid);
+
         }
     })
 }
@@ -781,8 +797,8 @@ function fetch_edit_data(id){
              $('#salary').val(result.userinfo.salary_rate);
              $('#hired_date').val(result.userinfo.hired_date);
              fetch(result.user[0].access_id,"","");
+             fetch_blob_image(result.userinfo.id,'upload-image-display');
             var designation = function(){
-                fetch_blob_image(result.userinfo.id,'upload-image-display');
                 $('#designation option[value="'+result.accesslevelhierarchy[0].parent_id+'"]').prop('selected',true);
                 $('#employee-form-submit')[0].disabled=false;
                 $('#employee-form-submit').html('Confirm');

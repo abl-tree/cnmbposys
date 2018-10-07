@@ -24,7 +24,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.AdminM.AdminL.Admin',
+            'excel_hash' =>strtolower('F.AdminM.AdminL.Admin'),
             ],
             [
             'firstname' => 'F.HRM',
@@ -36,7 +36,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.HRMM.HRML.HRM',
+            'excel_hash' =>strtolower('F.HRMM.HRML.HRM'),
             ],
             [
             'firstname' => 'F.HRS',
@@ -48,7 +48,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000001',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.HRSM.HRSL.HRS',
+            'excel_hash' =>strtolower('F.HRSM.HRSL.HRS'),
 
             ],
             [
@@ -61,7 +61,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.HRAM.HRAL.HRA',
+            'excel_hash' =>strtolower('F.HRAM.HRAL.HRA'),
 
             ],
             [
@@ -74,7 +74,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.OMM.OML.OM',
+            'excel_hash' =>strtolower('F.OMM.OML.OM'),
 
             ],
             [
@@ -87,7 +87,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.TLM.TLL.TL',
+            'excel_hash' =>strtolower('F.TLM.TLL.TL'),
             ],
             [
             'firstname' => 'F.TL1',
@@ -99,7 +99,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.TL1M.TL1L.TL1',
+            'excel_hash' =>strtolower('F.TL1M.TL1L.TL1'),
             ],
             [
             'firstname' => 'F.TL2',
@@ -111,7 +111,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.TL2M.TL2L.TL2',
+            'excel_hash' =>strtolower('F.TL2M.TL2L.TL2'),
             ],
             [
             'firstname' => 'F.agent1',
@@ -123,7 +123,7 @@ class UserInfosTableSeeder extends Seeder
             'contact_number' => '0000000000',
             'status' => 'Active',
             'hired_date' => '09/10/2017',
-            'excel_hash' =>'F.agent1M.agentL.agent1',
+            'excel_hash' =>strtolower('F.agent1M.agentL.agent1'),
             ],
         ];
        
