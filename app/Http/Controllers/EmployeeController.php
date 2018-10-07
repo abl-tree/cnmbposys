@@ -127,6 +127,11 @@ class EmployeeController extends Controller
             $userinfo->image = base64_encode($binaryfile);
             $userinfo->save();
         }
+        if($request->captured_photo){
+            $userinfo->image_ext='jpg';
+            $userinfo->image = $request->captured_photo;
+            $userinfo->save();
+        }
         $userinfo->save();
 
         
@@ -261,8 +266,10 @@ class EmployeeController extends Controller
     function fetch_blob_image(Request $request){
         $id = $request->id;
         $data = UserInfo::select('image','image_ext')->find($id);
-        if($data->image_ext!=""){
+        if($data->image_ext!="" && !strpos($data->image,';base64')){
             echo 'data:image/'.$data->image_ext.';base64, '.$data->image;
+        }else if(strpos($data->image,';base64')!== false){
+            echo 'data:image/'.$data->image_ext.$data->image;
         }else{
             echo 'no result';
         }
