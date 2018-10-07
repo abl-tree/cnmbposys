@@ -145,23 +145,52 @@ Modal  -->
                                     </div>
                                 </div>
                                 <div class="form-group row" style='padding-bottom:0px;margin-bottom:0px;'>
-                                    <div class="image-upload" style="height:137px;margin:0 auto;">
+                                    <div class="image-upload" style="height:150px;margin:0 auto;">
                                         <label id="form-image-container" for="photo" style="cursor:pointer">
                                             
                                                 <img src="/images/nobody.jpg" alt="profile Pic" id="upload-image-display" width="100px"/>
                                             
                                         </label>
                                         <input name="photo" id="photo" type="file" style="display:none"/>
+                                        <input name="captured_photo" id="captured_photo" type="text" value="" style="display:none"/>
+                                        <button id="start-camera" class="btn ti-camera"> Use Camera</button>
                                     </div>
+                                    
                                 </div>
+                                
+
                             </div>
                         </div>
+                       
                         <input type="hidden" name="id" id="employee-id">
                         <input type="hidden" name="action" id="action">
                         <input type="hidden" name="portion" id="portion">
                     </div>           
                 </form>
             </div>
+             <div id="show_camera" hidden="" class="modal-footer" align="center" >
+                        <div class="image-camera"> 
+                     
+                        <div class="col-sm-12" id="camera_kuha">
+                            <video muted id="camera-stream" ></video>
+                            <img id="snap">
+
+                        <p id="error-message"></p>
+
+                        <div class="controls" ">
+                          <button class="btn ti-loop disabled" id="delete-photo" title="Take Again"  ></button>
+                          <button class="btn ti-camera di" id="take-photo" title="Take Photo"></button>
+                          <a href="#" id="download-photo" download="selfie.png" target="_blank" title="Save Photo" class="btn ti-download disabled"></a>  
+                          <button class="btn ti-check disabled" id="done" title="Done" ></button>
+                        </div>
+
+                        <!-- Hidden canvas element. Used for taking snapshot of video. -->
+                        <canvas hidden="" style="height:200%; width: 180%;"></canvas>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
             <div class="modal-footer">
                 <div class="col-md-4">
                      <div class="pull-right">
