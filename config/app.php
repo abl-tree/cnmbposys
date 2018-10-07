@@ -214,8 +214,9 @@ return [
         'DataTables' => Yajra\Datatables\Facades\DataTables::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'phpSpreadSheet'=>PhpOffice\PhpSpreadsheet\IOFactory::class
-
+        'phpSpreadSheet'=>PhpOffice\PhpSpreadsheet\IOFactory::class,
+        'Xlsx'=> PhpOffice\PhpSpreadsheet\Writer\Xlsx::class,
+        'SFile'=>PhpOffice\PhpSpreadsheet\Shared\File::class,
     ],
 
 ];

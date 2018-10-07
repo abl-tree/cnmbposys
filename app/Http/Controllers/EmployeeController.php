@@ -58,13 +58,19 @@ class EmployeeController extends Controller
         $userinfo="";
         $access_level_hierarchy="";
         $email="";
+        $fullname_hash = strtolower($request->first_name.$request->middle_name.$request->last_name);
+        $excel_hash = UserInfo::all()->pluck('excel_hash')->toArray();
         
+
         ////////////////////////if
                 if($request->action=='add'){
                     $userinfo = new UserInfo;
                     $user = new User;
                     $access_level_hierarchy = new AccessLevelHierarchy;
                     $email = 'required|unique:users|email';
+                    if(in_array($fullname_hash,$excel_hash)){
+                        return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
+                    }
                 }else if($request->action=='edit'){
                     $userinfo = UserInfo::find($request->id);
                     $user = User::find($request->id);
@@ -73,6 +79,11 @@ class EmployeeController extends Controller
                         $email = 'required|email';
                     }else{
                         $email = 'required|unique:users|email';
+                    }
+                    if($userinfo->excel_hash != $fullname_hash){
+                        if(in_array($fullname_hash,$excel_hash)){
+                            return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
+                        }
                     }
                 }
         ////////////////////////endif
@@ -109,6 +120,7 @@ class EmployeeController extends Controller
         $userinfo->status="Active";
         $userinfo->contact_number=$request->contact;
         $userinfo->hired_date=$request->hired_date;
+        $userinfo->excel_hash = $fullname_hash;
         if($request->hasFile('photo')){
             $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
             $userinfo->image_ext= explode(".", strtolower($_FILES['photo']['name']))[1];
@@ -207,6 +219,7 @@ class EmployeeController extends Controller
     {
         $position = $request->get('applicant_position');
         $userposition = $request->get('user_position'); 
+        $eid = $request->get('employee_id'); 
         $accesslevel = new AccessLevel;
         $parentLevel = $accesslevel->getParentLevel($position);
         
@@ -221,7 +234,9 @@ class EmployeeController extends Controller
         if($data->count()>0){
             $output.= '<option value="">Select '.$data[0]->accesslevelname.'</option>';
             foreach($data as $datum){
-                $output .= '<option value="'.$datum->id.'">'.$datum->lastname.", ".$datum->firstname." ".$datum->middlename.'</option>';
+                if($datum->id!=$eid){
+                    $output .= '<option value="'.$datum->id.'">'.$datum->lastname.", ".$datum->firstname." ".$datum->middlename.'</option>';
+                }
             }
         }else{
             $output .= '<option value="">NA</option>';
