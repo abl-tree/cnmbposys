@@ -362,7 +362,7 @@ Modal -->
                 <div class="col-md-4">
                     <div class="pull-right">
                         <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
-                        <button type="button" id="submit_pass" class="btn btn-success btn-sm submit_pass">Confirm</button>
+                        <button type="submit" id="submit_pass" class="btn btn-success btn-sm submit_pass">Confirm</button>
                     </div>
                     </form>
                 </div>
