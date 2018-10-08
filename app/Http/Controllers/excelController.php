@@ -118,7 +118,7 @@ class excelController extends Controller
         }
         //parent worksheet
         $worksheet = new Worksheet($spreadsheet, 'Parent');
-        // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
         $spreadsheet->addSheet($worksheet);
         $parent_id_array = AccessLevel::groupBy('parent')->pluck('parent')->toArray();
         $tmp=[];
@@ -173,7 +173,7 @@ class excelController extends Controller
             $spreadsheet = $reader->load($path);
             $handler = $spreadsheet->setActiveSheetIndexByName('Employee');
             $rows = $handler->getHighestDataRow();
-            $emp = UserInfo::all();
+            $emp = UserInfo::where('user_infos.status','!=','Terminated')->get();
             if(intval($rows)!=count($emp)){
                 return response()->json("outdated");
                 exit;
@@ -305,9 +305,7 @@ class excelController extends Controller
             }
             $return_data[]=[
                 'saved_counter' => $saved_counter,
-                // 'saved_counter' => $parent_aid,  
                 'duplicate_counter' => $duplicate_counter,
-                // 'duplicate_counter' => $checker->getParentLevel($position),
                 'error_rows'=>$error_rows,
                 'error_counter'=>count($error_rows),
                 'reassign_counter'=>$reassign_counter,

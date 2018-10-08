@@ -687,7 +687,9 @@ $(document).on('click','.excel-action-button', function(){
        $('#action-export').hide();
        $('#excel-modal-header').html('Import');
        $('#excel-file-label').html('Select Excel File.');
+       $('$excel_file').val("");
        $('#excel-file-label').removeClass('btn-info').addClass('btn-secondary');
+       
     }else{
         $('#action-import').hide();
         $('#excel-form-submit').hide();
@@ -717,6 +719,7 @@ $(document).on('click','#excel-form-submit',function(e){
                     type: 'info',
                     html:
                     '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
+                    '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>'+
                     '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
                     '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
                     
