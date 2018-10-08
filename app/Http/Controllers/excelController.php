@@ -171,6 +171,13 @@ class excelController extends Controller
             $extension =  phpSpreadSheet::identify($path);
             $reader = phpSpreadSheet::createReader($extension);
             $spreadsheet = $reader->load($path);
+            $handler = $spreadsheet->setActiveSheetIndexByName('Employee');
+            $rows = $handler->getHighestDataRow();
+            $emp = UserInfo::all();
+            if(intval($rows)!=count($emp)){
+                return response()->json("outdated");
+                exit;
+            }
             $handler = $spreadsheet->setActiveSheetIndexByName('Add');
             $rows = $handler->getHighestDataRow();
             $data =[];
@@ -181,6 +188,9 @@ class excelController extends Controller
             $error_counter=0;
             $error_rows=[];
             
+                
+
+
             for($r=2;$r<=$rows;$r++){
                 
                 $fname = $handler->getCellByColumnAndRow(1, $r)->getValue();
@@ -188,6 +198,7 @@ class excelController extends Controller
                 $lname = $handler->getCellByColumnAndRow(3, $r)->getValue();
                 $birthdate = $handler->getCellByColumnAndRow(5, $r)->getFormattedValue();
                 $position = $handler->getCellByColumnAndRow(17, $r)->getOldCalculatedValue();
+                $parent_aid = $handler->getCellByColumnAndRow(18, $r)->getOldCalculatedValue();
                 $email = $handler->getCellByColumnAndRow(7, $r)->getValue();
                 $contact_number=$handler->getCellByColumnAndRow(8, $r)->getValue();
                 $hired_date=$handler->getCellByColumnAndRow(16, $r)->getFormattedValue();
@@ -218,6 +229,13 @@ class excelController extends Controller
                 if(!is_numeric($contact_number)||!is_numeric($sss)||!is_numeric($philhealth)||!is_numeric($pagibig)||!is_numeric($tin)||!is_numeric($salary_rate)){
                     $errorlog++;
                 }
+
+                $checker = new AccessLevel;
+                $checker->getParentLevel($position);
+                if(intval($checker->getParentLevel($position)) != intval($parent_aid)){
+                    $errorlog++;
+                }
+
 
                 if($errorlog==0){
                     if($position>1){
@@ -287,7 +305,9 @@ class excelController extends Controller
             }
             $return_data[]=[
                 'saved_counter' => $saved_counter,
+                // 'saved_counter' => $parent_aid,  
                 'duplicate_counter' => $duplicate_counter,
+                // 'duplicate_counter' => $checker->getParentLevel($position),
                 'error_rows'=>$error_rows,
                 'error_counter'=>count($error_rows),
                 'reassign_counter'=>$reassign_counter,

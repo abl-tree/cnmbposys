@@ -101,15 +101,13 @@ Modal  -->
                         <div class="col-md-4" style='border-left:1px solid #ccc'>
                             <h6 class="c-grey-900">Company Details</h6>
                             <div class="mT-30">
-                                <div class="form-group row">
+                                <div class="form-group row admin-hidden-field">
                                     <label class="col-sm-4 col-form-label font-xs" >Position</label>
                                     <div class="col-sm-8">
-                                        <select name="position" id="position" class="form-control font-xs">
+                                        <select name="position" id="position" class="form-control font-xs" >
                                             @foreach($userInfo as $datum)
                                                 @if($role->id==1)
-                                                    @if($datum->id>1)
                                                     <option value="{{$datum->id}}">{{$datum->name}}</option>
-                                                    @endif
                                                 @elseif($role->id==2)
                                                     @if($datum->id>2)
                                                     <option value="{{$datum->id}}">{{$datum->name}}</option>
@@ -124,7 +122,7 @@ Modal  -->
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row admin-hidden-field">
                                     <label class="col-sm-4 col-form-label font-xs" style="padding=0px;">Designation</label>
                                     <div class="col-sm-8">
                                         <select name="designation" class="form-control font-xs" id="designation">
@@ -165,6 +163,7 @@ Modal  -->
                         <input type="hidden" name="id" id="employee-id">
                         <input type="hidden" name="action" id="action">
                         <input type="hidden" name="portion" id="portion">
+                        <input type="hidden" name="role" id="role">
                     </div>           
                 </form>
             </div>
@@ -368,7 +367,7 @@ Modal  -->
                 {{ csrf_field()}}
                     <center>
                         <div id="action-import">
-                            <label for="excel_file" class="btn btn-info">Select excel file.</label>
+                            <label for="excel_file" id="excel-file-label" class="btn btn-default">Select excel file.</label>
                             <input type="file" name='excel_file' id="excel_file" style="display:none;">
                         </div>
                         <div id="action-export">
