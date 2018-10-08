@@ -83,7 +83,8 @@
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>User ID No.</th>
+                            <th>Employee No.</th>
+                            <th>Picture</th>
                             <th>Name</th>
                             <th>Position</th>
                             <th>Birthday</th>

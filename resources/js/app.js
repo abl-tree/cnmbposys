@@ -45,8 +45,19 @@ var employeetable = $('#employee').DataTable({
         "className": "text-center",
     }],
     ajax: "/refreshEmployeeList",
+    autoWidth: false,
     columns: [
         {data: 'child_info.id', name: 'id'},
+        {
+            width: '10%',
+            data: 'child_info.image', 
+            name: 'image',
+            render: function( data, type, row, meta ) {
+                if(data)
+                return '<img src="'+data+'">';
+                else return '<img src="/images/nobody.jpg">';
+            }
+        },
         {data: 'name', name: 'name'},
         {data: 'child_info.user.access.name', name: 'position'},
         {data: 'child_info.birthdate', name: 'birthdate'},

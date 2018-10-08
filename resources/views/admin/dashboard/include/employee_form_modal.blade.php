@@ -183,20 +183,17 @@ Modal -->
                 </form>
             </div>
             <div id="show_camera" hidden="" class="modal-footer" align="center">
-                <div class="image-camera">
-
-                    <div class="col-sm-12" id="camera_kuha">
-                        <video muted id="camera-stream"></video>
-                        <img id="snap">
+                    <div class="image-camera col-md-12">                    
+                        <div class="col-sm-12" id="camera_kuha">
+                            <video muted id="camera-stream"></video>
+                            <img id="snap">
 
                         <p id="error-message"></p>
 
-                        <div class="controls" ">
-                          <button class=" btn ti-loop disabled" id="delete-photo"
-                            title="Take Again"></button>
+                        <div class="controls">
+                            <button class="btn ti-loop disabled" id="delete-photo" title="Take Again"></button>
                             <button class="btn ti-camera di" id="take-photo" title="Take Photo"></button>
-                            <a href="#" id="download-photo" download="selfie.png" target="_blank" title="Save Photo"
-                                class="btn ti-download disabled"></a>
+                            <a href="#" id="download-photo" download="selfie.png" target="_blank" title="Save Photo" class="btn ti-download disabled"></a>  
                             <button class="btn ti-check disabled" id="done" title="Done"></button>
                         </div>
 
@@ -243,22 +240,19 @@ Modal -->
             </div>
             <div class="tab-content">
                 <div id="file_ir" class="tab-pane fade in">
-                    <div class="modal-body">
-                        <div class="alert alert-danger" style="display:none"></div>
-                        <form method="POST" id='add_IR_form' enctype="multipart/form-data">
-                            {{ csrf_field()}}
-                            <div class="row" style='padding-left:10px;padding-right:10px'>
-                                <div class="col-md-12">
-                                    <h6 class="c-grey-900">Incident Report</h6>
-                                    <div class="mT-30">
-                                        <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label ">Report Description: </label>
-                                            <div class="col-sm-8">
-                                                <textarea rows="5" cols="60" name="description" id="description" type="text"
-                                                    class="form-control" placeholder="File Here"></textarea>
-                                                <!-- <button  type="button" id="IR_email" class=" btn btn-info ti-email pull-right"></button> -->
-                                            </div>
-
+                <div class="modal-body">
+                <div class="alert alert-danger" style="display:none"></div>
+                    <form method="POST"  id='add_IR_form'  enctype="multipart/form-data">
+                         {{ csrf_field()}}
+                        <div class="row" style='padding-left:10px;padding-right:10px'>
+                            <div class="col-md-12">
+                                <h6 class="c-grey-900">Incident Report</h6>
+                                <div class="mT-30">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label ">Report Description: </label>
+                                        <div class="col-sm-9">
+                                           <textarea rows="5" cols="60" name="description" id="description" type="text" class="form-control" placeholder="File Here"></textarea>
+                                            <!-- <button  type="button" id="IR_email" class=" btn btn-info ti-email pull-right"></button> -->
                                         </div>
 
 
