@@ -12,6 +12,7 @@ use App\UserBenefit;
 use App\AccessLevelHierarchy;
 use App\AccessLevel;
 use Mail;
+use Carbon\Carbon;
 
 
 class EmployeeController extends Controller
@@ -278,6 +279,7 @@ class EmployeeController extends Controller
     public function update_status(Request $request){
         $user = UserInfo::where('id', $request->status_id)->first();
         $user->status = $request->status_data;
+        $user->separation_date = Carbon::now();
         $user->save();
         $account = User::where('uid', '=',$request->status_id)
                    ->first(); 
