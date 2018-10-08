@@ -233,6 +233,7 @@ $(document).on("click", ".view-employee", function(){
 
 $(document).on("click", "#prevProfile", function(){
     id = prevProfiles[prevProfiles.length-2];
+    $('#profile-edit-button').attr('data-id',id);
     if(prevProfiles.length > 1){
         $.ajax({
             url: "/viewProfile",
@@ -440,7 +441,11 @@ $(document).on('change','#position',function(){
 //display input file image before upload on change
 $("#photo").change(function() {
     readURL(this);
-    console.log(this);
+    // console.log(this);
+});
+$(document).on('change','#excel_file',function() {
+    $('#excel-file-label').removeClass('btn-secondary').addClass('btn-info');
+    $('#excel-file-label').html('File Selected');
 });
 
 //ajax request for CU action on from submission
@@ -534,17 +539,21 @@ $(document).on("click","#employee-form-submit", function(e) {
 //preload data on employee form on action add/update button click
 $(document).on('click','.form-action-button',function(){
     $('#action').val($(this).data('action'));
+    var access_id = $('#logged-position').val();
+    var id = $(this).attr('data-id');
+    $('#role').val(access_id);
+    $('.admin-hidden-field').show();
     if($(this).data('action')=='edit'){
-        var id = $(this).attr('data-id');
+        
         $('#employee-form-submit')[0].disabled=true;
         $('#employee-form-submit').html('Loading...');
         $('#employee-id').val(id);
         fetch_edit_data(id);
-        if($(this).data('portion')=='table'){
-            $('#position option[value="1"]').css('display','none');
-        }else if($(this).data('portion')=='profile'){
-            if($('#logged-access-id').val()>1){
-                $('#position option[value="1"]').css('display','none');
+        if($(this).attr('data-portion')=='table'){
+            // $('#position option[value="1"]').css('display','none');
+        }else if($(this).attr('data-portion')=='profile'){
+            if(id==1){
+                $('.admin-hidden-field').hide();
             }
         }
     }else if($(this).data('action')=='add'){
@@ -712,6 +721,10 @@ $(document).on('click','.excel-action-button', function(){
     if($(this).attr('data-action')=='import'){
        $('#action-export').hide();
        $('#excel-modal-header').html('Import');
+       $('#excel-file-label').html('Select Excel File.');
+       $('$excel_file').val("");
+       $('#excel-file-label').removeClass('btn-info').addClass('btn-secondary');
+       
     }else{
         $('#action-import').hide();
         $('#excel-form-submit').hide();
@@ -732,23 +745,31 @@ $(document).on('click','#excel-form-submit',function(e){
         processData: false,
         success:function(result)
         {
-            swal({
-                title: '<strong>Import Report</strong>',
-                type: 'info',
-                html:
-                '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
-                '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
-                '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
+            // alert(result+"success");
+            if(result=='outdated'){
+                swal({title:'Outdated Template',text:'Please use updated template or download new template.'})
+            }else{
+                swal({
+                    title: '<strong>Import Report</strong>',
+                    type: 'info',
+                    html:
+                    '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
+                    '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>'+
+                    '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
+                    '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
+                    
+                    focusConfirm: false,
+                    confirmButtonText:
+                    '<i class="fa fa-thumbs-up"></i> Noted!',
+                    confirmButtonAriaLabel: 'Thumbs up, great!',
                 
-                focusConfirm: false,
-                confirmButtonText:
-                '<i class="fa fa-thumbs-up"></i> Noted!',
-                confirmButtonAriaLabel: 'Thumbs up, great!',
-            
-            })
-            $('#excel-modal').modal('hide');
+                })
+                $('#excel-modal').modal('hide');
+            }
         },
         error: function (data) {
+            alert(result+"success");
+
             swal("Error","Please upload xlsx or xls file.")
         }
     })

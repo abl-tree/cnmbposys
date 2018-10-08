@@ -42,7 +42,7 @@
                             <br>
                             TIN:&nbsp;<span id="tin_P">{{ !empty($profile->benefits[3]->id_number) ? $profile->benefits[3]->id_number : 'N/A' }}</span>
                             <br>
-                            <br>                
+                            <br>
                             @if(isAdmin())
                             <button type="submit" class="btn cur-p btn-dark form-action-button" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
                             @endif

@@ -61,6 +61,11 @@ class EmployeeController extends Controller
         $email="";
         $fullname_hash = strtolower($request->first_name.$request->middle_name.$request->last_name);
         $excel_hash = UserInfo::all()->pluck('excel_hash')->toArray();
+        $admin_designation = "required";
+        $role = $request->role;
+        if($role==1){
+            $admin_designation="";
+        }
         
 
         ////////////////////////if
@@ -100,7 +105,7 @@ class EmployeeController extends Controller
             'email' => $email,
             'position' => 'required',
             'salary' => 'required',
-            'designation'=>'required',
+            'designation'=>$admin_designation,
             'hired_date'=>'required',
             'photo'=>'image|max:2000',
         ]);
@@ -234,7 +239,7 @@ class EmployeeController extends Controller
                     ->join('access_levels','users.access_id','=','access_levels.id')
                     ->join('user_infos','user_infos.id','=','users.uid')
                     ->select('user_infos.id','user_infos.firstname','user_infos.lastname','user_infos.middlename','access_levels.name as accesslevelname')
-                    ->where('access_levels.id','=',$parentLevel)
+                    ->where([['access_levels.id','=',$parentLevel],['user_infos.status','!=','Terminated']])
                     ->get();
         $output="";
         if($data->count()>0){
@@ -245,7 +250,11 @@ class EmployeeController extends Controller
                 }
             }
         }else{
-            $output .= '<option value="">NA</option>';
+            $val = "";
+            if($userposition==1){
+                $val=null;
+            }
+            $output .= '<option value="'.$val.'">NA</option>';
         }
         
         echo $output;
