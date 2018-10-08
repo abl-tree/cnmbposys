@@ -59,7 +59,12 @@ var employeetable = $('#employee').DataTable({
 }); 
  
 $( document ).ready(function() {
-  
+    $('#showAll').prop("disabled",true);
+    $('#showChild').prop("disabled",true);
+    $('#showTerminated').prop("disabled",true);
+    $('#import').prop("disabled",true);
+    $('#export').prop("disabled",true);
+    $('#addflag').prop("disabled",true);
     $.ajax({
         url: "/logstat",
         method: 'get',
@@ -68,18 +73,27 @@ $( document ).ready(function() {
             if(data.flagerino == 0){
             $('#update_password_modal').modal('show');
             }
+            else{
+                $('#showAll').prop("disabled",false);
+                $('#showChild').prop("disabled",false);
+                $('#showTerminated').prop("disabled",false);
+                $('#import').prop("disabled",false);
+                $('#export').prop("disabled",false);
+                $('#addflag').prop("disabled",false);
+            }
            // alert( data.flagerino ); 
         }
     });
 });
 
 $(document).on("click", ".submit_pass", function(){
+    
+    
+    if($('#pass').val()!=""){
     var input = $(this);
     var button =this;
     button.disabled = true;
     input.text('Saving'); 
-    
-    
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -92,6 +106,12 @@ $(document).on("click", ".submit_pass", function(){
             button.disabled = false;
             input.html('Confirm');
             swal("Success!", "Password Changed.", "success")
+            $('#showAll').prop("disabled",false);
+            $('#showChild').prop("disabled",false);
+            $('#showTerminated').prop("disabled",false);
+            $('#import').prop("disabled",false);
+            $('#export').prop("disabled",false);
+            $('#addflag').prop("disabled",false);
             $('#update_password_modal').modal('hide');
           
         },
@@ -101,6 +121,10 @@ $(document).on("click", ".submit_pass", function(){
             input.html('SAVE CHANGES');
         }
     })
+    }
+    else{
+        swal("Oh no!", "Please provide a valid password.", "error")
+    }
 });
 //PROFILE EMPLOYEE LIST -- END
 

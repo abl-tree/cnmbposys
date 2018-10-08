@@ -14,9 +14,13 @@
                                 <img id="profile-image-display" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.$profile->image : '/images/nobody.jpg'}}">
                                 
                             </div>
-                            <h2><span id="name_P">{{ $profile->firstname." ".$profile->middlename." ".$profile->lastname }}</span><br>
+                            <h5><span id="name_P">{{ $profile->firstname." ".$profile->middlename." ".$profile->lastname }}</span>
+                            </h5>
+                            <span class="maoni">
                             <span id="role_P">{{ $role->name }}</span>
-                            </h2>
+                            </span>
+                            <br>
+                            <br>
                             Birthday:&nbsp;<span id="birth_P"> {{ $profile->birthdate }}</span>
                             <br>
                             Gender:&nbsp;<span id="gender_P">{{ $profile->gender }}</span>
@@ -29,7 +33,7 @@
                             <br>
                             Date Hired:&nbsp;<span id="hired_P">{{ $profile->hired_date }}</span>
                             <br>
-                            <br>
+                        
                             SSS:&nbsp;<span id="sss_P">{{ !empty($profile->benefits[0]->id_number) ? $profile->benefits[0]->id_number : 'N/A' }}</span>
                             <br>
                             Philhealth:&nbsp;<span id="philhealth_P">{{ !empty($profile->benefits[1]->id_number) ? $profile->benefits[1]->id_number : 'N/A' }}</span>
@@ -38,8 +42,7 @@
                             <br>
                             TIN:&nbsp;<span id="tin_P">{{ !empty($profile->benefits[3]->id_number) ? $profile->benefits[3]->id_number : 'N/A' }}</span>
                             <br>
-                            <br>
-                            
+                            <br>                
                             @if(isAdmin())
                             <button type="submit" class="btn cur-p btn-dark form-action-button" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
                             @endif
@@ -69,11 +72,11 @@
 
                     @if(isAdminHR())
                     <div class="btn-group">
-                    <button type="input" class="btn cur-p btn-info excel-action-button" data-action="import"><span class="ti-upload"></span></button>
-                    <button type="input" class="btn cur-p btn-info excel-action-button" data-action="export"><span class="ti-download"></span></button>
+                    <button type="input" class="btn cur-p btn-info excel-action-button"  id ="import" data-action="import"><span class="ti-upload"></span></button>
+                    <button type="input" class="btn cur-p btn-info excel-action-button"  id ="export" data-action="export"><span class="ti-download"></span></button>
                     </div>
 
-                    <button type="submit" class="btn cur-p btn-dark form-action-button" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span> Add</button>
+                    <button type="submit" class="btn cur-p btn-dark form-action-button" id="addflag" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span> Add</button>
                     @endif
                 </div>
 
