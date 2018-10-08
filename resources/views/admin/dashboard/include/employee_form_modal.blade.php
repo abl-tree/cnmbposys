@@ -228,7 +228,7 @@ Modal  -->
                                 <div class="mT-30">
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label ">Report Description: </label>
-                                        <div class="col-sm-8">
+                                        <div class="col-sm-9">
                                            <textarea rows="5" cols="60" name="description" id="description" type="text" class="form-control" placeholder="File Here"></textarea>
                                             <!-- <button  type="button" id="IR_email" class=" btn btn-info ti-email pull-right"></button> -->
                                         </div>
