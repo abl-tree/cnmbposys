@@ -130,7 +130,7 @@ class EmployeeController extends Controller
         if($request->hasFile('photo')){
             $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
             $userinfo->image_ext= explode(".", strtolower($_FILES['photo']['name']))[1];
-            $userinfo->image = base64_encode($binaryfile);
+            $userinfo->image = 'data:image/'.explode(".", strtolower($_FILES['photo']['name']))[1].';base64, '.base64_encode($binaryfile);
             $userinfo->save();
         }
         if($request->captured_photo){
@@ -171,7 +171,7 @@ class EmployeeController extends Controller
         
         $check = $access_level_hierarchy->save();
         if($check){
-            return response()->json(['success'=>'Record is successfully added']);
+            return response()->json(['success'=>'Record is successfully added','image'=>$userinfo->image]);
         }
     }
 
@@ -224,7 +224,6 @@ class EmployeeController extends Controller
 
 
     //fetching designation dynamic data
-    
 
     function fetch(Request $request)
     {
@@ -266,24 +265,14 @@ class EmployeeController extends Controller
     function fetch_employee_data(Request $request){
         $id = $request->id;
         $data=[];
-        $data['userinfo'] = UserInfo::select('id','firstname','middlename','lastname','birthdate','gender','address','contact_number','salary_rate', 'status','hired_date')->find($id);
+        $data['userinfo'] = UserInfo::find($id);
         $data['user'] = User::where('uid','=',$id)->get();
         $data['userbenefit'] = UserBenefit::where('user_info_id','=',$id)->get();
         $data['accesslevelhierarchy'] = AccessLevelHierarchy::where('child_id','=',$id)->get();
         return json_encode($data);
     }
 
-    function fetch_blob_image(Request $request){
-        $id = $request->id;
-        $data = UserInfo::select('image','image_ext')->find($id);
-        if($data->image_ext!="" && !strpos($data->image,';base64')){
-            echo 'data:image/'.$data->image_ext.';base64, '.$data->image;
-        }else if(strpos($data->image,';base64')!== false){
-            echo 'data:image/'.$data->image_ext.$data->image;
-        }else{
-            echo 'no result';
-        }
-    }
+   
 
     public function update_status(Request $request){
         $user = UserInfo::where('id', $request->status_id)->first();
