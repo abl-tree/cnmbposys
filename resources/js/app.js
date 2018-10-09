@@ -214,8 +214,19 @@ $(document).on("click", ".view-employee", function(){
                         d.id = id;	
                     }
                 },
+                autoWidth: false,
                 columns: [
                     {data: 'child_info.id', name: 'id'},
+                    {
+                        width: '10%',
+                        data: 'child_info.image', 
+                        name: 'image',
+                        render: function( data, type, row, meta ) {
+                            if(data)
+                            return '<img src="'+data+'">';
+                            else return '<img src="/images/nobody.jpg">';
+                        }
+                    },
                     {data: 'name', name: 'name'},
                     {data: 'child_info.user.access.name', name: 'position'},
                     {data: 'child_info.birthdate', name: 'birthdate'},
@@ -256,8 +267,19 @@ $(document).on("click", "#prevProfile", function(){
                                 d.id = id;	
                             }
                         },
+                        autoWidth: false,
                         columns: [
                             {data: 'child_info.id', name: 'id'},
+                            {
+                                width: '10%',
+                                data: 'child_info.image', 
+                                name: 'image',
+                                render: function( data, type, row, meta ) {
+                                    if(data)
+                                    return '<img src="'+data+'">';
+                                    else return '<img src="/images/nobody.jpg">';
+                                }
+                            },
                             {data: 'name', name: 'name'},
                             {data: 'child_info.user.access.name', name: 'position'},
                             {data: 'child_info.birthdate', name: 'birthdate'},
@@ -284,8 +306,19 @@ $(document).on("click", "#prevProfile", function(){
                                 d.id = id;	
                             }
                         },
+                        autoWidth: false,
                         columns: [
                             {data: 'child_info.id', name: 'id'},
+                            {
+                                width: '10%',
+                                data: 'child_info.image', 
+                                name: 'image',
+                                render: function( data, type, row, meta ) {
+                                    if(data)
+                                    return '<img src="'+data+'">';
+                                    else return '<img src="/images/nobody.jpg">';
+                                }
+                            },
                             {data: 'name', name: 'name'},
                             {data: 'child_info.user.access.name', name: 'position'},
                             {data: 'child_info.birthdate', name: 'birthdate'},
@@ -329,8 +362,19 @@ $(document).on("click", "#showAll", function(){
             "className": "text-center",
         }],
         ajax: "/refreshEmployeeList",
+        autoWidth: false,
         columns: [
             {data: 'child_info.id', name: 'id'},
+            {
+                width: '10%',
+                data: 'child_info.image', 
+                name: 'image',
+                render: function( data, type, row, meta ) {
+                    if(data)
+                    return '<img src="'+data+'">';
+                    else return '<img src="/images/nobody.jpg">';
+                }
+            },
             {data: 'name', name: 'name'},
             {data: 'child_info.user.access.name', name: 'position'},
             {data: 'child_info.birthdate', name: 'birthdate'},
@@ -357,8 +401,19 @@ $(document).on("click", "#showChild", function(){
             "className": "text-center",
         }],
         ajax: "/childView",
+        autoWidth: false,
         columns: [
             {data: 'child_info.id', name: 'id'},
+            {
+                width: '10%',
+                data: 'child_info.image', 
+                name: 'image',
+                render: function( data, type, row, meta ) {
+                    if(data)
+                    return '<img src="'+data+'">';
+                    else return '<img src="/images/nobody.jpg">';
+                }
+            },
             {data: 'name', name: 'name'},
             {data: 'child_info.user.access.name', name: 'position'},
             {data: 'child_info.birthdate', name: 'birthdate'},
@@ -385,15 +440,26 @@ $(document).on("click", "#showTerminated", function(){
             "className": "text-center",
         }],
         ajax: "/terminatedView",
+        autoWidth: false,
         columns: [
-            {data: 'id', name: 'id'},
+            {data: 'child_info.id', name: 'id'},
+            {
+                width: '10%',
+                data: 'child_info.image', 
+                name: 'image',
+                render: function( data, type, row, meta ) {
+                    if(data)
+                    return '<img src="'+data+'">';
+                    else return '<img src="/images/nobody.jpg">';
+                }
+            },
             {data: 'name', name: 'name'},
-            {data: 'user.access.name', name: 'position'},
-            {data: 'birthdate', name: 'birthdate'},
-            {data: 'gender', name: 'gender'},
-            {data: 'contact_number', name: 'contact_number'},
-            {data: 'address', name: 'address'},
-            {data: "employee_status", name: 'status'},
+            {data: 'child_info.user.access.name', name: 'position'},
+            {data: 'child_info.birthdate', name: 'birthdate'},
+            {data: 'child_info.gender', name: 'gender'},
+            {data: 'child_info.contact_number', name: 'contact_number'},
+            {data: 'child_info.address', name: 'address'},
+            {data: "employee_status"},
             {data: "action", orderable:false,searchable:false}
         ]
     });

@@ -12,12 +12,10 @@
                             <!-- an ID that has _P at the end means that it is for the profile of a specific person being outputted on the left -->
                             <div class="img">
                                 <img id="profile-image-display" src="{{ ($profile->image_ext != '')? 'data:image/'.$profile->image_ext.';base64,'.$profile->image : '/images/nobody.jpg'}}">
-                                
                             </div>
-                            <h5><span id="name_P">{{ $profile->firstname." ".$profile->middlename." ".$profile->lastname }}</span>
-                            </h5>
+                            <h5><span id="name_P">{{ $profile->firstname." ".$profile->middlename." ".$profile->lastname }}</span></h5>
                             <span class="maoni">
-                            <span id="role_P">{{ $role->name }}</span>
+                                <span id="role_P">{{ $role->name }}</span>
                             </span>
                             <br>
                             <br>
@@ -53,7 +51,6 @@
         </div>
         <div class="email-wrapper ">
             <!-- Content -->
-            
             <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20">Employee list</h4> 
 
@@ -72,8 +69,8 @@
 
                     @if(isAdminHR())
                     <div class="btn-group">
-                    <button type="input" class="btn cur-p btn-info excel-action-button"  id ="import" data-action="import"><span class="ti-upload"></span></button>
-                    <button type="input" class="btn cur-p btn-info excel-action-button"  id ="export" data-action="export"><span class="ti-download"></span></button>
+                        <button type="input" class="btn cur-p btn-info excel-action-button"  id ="import" data-action="import"><span class="ti-upload"></span></button>
+                        <button type="input" class="btn cur-p btn-info excel-action-button"  id ="export" data-action="export"><span class="ti-download"></span></button>
                     </div>
 
                     <button type="submit" class="btn cur-p btn-dark form-action-button" id="addflag" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span> Add</button>
@@ -96,6 +93,7 @@
                         </tr>
                     </thead>
                 </table>
+            </div>
         </div>
     </div>
 </div>
