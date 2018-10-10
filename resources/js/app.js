@@ -184,8 +184,13 @@ function replaceProfile(data){
     $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
     $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
     $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
+    $('#profile-image-display').prop('src',data.profile.image)
 
-    fetch_blob_image(data.profile.id,'profile-image-display');
+    if(data.profile.image!=null){
+        $('#profile-image-display').prop('src',data.profile.image)
+    }else{
+        $('#profile-image-display').prop('src','/images/nobody.jpg')
+    }
 }
 
 $(document).on("click", ".view-employee", function(){
@@ -534,7 +539,7 @@ $(document).on("click","#employee-form-submit", function(e) {
             success: function(result){
                 if(result.errors){
                     $('.alert-danger').html('');
-                    console.log(result.errors);
+                    // console.log(result.errors);
                     var compact_req_msg='false'; //compact required message
                     var unique_email_msg='false';
                     var unique_name_msg='false';
@@ -592,10 +597,19 @@ $(document).on("click","#employee-form-submit", function(e) {
                     input.html('Confirm'); 
                 }else{ 
                     swal("Success!", "Your work has been saved", "success")
-                    employee_form_reset();
-                    refresh_employee_table(); // ben
+                    
                     button.disabled=false;
                     input.html('Confirm'); 
+                    if($('#action').val()=='edit'){
+                        if($('#portion').val()=='profile'){
+                            if($('#employee-id').val() == 1){
+                                $('#top-image-display').attr('src',result.image);
+                            }
+                            $('#profile-image-display').attr('src',result.image);
+                        }
+                    }
+                    refresh_employee_table(); // ben
+                    employee_form_reset();
                 }
             }
         });
@@ -604,29 +618,29 @@ $(document).on("click","#employee-form-submit", function(e) {
 
 //preload data on employee form on action add/update button click
 $(document).on('click','.form-action-button',function(){
-    $('#action').val($(this).data('action'));
+    var action = $(this).attr('data-action');
+    $('#action').val(action);
     var access_id = $('#logged-position').val();
     var id = $(this).attr('data-id');
     $('#role').val(access_id);
     $('.admin-hidden-field').show();
-    if($(this).data('action')=='edit'){
-        
+    if(action=='edit'){
+        var portion = $(this).attr('data-portion');
+        $('#portion').val(portion);
         $('#employee-form-submit')[0].disabled=true;
         $('#employee-form-submit').html('Loading...');
         $('#employee-id').val(id);
         fetch_edit_data(id);
-        if($(this).attr('data-portion')=='table'){
-            // $('#position option[value="1"]').css('display','none');
-        }else if($(this).attr('data-portion')=='profile'){
+        if(portion=='profile'){
             if(id==1){
                 $('.admin-hidden-field').hide();
             }
         }
-    }else if($(this).data('action')=='add'){
-        console.log($('#position').val());
+    }else if(action=='add'){
+        // console.log($('#position').val());
         fetch($('#position').val());
     }
-    $('#employee-form-modal-header-title').html(ucword($(this).data('action')));
+    $('#employee-form-modal-header-title').html(ucword(action));
     $('#employee-form-modal').modal('show');
 });
  
@@ -750,7 +764,7 @@ $(document).on('click','#submit_status',function(event){
         },
         error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error");
-            console.log(data)
+            // console.log(data)
             button.disabled = false;
             input.html('Confirm');
         }
@@ -788,7 +802,7 @@ $(document).on('click','.excel-action-button', function(){
        $('#action-export').hide();
        $('#excel-modal-header').html('Import');
        $('#excel-file-label').html('Select Excel File.');
-       $('$excel_file').val("");
+       $('#excel_file').val("");
        $('#excel-file-label').removeClass('btn-info').addClass('btn-secondary');
        
     }else{
@@ -861,14 +875,14 @@ function employee_form_reset(){
 }
 //display photo before upload
 function readURL(input) {
-    console.log(input);
+    // console.log(input);
 
     var reader = new FileReader();
     if (input.files && input.files[0]) {
       
       reader.onload = function(e) {
         $('#upload-image-display').attr('src', e.target.result);
-         console.log($('#photo').attr());
+        //  console.log($('#photo').attr());
       }
       reader.readAsDataURL(input.files[0]);
     }else{
@@ -876,7 +890,7 @@ function readURL(input) {
          $('#captured_photo').val( input);
 
     }
-    console.log($('#captured_photo').val());
+    // console.log($('#captured_photo').val());
 }
   
 //ucword
@@ -895,7 +909,7 @@ function fetch(a_position,u_position,eid){
         success:function(result)
         {
             $('#designation').html(result);
-           console.log(eid);
+        //    console.log(eid);
 
         }
     })
@@ -929,7 +943,12 @@ function fetch_edit_data(id){
              $('#salary').val(result.userinfo.salary_rate);
              $('#hired_date').val(result.userinfo.hired_date);
              fetch(result.user[0].access_id,"","");
-             fetch_blob_image(result.userinfo.id,'upload-image-display');
+             if(result.userinfo.image!=null){
+                $('#upload-image-display').attr('src',result.userinfo.image);
+             }else{
+                $('#upload-image-display').attr('src','/images/nobody.jpg');
+             }
+             
             var designation = function(){
                 $('#designation option[value="'+result.accesslevelhierarchy[0].parent_id+'"]').prop('selected',true);
                 $('#employee-form-submit')[0].disabled=false;
@@ -943,23 +962,6 @@ function fetch_edit_data(id){
 function refresh_employee_table(){
     employeetable.ajax.reload(); //reload datatable ajax
 } 
-
-function fetch_blob_image(id,element){
-    $.ajax({
-        url:"employee/fetch_blob_image",
-        method:"POST",
-        data:{id:id},
-        success:function(result)
-        {
-            var img ="/images/nobody.jpg";
-            if(result!='no result'){
-                img = result;
-            }
-            $('#'+element).attr('src',img);
-        }
-    })
-}
-
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -1126,7 +1128,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayErrorMessage(error_msg, error) {
         error = error || "";
         if(error){
-            console.error(error);
+            // console.error(error);
         }
 
         error_message.innerText = error_msg;

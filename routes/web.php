@@ -40,7 +40,6 @@ Route::group([ 'middleware'=>['auth']], function () {
     Route::resource('employee','EmployeeController');
     Route::post('employee/fetch','EmployeeController@fetch');
     Route::post('employee/fetch_employee_data','EmployeeController@fetch_employee_data');
-    Route::post('employee/fetch_blob_image','EmployeeController@fetch_blob_image');
 
     //CU EMPLOYEE -- END
 

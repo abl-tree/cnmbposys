@@ -380,7 +380,7 @@ Modal -->
                 <h4 class="modal-title"><small id="excel-modal-header">Import<span></span> Excel</small></h4>
             </div>
             <div class="modal-body">
-                <form method="POST" id='import-excel-form'>
+                <form method="GET" id='import-excel-form'>
                     {{ csrf_field()}}
                     <center>
                         <div id="action-import">
