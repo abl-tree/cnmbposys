@@ -164,7 +164,7 @@ Modal -->
                                         </label>
                                         <input name="photo" id="photo" type="file" style="display:none" />
                                         <input name="captured_photo" id="captured_photo" type="text" value="" style="display:none" />
-                                        <button id="start-camera" class="btn ti-camera"> Use Camera</button>
+                                        <button id="start-camera" class="btn btn-primary "><span class="ti-camera"></span>&nbsp; Take a photo</button>
                                     </div>
 
                                 </div>

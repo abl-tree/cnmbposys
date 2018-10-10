@@ -21,7 +21,7 @@
       <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv" style='background-image: url("/images/finalbanner.png")'>
      
       <div class="pos-a centerXY">
-          <div class="bgc-white bdrs-50p pos-r" style='width: 180px; height: 180px;'>
+          <div class="bgc-white bdrs-50p pos-r" style='width: 170px; height: 170px;'>
             <img class="pos-a centerXY" src="/images/cnmfinal.png" style="width:130px; height:88px" alt="">
           </div>
         </div>
