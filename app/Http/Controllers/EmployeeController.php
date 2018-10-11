@@ -104,7 +104,7 @@ class EmployeeController extends Controller
             'contact' => 'required',
             'email' => $email,
             'position' => 'required',
-            'salary' => 'required',
+            // 'salary' => 'required',
             'designation'=>$admin_designation,
             'hired_date'=>'required',
             'photo'=>'image|max:2000',
@@ -171,7 +171,7 @@ class EmployeeController extends Controller
         
         $check = $access_level_hierarchy->save();
         if($check){
-            return response()->json(['success'=>'Record is successfully added','image'=>$userinfo->image]);
+            return response()->json(['success'=>'Record is successfully added','info'=>$userinfo,'user'=>$user,'benefit'=>UserBenefit::where('user_info_id',$request->id)->get()]);
         }
     }
 
