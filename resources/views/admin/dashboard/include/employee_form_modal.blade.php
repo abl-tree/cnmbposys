@@ -1,4 +1,4 @@
-Modal -->
+
 <!-- emman update -->
 <div id="employee-form-modal" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
     <div class="modal-dialog modal-lg">

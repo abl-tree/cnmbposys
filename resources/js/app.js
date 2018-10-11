@@ -54,8 +54,8 @@ var employeetable = $('#employee').DataTable({
             name: 'image',
             render: function( data, type, row, meta ) {
                 if(data)
-                return '<img src="'+data+'">';
-                else return '<img src="/images/nobody.jpg">';
+                return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
             }
         },
         {data: 'name', name: 'name'},
@@ -228,8 +228,8 @@ $(document).on("click", ".view-employee", function(){
                         name: 'image',
                         render: function( data, type, row, meta ) {
                             if(data)
-                            return '<img src="'+data+'">';
-                            else return '<img src="/images/nobody.jpg">';
+                            return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                            else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                         }
                     },
                     {data: 'name', name: 'name'},
@@ -281,8 +281,8 @@ $(document).on("click", "#prevProfile", function(){
                                 name: 'image',
                                 render: function( data, type, row, meta ) {
                                     if(data)
-                                    return '<img src="'+data+'">';
-                                    else return '<img src="/images/nobody.jpg">';
+                                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                                 }
                             },
                             {data: 'name', name: 'name'},
@@ -320,8 +320,8 @@ $(document).on("click", "#prevProfile", function(){
                                 name: 'image',
                                 render: function( data, type, row, meta ) {
                                     if(data)
-                                    return '<img src="'+data+'">';
-                                    else return '<img src="/images/nobody.jpg">';
+                                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                                 }
                             },
                             {data: 'name', name: 'name'},
@@ -376,8 +376,8 @@ $(document).on("click", "#showAll", function(){
                 name: 'image',
                 render: function( data, type, row, meta ) {
                     if(data)
-                    return '<img src="'+data+'">';
-                    else return '<img src="/images/nobody.jpg">';
+                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                 }
             },
             {data: 'name', name: 'name'},
@@ -415,8 +415,8 @@ $(document).on("click", "#showChild", function(){
                 name: 'image',
                 render: function( data, type, row, meta ) {
                     if(data)
-                    return '<img src="'+data+'">';
-                    else return '<img src="/images/nobody.jpg">';
+                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                 }
             },
             {data: 'name', name: 'name'},
@@ -454,8 +454,8 @@ $(document).on("click", "#showTerminated", function(){
                 name: 'image',
                 render: function( data, type, row, meta ) {
                     if(data)
-                    return '<img src="'+data+'">';
-                    else return '<img src="/images/nobody.jpg">';
+                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                 }
             },
             {data: 'name', name: 'name'},
@@ -603,9 +603,21 @@ $(document).on("click","#employee-form-submit", function(e) {
                     if($('#action').val()=='edit'){
                         if($('#portion').val()=='profile'){
                             if($('#employee-id').val() == 1){
-                                $('#top-image-display').attr('src',result.image);
+                                $('#top-image-display').attr('src',result.info.image);
                             }
-                            $('#profile-image-display').attr('src',result.image);
+                            $('#profile-image-display').attr('src',result.info.image);
+                            $('#contact_P').html(result.info.contact_number);
+                            $('#email_P').html(result.user.email);
+                            $('#address_P').html(result.info.address);
+                            $('#sss_P').html(result.benefit[0].id_number);
+                            $('#philhealth_P').html(result.benefit[1].id_number);
+                            $('#pagibig_P').html(result.benefit[2].id_number);
+                            $('#tin_P').html(result.benefit[3].id_number);
+                            $('#birth_P').html(result.info.birthdate);
+                            $('#hired_P').html(result.info.hired_date);
+                            $('#name_P').html(result.info.firstname+" "+result.info.middlename+" "+result.info.lastname);
+
+                            // $('#profile-image-display').attr('src',result.image);
                         }
                     }
                     refresh_employee_table(); // ben
@@ -630,6 +642,7 @@ $(document).on('click','.form-action-button',function(){
         $('#employee-form-submit')[0].disabled=true;
         $('#employee-form-submit').html('Loading...');
         $('#employee-id').val(id);
+
         fetch_edit_data(id);
         if(portion=='profile'){
             if(id==1){

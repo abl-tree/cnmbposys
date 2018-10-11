@@ -8,7 +8,7 @@
 						<div class="peers ai-c fxw-nw">
 							<div class="peer">
 								<div class="logo ni">
-									<img src="/images/cnmfinal.png" alt="">
+									<img src="/images/cnmfinal.png" alt="" style="padding-left:5px;padding-right:5px;">
 								</div>
 							</div>
 							<div class="peer peer-greed">
