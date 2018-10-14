@@ -16,7 +16,7 @@
 
         <div class='d-f jc-c fxd-c'>
             <h1 class='mB-30 fw-900 lh-1 c-red-500' style="font-size: 40px;">Wait, Hol' up!</h1>
-            <h3 class='mB-10 fsz-lg c-grey-900 tt-c'>Mandatory Password Reset</h3>
+            <h3 class='mB-10 fsz-lg c-grey-900 tt-c'>Mandatory Password Change</h3>
             <span class='mB-20 fsz-def c-grey-700'>Before you start pls change the default password so that hackers
                 won't
                 just guess your password.</span>
