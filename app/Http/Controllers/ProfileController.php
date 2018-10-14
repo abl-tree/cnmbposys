@@ -163,12 +163,14 @@ class ProfileController extends Controller
         $access_level = $user->access_id;
         $role = AccessLevel::find($access_level);
         $user = User::find($id);
+        $viewer = auth()->user()->access_id;
         $profile = UserInfo::with('benefits')->find($id);
 
         $output = array(
             'profile' => $profile,
             'role' => $role,
-            'user' => $user
+            'user' => $user,
+            'viewer' => $viewer
         );
         echo json_encode($output);
     }
@@ -177,6 +179,7 @@ class ProfileController extends Controller
         $id = auth()->user()->id;
         $access_level = auth()->user()->access_id;
         $role = AccessLevel::find($access_level);
+        $viewer = auth()->user()->access_id;
         $profile = UserInfo::with('benefits')->find($id);
         $user = User::find($id);
 
@@ -186,6 +189,7 @@ class ProfileController extends Controller
             'profile' => $profile,
             'role' => $role,
             'user' => $user,
+            'viewer' => $viewer
         );
         echo json_encode($output);
     }

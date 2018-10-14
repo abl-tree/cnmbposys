@@ -143,6 +143,7 @@ $(document).on("click", ".passChange", function(){
 var prevProfiles = [];
 var prevButton = $("#prevProfile");
 var currentTab;
+var showBenefits;
 
 //get id of current profile
 function getCurrentProfile(){
@@ -171,18 +172,28 @@ getCurrentTab();
 function replaceProfile(data){
     $("#name_P").html(data.profile.firstname + " " + data.profile.middlename + " " + data.profile.lastname)
     $("#role_P").html(data.role.name);
-    $("#birth_P").html(data.profile.birthdate);
     $("#gender_P").html(data.profile.gender);
     $("#contact_P").html(data.profile.contact_number);
     $("#address_P").html(data.profile.address);
     $("#email_P").html(data.user.email);
     $("#hired_P").html(data.profile.hired_date);
 
-    $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
-    $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
-    $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
-    $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
-    $('#profile-image-display').prop('src',data.profile.image)
+    if(data.viewer == 1 && data.viewer == 1 || showBenefits == 0){
+        $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
+        $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
+        $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
+        $("#tin_P").html(!!data.profile.benefits[3].id_number ? data.profile.benefits[3].id_number : 'N/A');
+        $('#profile-image-display').prop('src',data.profile.image);
+        $("#birth_P").html(data.profile.birthdate);
+    }
+    else{
+        $("#sss_P").html('N/A');
+        $("#philhealth_P").html('N/A');
+        $("#pagibig_P").html('N/A');
+        $("#tin_P").html('N/A');
+        $("#birth_P").html('N/A');
+        $('#profile-image-display').prop('src',data.profile.image);
+    }
 
     if(data.profile.image!=null){
         $('#profile-image-display').prop('src',data.profile.image)
@@ -195,6 +206,7 @@ $(document).on("click", ".view-employee", function(){
     id = $(this).attr("id");
     $('#profile-edit-button').attr('data-id',id);
     prevProfiles.push(id);
+    showBenefits = prevProfiles.length;
     $.ajax({
         url: "/viewProfile",
         method: 'get',
@@ -219,6 +231,7 @@ $(document).on("click", "#prevProfile", function(){
             dataType: 'json',
             data:{id:id},
             success:function(data){
+                showBenefits = prevProfiles.length - 2;
                 replaceProfile(data);
                 if(prevProfiles.length-2 == 0 && currentTab == 'showAll'){
                     initialize_employee_table("/refreshEmployeeList");
@@ -242,39 +255,41 @@ function backToProfile(){
         method: 'get',
         dataType: 'json',
         success:function(data){
+            showBenefits = 0;
             replaceProfile(data);
         }
     })
 }
 
 $(document).on("click", "#showAll", function(){
+    resetPrevButton();
     backToProfile();
 
     initialize_employee_table('/refreshEmployeeList');
     currentTab = 'showAll';
-    resetPrevButton();
 })
 
 $(document).on("click", "#showChild", function(){
+    resetPrevButton();
     backToProfile();
     
     initialize_employee_table("/childView");
 
     currentTab = 'childView';
-    resetPrevButton();
 })
 
 $(document).on("click", "#showTerminated", function(){
+    resetPrevButton();
     backToProfile();
 
     initialize_employee_table("/terminatedView");
 
     currentTab = 'showTerminated';
-    resetPrevButton();
 })
 
 
 function resetPrevButton(){
+    showBenefits = 0;
     prevProfiles = [];
     prevButton.prop('disabled', true);
     getCurrentProfile();
@@ -318,8 +333,6 @@ $(document).on('change','#excel_file',function() {
     $('#excel-file-label').removeClass('btn-secondary').addClass('btn-info');
     $('#excel-file-label').html('File Selected');
 });
-
-
 
 document.getElementById('photo').onchange = function(evt) {
 
