@@ -203,8 +203,7 @@ class ProfileController extends Controller
           $users->save();
     }
 
-    public function updateEmployeeList(Request $request){
-        $id = $request->get('id');
+    public function updateEmployeeList($id, Request $request){
         
         $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
         return $this->reloadDatatable($employeeList);

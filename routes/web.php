@@ -25,7 +25,7 @@ Route::group([ 'middleware'=>['auth']], function () {
     Route::get('/logstat', 'ProfileController@checkLoginStat')->name('logstat');
     Route::post('/updatePass', 'ProfileController@updatePassword')->name('updatePass');
     Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList');
-    Route::get('/updateEmployeeList', 'ProfileController@updateEmployeeList');
+    Route::get('/updateEmployeeList/{id}', 'ProfileController@updateEmployeeList');
     Route::get('/viewProfile', 'ProfileController@viewProfile');
     Route::get('/backToProfile', 'ProfileController@backToProfile');
     Route::get('/getCurrentProfile', 'ProfileController@getCurrentProfile');

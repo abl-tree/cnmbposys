@@ -37,44 +37,65 @@ var description;
 //end of global variables
 
 //PROFILE EMPLOYEE LIST -- START
+function initialize_employee_table(url){
 
-var employeetable = $('#employee').DataTable({
-    processing: true,
-    columnDefs: [{
-        "targets": "_all", // your case first column
-        "className": "text-center",
-    }],
-    ajax: "/refreshEmployeeList",
-    autoWidth: false,
-    order: [ 2 , 'desc' ],
-    columns: [
-        {data: 'id', name: 'id'},
-        {
-            width: '10%',
-            data: 'child_info.image', 
-            name: 'image',
-            render: function( data, type, row, meta ) {
-                if(data)
-                return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
-            }
-        },
-        {data: 'name', name: 'name'},
-        {data: 'child_info.user.access.name', name: 'position'},
-        {data: 'child_info.birthdate', name: 'birthdate'},
-        {data: 'child_info.gender', name: 'gender'},
-        {data: 'child_info.contact_number', name: 'contact_number'},
-        {data: 'child_info.address', name: 'address'},
-        {data: "employee_status"},
-        {data: "action", orderable:false,searchable:false}
-    ],
-    createdRow: function ( row, data, index ) {
-        if ( !data['parent_id'] ) {
-            // $('td', row).eq(2).css("background-color", "#FF9999");
-            // $('td', row).eq(3).css("background-color", "#FF9999");
-        }
+    if(url == "/terminatedView"){
+        image = "image";
+        position = "user.access.name";
+        birthdate = "birthdate";
+        gender = "gender";
+        contact_number = "contact_number";
+        address = "address";
+    }else{
+        image = "child_info.image"
+        position = "child_info.user.access.name";
+        birthdate = "child_info.birthdate";
+        gender = "child_info.gender";
+        contact_number = "child_info.contact_number";
+        address = "child_info.address";
     }
-}); 
+
+    employeetable = $('#employee').DataTable({
+        destroy: true,
+        processing: true,
+        columnDefs: [{
+            "targets": "_all", // your case first column
+            "className": "text-center",
+        }],
+        ajax: url,
+        autoWidth: false,
+        order: [ 2 , 'desc' ],
+        columns: [
+            {data: 'id', name: 'id'},
+            {
+                width: '10%',
+                data: image, 
+                name: 'image',
+                render: function( data, type, row, meta ) {
+                    if(data)
+                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
+                }
+            },
+            {data: 'name', name: 'name'},
+            {data: position, name: 'position'},
+            {data: birthdate, name: 'birthdate'},
+            {data: gender, name: 'gender'},
+            {data: contact_number, name: 'contact_number'},
+            {data: address, name: 'address'},
+            {data: "employee_status"},
+            {data: "action", orderable:false,searchable:false}
+        ],
+        createdRow: function ( row, data, index ) {
+            if ( !data['parent_id'] ) {
+                // $('td', row).eq(2).css("background-color", "#FF9999");
+                // $('td', row).eq(3).css("background-color", "#FF9999");
+            }
+        }
+    }); 
+}
+
+initialize_employee_table("/refreshEmployeeList");
  
 $( document ).ready(function() {
     $('#showAll').prop("disabled",true);
@@ -212,50 +233,7 @@ $(document).on("click", ".view-employee", function(){
         success:function(data){
             replaceProfile(data);
             
-            employeetable = $('#employee').DataTable({
-                destroy: true,
-                processing: true,
-                order: [ 2 , 'desc' ],
-                columnDefs: [{
-                    "targets": "_all", // your case first column
-                    "className": "text-center",
-        
-                }],
-                ajax: {
-                    "url": "/updateEmployeeList",
-                    "data": function(d){
-                        d.id = id;	
-                    }
-                },
-                autoWidth: false,
-                columns: [
-                    {data: 'id', name: 'id'},
-                    {
-                        width: '10%',
-                        data: 'child_info.image', 
-                        name: 'image',
-                        render: function( data, type, row, meta ) {
-                            if(data)
-                            return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                            else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
-                        }
-                    },
-                    {data: 'name', name: 'name'},
-                    {data: 'child_info.user.access.name', name: 'position'},
-                    {data: 'child_info.birthdate', name: 'birthdate'},
-                    {data: 'child_info.gender', name: 'gender'},
-                    {data: 'child_info.contact_number', name: 'contact_number'},
-                    {data: 'child_info.address', name: 'address'},
-                    {data: "employee_status"},
-                    {data: "action", orderable:false,searchable:false}
-                ],
-                createdRow: function ( row, data, index ) {
-                    if ( !data['parent_id'] ) {
-                        // $('td', row).eq(2).css("background-color", "#FF9999");
-                        // $('td', row).eq(3).css("background-color", "#FF9999");
-                    }
-                }
-            });
+            initialize_employee_table("/updateEmployeeList/"+id);
             prevButton.prop('disabled', false);
         }
     })
@@ -273,94 +251,10 @@ $(document).on("click", "#prevProfile", function(){
             success:function(data){
                 replaceProfile(data);
                 if(prevProfiles.length-2 == 0 && currentTab == 'showAll'){
-                    employeetable = $('#employee').DataTable({
-                        destroy: true,
-                        processing: true,
-                        order: [ 2 , 'desc' ],
-                        columnDefs: [{
-                            "targets": "_all", // your case first column
-                            "className": "text-center",
-                        }],
-                        ajax: {
-                            "url": "/refreshEmployeeList",
-                            "data": function(d){
-                                d.id = id;	
-                            }
-                        },
-                        autoWidth: false,
-                        columns: [
-                            {data: 'id', name: 'id'},
-                            {
-                                width: '10%',
-                                data: 'child_info.image', 
-                                name: 'image',
-                                render: function( data, type, row, meta ) {
-                                    if(data)
-                                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
-                                }
-                            },
-                            {data: 'name', name: 'name'},
-                            {data: 'child_info.user.access.name', name: 'position'},
-                            {data: 'child_info.birthdate', name: 'birthdate'},
-                            {data: 'child_info.gender', name: 'gender'},
-                            {data: 'child_info.contact_number', name: 'contact_number'},
-                            {data: 'child_info.address', name: 'address'},
-                            {data: "employee_status"},
-                            {data: "action", orderable:false,searchable:false}
-                        ],
-                        createdRow: function ( row, data, index ) {
-                            if ( !data['parent_id'] ) {
-                                // $('td', row).eq(2).css("background-color", "#FF9999");
-                                // $('td', row).eq(3).css("background-color", "#FF9999");
-                            }
-                        }
-                    });
+                    initialize_employee_table("/refreshEmployeeList");
                 }
                 else{//childView
-                    employeetable = $('#employee').DataTable({
-                        destroy: true,
-                        processing: true,
-                        order: [ 2 , 'desc' ],
-                        columnDefs: [{
-                            "targets": "_all", // your case first column
-                            "className": "text-center",
-                
-                        }],
-                        ajax: {
-                            "url": "/updateEmployeeList",
-                            "data": function(d){
-                                d.id = id;	
-                            }
-                        },
-                        autoWidth: false,
-                        columns: [
-                            {data: 'id', name: 'id'},
-                            {
-                                width: '10%',
-                                data: 'child_info.image', 
-                                name: 'image',
-                                render: function( data, type, row, meta ) {
-                                    if(data)
-                                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
-                                }
-                            },
-                            {data: 'name', name: 'name'},
-                            {data: 'child_info.user.access.name', name: 'position'},
-                            {data: 'child_info.birthdate', name: 'birthdate'},
-                            {data: 'child_info.gender', name: 'gender'},
-                            {data: 'child_info.contact_number', name: 'contact_number'},
-                            {data: 'child_info.address', name: 'address'},
-                            {data: "employee_status"},
-                            {data: "action", orderable:false,searchable:false}
-                        ],
-                        createdRow: function ( row, data, index ) {
-                            if ( !data['parent_id'] ) {
-                                $(row).css("background-color", "#FF9999");
-                            }
-                        }
-                    });
+                    initialize_employee_table("/updateEmployeeList/"+id);
                 }
                 
                 prevProfiles.pop();
@@ -386,45 +280,7 @@ function backToProfile(){
 $(document).on("click", "#showAll", function(){
     backToProfile();
 
-    $('#employee').DataTable({
-        destroy: true,
-        processing: true,
-        columnDefs: [{
-            "targets": "_all", // your case first column
-            "className": "text-center",
-        }],
-        ajax: "/refreshEmployeeList",
-        autoWidth: false,
-        order: [ 2 , 'desc' ],
-        columns: [
-            {data: 'id', name: 'id'},
-            {
-                width: '10%',
-                data: 'child_info.image', 
-                name: 'image',
-                render: function( data, type, row, meta ) {
-                    if(data)
-                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
-                }
-            },
-            {data: 'name', name: 'name'},
-            {data: 'child_info.user.access.name', name: 'position'},
-            {data: 'child_info.birthdate', name: 'birthdate'},
-            {data: 'child_info.gender', name: 'gender'},
-            {data: 'child_info.contact_number', name: 'contact_number'},
-            {data: 'child_info.address', name: 'address'},
-            {data: "employee_status"},
-            {data: "action", orderable:false, searchable:false}
-        ],
-        createdRow: function ( row, data, index ) {
-            if ( !data['parent_id'] ) {
-                // $('td', row).eq(2).css("background-color", "#FF9999");
-                // $('td', row).eq(3).css("background-color", "#FF9999");
-            }
-        }
-    });
-
+    initialize_employee_table('/refreshEmployeeList');
     currentTab = 'showAll';
     resetPrevButton();
 })
@@ -432,44 +288,7 @@ $(document).on("click", "#showAll", function(){
 $(document).on("click", "#showChild", function(){
     backToProfile();
     
-    $('#employee').DataTable({
-        destroy: true,
-        processing: true,
-        columnDefs: [{
-            "targets": "_all", // your case first column
-            "className": "text-center",
-        }],
-        ajax: "/childView",
-        autoWidth: false,
-        order: [ 2 , 'desc' ],
-        columns: [
-            {data: 'id', name: 'id'},
-            {
-                width: '10%',
-                data: 'child_info.image', 
-                name: 'image',
-                render: function( data, type, row, meta ) {
-                    if(data)
-                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
-                }
-            },
-            {data: 'name', name: 'name'},
-            {data: 'child_info.user.access.name', name: 'position'},
-            {data: 'child_info.birthdate', name: 'birthdate'},
-            {data: 'child_info.gender', name: 'gender'},
-            {data: 'child_info.contact_number', name: 'contact_number'},
-            {data: 'child_info.address', name: 'address'},
-            {data: "employee_status"},
-            {data: "action", orderable:false,searchable:false}
-        ],
-        createdRow: function ( row, data, index ) {
-            if ( !data['parent_id'] ) {
-                // $('td', row).eq(2).css("background-color", "#FF9999");
-                // $('td', row).eq(3).css("background-color", "#FF9999");
-            }
-        }
-    });
+    initialize_employee_table("/childView");
 
     currentTab = 'childView';
     resetPrevButton();
@@ -478,44 +297,7 @@ $(document).on("click", "#showChild", function(){
 $(document).on("click", "#showTerminated", function(){
     backToProfile();
 
-    $('#employee').DataTable({
-        destroy: true,
-        processing: true,
-        columnDefs: [{
-            "targets": "_all", // your case first column
-            "className": "text-center",
-        }],
-        ajax: "/terminatedView",
-        autoWidth: false,
-        order: [ 2 , 'desc' ],
-        columns: [
-            {data: 'id', name: 'id'},
-            {
-                width: '10%',
-                data: 'image', 
-                name: 'image',
-                render: function( data, type, row, meta ) {
-                    if(data)
-                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
-                }
-            },
-            {data: 'name', name: 'name'},
-            {data: 'user.access.name', name: 'position'},
-            {data: 'birthdate', name: 'birthdate'},
-            {data: 'gender', name: 'gender'},
-            {data: 'contact_number', name: 'contact_number'},
-            {data: 'address', name: 'address'},
-            {data: "employee_status", name: 'status'},
-            {data: "action", orderable:false,searchable:false}
-        ],
-        createdRow: function ( row, data, index ) {
-            if ( !data['parent_id'] ) {
-                // $('td', row).eq(2).css("background-color", "#FF9999");
-                // $('td', row).eq(3).css("background-color", "#FF9999");
-            }
-        }
-    });
+    initialize_employee_table("/terminatedView");
 
     currentTab = 'showTerminated';
     resetPrevButton();
@@ -1210,5 +992,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
-
- 
