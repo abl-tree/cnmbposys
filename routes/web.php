@@ -8,7 +8,14 @@ Auth::routes();
 | Admin
 |------------------------------------------------------------------------------------
 */
-Route::group([ 'middleware'=>['auth']], function () {
+
+Route::group([ 'middleware'=>['firstLogin']], function () {
+    Route::get('/security', 'firstLoginController@index')->name('security');
+    Route::post('/updatePass', 'firstLoginController@updatePassword')->name('updatePass');
+});
+
+Route::group([ 'middleware'=>['loginVerif']], function () {
+    
     Route::get('/', 'ProfileController@index')->name('dashboard');
     Route::resource('users', 'UserController');
     /*Route::get('/email', function () {
@@ -23,7 +30,7 @@ Route::group([ 'middleware'=>['auth']], function () {
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
     Route::get('/logstat', 'ProfileController@checkLoginStat')->name('logstat');
-    Route::post('/updatePass', 'ProfileController@updatePassword')->name('updatePass');
+
     Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList');
     Route::get('/updateEmployeeList/{id}', 'ProfileController@updateEmployeeList');
     Route::get('/viewProfile', 'ProfileController@viewProfile');

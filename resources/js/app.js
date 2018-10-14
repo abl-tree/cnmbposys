@@ -96,38 +96,8 @@ function initialize_employee_table(url){
 }
 
 initialize_employee_table("/refreshEmployeeList");
- 
-$( document ).ready(function() {
-    $('#showAll').prop("disabled",true);
-    $('#showChild').prop("disabled",true);
-    $('#showTerminated').prop("disabled",true);
-    $('#import').prop("disabled",true);
-    $('#export').prop("disabled",true);
-    $('#addflag').prop("disabled",true);
-    $.ajax({
-        url: "/logstat",
-        method: 'get',
-        dataType: 'json',
-        success:function(data){
-            if(data.flagerino == 0){
-            $('#update_password_modal').modal('show');
-            }
-            else{
-                $('#showAll').prop("disabled",false);
-                $('#showChild').prop("disabled",false);
-                $('#showTerminated').prop("disabled",false);
-                $('#import').prop("disabled",false);
-                $('#export').prop("disabled",false);
-                $('#addflag').prop("disabled",false);
-            }
-           // alert( data.flagerino ); 
-        }
-    });
-});
 
-$(document).on("click", ".submit_pass", function(){
-    
-    
+$(document).on("click", ".passChange", function(){
     if($('#pass').val()!=""){
     var input = $(this);
     var button =this;
@@ -151,13 +121,13 @@ $(document).on("click", ".submit_pass", function(){
             $('#import').prop("disabled",false);
             $('#export').prop("disabled",false);
             $('#addflag').prop("disabled",false);
-            $('#update_password_modal').modal('hide');
+            window.location.replace("/");
           
         },
         error: function(data){
             swal("Oh no!", "Something went wrong, try again.", "error")
             button.disabled = false;
-            input.html('SAVE CHANGES');
+            input.html('Save');
         }
     })
     }
@@ -349,6 +319,12 @@ $(document).on('change','#excel_file',function() {
     $('#excel-file-label').html('File Selected');
 });
 
+
+
+document.getElementById('photo').onchange = function(evt) {
+
+   
+};
 //ajax request for CU action on from submission
 $(document).on("click","#employee-form-submit", function(e) {
     e.preventDefault();

@@ -20,7 +20,7 @@ class ProfileController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('loginVerif');
     }
 
     /**
@@ -196,12 +196,7 @@ class ProfileController extends Controller
         );
         echo json_encode($output);
     }
-    public function updatePassword(Request $request){
-        $users = User::find(auth()->user()->id);
-          $users->password =$request->pass;
-          $users->loginFlag = 1;
-          $users->save();
-    }
+    
 
     public function updateEmployeeList($id, Request $request){
         
