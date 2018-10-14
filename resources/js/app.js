@@ -49,13 +49,12 @@ var employeetable = $('#employee').DataTable({
     columns: [
         {data: 'child_info.id', name: 'id'},
         {
-            width: '10%',
             data: 'child_info.image', 
             name: 'image',
             render: function( data, type, row, meta ) {
                 if(data)
-                return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
+                return '<img class="w-2r bdrs-50p"  style="width:50px; height:50px; "src="'+data+'">';
+                else return '<img class="w-2r bdrs-50p"  src="/images/nobody.jpg">';
             }
         },
         {data: 'name', name: 'name'},
@@ -210,7 +209,7 @@ $(document).on("click", ".view-employee", function(){
                         name: 'image',
                         render: function( data, type, row, meta ) {
                             if(data)
-                            return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                            return '<img class="w-2r bdrs-50p" style="width:50px; height:50px; src="'+data+'">';
                             else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                         }
                     },
@@ -263,7 +262,7 @@ $(document).on("click", "#prevProfile", function(){
                                 name: 'image',
                                 render: function( data, type, row, meta ) {
                                     if(data)
-                                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                                    return '<img class="w-2r bdrs-50p" style="width:50px; height:50px; src="'+data+'">';
                                     else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                                 }
                             },
@@ -302,7 +301,7 @@ $(document).on("click", "#prevProfile", function(){
                                 name: 'image',
                                 render: function( data, type, row, meta ) {
                                     if(data)
-                                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                                    return '<img class="w-2r bdrs-50p" style="width:50px; height:50px; src="'+data+'">';
                                     else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                                 }
                             },
@@ -358,7 +357,7 @@ $(document).on("click", "#showAll", function(){
                 name: 'image',
                 render: function( data, type, row, meta ) {
                     if(data)
-                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
+                    return '<img class="w-2r bdrs-50p" style="width:50px; height:50px; src="'+data+'">';
                     else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
                 }
             },
@@ -397,8 +396,8 @@ $(document).on("click", "#showChild", function(){
                 name: 'image',
                 render: function( data, type, row, meta ) {
                     if(data)
-                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
+                    return '<img class="w-2r bdrs-50p" style="width:50px; height:50px; src="'+data+'">';
+                    else return '<img class="w-2r bdrs-50p"  src="/images/nobody.jpg">';
                 }
             },
             {data: 'name', name: 'name'},
@@ -436,8 +435,8 @@ $(document).on("click", "#showTerminated", function(){
                 name: 'image',
                 render: function( data, type, row, meta ) {
                     if(data)
-                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
+                    return '<img class="w-2r bdrs-50p" style="width:50px; height:50px; src="'+data+'">';
+                    else return '<img class="w-2r bdrs-50p"  src="/images/nobody.jpg">';
                 }
             },
             {data: 'name', name: 'name'},
@@ -501,6 +500,12 @@ $(document).on('change','#excel_file',function() {
     $('#excel-file-label').html('File Selected');
 });
 
+
+
+document.getElementById('photo').onchange = function(evt) {
+
+   
+};
 //ajax request for CU action on from submission
 $(document).on("click","#employee-form-submit", function(e) {
     e.preventDefault();
