@@ -46,7 +46,7 @@ class ProfileController extends Controller
         $access_level = auth()->user()->access_id;
 
         if(isAdminHRM()){
-            $emp = AccessLevelHierarchy::with('childInfo.user.access')->get();
+            $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('id', 'DESC')->get();
             $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level)->where('childInfo.status', '<>', 'Terminated');
         }
         else{
@@ -146,7 +146,14 @@ class ProfileController extends Controller
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
-        ->rawColumns(['employee_status', 'action'])
+        ->editColumn('id', function ($data){
+            if($data->parent_id){
+                return $data->childInfo->id;
+            }else{
+                return "<span class='badge badge-danger'>NA</span><span style='color:black;'> ".$data->childInfo->id."</span>";
+            }
+        })
+        ->rawColumns(['employee_status', 'action', 'id'])
         ->make(true);
     }
 

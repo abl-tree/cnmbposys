@@ -46,8 +46,9 @@ var employeetable = $('#employee').DataTable({
     }],
     ajax: "/refreshEmployeeList",
     autoWidth: false,
+    order: [ 2 , 'desc' ],
     columns: [
-        {data: 'child_info.id', name: 'id'},
+        {data: 'id', name: 'id'},
         {
             width: '10%',
             data: 'child_info.image', 
@@ -66,7 +67,13 @@ var employeetable = $('#employee').DataTable({
         {data: 'child_info.address', name: 'address'},
         {data: "employee_status"},
         {data: "action", orderable:false,searchable:false}
-    ]
+    ],
+    createdRow: function ( row, data, index ) {
+        if ( !data['parent_id'] ) {
+            // $('td', row).eq(2).css("background-color", "#FF9999");
+            // $('td', row).eq(3).css("background-color", "#FF9999");
+        }
+    }
 }); 
  
 $( document ).ready(function() {
@@ -208,6 +215,7 @@ $(document).on("click", ".view-employee", function(){
             employeetable = $('#employee').DataTable({
                 destroy: true,
                 processing: true,
+                order: [ 2 , 'desc' ],
                 columnDefs: [{
                     "targets": "_all", // your case first column
                     "className": "text-center",
@@ -221,7 +229,7 @@ $(document).on("click", ".view-employee", function(){
                 },
                 autoWidth: false,
                 columns: [
-                    {data: 'child_info.id', name: 'id'},
+                    {data: 'id', name: 'id'},
                     {
                         width: '10%',
                         data: 'child_info.image', 
@@ -240,7 +248,13 @@ $(document).on("click", ".view-employee", function(){
                     {data: 'child_info.address', name: 'address'},
                     {data: "employee_status"},
                     {data: "action", orderable:false,searchable:false}
-                ]
+                ],
+                createdRow: function ( row, data, index ) {
+                    if ( !data['parent_id'] ) {
+                        // $('td', row).eq(2).css("background-color", "#FF9999");
+                        // $('td', row).eq(3).css("background-color", "#FF9999");
+                    }
+                }
             });
             prevButton.prop('disabled', false);
         }
@@ -262,6 +276,7 @@ $(document).on("click", "#prevProfile", function(){
                     employeetable = $('#employee').DataTable({
                         destroy: true,
                         processing: true,
+                        order: [ 2 , 'desc' ],
                         columnDefs: [{
                             "targets": "_all", // your case first column
                             "className": "text-center",
@@ -274,7 +289,7 @@ $(document).on("click", "#prevProfile", function(){
                         },
                         autoWidth: false,
                         columns: [
-                            {data: 'child_info.id', name: 'id'},
+                            {data: 'id', name: 'id'},
                             {
                                 width: '10%',
                                 data: 'child_info.image', 
@@ -293,13 +308,20 @@ $(document).on("click", "#prevProfile", function(){
                             {data: 'child_info.address', name: 'address'},
                             {data: "employee_status"},
                             {data: "action", orderable:false,searchable:false}
-                        ]
+                        ],
+                        createdRow: function ( row, data, index ) {
+                            if ( !data['parent_id'] ) {
+                                // $('td', row).eq(2).css("background-color", "#FF9999");
+                                // $('td', row).eq(3).css("background-color", "#FF9999");
+                            }
+                        }
                     });
                 }
                 else{//childView
                     employeetable = $('#employee').DataTable({
                         destroy: true,
                         processing: true,
+                        order: [ 2 , 'desc' ],
                         columnDefs: [{
                             "targets": "_all", // your case first column
                             "className": "text-center",
@@ -313,7 +335,7 @@ $(document).on("click", "#prevProfile", function(){
                         },
                         autoWidth: false,
                         columns: [
-                            {data: 'child_info.id', name: 'id'},
+                            {data: 'id', name: 'id'},
                             {
                                 width: '10%',
                                 data: 'child_info.image', 
@@ -332,7 +354,12 @@ $(document).on("click", "#prevProfile", function(){
                             {data: 'child_info.address', name: 'address'},
                             {data: "employee_status"},
                             {data: "action", orderable:false,searchable:false}
-                        ]
+                        ],
+                        createdRow: function ( row, data, index ) {
+                            if ( !data['parent_id'] ) {
+                                $(row).css("background-color", "#FF9999");
+                            }
+                        }
                     });
                 }
                 
@@ -368,8 +395,9 @@ $(document).on("click", "#showAll", function(){
         }],
         ajax: "/refreshEmployeeList",
         autoWidth: false,
+        order: [ 2 , 'desc' ],
         columns: [
-            {data: 'child_info.id', name: 'id'},
+            {data: 'id', name: 'id'},
             {
                 width: '10%',
                 data: 'child_info.image', 
@@ -387,8 +415,14 @@ $(document).on("click", "#showAll", function(){
             {data: 'child_info.contact_number', name: 'contact_number'},
             {data: 'child_info.address', name: 'address'},
             {data: "employee_status"},
-            {data: "action", orderable:false,searchable:false}
-        ]
+            {data: "action", orderable:false, searchable:false}
+        ],
+        createdRow: function ( row, data, index ) {
+            if ( !data['parent_id'] ) {
+                // $('td', row).eq(2).css("background-color", "#FF9999");
+                // $('td', row).eq(3).css("background-color", "#FF9999");
+            }
+        }
     });
 
     currentTab = 'showAll';
@@ -407,8 +441,9 @@ $(document).on("click", "#showChild", function(){
         }],
         ajax: "/childView",
         autoWidth: false,
+        order: [ 2 , 'desc' ],
         columns: [
-            {data: 'child_info.id', name: 'id'},
+            {data: 'id', name: 'id'},
             {
                 width: '10%',
                 data: 'child_info.image', 
@@ -427,7 +462,13 @@ $(document).on("click", "#showChild", function(){
             {data: 'child_info.address', name: 'address'},
             {data: "employee_status"},
             {data: "action", orderable:false,searchable:false}
-        ]
+        ],
+        createdRow: function ( row, data, index ) {
+            if ( !data['parent_id'] ) {
+                // $('td', row).eq(2).css("background-color", "#FF9999");
+                // $('td', row).eq(3).css("background-color", "#FF9999");
+            }
+        }
     });
 
     currentTab = 'childView';
@@ -446,6 +487,7 @@ $(document).on("click", "#showTerminated", function(){
         }],
         ajax: "/terminatedView",
         autoWidth: false,
+        order: [ 2 , 'desc' ],
         columns: [
             {data: 'id', name: 'id'},
             {
@@ -466,7 +508,13 @@ $(document).on("click", "#showTerminated", function(){
             {data: 'address', name: 'address'},
             {data: "employee_status", name: 'status'},
             {data: "action", orderable:false,searchable:false}
-        ]
+        ],
+        createdRow: function ( row, data, index ) {
+            if ( !data['parent_id'] ) {
+                // $('td', row).eq(2).css("background-color", "#FF9999");
+                // $('td', row).eq(3).css("background-color", "#FF9999");
+            }
+        }
     });
 
     currentTab = 'showTerminated';
