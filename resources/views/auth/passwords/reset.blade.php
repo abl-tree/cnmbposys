@@ -4,13 +4,13 @@
 
 
     <h4 class="fw-300 c-grey-900 mB-40">Reset Password</h4>
-    <form class="form-horizontal" method="POST" action="{{ route('password.request') }}">
+    <form class="form-horizontal" method="POST" action="{{ route('password.update') }}">
         {{ csrf_field() }}
         <input type="hidden" name="token" value="{{ $token }}">
 
         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
             <label for="email" class="text-normal text-dark">E-Mail Address</label>
-            <input id="email" type="email" class="form-control" name="email" value="{{ $email ??? old('email') }}" required autofocus>
+            <input id="email" type="email" class="form-control" name="email" value="{{ $email or old('email') }}" required autofocus>
 
             @if ($errors->has('email'))
                 <span class="form-text text-danger">
