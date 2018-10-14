@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-
+use Password;
 class ResetPasswordController extends Controller
 {
     /*
@@ -25,7 +26,7 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/profile';
 
     /**
      * Create a new controller instance.
@@ -36,4 +37,9 @@ class ResetPasswordController extends Controller
     {
         $this->middleware('guest');
     }
+
+    protected function broker(){
+        return Password::broker('users');
+    }
+
 }
