@@ -339,39 +339,6 @@
 </div>
 <!-- END UPDATE STATUS MODAL -->
 
-<!-- START UPDATE PASSWORD MODAL  -->
-<div id="update_password_modal" data-backdrop="static" data-keyboard="false" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title">Mandatory password update </h6>
-            </div>
-            <div class="modal-body">
-                <form action="#" method="POST" id='update_password_form' id="needs-validation" novalidate>
-                    {{ csrf_field()}}
-                    <div class="row" style='padding:10px'>
-                        <div class="col-md-12">
-                            <div class="form-group" id="passinput">
-                                <label for="status_data">New Password</label>
-                                <input name="pass" id="pass" type="password" class="form-control font-xs" placeholder="Password" required>
-                            </div>
-                        </div>
-                    </div>
-            </div>
-            <div class="modal-footer">
-                <div class="col-md-4">
-                    <div class="pull-right">
-                        <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
-                        <button type="submit" id="submit_pass" class="btn btn-success btn-sm submit_pass">Confirm</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- END UPDATE PASSWORD MODAL -->
-
 <!-- UPLOAD EXCEL MODAL START -->
 <div id="excel-modal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-md">
