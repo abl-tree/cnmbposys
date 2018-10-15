@@ -106,4 +106,5 @@ class User extends Authenticatable
         return $this->hasOne('\App\AccessLevel', 'id', 'access_id');
     }
 
+    
 }

@@ -22,7 +22,7 @@ class AccessLevelHierarchiesTableSeeder extends Seeder
                 'child_id' => 2, 
             ),
             array(
-                'parent_id' => 2, 
+                'parent_id' => null, 
                 'child_id' => 3, 
             ),
             array(

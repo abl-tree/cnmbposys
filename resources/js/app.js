@@ -72,9 +72,13 @@ function initialize_employee_table(url){
                 data: image, 
                 name: 'image',
                 render: function( data, type, row, meta ) {
-                    if(data)
-                    return '<img class="w-2r bdrs-50p" src="'+data+'">';
-                    else return '<img class="w-2r bdrs-50p" src="/images/nobody.jpg">';
+                    
+                    // var data = btoa(data.substr(data.indexOf(',')));
+                    if(data){
+                        // console.log(data);
+                        btoa(data.substr(data.search(',')));
+                    return '<div class="table-image-cover bdrs-50p" style="background-image:url('+data+')"></div>';
+                    }else{ return '<div class="table-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>';}
                 }
             },
             {data: 'name', name: 'name'},
@@ -409,7 +413,9 @@ $(document).on("click","#employee-form-submit", function(e) {
                     if($('#action').val()=='edit'){
                         if($('#portion').val()=='profile'){
                             if($('#employee-id').val() == 1){
-                                $('#top-image-display').attr('src',result.info.image);
+                                var data = result.info.image
+                                btoa(data.substr(data.search(',')));
+                                $('#top-image-display').css('background-image','url('+data+')');
                             }
                             $('#profile-image-display').attr('src',result.info.image);
                             $('#contact_P').html(result.info.contact_number);
@@ -611,7 +617,7 @@ $(document).on('click','.update_status',function(event){
     });
 });
 
-$(document).on('click','.excel-action-button', function(){
+$(document).on('click','.excel-action-button', function(e){
     $('#action-import').show();
     $('#action-export').show();
     $('#excel-form-submit').show();
@@ -645,26 +651,28 @@ $(document).on('click','#excel-form-submit',function(e){
         success:function(result)
         {
             // alert(result+"success");
-            if(result=='outdated'){
-                swal({title:'Outdated Template',text:'Please use updated template or download new template.'})
-            }else{
-                swal({
-                    title: '<strong>Import Report</strong>',
-                    type: 'info',
-                    html:
-                    '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
-                    '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>'+
-                    '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
-                    '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
-                    
-                    focusConfirm: false,
-                    confirmButtonText:
-                    '<i class="fa fa-thumbs-up"></i> Noted!',
-                    confirmButtonAriaLabel: 'Thumbs up, great!',
-                
-                })
-                $('#excel-modal').modal('hide');
+            var reassign = '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>';
+            if(result[0].outdated==true){
+                reassign = '<li>Reassign disabled.<strong> Outdated template.</strong></li>';
             }
+            swal({
+                title: '<strong>Import Report</strong>',
+                type: 'info',
+                html:
+                '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
+                reassign+
+                '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
+                '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
+                
+                focusConfirm: false,
+                confirmButtonText:
+                '<i class="fa fa-thumbs-up"></i> Noted!',
+                confirmButtonAriaLabel: 'Thumbs up, great!',
+            
+            })
+            $('#excel-modal').modal('hide');
+            refresh_employee_table();
+            
         },
         error: function (data) {
             alert(result+"success");

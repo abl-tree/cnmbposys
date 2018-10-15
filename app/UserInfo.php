@@ -69,24 +69,5 @@ class UserInfo extends Model
         return $query;
     }
 
-    public function getExcelTemplate(){
-        $dbraw = 'concat("") as c1,concat("") as c2,concat("") as c3,concat("") as c4,concat("") as c5,concat("") as c6';
-        $dbraw .= ',concat("") as c11,concat("") as c2,concat("") as c13,concat("") as c4,concat("") as c15,concat("") as c16';
-        $dbraw .= ',concat("") as c21,concat("") as c22,concat("")  as c23,concat("")  as c24,concat("")  as c25,concat("")  as c26';
-
-        $query = DB::table('excel_functions')
-        ->where('id','=',1)
-        ->select(DB::raw($dbraw),'formula1','formula2','formula3')
-        ->orderBy('id','asc');
-        return $query;
-    }
-
-    public function getParentsWithId(){
-        $query = DB::table('users')
-        ->join('user_infos', 'user_infos.id','=','users.uid')
-        ->join('access_levels', 'access_levels.id','=','users.access_id')
-        ->select('user_infos.id',DB::raw('CONCAT_WS(" ",user_infos.firstname,user_infos.lastname)'))
-        ->orderBy('user_infos.id','asc');
-        return $query;
-    }
+    
 }
