@@ -76,7 +76,6 @@ function initialize_employee_table(url){
                     // var data = btoa(data.substr(data.indexOf(',')));
                     if(data){
                         // console.log(data);
-                        btoa(data.substr(data.search(',')));
                     return '<div class="table-image-cover bdrs-50p" style="background-image:url('+data+')"></div>';
                     }else{ return '<div class="table-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>';}
                 }
@@ -413,8 +412,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                     if($('#action').val()=='edit'){
                         if($('#portion').val()=='profile'){
                             if($('#employee-id').val() == 1){
-                                var data = result.info.image
-                                btoa(data.substr(data.search(',')));
+                                var data = result.info.image;
                                 $('#top-image-display').css('background-image','url('+data+')');
                             }
                             $('#profile-image-display').attr('src',result.info.image);
