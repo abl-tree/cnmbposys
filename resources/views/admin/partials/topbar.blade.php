@@ -176,7 +176,18 @@
             <li class="dropdown">
                 <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
                     <div class="peer mR-10">
-                        <img id="top-image-display" class="w-2r bdrs-50p" src="{{ !empty($profile->image)? $profile->image : '/images/nobody.jpg'}}" alt="">
+
+                        @php
+                            if(!empty($profile->image)){
+                                $p1 = substr($profile->image,0,strpos($profile->image,','));
+                                $p2 = substr($profile->image,strpos($profile->image,','));
+
+                                echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url('.$profile->image.')"></div>';
+                            }else{
+                                echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>';
+                            }
+                        @endphp
+                        
                         <input type="hidden" id="logged-position" value="{{$role->id}}">
                         <input type="hidden" id="uid" value="{{$profile->id}}">
                     </div>

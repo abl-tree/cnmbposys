@@ -347,7 +347,7 @@
                 <h4 class="modal-title"><small id="excel-modal-header">Import<span></span> Excel</small></h4>
             </div>
             <div class="modal-body">
-                <form method="GET" id='import-excel-form'>
+                <form id='import-excel-form' method = "get">
                     {{ csrf_field()}}
                     <center>
                         <div id="action-import">

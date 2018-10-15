@@ -22,13 +22,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class excelController extends Controller
 {
     function template(){
-        // $name = "Employee-Template-";
-        // $name.= now();
-        // return (new exportTemplateSheet)->download($name.'.xlsx');
         $filename = "Employee-Template-".now().".xlsx"; //filename
-       
         $spreadsheet = new Spreadsheet();
-        
         //add template sheet
         $header = [
             'First Name',
@@ -44,21 +39,11 @@ class excelController extends Controller
             'PagIbig',
             'TIN',
             'Position',
-            'Parent Name',
             'Salary',
             'Hired Date',
-            'Position ID',
-            'Parent AID',
-            'Parent Code',
-            'Parent ID',
         ];
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
-        $formula = DB::table('excel_functions')->where('id','=',1)->get();
-        $worksheet->setCellValue('Q2',$formula[0]->formula1);
-        $worksheet->setCellValue('R2',$formula[0]->formula2);
-        $worksheet->setCellValue('S2',$formula[0]->formula3);
-        $worksheet->setCellValue('T2',$formula[0]->formula4);
         $worksheet->setTitle("Add");
         //reassign sheet
         $worksheet = new Worksheet($spreadsheet, 'Reassign');
@@ -81,17 +66,33 @@ class excelController extends Controller
         ->get();
         foreach($employee as $k => $datum){
             $tmp = DB::table('user_infos')
-            ->join('users','user_infos.id','=','users.uid')
-            ->join('access_levels','users.access_id','=','access_levels.id')
-            ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename, user_infos.lastname) as fullname'),'access_levels.code as code')
-            ->where([['user_infos.id','=',$datum->parent_id],['user_infos.status','!=','Terminated']])
-            ->get();
-            $worksheet->setCellValue('A'.($k+2),$datum->id);
-            $worksheet->setCellValue('B'.($k+2),$datum->fullname);
-            $worksheet->setCellValue('C'.($k+2),$datum->position);
-            $worksheet->setCellValue('F'.($k+2),$tmp[0]->code);
+                ->join('users','user_infos.id','=','users.uid')
+                ->join('access_levels','users.access_id','=','access_levels.id')
+                ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename, user_infos.lastname) as fullname'),'access_levels.code as code')
+                ->where([['user_infos.id','=',$datum->parent_id],['user_infos.status','!=','Terminated']])
+                ->get();
+            
+                $id = $datum->id;
+                $emp_name = $datum->fullname;
+                $emp_pos = $datum->position;
+                $pa_pcode = '';
+                $pa_name = '';
+
+            if($datum->parent_id!=null){
+                $pa_pcode = $tmp[0]->code;
+                $pa_name = $tmp[0]->fullname;
+            }else{
+                $alfunction = new AccessLevel;
+                $pa_pcode = $alfunction->getParentCodeByPositionName($datum->position);
+                $pa_name ="";
+            }
+            
+            $worksheet->setCellValue('A'.($k+2),$id);
+            $worksheet->setCellValue('B'.($k+2),$emp_name);
+            $worksheet->setCellValue('C'.($k+2),$emp_pos);
+            $worksheet->setCellValue('D'.($k+2),$pa_name);
+            $worksheet->setCellValue('F'.($k+2),$pa_pcode);
             $worksheet->setCellValue('G'.($k+2),'"=IF([New Parent]<>"",INDEX(Employee!A:A,MATCH([New Parent],Employee!B:B,0),0),"")');
-            $worksheet->setCellValue('D'.($k+2),$tmp[0]->fullname);
         }
         $spreadsheet->addSheet($worksheet);
         //position sheet
@@ -133,6 +134,13 @@ class excelController extends Controller
             $worksheet->fromArray($datum,null,'A'.($k));
         }
 
+        //Gender worksheet
+        $worksheet = new Worksheet($spreadsheet, 'Gender');
+        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+        $spreadsheet->addSheet($worksheet);
+        $tmp=['Male','Female'];
+        $worksheet->fromArray($tmp,null,'A1');
+
 
 
 
@@ -140,6 +148,7 @@ class excelController extends Controller
 
         // //defining named range
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('superadmin',$spreadsheet->getSheetByName('Parent'),'1:1'));
+        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('gender',$spreadsheet->getSheetByName('Gender'),'1:1'));
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('hrm',$spreadsheet->getSheetByName('Parent'),'2:2'));
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('om',$spreadsheet->getSheetByName('Parent'),'3:3'));
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('rtam',$spreadsheet->getSheetByName('Parent'),'4:4'));
@@ -174,9 +183,9 @@ class excelController extends Controller
             $handler = $spreadsheet->setActiveSheetIndexByName('Employee');
             $rows = $handler->getHighestDataRow();
             $emp = UserInfo::where('user_infos.status','!=','Terminated')->get();
+            $outdated = false;
             if(intval($rows)!=count($emp)){
-                return response()->json("outdated");
-                exit;
+                $outdated = true;
             }
             $handler = $spreadsheet->setActiveSheetIndexByName('Add');
             $rows = $handler->getHighestDataRow();
@@ -187,7 +196,8 @@ class excelController extends Controller
             $saved_counter=0;
             $error_counter=0;
             $error_rows=[];
-            
+
+           
                 
 
 
@@ -197,15 +207,16 @@ class excelController extends Controller
                 $mname = $handler->getCellByColumnAndRow(2, $r)->getValue();
                 $lname = $handler->getCellByColumnAndRow(3, $r)->getValue();
                 $birthdate = $handler->getCellByColumnAndRow(5, $r)->getFormattedValue();
-                $position = $handler->getCellByColumnAndRow(17, $r)->getOldCalculatedValue();
-                $parent_aid = $handler->getCellByColumnAndRow(18, $r)->getOldCalculatedValue();
+                $position_id = new AccessLevel;
+                $position = $position_id->getIdByPositionName($handler->getCellByColumnAndRow(13, $r)->getValue());
+                // $parent_aid = $handler->getCellByColumnAndRow(18, $r)->getOldCalculatedValue();
                 $email = $handler->getCellByColumnAndRow(7, $r)->getValue();
                 $contact_number=$handler->getCellByColumnAndRow(8, $r)->getValue();
-                $hired_date=$handler->getCellByColumnAndRow(16, $r)->getFormattedValue();
-                $designation=$handler->getCellByColumnAndRow(20, $r)->getOldCalculatedValue();
+                $hired_date=$handler->getCellByColumnAndRow(15, $r)->getFormattedValue();
+                // $designation=$handler->getCellByColumnAndRow(20, $r)->getOldCalculatedValue();
                 $address=$handler->getCellByColumnAndRow(6, $r)->getValue();
                 $gender=$handler->getCellByColumnAndRow(4, $r)->getValue();
-                $salary_rate=$handler->getCellByColumnAndRow(15, $r)->getValue();
+                $salary_rate=$handler->getCellByColumnAndRow(14, $r)->getValue();
                 $sss=$handler->getCellByColumnAndRow(9, $r)->getValue();
                 $philhealth=$handler->getCellByColumnAndRow(10, $r)->getValue();
                 $pagibig=$handler->getCellByColumnAndRow(11, $r)->getValue();
@@ -215,14 +226,11 @@ class excelController extends Controller
                 $reassign_counter = 0;
                 //Manual error Filter
                 //email
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $errorlog++;
-                }
-                if(in_array($email,$taken_email)){
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)||in_array($email,$taken_email)) {
                     $errorlog++;
                 }
                 //BLANK strings
-                if($fname==""||$mname==""||$lname==""||$birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$designation==""||$address==""||$gender==""||$salary_rate==""){
+                if($birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$address==""||$gender==""||$salary_rate==""){
                     $errorlog++;
                 }
                 //numeric inputs
@@ -230,78 +238,78 @@ class excelController extends Controller
                     $errorlog++;
                 }
 
-                $checker = new AccessLevel;
-                $checker->getParentLevel($position);
-                if(intval($checker->getParentLevel($position)) != intval($parent_aid)){
-                    $errorlog++;
+                // if($gender!='Male'||$gender!='Female'){
+                //     $errorlog++;
+                // }
+
+                if(in_array($concat,$hash)){
+                    $duplicate_counter++;
                 }
 
-
-                if($errorlog==0){
+                if($errorlog==0&&$duplicate_counter==0){
                     if($position>1){
-                        if(in_array($concat,$hash)){
-                            $duplicate_counter++;
-                        }else{
-                            
-                            $userinfo = new UserInfo;
-                            $userinfo->firstname=$fname;
-                            $userinfo->lastname=$lname;
-                            $userinfo->middlename=$mname;
-                            $userinfo->address=$address;
-                            $userinfo->birthdate=$birthdate;
-                            $userinfo->gender=$gender;
-                            $userinfo->salary_rate=$salary_rate;
-                            $userinfo->status="Active";
-                            $userinfo->contact_number=$contact_number;
-                            $userinfo->hired_date=$hired_date;
-                            $userinfo->save();
-                            $user = new User;
-                            $user->uid= $userinfo->id;
-                            $user->email = $email;
-                            $user->password = $fname.$lname;
-                            $user->access_id = $position;
-                            $user->save();
-            
-                            $obj_benefit=[];
-                            for($l=0;$l<4;$l++){
-                                $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$handler->getCellByColumnAndRow($l+9, $r)->getValue(),];
-                            }
-                            UserBenefit::insert($obj_benefit);
+                        $userinfo = new UserInfo;
+                        $userinfo->firstname=$fname;
+                        $userinfo->lastname=$lname;
+                        $userinfo->middlename=$mname;
+                        $userinfo->address=$address;
+                        $userinfo->birthdate=$birthdate;
+                        $userinfo->gender=$gender;
+                        $userinfo->salary_rate=$salary_rate;
+                        $userinfo->status="Active";
+                        $userinfo->contact_number=$contact_number;
+                        $userinfo->hired_date=$hired_date;
+                        $s_userinfo=$userinfo->save();
+                        if(!$s_userinfo){
+                            $error_rows[]=$r;
+                        }
+                        $user = new User;
+                        $user->uid= $userinfo->id;
+                        $user->email = $email;
+                        $user->password = $fname.$lname;
+                        $user->access_id = $position;
+                        $user->save();
+        
+                        $obj_benefit=[];
+                        for($l=0;$l<4;$l++){
+                            $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$handler->getCellByColumnAndRow($l+9, $r)->getValue(),];
+                        }
+                        UserBenefit::insert($obj_benefit);
 
-                            $access_level_hierarchy = new AccessLevelHierarchy;
-                            $access_level_hierarchy->child_id = $userinfo->id;
-                            $access_level_hierarchy->parent_id = $designation;
-                            $check = $access_level_hierarchy->save();
-                            if($check){
-                                $saved_counter++;
-                                $userinfo->excel_hash = $concat;
-                                $userinfo->save();
-                            }
-                        } 
-                    }
-                }else{
+                        $access_level_hierarchy = new AccessLevelHierarchy;
+                        $access_level_hierarchy->child_id = $userinfo->id;
+                        $access_level_hierarchy->parent_id = null;
+                        $check = $access_level_hierarchy->save();
+                        if($check){
+                            $saved_counter++;
+                            $userinfo->excel_hash = $concat;
+                            $userinfo->save();
+                        }
+                    } 
+                }else if($errorlog>0){
                     $error_rows[]=$r;
                 }
             }
 
             //Reassign
-
-            $handler = $spreadsheet->setActiveSheetIndexByName('Reassign');
-            $rows = $handler->getHighestDataRow();
-            for($r=2;$r<=$rows;$r++){
-                $id = $handler->getCellByColumnAndRow(1, $r)->getValue();
-                $parent_id = $handler->getCellByColumnAndRow(7, $r)->getOldCalculatedValue();
-                if($parent_id!=""){
-                    //delete records
-                    $del = AccessLevelHierarchy::where('child_id','=',$id)->delete();
-                    //create new record
-                    $new = new AccessLevelHierarchy;
-                    $new->child_id = $id;
-                    $new->parent_id = $parent_id;
-                    $new->save();
-                    $reassign_counter++;
+            if($outdated==false){
+                $handler = $spreadsheet->setActiveSheetIndexByName('Reassign');
+                $rows = $handler->getHighestDataRow();
+                for($r=2;$r<=$rows;$r++){
+                    $id = $handler->getCellByColumnAndRow(1, $r)->getValue();
+                    $parent_id = $handler->getCellByColumnAndRow(7, $r)->getOldCalculatedValue();
+                    if($parent_id!=""){
+                        //delete records
+                        $del = AccessLevelHierarchy::where('child_id','=',$id)->delete();
+                        //create new record
+                        $new = new AccessLevelHierarchy;
+                        $new->child_id = $id;
+                        $new->parent_id = $parent_id;
+                        $new->save();
+                        $reassign_counter++;
+                    }
+                    
                 }
-                
             }
             $return_data[]=[
                 'saved_counter' => $saved_counter,
@@ -309,6 +317,7 @@ class excelController extends Controller
                 'error_rows'=>$error_rows,
                 'error_counter'=>count($error_rows),
                 'reassign_counter'=>$reassign_counter,
+                'outdated' => $outdated,
             ];
             return response()->json($return_data);
         }

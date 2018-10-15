@@ -80853,3 +80853,15 @@ body {
   background-color: #f9fafb !important;
 }
 
+.table-image-cover {
+  height: 50px;
+  width: 50px;
+  background-size: cover;
+}
+
+.top-image-cover {
+  height: 30px;
+  width: 30px;
+  background-size: cover;
+}
+

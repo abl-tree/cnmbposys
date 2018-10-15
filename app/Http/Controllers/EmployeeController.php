@@ -130,7 +130,7 @@ class EmployeeController extends Controller
         if($request->hasFile('photo')){
             $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
             $userinfo->image_ext= explode(".", strtolower($_FILES['photo']['name']))[1];
-            $userinfo->image = 'data:image/'.explode(".", strtolower($_FILES['photo']['name']))[1].';base64, '.base64_encode($binaryfile);
+            $userinfo->image = 'data:image/'.explode(".", strtolower($_FILES['photo']['name']))[1].';base64,'.base64_encode($binaryfile);
             $userinfo->save();
         }
         if($request->captured_photo){
