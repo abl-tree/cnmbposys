@@ -151,5 +151,7 @@
 </div>
     @include('admin.dashboard.include.employee_form_modal');  
 
-                
+      <script>
+        console.log({!! $emp !!})
+      </script>
 @endsection

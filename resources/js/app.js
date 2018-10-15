@@ -64,7 +64,7 @@ function initialize_employee_table(url){
         }],
         ajax: url,
         autoWidth: false,
-        order: [ 2 , 'desc' ],
+        order: [ 1 ],
         columns: [
             {data: 'id', name: 'id'},
             {

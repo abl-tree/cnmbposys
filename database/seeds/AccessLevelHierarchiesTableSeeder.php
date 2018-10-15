@@ -26,7 +26,7 @@ class AccessLevelHierarchiesTableSeeder extends Seeder
                 'child_id' => 3, 
             ),
             array(
-                'parent_id' => 2, 
+                'parent_id' => null, 
                 'child_id' => 4, 
             ),
             array(
@@ -34,7 +34,7 @@ class AccessLevelHierarchiesTableSeeder extends Seeder
                 'child_id' => 5, 
             ),
             array(
-                'parent_id' => 5, 
+                'parent_id' => null, 
                 'child_id' => 6, 
             ),
             array(
@@ -42,7 +42,7 @@ class AccessLevelHierarchiesTableSeeder extends Seeder
                 'child_id' => 7, 
             ),
             array(
-                'parent_id' => 5, 
+                'parent_id' => null, 
                 'child_id' => 8, 
             ),
             array(

@@ -36,9 +36,10 @@ class ProfileController extends Controller
         $role = AccessLevel::find($access_level);
         $profile = UserInfo::with('benefits')->find($id);
         $user = User::find($id);
+        $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id')->get();
 
         $userInfo = AccessLevel::all();
-        return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo'));
+        return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo', 'emp'));
     }
 
     public function refreshEmployeeList(){//Used when loading default datatable and in showAll f or Admin/HRs
@@ -46,7 +47,7 @@ class ProfileController extends Controller
         $access_level = auth()->user()->access_id;
 
         if(isAdminHRM()){
-            $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('id', 'DESC')->get();
+            $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id', 'asc')->get();
             $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level)->where('childInfo.status', '<>', 'Terminated');
         }
         else{
