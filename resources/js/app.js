@@ -178,7 +178,7 @@ function replaceProfile(data){
     $("#email_P").html(data.user.email);
     $("#hired_P").html(data.profile.hired_date);
 
-    if(data.viewer == 1 && data.viewer == 1 || showBenefits == 0){
+    if(data.viewer == 1 && data.viewer == 2 || showBenefits == 0){
         $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
         $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
         $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
@@ -187,11 +187,11 @@ function replaceProfile(data){
         $("#birth_P").html(data.profile.birthdate);
     }
     else{
-        $("#sss_P").html('N/A');
-        $("#philhealth_P").html('N/A');
-        $("#pagibig_P").html('N/A');
-        $("#tin_P").html('N/A');
-        $("#birth_P").html('N/A');
+        $("#sss_P").html('••••••');
+        $("#philhealth_P").html('••••••');
+        $("#pagibig_P").html('••••••');
+        $("#tin_P").html('••••••');
+        $("#birth_P").html('••••••');
         $('#profile-image-display').prop('src',data.profile.image);
     }
 
