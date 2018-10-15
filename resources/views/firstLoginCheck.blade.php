@@ -27,11 +27,12 @@
                     <input name="pass" id="pass" name="pass" type="password" class="form-control font-xs col-md-6"
                         placeholder="Password" required>
                 </div>
+                <button type="submit" class='btn btn-primary passChange'>Save</button>
+                <a href="/logout" class="btn btn-danger ">Logout</a>
             </form>
             <div>
 
-                <button class='btn btn-primary passChange'>Save</button>
-                <a href="/logout" class="btn btn-danger ">Logout</a>
+                
 
             </div>
 
