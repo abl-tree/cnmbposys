@@ -22,6 +22,10 @@
                             <div class='container'>
                                 <table class="profile-table" style='' width="100%">
                                     <tr >
+                                        <td align='left'>ID</td>
+                                        <td align="right" id="contact_P">{{$profile->id}}</td>
+                                    </tr>
+                                    <tr >
                                         <td align='left'>Contact</td>
                                         <td align="right" id="contact_P">{{$profile->contact_number}}</td>
                                     </tr>
