@@ -80817,13 +80817,13 @@ img {
 
 .dataTables_filter {
   position: absolute;
-  top: 122px;
+  top: 44px;
   right: 42px;
 }
 
 .reposition {
   position: absolute;
-  top: 160px;
+  top: 82px;
   right: 40px;
 }
 
@@ -80920,7 +80920,7 @@ section {
 }
 
 .info-radio:checked + .info-button-label {
-  background-color: #cecece;
+  background-color: #e9e9e9;
 }
 
 #tab1:checked ~ .tab-content-wrapper > #tab-content1,
@@ -80931,5 +80931,15 @@ section {
 
 .tab-content {
   display: none;
+}
+
+.hide {
+  display: none;
+}
+
+.coagent-wrap:hover {
+  border: #dadada solid 1px;
+  border-radius: 5px 5px 5px 5px;
+  background-color: white;
 }
 

@@ -192,15 +192,14 @@ img {
 
 .dataTables_filter {
     position: absolute;
-    top: 122px;
+    top: 44px;
     right: 42px;
 }
 
 
-
 .reposition {
     position: absolute;
-    top: 160px;
+    top: 82px;
     right: 40px;
 }
 
@@ -335,7 +334,7 @@ section {
 }
 
 .info-radio:checked + .info-button-label{
-    background-color:rgb(206, 206, 206);
+    background-color:rgb(233, 233, 233);
 }
 
 #tab1:checked ~ .tab-content-wrapper > #tab-content1,
@@ -349,3 +348,12 @@ section {
 }
 
 
+.hide{
+    display:none;
+}
+
+.coagent-wrap:hover{
+    border:rgb(218, 218, 218) solid 1px;
+    border-radius: 5px 5px 5px 5px;
+    background-color:white;
+}

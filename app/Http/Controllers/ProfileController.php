@@ -40,15 +40,27 @@ class ProfileController extends Controller
 
         $userInfo = AccessLevel::all();
 
-        $blade = "";
 
         if($user->access_id == 12){ //if agent
-            $blade="agent";
+            $parent1 = AccessLevelHierarchy::where("child_id","=",$profile->id)->first();
+            $parent = UserInfo::where("id","=",$parent1->parent_id)->first();
+            $parent_user = User::where("uid","=",$parent1->parent_id)->first();
+            $coagent_ids = AccessLevelHierarchy::where("parent_id","=",$parent->id)->pluck('id');
+            $coagent = UserInfo::find($coagent_ids);
+            $coagent_count = AccessLevelHierarchy::where("parent_id","=",$parent->id)->count();
+            $row = 0;
+            if(floor($coagent_count/3)==0){
+                $row=1;
+            }else{
+                $row=ceil($coagent_count/3);
+            }
+
+            return view('admin.dashboard.agent', compact('profile', 'role','user', 'userInfo','parent','parent_user','coagent','row','coagent_count'));
         }else{
-            $blade="profile";
+            return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo', 'emp'));
         }
 
-        return view('admin.dashboard.'.$blade, compact('profile', 'role', 'user', 'userInfo', 'emp'));
+        
     }
 
     public function refreshEmployeeList(){//Used when loading default datatable and in showAll f or Admin/HRs

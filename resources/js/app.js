@@ -697,14 +697,20 @@ $(document).on('click','#excel-modal-cancel',function(){
     $('#excel-modal').modal('hide');
 });
 
-// $('.email-wrapper').scroll(function(){
-//     var scrollPos=$('.email-wrapper').scrollTop();
-//     if(scrollPos>=navOffset){
-//         $('#nav-inner-header').addClass('fixed-top');
-//     }else{
-//         $('#nav-inner-header').removeClass('fixed-top');
-//     }
-// });
+//phase2
+$(document).on('click','#coagent-row-toggle',function(e){
+    e.preventDefault();
+    if($(this).html()=="See more..."){
+        $(this).html('See less...');
+        $('.coagent-rows').show();
+    }else{
+        $(this).html('See more...');
+        $('.coagent-rows').hide();
+    }
+});
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 
 
