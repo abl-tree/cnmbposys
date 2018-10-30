@@ -696,6 +696,15 @@ $(document).on('click','#excel-form-submit',function(e){
 $(document).on('click','#excel-modal-cancel',function(){
     $('#excel-modal').modal('hide');
 });
+
+// $('.email-wrapper').scroll(function(){
+//     var scrollPos=$('.email-wrapper').scrollTop();
+//     if(scrollPos>=navOffset){
+//         $('#nav-inner-header').addClass('fixed-top');
+//     }else{
+//         $('#nav-inner-header').removeClass('fixed-top');
+//     }
+// });
 ////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -987,3 +996,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+

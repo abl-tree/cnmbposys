@@ -143,7 +143,7 @@ class EmployeeController extends Controller
         
         $user->uid= $userinfo->id;
         $user->email = $request->email;
-        $user->password = $userinfo->firstname.$userinfo->lastname;
+        $user->password = $userinfo->hired_date.trim($userinfo->lastname," "); //datehired+lastname(withCaps no space)
         $user->access_id = $request->position;
         $user->save();
 

@@ -101,6 +101,7 @@
         </div>
         <div class="email-wrapper">
             <!-- Content -->
+            
             <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20">Employee list</h4> 
 

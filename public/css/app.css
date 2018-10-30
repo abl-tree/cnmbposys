@@ -1,4 +1,4 @@
-/*!
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);@import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css);/*!
  * Bootstrap v4.1.1 (https://getbootstrap.com/)
  * Copyright 2011-2018 The Bootstrap Authors
  * Copyright 2011-2018 Twitter, Inc.
@@ -80817,13 +80817,13 @@ img {
 
 .dataTables_filter {
   position: absolute;
-  top: 38px;
-  right: 40px;
+  top: 122px;
+  right: 42px;
 }
 
 .reposition {
   position: absolute;
-  top: 80px;
+  top: 160px;
   right: 40px;
 }
 
@@ -80863,5 +80863,73 @@ body {
   height: 30px;
   width: 30px;
   background-size: cover;
+}
+
+.profile-image-cover {
+  border: 5px white solid;
+  background-size: cover;
+}
+
+.profile-bg:hover {
+  -webkit-box-shadow: inset 0 0 30px #000000;
+  box-shadow: inset 0 0 30px #000000;
+}
+
+.profile-bg {
+  -webkit-box-shadow: inset 0 0 10px #000000;
+  box-shadow: inset 0 0 10px #000000;
+}
+
+.hr {
+  width: 100%;
+  text-align: center;
+  line-height: 0.1em;
+  margin: 10px 0 20px;
+}
+
+.hr span {
+  padding: 0 10px;
+}
+
+main {
+  min-width: 100%;
+  max-width: 100%;
+  padding: 5px;
+  margin: 0 auto;
+  background: #fff;
+}
+
+section {
+  display: none;
+  padding: 20px 0 0;
+  border-top: 1px solid #ddd;
+}
+
+.tab-radio-button {
+  display: none;
+}
+
+.info-button-label {
+  padding: 5px;
+  border: #888 solid 1px;
+}
+
+.info-button-label:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.info-radio:checked + .info-button-label {
+  background-color: #cecece;
+}
+
+#tab1:checked ~ .tab-content-wrapper > #tab-content1,
+#tab2:checked ~ .tab-content-wrapper > #tab-content2,
+#tab3:checked ~ .tab-content-wrapper > #tab-content3 {
+  display: block;
+}
+
+.tab-content {
+  display: none;
 }
 

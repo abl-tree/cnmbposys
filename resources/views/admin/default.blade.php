@@ -29,23 +29,23 @@
         <div class="page-container">
             <!-- ### $Topbar ### -->
             @include('admin.partials.topbar')
-
             <!-- ### $App Screen Content ### -->
-            <main class='main-content bgc-grey-100'>
-                <div id='mainContent'>
-                    <div class="container-fluid">
+                <main class='main-content bgc-grey-100'>
+                    <div id='mainContent'>
+                        <div class="container-fluid">
 
-                        <h4 class="c-grey-900 mT-10 mB-30">@yield('page-header')</h4>
+                            <h4 class="c-grey-900 mT-10 mB-30">@yield('page-header')</h4>
 
-						@include('admin.partials.messages') 
-						@yield('content')
+                            @include('admin.partials.messages') 
+                            @yield('content')
 
+                        </div>
                     </div>
-                </div>
-            </main>
-
+                </main>
             <!-- ### $App Screen Footer ### -->
-            <footer class="bdT  bgc-white  ta-c p-30 lh-0 fsz-sm c-grey-600">
+            <!-- <div style="clear:both;height:300px;"></div> -->
+            
+            <footer class="bdT bgc-white  ta-c p-30 lh-0 fsz-sm c-grey-600">
                 <span>Copyright © 2018 Designed by
                     <a href="https://colorlib.com" target='_blank' title="Colorlib">Colorlib</a> Powered by Solid Script Web Systems. All rights reserved.</span>
             </footer>
