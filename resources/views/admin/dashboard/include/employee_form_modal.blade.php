@@ -356,12 +356,14 @@
                         </div>
                         <div id="action-export">
 
-                            <a href="/profile/excel_exportreport" class="btn btn-sq-lg btn-outline-primary"><br><i
+                            <a href="/profile/excel_export_report" class="btn btn-sq-lg btn-outline-primary"><br><i
                                     class="fa fa-address-book-o fa-5x"></i><br />
                                 Report File </a>
-                            <a href="/profile/excel_exporttemplate" class="btn btn-sq-lg btn-outline-primary"><br><i
+                            <a href="/profile/excel_export_add_template" class="btn btn-sq-lg btn-outline-primary"><br><i
                                     class="fa fa-newspaper-o fa-5x"></i><br />
-                                Template File</a>
+                                Add Template</a>
+                                <a href="/profile/excel_export_reassign_template" class="btn btn-sq-lg btn-outline-primary"><br><i class="fa fa-list-ol fa-5x"></i><br />
+                                Reassign Template</a>
                         </div>
 
                     </center>

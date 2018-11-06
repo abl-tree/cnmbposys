@@ -16,39 +16,57 @@ class UserInfo extends Model
     protected $fillable = [
         'firstname', 'middlename', 'lastname', 'birthdate', 'gender', 'contact_number', 'address', 'image', 'salary_rate','image_ext', 'status', 'hired_date', 'separation_date', 'excel_hash'
     ];
-    /**
-     * Set the user's firstname.
-     *
-     * @param  string  $value
-     * @return void
-     */
+
+     //Mutator
     public function setFirstnameAttribute($value)
     {
-        $this->attributes['firstname'] = ucwords($value);
-    }
-    
-    /**
-     * Set the user's middlename.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setMiddlenameAttribute($value)
-    {
-        $this->attributes['middlename'] = ucwords($value);
-    }
-    
-    /**
-     * Set the user's middlename.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setLastnameAttribute($value)
-    {
-        $this->attributes['lastname'] = ucwords($value);
+        $this->attributes['firstname'] = strtolower($value);
     }
 
+    public function setMiddlenameAttribute($value)
+    {
+        $this->attributes['middlename'] = strtolower($value);
+    }
+
+    public function setLastnameAttribute($value)
+    {
+        $this->attributes['lastname'] = strtolower($value);
+    }
+
+    public function setAddressAttribute($value)
+    {
+        $this->attributes['address'] = strtolower($value);
+    }    
+
+    public function setExcelHashAttribute($value)
+    {
+        $this->attributes['excel_hash'] = str_replace(' ', '', strtolower($value));
+    }
+
+    //Accessors
+    public function getFirstnameAttribute($value)
+    {
+        return ucwords($value);
+    }
+
+    public function getMiddlenameAttribute($value)
+    {
+        return ucwords($value);        
+    }
+
+    public function getLastnameAttribute($value)
+    {
+        return ucwords($value);        
+    }
+
+    public function getAddressAttribute($value)
+    {
+        return ucwords($value);
+    }    
+
+
+
+    //Relationships
     public function user() {
         return $this->hasOne('\App\User', 'uid', 'id');
     }
