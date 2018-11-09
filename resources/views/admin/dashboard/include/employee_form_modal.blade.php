@@ -246,16 +246,36 @@
                             {{ csrf_field()}}
                             <div class="row" style='padding-left:10px;padding-right:10px'>
                                 <div class="col-md-12">
-                                    <h6 class="c-grey-900">Incident Report</h6>
-                                    <div class="mT-30">
-                                        <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label ">Report Description: </label>
-                                            <div class="col-sm-9">
-                                                <textarea rows="5" cols="60" name="description" id="description" type="text" class="form-control" placeholder="File Here"></textarea>
-                                                <!-- <button  type="button" id="IR_email" class=" btn btn-info ti-email pull-right"></button> -->
-                                            </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label ">Level of Sanction:</label>
+                                        <div class="col-sm-4">
+                                           <select class="form-control" id="sanction_level" name="sanction_level" required>
+                                            <option value="Verbal Warning">1</option>
+                                            <option value="Written Warning">2</option>
+                                            <option value="Final Warning">4</option>
+                                            <option value="Endorse to HR">6</option>
+                                            </select>
                                         </div>
                                     </div>
+                                     <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label ">Type of Sanction:</label>
+                                        <div class="col-sm-4">
+                                           <select class="form-control" id="sanction_type" name="sanction_type" required>
+                                            <option value="Absentism">Absentism</option>
+                                            <option value="Test Type">Test Type</option>
+                                            <option value="Test Type">Test Type</option>
+                                            <option value="Test Type">Test Type</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label ">Report Description: </label>
+                                        <div class="col-sm-9">
+                                            <textarea rows="3" cols="40" name="description" id="description" type="text" class="form-control" placeholder="File Here"></textarea>
+                                            <!-- <button  type="button" id="IR_email" class=" btn btn-info ti-email pull-right"></button> -->
+                                        </div>
+                                    </div>
+                               
                                 </div>
                                 <input type="hidden" name="ir_id" id="ir_id" value="">
                                 <input type="hidden" name="button_action" id="button_action" value="">
@@ -280,6 +300,9 @@
                                     <tr>
                                         <th>Description</th>
                                         <th>Date Filed</th>
+                                        <th>Sanction Level</th>
+                                        <th>Sanction Type</th>
+                                        <th>Agent Commitment</th>
                                         <th>Filed By</th>
                                     </tr>
                                 </thead>

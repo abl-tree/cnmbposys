@@ -19,6 +19,9 @@ class UserReports extends Migration
             $table->foreign('user_reports_id')->references('id')->on('user_infos')->onDelete('cascade');
             $table->unsignedInteger('filed_by');
             $table->foreign('filed_by')->references('id')->on('user_infos')->onDelete('cascade');
+            $table->string('sanction_level');
+            $table->string('sanction_type');
+            $table->longText('agent_commitment')->nullable();
             $table->longText('description');
             $table->timestamps();
         });

@@ -57,7 +57,7 @@ class ProfileController extends Controller
 
         return $this->reloadDatatable($employeeList);
     }
-
+ 
     public function childView(){
         $id = auth()->user()->id;
         $employeeList = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();

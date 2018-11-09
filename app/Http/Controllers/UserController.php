@@ -66,6 +66,8 @@ class UserController extends Controller
             $IR->user_reports_id = $request->id;
             $IR->description = $request->description;
             $IR->filed_by = $logged_in;
+            $IR->sanction_level =$request->sanction_level;
+            $IR->sanction_type =$request->sanction_type;
             $IR->save(); 
             $IRcount = UserReport::where('user_reports_id','=',$request->id)->count();
             $user = User::where('uid', '=',$request->id)->first(); 
@@ -96,10 +98,16 @@ class UserController extends Controller
         $reports_details = DB::table('user_reports')
         ->join('users','users.id','=','user_reports.user_reports_id')
         ->join('user_infos','user_infos.id','=','user_reports.filed_by')
-        ->select('user_reports.id','description as description','user_reports.created_at as date_filed','firstname','lastname','middlename')
+        ->select('user_reports.id','description as description','user_reports.created_at as date_filed','firstname','lastname','middlename','sanction_type as sanction_type','sanction_level as sanction_level','agent_commitment as agent_commitment')
         ->where('user_reports.user_reports_id','=',$id)->get();
 
         return Datatables::of($reports_details)
+        ->editColumn('agent_commitment', function ($data){
+            if($data->agent_commitment==null){
+
+            }
+            return "No Reply";
+        })
         ->editColumn('date_filed', function ($data){
             return date('F d, Y g:i a', strtotime($data->date_filed));
         })->make(true);
