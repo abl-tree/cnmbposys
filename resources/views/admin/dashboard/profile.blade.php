@@ -103,6 +103,14 @@
                 </div>
             </div>
         </div>
+        <div id="full_pic" class="modal">
+
+              <!-- The Close Button -->
+              <span class="close_pic">&times;</span>
+
+              <!-- Modal Content (The Image) -->
+              <img class="full_pic_content" id="img01">
+        </div>
         <div class="email-wrapper">
             <!-- Content -->
             <div class="bdT pX-40 pY-30 col-md-12">

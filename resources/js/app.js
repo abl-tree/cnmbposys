@@ -985,5 +985,24 @@ document.addEventListener('DOMContentLoaded', function () {
         snap.classList.remove("visible");
         error_message.classList.remove("visible");
     }
+        var modal = document.getElementById('full_pic');
 
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById('profile-image-display');
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+        img.onclick = function(){
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close_pic")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() { 
+          modal.style.display = "none";
+        }
+        
 });
