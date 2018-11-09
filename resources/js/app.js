@@ -852,13 +852,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Create an object URL for the video stream and
                 // set it as src of our HTLM video element.
-                video.src = window.URL.createObjectURL(stream);
+               video.srcObject = stream;
 
                 // Play the video element to start the stream.
                 video.play();
                 video.onplay = function() {
                     showVideo();
                 };
+                 $(document).on('click','#done',function(event){
+                    event.preventDefault();
+                   $("#show_camera").attr('hidden','');
+                   stream.getTracks().forEach(track => track.stop())
+                 });
+
+                $('#employee-form-modal').on('hidden.bs.modal', function (e) {
+                    $("#show_camera").attr('hidden','');
+                    stream.getTracks().forEach(track => track.stop())
+                });
          
             },
             // Error Callback
@@ -911,6 +921,7 @@ document.addEventListener('DOMContentLoaded', function () {
         video.pause();
 
     });
+
 
 
     delete_photo_btn.addEventListener("click", function(e) {
