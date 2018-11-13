@@ -11,10 +11,8 @@ use App\UserInfo;
 use App\UserBenefit;
 use App\AccessLevelHierarchy;
 use App\AccessLevel;
-use App\ExcelTemplateValidator;
 use Mail;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 
 class EmployeeController extends Controller
@@ -61,40 +59,40 @@ class EmployeeController extends Controller
         $userinfo="";
         $access_level_hierarchy="";
         $email="";
-        $fullname_hash = str_replace(' ', '', strtolower($request->first_name.$request->middle_name.$request->last_name));
+        $fullname_hash = strtolower($request->first_name.$request->middle_name.$request->last_name);
         $excel_hash = UserInfo::all()->pluck('excel_hash')->toArray();
         $admin_designation = "required";
         $role = $request->role;
-
         if($role==1){
             $admin_designation="";
         }
         
 
-        if($request->action=='add'){
-            $userinfo = new UserInfo;
-            $user = new User;
-            $access_level_hierarchy = new AccessLevelHierarchy;
-            $email = 'required|unique:users|email';
-            //check if fullname exist
-            if(in_array($fullname_hash,$excel_hash)){
-                return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
-            }
-        }else if($request->action=='edit'){
-            $userinfo = UserInfo::find($request->id);
-            $user = User::find($request->id);
-            $access_level_hierarchy = AccessLevelHierarchy::where('child_id','=',$request->id)->first();
-            if($user->email == $request->email){
-                $email = 'required|email';
-            }else{
-                $email = 'required|unique:users|email';
-            }
-            if($userinfo->excel_hash != $fullname_hash){
-                if(in_array($fullname_hash,$excel_hash)){
-                    return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
+        ////////////////////////if
+                if($request->action=='add'){
+                    $userinfo = new UserInfo;
+                    $user = new User;
+                    $access_level_hierarchy = new AccessLevelHierarchy;
+                    $email = 'required|unique:users|email';
+                    if(in_array($fullname_hash,$excel_hash)){
+                        return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
+                    }
+                }else if($request->action=='edit'){
+                    $userinfo = UserInfo::find($request->id);
+                    $user = User::find($request->id);
+                    $access_level_hierarchy = AccessLevelHierarchy::where('child_id','=',$request->id)->first();
+                    if($user->email == $request->email){
+                        $email = 'required|email';
+                    }else{
+                        $email = 'required|unique:users|email';
+                    }
+                    if($userinfo->excel_hash != $fullname_hash){
+                        if(in_array($fullname_hash,$excel_hash)){
+                            return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
+                        }
+                    }
                 }
-            }
-        }
+        ////////////////////////endif
 
         $validator = Validator::make($request->all(), [
             'first_name' => 'required',
@@ -145,9 +143,7 @@ class EmployeeController extends Controller
         
         $user->uid= $userinfo->id;
         $user->email = $request->email;
-        if($request->action=="add"){
-            $user->password = str_replace(' ', '', strtolower($userinfo->firstname.$userinfo->lastname));
-        }
+        $user->password = $userinfo->firstname.$userinfo->lastname;
         $user->access_id = $request->position;
         $user->save();
 
@@ -175,8 +171,6 @@ class EmployeeController extends Controller
         
         $check = $access_level_hierarchy->save();
         if($check){
-            $etv = new ExcelTemplateValidator;
-            $etv = $etv->updateExcelToken("Reassign");
             return response()->json(['success'=>'Record is successfully added','info'=>$userinfo,'user'=>$user,'benefit'=>UserBenefit::where('user_info_id',$request->id)->get()]);
         }
     }
@@ -284,11 +278,7 @@ class EmployeeController extends Controller
         $user = UserInfo::where('id', $request->status_id)->first();
         $user->status = $request->status_data;
         $user->separation_date = Carbon::now();
-        $saved = $user->save();
-        if($saved){
-            $etv = new ExcelTemplateValidator;
-            $etv = $etv->updateExcelToken("Reassign");
-        }
+        $user->save();
         $account = User::where('uid', '=',$request->status_id)
                    ->first(); 
         $userInfo = UserInfo::where('id', '=',$request->status_id)
@@ -316,7 +306,6 @@ class EmployeeController extends Controller
         $user = UserInfo::where('id', $request->id)->get();
         return $user;
     }
-
-
+    
     
 }

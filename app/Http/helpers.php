@@ -88,4 +88,3 @@ function canIR(){
         return false;
     }
 }
-

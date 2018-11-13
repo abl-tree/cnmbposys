@@ -226,7 +226,6 @@ $(document).on("click", ".view-employee", function(){
     })
 }) 
 
-
 $(document).on("click", "#prevProfile", function(){
     id = prevProfiles[prevProfiles.length-2];
     $('#profile-edit-button').attr('data-id',id);
@@ -336,17 +335,8 @@ $("#photo").change(function() {
     // console.log(this);
 });
 $(document).on('change','#excel_file',function() {
-    
-    if($(this).val().split('.').pop().toLowerCase()=='xlsx'){
-        $('#excel-file-label').removeClass('btn-secondary').addClass('btn-info');
-        $('#excel-file-label').html('File Selected');
-        $('#excel-form-submit')[0].disabled = false;
-    }else{
-        $('#excel-file-label').removeClass('btn-info').addClass('btn-secondary');
-        $('#excel-file-label').html('Invalid File.')
-        $('#excel-form-submit')[0].disabled = true;
-    }
-    
+    $('#excel-file-label').removeClass('btn-secondary').addClass('btn-info');
+    $('#excel-file-label').html('File Selected');
 });
 
 document.getElementById('photo').onchange = function(evt) {
@@ -440,12 +430,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                                 var data = result.info.image;
                                 $('#top-image-display').css('background-image','url('+data+')');
                             }
-                            if(result.info.image){
-                                $('#profile-image-display').attr('src',result.info.image);
-                            }else{
-                                $('#profile-image-display').attr('src','/images/nobody.jpg');
-                            }
-                            
+                            $('#profile-image-display').attr('src',result.info.image);
                             $('#contact_P').html(result.info.contact_number);
                             $('#email_P').html(result.user.email);
                             $('#address_P').html(result.info.address);
@@ -674,9 +659,6 @@ $(document).on('click','.excel-action-button', function(e){
 $(document).on('click','#excel-form-submit',function(e){
     e.preventDefault();
     var formData = new FormData($('#import-excel-form')[0]);
-    var btn = $('#excel-form-submit');
-    btn[0].disabled = true;
-    btn.html('Loading...');
     $.ajax({
         url:"/profile/excel_import",
         method:"POST",
@@ -687,63 +669,40 @@ $(document).on('click','#excel-form-submit',function(e){
         processData: false,
         success:function(result)
         {
-            btn.html('Confirm');
-            btn[0].disabled=false;
             // alert(result+"success");
-            // var reassign = '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>';
-            var title="";
-            var htmlcontent="";
-            
+            var reassign = '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>';
             if(result[0].outdated==true){
-                title = "<strong>Outdated Template</strong>"
-                htmlcontent = '<div class="alert alert-info"> Please download new template.</div>';
-            }else if(result[0].outdated==false){
-                if(result[0].action=='Add'){
-                    var err=0;
-                    if(result[0].error_rows.length>0){
-                        err=error_rows;
-                    }else{
-                        err=0;
-                    }
-                    title = "<strong>Add Employee Report</strong>";
-                    htmlcontent = '<div class="alert alert-success"><strong>'+result[0].saved_counter+'</strong> record/s added.</div>';
-                    htmlcontent += '<div class="alert alert-info"><strong>'+result[0].duplicate_counter+'</strong> duplicate/s found.</div>';
-                    htmlcontent += '<div class="alert alert-warning">Error rows: '+(err).toString()+'</div>';
-                }else if(result[0].action=='Reassign'){
-                    title = "<strong>Reassign Employee Report</strong>";
-                    htmlcontent = '<div class="alert alert-success"><strong>'+result[0].reassign_counter+'</strong> reassigned employee/s.</div>';
-                }
+                reassign = '<li>Reassign disabled.<strong> Outdated template.</strong></li>';
             }
-
-            if(result=='File not valid.'){
-                title="<strong>Invalid</strong>";
-                htmlcontent="<div class='alert alert-danger'>Please upload a <strong>.xlsx</strong> file.</div>";
-            }
-
             swal({
-                title: title,
-                html:htmlcontent,
+                title: '<strong>Import Report</strong>',
+                type: 'info',
+                html:
+                '<li>Successfully added <strong>' + result[0].saved_counter+'</strong> records.</li>'+
+                reassign+
+                '<li>Found <strong>' + result[0].duplicate_counter+'</strong> duplicate names.</li>'+
+                '<li><strong>' + result[0].error_counter+'</strong> Errors</li>',
+                
                 focusConfirm: false,
                 confirmButtonText:
                 '<i class="fa fa-thumbs-up"></i> Noted!',
                 confirmButtonAriaLabel: 'Thumbs up, great!',
             
             })
-            
             $('#excel-modal').modal('hide');
             refresh_employee_table();
             
         },
+        error: function (data) {
+            alert(result+"success");
+
+            swal("Error","Please upload xlsx or xls file.")
+        }
     })
 });
 
 $(document).on('click','#excel-modal-cancel',function(){
     $('#excel-modal').modal('hide');
-});
-
-
-$(document).on('click','#import',function(){
-    $('#excel-form-submit')[0].disabled = false;
 });
 ////////////////////////////////////////////////////////////////////////////////////
 
@@ -845,7 +804,6 @@ function fetch_edit_data(id){
         }
     })
 }
-
 
 function refresh_employee_table(){
     employeetable.ajax.reload(); //reload datatable ajax
@@ -965,7 +923,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-
     delete_photo_btn.addEventListener("click", function(e) {
 
         e.preventDefault();
@@ -1038,24 +995,5 @@ document.addEventListener('DOMContentLoaded', function () {
         snap.classList.remove("visible");
         error_message.classList.remove("visible");
     }
-        var modal = document.getElementById('full_pic');
 
-        // Get the image and insert it inside the modal - use its "alt" text as a caption
-        var img = document.getElementById('profile-image-display');
-        var modalImg = document.getElementById("img01");
-        var captionText = document.getElementById("caption");
-        img.onclick = function(){
-            modal.style.display = "block";
-            modalImg.src = this.src;
-            captionText.innerHTML = this.alt;
-        }
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close_pic")[0];
-
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() { 
-          modal.style.display = "none";
-        }
-        
 });

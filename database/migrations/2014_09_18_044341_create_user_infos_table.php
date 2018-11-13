@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 
 class CreateUserInfosTable extends Migration
 {
@@ -14,7 +13,6 @@ class CreateUserInfosTable extends Migration
      */
     public function up()
     {
-        
         Schema::create('user_infos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('firstname');
@@ -32,9 +30,8 @@ class CreateUserInfosTable extends Migration
             $table->string('excel_hash');
             $table->timestamps();
         });
-        
+
         DB::statement("ALTER TABLE user_infos ADD image LONGBLOB");
-        
     }
 
     /**
