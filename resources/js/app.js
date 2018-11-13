@@ -894,13 +894,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Create an object URL for the video stream and
                 // set it as src of our HTLM video element.
-                video.src = window.URL.createObjectURL(stream);
+               video.srcObject = stream;
 
                 // Play the video element to start the stream.
                 video.play();
                 video.onplay = function() {
                     showVideo();
                 };
+                 $(document).on('click','#done',function(event){
+                    event.preventDefault();
+                   $("#show_camera").attr('hidden','');
+                   stream.getTracks().forEach(track => track.stop())
+                 });
+
+                $('#employee-form-modal').on('hidden.bs.modal', function (e) {
+                    $("#show_camera").attr('hidden','');
+                    stream.getTracks().forEach(track => track.stop())
+                });
          
             },
             // Error Callback
@@ -953,6 +963,7 @@ document.addEventListener('DOMContentLoaded', function () {
         video.pause();
 
     });
+
 
 
     delete_photo_btn.addEventListener("click", function(e) {
@@ -1027,5 +1038,24 @@ document.addEventListener('DOMContentLoaded', function () {
         snap.classList.remove("visible");
         error_message.classList.remove("visible");
     }
+        var modal = document.getElementById('full_pic');
 
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById('profile-image-display');
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+        img.onclick = function(){
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close_pic")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() { 
+          modal.style.display = "none";
+        }
+        
 });
