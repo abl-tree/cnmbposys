@@ -34,6 +34,8 @@ window.swal = require('sweetalert2');
 //global variables
 var ir_id;
 var description;
+var sanction_level;
+var sanction_type;
 //end of global variables
 
 //PROFILE EMPLOYEE LIST -- START
@@ -527,6 +529,9 @@ $(document).on('click','.add_nod',function(event){
             columns: [
                 {data: 'description',name:'description'},
                 {data: 'date_filed',name:'date_filed'},
+                {data: 'sanction_level',name:'sanction_level'},
+                {data: 'sanction_type',name:'sanction_type'},
+                {data: 'agent_commitment',name:'agent_commitment'},
                 {data:'filed_by',
                 render: function(data, type, full, meta){
                     return full.firstname +" "+ full.middlename+" "+full.lastname;
@@ -554,6 +559,9 @@ $(document).on('click','#add_IR',function(event){
         input.html('Saving...'); 
        // $('#add_IR_form').serialize();
        description = $('#description').val();
+       sanction_level = $('#sanction_level').val();
+       sanction_type = $('#sanction_type').val();
+       console.log(sanction_level);
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -561,7 +569,7 @@ $(document).on('click','#add_IR',function(event){
             url:"/add_IR",
             method: 'POST',
             dataType:'json',
-            data: {id:ir_id,description:description},
+            data: {id:ir_id,description:description,sanction_level:sanction_level,sanction_type:sanction_type},
             success:function(data){
                 if(data=="Error"){
                     swal("Input Missing!", "Please Enter Description.", "error")
@@ -856,15 +864,7 @@ document.addEventListener('DOMContentLoaded', function () {
     download_photo_btn = document.querySelector('#download-photo'),
     error_message = document.querySelector('#error-message');
 
-    $(document).on('click','#done',function(event){
-        event.preventDefault();
-       $("#show_camera").attr('hidden','');
-     });
-
-    $('#employee-form-modal').on('hidden.bs.modal', function (e) {
-        video.pause();
-        $("#show_camera").attr('hidden','');
-    });
+   
 
     // The getUserMedia interface is used for handling camera input.
     // Some browsers need a prefix so here we're covering all the options
