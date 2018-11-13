@@ -62,9 +62,9 @@ class User extends Authenticatable
     }
 
     
-    public function setNameAttribute($value)
+    public function setEmailAttribute($value)
     {
-        $this->attributes['name'] = ucwords($value);
+        $this->attributes['email'] = strtolower($value);
     }
    /* 
     public function getAvatarAttribute($value)
@@ -106,5 +106,4 @@ class User extends Authenticatable
         return $this->hasOne('\App\AccessLevel', 'id', 'access_id');
     }
 
-    
 }

@@ -65,8 +65,9 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
     //UPDATE STATUS -- END
 
     //IMPORT EXPORT EXCEL -- START
-    Route::get('/profile/excel_exportreport','excelController@report')->name('excel.exportreport');
-    Route::get('/profile/excel_exporttemplate','excelController@template')->name('excel.exporttemplate');
+    Route::get('/profile/excel_export_report','excelController@report')->name('excel.exportreport');
+    Route::get('/profile/excel_export_add_template','excelController@Addtemplate')->name('excel.exportaddtemplate');
+    Route::get('/profile/excel_export_reassign_template','excelController@Reassigntemplate')->name('excel.exportreassigntemplate');
     Route::post('/profile/excel_import','excelController@import')->name('excel.import');
     //IMPORT EXPORT EXCEL -- END
 });
