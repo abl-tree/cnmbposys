@@ -136,6 +136,10 @@
 
                     <button type="submit" class="btn cur-p btn-secondary form-action-button" id="addflag" data-action="add" data-url="/employee"  data-toggle="tooltip" data-placement="top" title="Add Employee"><span class="ti-pencil-alt"></span></button>
                     @endif
+
+                    @if(isAdminHRM())
+                    <button type="submit" class="btn cur-p btn-secondary add-position-button" id="add_position" data-action="add" data-url="/position"  data-toggle="tooltip" data-placement="top" title="Add Position"><span class="ti-user"></span></button>
+                    @endif
                 </div>
                 </div>
 
