@@ -19,7 +19,7 @@ class CreateUserBenefitsTable extends Migration
             $table->foreign('user_info_id')->references('id')->on('user_infos')->onDelete('cascade');
             $table->unsignedInteger('benefit_id');
             $table->foreign('benefit_id')->references('id')->on('benefits')->onDelete('cascade');
-            $table->integer('id_number')->nullable();
+            $table->string('id_number')->nullable();
             $table->timestamps();
         });
     }

@@ -165,17 +165,27 @@ class excelController extends Controller
         $spreadsheet->addSheet($worksheet);
         $parent_id_array = AccessLevel::groupBy('parent')->pluck('parent')->toArray();
         $tmp=[];
-        foreach($parent_id_array as $datum){
+        $tmp1=[];
+        foreach($parent_id_array as $k => $datum){
             $tmp[] = DB::table('user_infos')
             ->join('users','users.uid','=','user_infos.id')
             ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'))
             ->where([['users.access_id','=',$datum],['user_infos.status','!=','Terminated'],])
             ->pluck('fullname')->toArray();
+            if(empty($datum)){
+                $tmp1[] = 'superadmin';
+            }else{
+                $dt = AccessLevel::find($datum);
+                $tmp1[] = $dt->code;
+            }
         }
         foreach($tmp as $k => $datum){
             $worksheet->fromArray($datum,null,'A'.($k));
         }
-
+        //get code
+        foreach($tmp1 as $k => $datum){
+            $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange($datum,$spreadsheet->getSheetByName('Parent'),($k).':'.($k)));
+        }
         //config sheet
         $token = DB::table('excel_template_validators')->where('template','Reassign')->pluck('token');
         $config=[
@@ -188,12 +198,12 @@ class excelController extends Controller
         $worksheet->fromArray($config,null,'A1');
 
         // //defining named range
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('superadmin',$spreadsheet->getSheetByName('Parent'),'1:1'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('hrm',$spreadsheet->getSheetByName('Parent'),'2:2'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('om',$spreadsheet->getSheetByName('Parent'),'3:3'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('rtam',$spreadsheet->getSheetByName('Parent'),'4:4'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('tqm',$spreadsheet->getSheetByName('Parent'),'5:5'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('tl',$spreadsheet->getSheetByName('Parent'),'6:6'));
+        
+        // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('hrm',$spreadsheet->getSheetByName('Parent'),'2:2'));
+        // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('om',$spreadsheet->getSheetByName('Parent'),'3:3'));
+        // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('rtam',$spreadsheet->getSheetByName('Parent'),'4:4'));
+        // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('tqm',$spreadsheet->getSheetByName('Parent'),'5:5'));
+        // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('tl',$spreadsheet->getSheetByName('Parent'),'6:6'));
         
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->setPreCalculateFormulas(false);
@@ -205,9 +215,64 @@ class excelController extends Controller
     }
 
     function report(){
-        $name = "Export-Report-";
-        $name.= now();
-        return (new exportReportSheet)->download($name.'.xlsx');
+        // $name = "Export-Report-";
+        // $name.= now();
+        // return (new exportReportSheet)->download($name.'.xlsx');
+        $filename = "Report-Template-".now().".xlsx"; //filename
+        $spreadsheet = new Spreadsheet();
+        //add template sheet
+        $header = [
+            'CID',
+            'First Name',
+            'Middle Name',
+            'Last Name',
+            'Status',
+            'Gender',
+            'Birth Date',
+            'Address',
+            'PersonalEmail',
+            'CompanyEmail',
+            'Contact No.',
+            'SSS',
+            'Philhealth',
+            'PagIbig',
+            'TIN',
+            'Position',
+            'Hired Date',
+            'Separation Date',
+        ];
+        $worksheet = $spreadsheet->getActiveSheet(0);
+        $worksheet->fromArray($header,null,'A1');
+        $userInfo = new UserInfo;
+        $employee = $userInfo->getAllEmployee();
+        $worksheet->setTitle("Report");
+        foreach($employee as $k => $datum){
+            $worksheet->setCellValue('A'.($k+2),$datum->company_id);
+            $worksheet->setCellValue('B'.($k+2),$datum->firstname);
+            $worksheet->setCellValue('C'.($k+2),$datum->middlename);
+            $worksheet->setCellValue('D'.($k+2),$datum->lastname);
+            $worksheet->setCellValue('E'.($k+2),$datum->status);
+            $worksheet->setCellValue('F'.($k+2),$datum->gender);
+            $worksheet->setCellValue('G'.($k+2),$datum->birthdate);
+            $worksheet->setCellValue('H'.($k+2),$datum->address);
+            $worksheet->setCellValue('I'.($k+2),$datum->p_email);
+            $worksheet->setCellValue('J'.($k+2),$datum->email);
+            $worksheet->setCellValue('K'.($k+2),$datum->contact_number);
+            $worksheet->setCellValue('L'.($k+2),$datum->col1);
+            $worksheet->setCellValue('M'.($k+2),$datum->col2);
+            $worksheet->setCellValue('N'.($k+2),$datum->col3);
+            $worksheet->setCellValue('O'.($k+2),$datum->col4);
+            $worksheet->setCellValue('P'.($k+2),$datum->name);
+            $worksheet->setCellValue('Q'.($k+2),$datum->hired_date);
+            $worksheet->setCellValue('R'.($k+2),$datum->separation_date);
+        }
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->setPreCalculateFormulas(false);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
     }
 
 
@@ -249,10 +314,10 @@ class excelController extends Controller
                         $p_email = $handler->getCellByColumnAndRow(7, $r)->getValue();
                         $email = $handler->getCellByColumnAndRow(8, $r)->getValue();
                         $contact_number=$handler->getCellByColumnAndRow(9, $r)->getValue();
-                        $sss=(int)$handler->getCellByColumnAndRow(10, $r)->getValue();
-                        $philhealth=(int)$handler->getCellByColumnAndRow(11, $r)->getValue();
-                        $pagibig=(int)$handler->getCellByColumnAndRow(12, $r)->getValue();
-                        $tin=(int)$handler->getCellByColumnAndRow(13, $r)->getValue();
+                        $sss=$handler->getCellByColumnAndRow(10, $r)->getValue();
+                        $philhealth=$handler->getCellByColumnAndRow(11, $r)->getValue();
+                        $pagibig=$handler->getCellByColumnAndRow(12, $r)->getValue();
+                        $tin=$handler->getCellByColumnAndRow(13, $r)->getValue();
                         $position_id = new AccessLevel;
                         $position = $position_id->getIdByPositionName($handler->getCellByColumnAndRow(14, $r)->getValue());
                         $company_id = $handler->getCellByColumnAndRow(15, $r)->getValue();
@@ -315,7 +380,7 @@ class excelController extends Controller
                 
                                 $obj_benefit=[];
                                 for($l=0;$l<4;$l++){
-                                    $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$handler->getCellByColumnAndRow($l+9, $r)->getValue(),];
+                                    $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$handler->getCellByColumnAndRow($l+10, $r)->getValue(),];
                                 }
                                 UserBenefit::insert($obj_benefit);
         
