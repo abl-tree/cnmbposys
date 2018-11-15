@@ -64,6 +64,11 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
     Route::get('/get_status', 'EmployeeController@get_status');
     //UPDATE STATUS -- END
 
+    //ADD POSITION -- START
+    Route::post('/add_position', 'EmployeeController@add_position');
+    Route::get('/get_position', 'EmployeeController@get_position');
+    //ADD POSITION -- END
+
     //IMPORT EXPORT EXCEL -- START
     Route::get('/profile/excel_export_report','excelController@report')->name('excel.exportreport');
     Route::get('/profile/excel_export_add_template','excelController@Addtemplate')->name('excel.exportaddtemplate');
