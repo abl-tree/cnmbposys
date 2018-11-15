@@ -504,6 +504,82 @@ $(document).on('click','.form-action-button',function(){
     $('#employee-form-modal-header-title').html(ucword(action));
     $('#employee-form-modal').modal('show');
 });
+
+/////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////// START ADD POSITION
+/////////////////////////////////////////////////////////////
+
+$(document).on('click','.add-position-button',function(){
+
+    var action = $(this).attr('data-action');
+    $('#action').val(action);
+    if(action=='add'){
+        // console.log($('#position').val());
+    }
+    $('#position-modal-header').html(ucword(action));
+
+    function ajax1(){
+        return $.ajax({
+            url:"/get_position",
+            method: 'GET',
+            dataType:'json',
+            success:function(data){
+                $('#position_designation').find('option').remove();
+                for(x=0;x<data.length;x++){
+                    $('#position_designation').append('<option value="'+data[x].id+'">'+data[x].name+'</option>');
+                }
+            },
+            error: function(data){
+                console.log(data);
+            }
+        })
+    }
+    
+    $.when(ajax1()).done(function(a1){
+        
+        $('#position-modal-form').modal('show');
+    });
+
+});
+
+$(document).on('click','#position-modal-cancel',function(){
+    $('#position-modal-form').modal('hide');
+});
+
+$(document).on('click','#position-form-submit',function(event){
+    event.preventDefault();
+        var input = $(this);
+        var button = this;
+        button.disabled = true;
+        input.html('Saving...'); 
+       // $('#add_IR_form').serialize();
+       description = $('#description').val();
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:"/add_position",
+            method: 'POST',
+            dataType:'json',
+            data: $('#add-position-form').serialize(),
+            success:function(data){
+                swal("Done!", "New position successfully added.", "success")
+                button.disabled = false;
+                input.html('Save');
+                $('#position-modal-form').modal('hide');
+                $('#add-position-form')[0].reset();
+            },
+            error: function(data){
+                swal("Oh no!", "Something went wrong, try again.", "error")
+                button.disabled = false;
+                input.html('Save');
+            }
+        })
+});
+
+/////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////// END ADD POSITION
+/////////////////////////////////////////////////////////////
  
  var ir_list;
 
