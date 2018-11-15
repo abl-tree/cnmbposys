@@ -61,6 +61,7 @@ class EmployeeController extends Controller
         $userinfo="";
         $access_level_hierarchy="";
         $email="";
+        $pemail="";
         $fullname_hash = str_replace(' ', '', strtolower($request->first_name.$request->middle_name.$request->last_name));
         $excel_hash = UserInfo::all()->pluck('excel_hash')->toArray();
         $admin_designation = "required";
@@ -69,7 +70,6 @@ class EmployeeController extends Controller
         if($role==1){
             $admin_designation="";
         }
-        
 
         if($request->action=='add'){
             $userinfo = new UserInfo;
@@ -89,6 +89,11 @@ class EmployeeController extends Controller
             }else{
                 $email = 'required|unique:users|email';
             }
+            if($userinfo->p_email == $request->p_email){
+                $pemail = 'required|email';
+            }else{
+                $pemail = 'required|unique:user_infos|email';
+            }
             if($userinfo->excel_hash != $fullname_hash){
                 if(in_array($fullname_hash,$excel_hash)){
                     return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
@@ -103,7 +108,9 @@ class EmployeeController extends Controller
             'address' => 'required',
             'birthdate' => 'required',
             'gender' => 'required',
-            'contact' => 'required',
+            'company_id' => 'required',
+            'p_email' => $pemail,
+            // 'contact' => 'required',
             'email' => $email,
             'position' => 'required',
             // 'salary' => 'required',
@@ -129,6 +136,7 @@ class EmployeeController extends Controller
         $userinfo->contact_number=$request->contact;
         $userinfo->hired_date=$request->hired_date;
         $userinfo->excel_hash = $fullname_hash;
+        $userinfo->p_email = $request->p_email;
         if($request->hasFile('photo')){
             $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
             $userinfo->image_ext= explode(".", strtolower($_FILES['photo']['name']))[1];
@@ -149,6 +157,7 @@ class EmployeeController extends Controller
             $user->password = str_replace(' ', '', strtolower($userinfo->firstname.$userinfo->lastname));
         }
         $user->access_id = $request->position;
+        $user->company_id = $request->company_id;
         $user->save();
 
         $obj_benefit=[];

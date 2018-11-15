@@ -33,13 +33,15 @@ class excelController extends Controller
             'Gender',
             'Birth Date',
             'Address',
-            'Email',
+            'PersonalEmail',
+            'CompanyEmail',
             'Contact No.',
             'SSS',
             'PhilHealth',
             'PagIbig',
             'TIN',
             'Position',
+            'CompanyID',
             'Salary',
             'Hired Date',
         ];
@@ -62,7 +64,7 @@ class excelController extends Controller
         $worksheet->fromArray($tmp,null,'A1');
 
         //config sheet
-        $token = DB::table('excel_template_validators')->where('template','Reassign')->pluck('token');
+        $token = DB::table('excel_template_validators')->where('template','Add')->pluck('token');
         $config=[
             'Add',
             $token[0],
@@ -203,7 +205,7 @@ class excelController extends Controller
     }
 
     function report(){
-        $name = "Import-Report-";
+        $name = "Export-Report-";
         $name.= now();
         return (new exportReportSheet)->download($name.'.xlsx');
     }
@@ -236,23 +238,26 @@ class excelController extends Controller
                     $rows = $handler->getHighestDataRow();    
                     for($r=2;$r<=$rows;$r++){
                         $taken_email = User::pluck('email')->toArray();
+                        $taken_pemail = UserInfo::pluck('p_email')->toArray();
                         $hash = UserInfo::pluck('excel_hash')->toArray();
                         $fname = $handler->getCellByColumnAndRow(1, $r)->getValue();
                         $mname = $handler->getCellByColumnAndRow(2, $r)->getValue();
                         $lname = $handler->getCellByColumnAndRow(3, $r)->getValue();
-                        $birthdate = $handler->getCellByColumnAndRow(5, $r)->getFormattedValue();
-                        $position_id = new AccessLevel;
-                        $position = $position_id->getIdByPositionName($handler->getCellByColumnAndRow(13, $r)->getValue());
-                        $email = $handler->getCellByColumnAndRow(7, $r)->getValue();
-                        $contact_number=$handler->getCellByColumnAndRow(8, $r)->getValue();
-                        $hired_date=$handler->getCellByColumnAndRow(15, $r)->getFormattedValue();
-                        $address=$handler->getCellByColumnAndRow(6, $r)->getValue();
                         $gender=$handler->getCellByColumnAndRow(4, $r)->getValue();
-                        $salary_rate=(int)$handler->getCellByColumnAndRow(14, $r)->getValue();
-                        $sss=(int)$handler->getCellByColumnAndRow(9, $r)->getValue();
-                        $philhealth=(int)$handler->getCellByColumnAndRow(10, $r)->getValue();
-                        $pagibig=(int)$handler->getCellByColumnAndRow(11, $r)->getValue();
-                        $tin=(int)$handler->getCellByColumnAndRow(12, $r)->getValue();
+                        $birthdate = $handler->getCellByColumnAndRow(5, $r)->getFormattedValue();
+                        $address=$handler->getCellByColumnAndRow(6, $r)->getValue();
+                        $p_email = $handler->getCellByColumnAndRow(7, $r)->getValue();
+                        $email = $handler->getCellByColumnAndRow(8, $r)->getValue();
+                        $contact_number=$handler->getCellByColumnAndRow(9, $r)->getValue();
+                        $sss=(int)$handler->getCellByColumnAndRow(10, $r)->getValue();
+                        $philhealth=(int)$handler->getCellByColumnAndRow(11, $r)->getValue();
+                        $pagibig=(int)$handler->getCellByColumnAndRow(12, $r)->getValue();
+                        $tin=(int)$handler->getCellByColumnAndRow(13, $r)->getValue();
+                        $position_id = new AccessLevel;
+                        $position = $position_id->getIdByPositionName($handler->getCellByColumnAndRow(14, $r)->getValue());
+                        $company_id = $handler->getCellByColumnAndRow(15, $r)->getValue();
+                        $salary_rate=(int)$handler->getCellByColumnAndRow(16, $r)->getValue();
+                        $hired_date=$handler->getCellByColumnAndRow(17, $r)->getFormattedValue();
                         $concat = str_replace(' ', '', strtolower($fname.$mname.$lname));
                         $errorlog = 0;
                         //Manual error Filter
@@ -265,13 +270,16 @@ class excelController extends Controller
                             if(in_array(strtolower($email),$taken_email)){
                                 $errorlog++;
                             }
+                            if(in_array(strtolower($p_email),$taken_pemail)){
+                                $errorlog++;
+                            }
                         }
 
-                        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        if (!filter_var($email, FILTER_VALIDATE_EMAIL)||!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                             $errorlog++;
                         }
                         //BLANK strings
-                        if($birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$address==""||$gender==""){
+                        if($birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$address==""||$gender==""||$company_id==""||$p_email==""){
                             $errorlog++;
                         }
                         //numeric inputs
@@ -292,6 +300,7 @@ class excelController extends Controller
                                 $userinfo->status="Active";
                                 $userinfo->contact_number=$contact_number;
                                 $userinfo->hired_date=$hired_date;
+                                $userinfo->p_email=$p_email;
                                 $s_userinfo=$userinfo->save();
                                 if(!$s_userinfo){
                                     $error_rows[]=$r;
@@ -301,6 +310,7 @@ class excelController extends Controller
                                 $user->email = $email;
                                 $user->password = str_replace(' ', '', strtolower($fname.$lname));
                                 $user->access_id = $position;
+                                $user->company_id = $company_id;
                                 $user->save();
                 
                                 $obj_benefit=[];

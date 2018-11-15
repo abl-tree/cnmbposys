@@ -23,13 +23,14 @@ class CreateUserInfosTable extends Migration
             $table->string('birthdate');
             $table->enum('gender', ['Male', 'Female']);
             $table->string('contact_number');
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->double('salary_rate', 8, 2)->nullable();
             $table->string('image_ext')->nullable();
             $table->string('status')->nullable();
             $table->string('hired_date');
             $table->string('separation_date');
             $table->string('excel_hash');
+            $table->string('p_email');
             $table->timestamps();
         });
         
