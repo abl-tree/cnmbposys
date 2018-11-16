@@ -405,4 +405,45 @@
     </div>
 </div>
 <!-- UPLOAD EXCEL MODAL END -->
-<!--   -->
+
+<!-- START ADD POSITION MODAL -->
+<div id="position-modal-form" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="position-modal-header"></span><span> Position</span></h4>
+            </div>
+            <div class="modal-body">
+                <form id='add-position-form' method="post">
+                    {{ csrf_field()}}
+                    <center>
+                        <div  id="add-position">
+                            <div class="form-group row">
+                                <label for="position_name" class="col-md-4 col-form-label">Position Name: </label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" name='position_name' id="position_name">
+                                </div>  
+                            </div>
+                            <div class="form-group row">
+                                <label for="position_designation" class="col-md-4 col-form-label">Designation: </label>
+                                <div class="col-md-8">
+                                    <select type="text" class="form-control" name='position_designation' id="position_designation">
+                                    </select>
+                                </div> 
+                            </div>
+                        </div>
+                    </center>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-6">
+                    <div class="pull-right">
+                        <a class="btn btn-default" id="position-modal-cancel">Cancel</a>
+                        <button id="position-form-submit" class="btn btn-danger push-right" style="color:white">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END ADD POSITION MODAL -->

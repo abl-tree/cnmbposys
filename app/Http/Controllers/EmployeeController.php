@@ -326,6 +326,25 @@ class EmployeeController extends Controller
         return $user;
     }
 
+    public function add_position(Request $request){
+
+        $stripped = str_replace(' ', '', $request->position_name);
+        $code = strtolower($stripped);
+
+        $access_level = new AccessLevel;
+        $access_level->code = $code;
+        $access_level->name = $request->position_name;
+        $access_level->parent = $request->position_designation;
+        $access_level->save();
+
+        return $access_level;
+    }
+    
+    public function get_position(Request $request){
+        $access_level = AccessLevel::all();
+        return $access_level;
+    }
+
 
     
 }
