@@ -17,20 +17,20 @@ class CreateUserInfosTable extends Migration
         
         Schema::create('user_infos', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('firstname');
+            $table->string('firstname')->nullable();
             $table->string('middlename')->nullable();
-            $table->string('lastname');
-            $table->string('birthdate');
+            $table->string('lastname')->nullable();
+            $table->string('birthdate')->nullable();
             $table->enum('gender', ['Male', 'Female']);
-            $table->string('contact_number');
+            $table->string('contact_number')->nullable();
             $table->string('address')->nullable();
             $table->double('salary_rate', 8, 2)->nullable();
             $table->string('image_ext')->nullable();
             $table->string('status')->nullable();
-            $table->string('hired_date');
+            $table->string('hired_date')->nullable();
             $table->string('separation_date');
             $table->string('excel_hash');
-            $table->string('p_email');
+            $table->string('p_email')->nullable();
             $table->timestamps();
         });
         

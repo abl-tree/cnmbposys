@@ -781,7 +781,7 @@ $(document).on('click','#excel-form-submit',function(e){
                 if(result[0].action=='Add'){
                     var err=0;
                     if(result[0].error_rows.length>0){
-                        err=error_rows;
+                        err=result[0].error_rows;   
                     }else{
                         err=0;
                     }

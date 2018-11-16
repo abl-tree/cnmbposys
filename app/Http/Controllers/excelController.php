@@ -325,12 +325,14 @@ class excelController extends Controller
                         $hired_date=$handler->getCellByColumnAndRow(17, $r)->getFormattedValue();
                         $concat = str_replace(' ', '', strtolower($fname.$mname.$lname));
                         $errorlog = 0;
+                        $this_duplicate = 0;
                         //Manual error Filter
                         //email
                         
         
                         if(in_array($concat,$hash)){
                             $duplicate_counter++;
+                            $this_duplicate=1;
                         }else{
                             if(in_array(strtolower($email),$taken_email)){
                                 $errorlog++;
@@ -343,16 +345,17 @@ class excelController extends Controller
                         if (!filter_var($email, FILTER_VALIDATE_EMAIL)||!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                             $errorlog++;
                         }
-                        //BLANK strings
+                        // BLANK strings
                         if($birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$address==""||$gender==""||$company_id==""||$p_email==""){
                             $errorlog++;
                         }
                         //numeric inputs
-                        if(!is_numeric($contact_number)||!is_numeric($sss)||!is_numeric($philhealth)||!is_numeric($pagibig)||!is_numeric($tin)||!is_numeric($salary_rate)){
-                            $errorlog++;
-                        }
+                        // if(!is_numeric($contact_number)||!is_numeric($sss)||!is_numeric($phil
+                        //     health)||!is_numeric($pagibig)||!is_numeric($tin)||!is_numeric($salary_rate)){
+                        //     $errorlog++;
+                        // }
         
-                        if($errorlog==0&&$duplicate_counter==0){
+                        if($errorlog==0&&$this_duplicate ==0){
                             if($position>1){
                                 $userinfo = new UserInfo;
                                 $userinfo->firstname=$fname;
