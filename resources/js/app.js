@@ -181,7 +181,9 @@ function replaceProfile(data){
     $("#email_P").html(data.user.email);
     $("#hired_P").html(data.profile.hired_date);
 
-    if(data.viewer == 1 && data.viewer == 2 || showBenefits == 0){
+    console.log(data.viewer);
+
+    if(data.viewer == 1 || data.viewer == 2 || showBenefits == 0){
         $("#sss_P").html(!!data.profile.benefits[0].id_number ? data.profile.benefits[0].id_number : 'N/A');
         $("#philhealth_P").html(!!data.profile.benefits[1].id_number ? data.profile.benefits[1].id_number : 'N/A');
         $("#pagibig_P").html(!!data.profile.benefits[2].id_number ? data.profile.benefits[2].id_number : 'N/A');
