@@ -1,7 +1,7 @@
 
 <!-- emman update -->
 <div id="employee-form-modal" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +12,24 @@
                 <form method="POST" id='employee-form' class="needs-validation" enctype="multipart/form-data">
                     {{ csrf_field()}}
                     <div class="row" style='padding:10px'>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="image-upload">
+                                    <label id="form-image-container" for="photo" style="cursor:pointer">
+                                        <img src="/images/nobody.jpg" alt="profile Pic" id="upload-image-display"
+                                            width="100%" />
+                                    </label>
+                                    <input name="photo" id="photo"  type="file" style="display:none" />
+                                    <input name="captured_photo" id="captured_photo" type="text" value="" style="display:none" />
+                                    
+                                </div>
+                            </div>
+                            <div class="row">
+                                <button id="start-camera" class="btn btn-primary form-control"><span class="ti-camera"></span>&nbsp; Take a photo</button>
+                            </div>
+                        </div>
+                        <!-- //basic info -->
+                        <div class="col-md-3">
                             <h6 class="c-grey-900">Basic Info</h6>
                             <div class="mT-30">
                                 <div class="form-group row">
@@ -44,25 +61,23 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-xs">Birthdate</label>
-                                    <div class="timepicker-input col-sm-8">
-                                        <input name="birthdate" id="birthdate" type="text" class="form-control bdc-black start-date font-xs"
-                                            placeholder="MM/DD/YYYY" data-provide="datepicker">
+                                    <label class="col-sm-4 col-form-label font-xs">Contact</label>
+                                    <div class="col-sm-8">
+                                        <input name="contact" id="contact" type="text" class="form-control font-xs"
+                                            placeholder="Contact">
                                     </div>
                                 </div>
-                                <div class="form-group row" style="border-top:3px;">
-                                    <label class="col-sm-4 col-form-label font-xs">Gender</label>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs pad0">Personal Email</label>
                                     <div class="col-sm-8">
-                                        <select name="gender" id="gender" class="form-control font-xs">
-                                            <option selected>Male</option>
-                                            <option>Female</option>
-                                        </select>
+                                        <input name="p_email" id="p_email" type="text" class="form-control font-xs"
+                                            placeholder="Personal Email">
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-md-4" style='border-left:1px solid #ccc'>
+                        <!-- //additional info -->
+                        <div class="col-md-3" style='border-left:1px solid #ccc'>
                             <h6 class="c-grey-900">Additional Information</h6>
                             <div class="mT-30">
                                 <div class="form-group row">
@@ -94,22 +109,33 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Birthdate</label>
+                                    <div class="timepicker-input col-sm-8">
+                                        <input name="birthdate" id="birthdate" type="text" class="form-control bdc-black start-date font-xs"
+                                            placeholder="MM/DD/YYYY" data-provide="datepicker">
+                                    </div>
+                                </div>
+                                <div class="form-group row" style="border-top:3px;">
+                                    <label class="col-sm-4 col-form-label font-xs">Gender</label>
+                                    <div class="col-sm-8">
+                                        <select name="gender" id="gender" class="form-control font-xs">
+                                            <option selected>Male</option>
+                                            <option>Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs">Contact</label>
                                     <div class="col-sm-8">
                                         <input name="contact" id="contact" type="text" class="form-control font-xs"
                                             placeholder="Contact">
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-xs">Email</label>
-                                    <div class="col-sm-8">
-                                        <input name="email" id="email" type="email" class="form-control font-xs"
-                                            placeholder="Email">
-                                    </div>
-                                </div>
+                                </div> -->
+                                
                             </div>
                         </div>
-                        <div class="col-md-4" style='border-left:1px solid #ccc'>
+                        <!-- //company info -->
+                        <div class="col-md-3" style='border-left:1px solid #ccc'>
                             <h6 class="c-grey-900">Company Details</h6>
                             <div class="mT-30">
                                 <div class="form-group row admin-hidden-field">
@@ -141,10 +167,17 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-xs">Date Hired</label>
-                                    <div class="timepicker-input col-sm-8">
-                                        <input name="hired_date" id='hired_date' type="text" class="form-control bdc-black start-date font-xs"
-                                            placeholder="MM/DD/YYYY" data-provide="datepicker">
+                                    <label class="col-sm-4 col-form-label font-xs">Email</label>
+                                    <div class="col-sm-8">
+                                        <input name="email" id="email" type="email" class="form-control font-xs"
+                                            placeholder="Email">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Company ID</label>
+                                    <div class="col-sm-8">
+                                        <input name="company_id" id="company_id" type="number" step='1' class="form-control font-xs"
+                                            placeholder="Company ID">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -154,22 +187,13 @@
                                             placeholder="Salary">
                                     </div>
                                 </div>
-                                <div class="form-group row" style='padding-bottom:0px;margin-bottom:0px;'>
-                                    <div class="image-upload" style="height:150px;margin:0 auto;">
-                                        <label id="form-image-container" for="photo" style="cursor:pointer">
-
-                                            <img src="/images/nobody.jpg" alt="profile Pic" id="upload-image-display"
-                                                width="100px" />
-
-                                        </label>
-                                        <input name="photo" id="photo"  type="file" style="display:none" />
-                                        <input name="captured_photo" id="captured_photo" type="text" value="" style="display:none" />
-                                        <button id="start-camera" class="btn btn-primary "><span class="ti-camera"></span>&nbsp; Take a photo</button>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label font-xs">Date Hired</label>
+                                    <div class="timepicker-input col-sm-8">
+                                        <input name="hired_date" id='hired_date' type="text" class="form-control bdc-black start-date font-xs"
+                                            placeholder="MM/DD/YYYY" data-provide="datepicker">
                                     </div>
-
                                 </div>
-
-
                             </div>
                         </div>
 

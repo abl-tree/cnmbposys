@@ -23,7 +23,7 @@
                                 <table class="profile-table" style='' width="100%">
                                     <tr >
                                         <td align='left'>ID</td>
-                                        <td align="right" id="contact_P">{{$profile->id}}</td>
+                                        <td align="right" id="company_id_P">{{$user->company_id}}</td>
                                     </tr>
                                     <tr >
                                         <td align='left'>Contact</td>
@@ -62,8 +62,6 @@
                                         <td align="right" id='hired_P'>{{$profile->hired_date}}</td>
                                     </tr>
                                 </table>
-                                
-                                
                             </div>
                             <!-- <div class='' style='border-left:5px solid yellow;padding:5px;'>
                                 <div>contact</div>
@@ -124,19 +122,19 @@
 
                     <div class="btn-group">
                         @if(isAdminHRM())
-                        <button class="btn cur-p btn-primary" id="showAll"><span class="ti-menu"></span></button>
+                        <button class="btn cur-p btn-primary" id="showAll" data-toggle="tooltip" data-placement="top" title="Employee"><span class="ti-menu"></span></button>
                         @endif
-                        <button class="btn cur-p btn-primary" id="showChild"><span class="ti-menu-alt"></span></button>
-                        <button class="btn cur-p btn-primary" id="showTerminated"><span class="ti-na"></span></button>
+                        <button class="btn cur-p btn-primary" id="showChild" data-toggle="tooltip" data-placement="top" title="Staff"><span class="ti-menu-alt"></span></button>
+                        <button class="btn cur-p btn-primary" id="showTerminated"  data-toggle="tooltip" data-placement="top" title="Terminated"><span class="ti-na"></span></button>
                     </div>
 
                     @if(isAdminHR())
                     <div class="btn-group">
-                        <button type="input" class="btn cur-p btn-info excel-action-button"  id ="import" data-action="import"><span class="ti-upload"></span></button>
-                        <button type="input" class="btn cur-p btn-info excel-action-button"  id ="export" data-action="export"><span class="ti-download"></span></button>
+                        <button type="input" class="btn cur-p btn-info excel-action-button"  id ="import" data-action="import" data-toggle="tooltip" data-placement="top" title="Import Excel"><span class="ti-upload"></span></button>
+                        <button type="input" class="btn cur-p btn-info excel-action-button"  id ="export" data-action="export"  data-toggle="tooltip" data-placement="top" title="Export Excel Templates"><span class="ti-download"></span></button>
                     </div>
 
-                    <button type="submit" class="btn cur-p btn-secondary form-action-button" id="addflag" data-action="add" data-url="/employee"><span class="ti-pencil-alt"></span></button>
+                    <button type="submit" class="btn cur-p btn-secondary form-action-button" id="addflag" data-action="add" data-url="/employee"  data-toggle="tooltip" data-placement="top" title="Add Employee"><span class="ti-pencil-alt"></span></button>
                     @endif
                 </div>
                 </div>

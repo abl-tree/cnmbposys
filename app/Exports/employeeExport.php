@@ -24,7 +24,7 @@ class employeeExport implements FromQuery,ShouldAutoSize,WithHeadings,WithTitle
     public function headings(): array
     {
         return [
-            'SID',
+            'CID',
             'First Name',
             'Middle Name',
             'Last Name',
@@ -32,7 +32,8 @@ class employeeExport implements FromQuery,ShouldAutoSize,WithHeadings,WithTitle
             'Gender',
             'Birth Date',
             'Address',
-            'Email',
+            'PersonalEmail',
+            'CompanyEmail',
             'Contact No.',
             'SSS',
             'Philhealth',

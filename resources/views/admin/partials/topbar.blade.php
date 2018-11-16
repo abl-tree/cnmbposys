@@ -192,7 +192,7 @@
                         <input type="hidden" id="uid" value="{{$profile->id}}">
                     </div>
                     <div class="peer">
-                        <span class="fsz-sm c-grey-900">{!! topBarName()->firstname." ".topBarName()->middlename." ".topBarName()->lastname !!}</span>
+                        <span id='top-bar-name' class="fsz-sm c-grey-900">{!! topBarName()->firstname." ".topBarName()->middlename." ".topBarName()->lastname !!}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu fsz-sm">

@@ -392,6 +392,13 @@ $(document).on("click","#employee-form-submit", function(e) {
                                 email_error='true';
                             }
                         }
+                        if(key=='p_email'){
+                            if(value.indexOf("is already used.")!= -1){
+                                unique_pemail_msg='true';
+                            }else{
+                                email_error='true';
+                            }
+                        }
                         if(key=='first_name'){
                             if(value=='Name Already Exist.'){
                                 unique_name_msg='true';
@@ -409,7 +416,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                         $('.alert-danger').append('<li style="font-size:0.8em"> Your email is already in use. </li>');
                     }
                     if(email_error=='true'){
-                        $('.alert-danger').append('<li style="font-size:0.8em"> Please enter valid email. </li>');
+                        $('.alert-danger').append('<li style="font-size:0.8em"> Email address already taken or invalid in format.</li>');
                     }
                     if(image_file=='true'){
                         $('.alert-danger').append('<li style="font-size:0.8em"> Please upload valid image file with 2MB max size. </li>');
@@ -437,6 +444,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                             if($('#employee-id').val() == 1){
                                 var data = result.info.image;
                                 $('#top-image-display').css('background-image','url('+data+')');
+                                $('#top-bar-name').html(result.info.firstname+" "+result.info.middlename+" "+result.info.lastname);
                             }
                             if(result.info.image){
                                 $('#profile-image-display').attr('src',result.info.image);
@@ -444,6 +452,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                                 $('#profile-image-display').attr('src','/images/nobody.jpg');
                             }
                             
+                            $('#company_id_P').html(result.info.company_id);
                             $('#contact_P').html(result.info.contact_number);
                             $('#email_P').html(result.user.email);
                             $('#address_P').html(result.info.address);
@@ -454,6 +463,7 @@ $(document).on("click","#employee-form-submit", function(e) {
                             $('#birth_P').html(result.info.birthdate);
                             $('#hired_P').html(result.info.hired_date);
                             $('#name_P').html(result.info.firstname+" "+result.info.middlename+" "+result.info.lastname);
+                            
 
                             // $('#profile-image-display').attr('src',result.image);
                         }
@@ -820,6 +830,8 @@ function fetch_edit_data(id){
              $('#email').val(result.user[0].email);
              $('#position option[value="'+result.user[0].access_id+'"]')[0].selected=true;
              $('#salary').val(result.userinfo.salary_rate);
+             $('#p_email').val(result.userinfo.p_email);
+             $('#company_id').val(result.user[0].company_id);
              $('#hired_date').val(result.userinfo.hired_date);
              fetch(result.user[0].access_id,"","");
              if(result.userinfo.image!=null){
