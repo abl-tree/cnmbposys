@@ -1,8 +1,8 @@
-@import 'spec/settings/index';
-@import 'spec/tools/index';
+@import "spec/settings/index";
+@import "spec/tools/index";
 @import "~bootstrap/scss/bootstrap";
-@import 'spec/index';
-@import 'vendor/index';
+@import "spec/index";
+@import "vendor/index";
 
 #loader {
     transition: all 0.3s ease-in-out;
@@ -20,16 +20,15 @@
     visibility: hidden;
 }
 
-.ni{
- position:relative;
- top:10px;
- margin-right:10px;
-   
+.ni {
+    position: relative;
+    top: 10px;
+    margin-right: 10px;
 }
 .btn-sq-lg {
     width: 150px !important;
     height: 150px !important;
-  }
+}
 .spinner {
     width: 40px;
     height: 40px;
@@ -38,17 +37,17 @@
     left: calc(50% - 20px);
     background-color: #333;
     border-radius: 100%;
-    -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
-    animation: sk-scaleout 1.0s infinite ease-in-out;
+    -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+    animation: sk-scaleout 1s infinite ease-in-out;
 }
 
 @-webkit-keyframes sk-scaleout {
     0% {
-        -webkit-transform: scale(0)
+        -webkit-transform: scale(0);
     }
 
     100% {
-        -webkit-transform: scale(1.0);
+        -webkit-transform: scale(1);
         opacity: 0;
     }
 }
@@ -60,8 +59,8 @@
     }
 
     100% {
-        -webkit-transform: scale(1.0);
-        transform: scale(1.0);
+        -webkit-transform: scale(1);
+        transform: scale(1);
         opacity: 0;
     }
 }
@@ -99,19 +98,22 @@ img {
     border-color: #ced4da !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__rendered {
     height: 35px !important;
     line-height: 2.4 !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__arrow {
     height: 35px !important;
 }
 
 .select2-container .select2-selection--single {
     height: 35px !important;
 }
-
 
 .card {
     position: relative;
@@ -155,12 +157,12 @@ img {
     margin: 20px auto;
 }
 .card .box .maoni #role_P {
-    font-size:14px;
-    background:#e91e63;
-    color:#fff;
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:15px;
+    font-size: 14px;
+    background: #e91e63;
+    color: #fff;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 15px;
 }
 
 .card .box p {
@@ -196,16 +198,11 @@ img {
     right: 40px;
 }
 
-;
-
 .reposition {
     position: absolute;
     top: 80px;
     right: 40px;
 }
-
-;
-
 
 .font-xs {
     font-size: 0.79em;
@@ -220,30 +217,29 @@ th {
     font-size: 0.79em !important;
 }
 
-.profile-table tr td{
-    padding-top:5px;
-    padding-bottom:5px;
-    padding-left:5px;
-    border-top:1px solid #ccc;
-    border-bottom:1px solid #ccc;
-    font-size:0.8em;
-  }
+.profile-table tr td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.8em;
+}
 
-  body{
-      background-color:#f9fafb !important;
-  }
+body {
+    background-color: #f9fafb !important;
+}
 
-  
-  .table-image-cover{
-      height:50px;
-      width:50px;
-      background-size:cover;
-  }
+.table-image-cover {
+    height: 50px;
+    width: 50px;
+    background-size: cover;
+}
 
-  .top-image-cover{
-    height:30px;
-    width:30px;
-    background-size:cover;
+.top-image-cover {
+    height: 30px;
+    width: 30px;
+    background-size: cover;
 }
 #profile-image-display {
     border-radius: 5px;
@@ -251,8 +247,9 @@ th {
     transition: 0.3s;
 }
 
-#profile-image-display:hover {opacity: 0.7;}
-
+#profile-image-display:hover {
+    opacity: 0.7;
+}
 
 /* The Modal (background) */
 #full_pic {
@@ -265,8 +262,8 @@ th {
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
 }
 
 /* Modal Content (Image) */
@@ -274,7 +271,7 @@ th {
     margin: auto;
     display: block;
     width: 80%;
-    max-width:100%;
+    max-width: 100%;
 }
 
 /* Caption of Modal Image (Image Text) - Same Width as the Image */
@@ -290,14 +287,19 @@ th {
 }
 
 /* Add Animation - Zoom in the Modal */
-.full_pic_content, #caption { 
+.full_pic_content,
+#caption {
     animation-name: zoom;
     animation-duration: 0.6s;
 }
 
 @keyframes zoom {
-    from {transform:scale(0)} 
-    to {transform:scale(1)}
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
 }
 
 /* The Close Button */
@@ -319,15 +321,27 @@ th {
 }
 
 /* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 100%){
-   .full_pic_content {
+@media only screen and (max-width: 100%) {
+    .full_pic_content {
         width: 100%;
     }
 }
 
 @media (min-width: 768px) {
     .modal-xl {
-      width: 90%;
-     max-width:1200px;
+        width: 90%;
+        max-width: 1200px;
     }
-  }
+}
+
+.x-table::-webkit-scrollbar {
+    width: 1px;
+}
+
+/* Handle */
+.x-table::-webkit-scrollbar-thumb {
+    background: rgba(170, 170, 170, 0.8);
+}
+.x-table::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(141, 141, 141, 0.4);
+}

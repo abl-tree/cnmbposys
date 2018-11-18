@@ -26,20 +26,18 @@
         @include('admin.partials.sidebar')
 
         <!-- #Main ============================ -->
-        <div class="page-container">
+        <div id='app' class="page-container">
             <!-- ### $Topbar ### -->
             @include('admin.partials.topbar')
 
             <!-- ### $App Screen Content ### -->
             <main class='main-content bgc-grey-100'>
                 <div id='mainContent'>
-                    <div class="container-fluid">
-
+                    <div class="container pX-80">
                         <h4 class="c-grey-900 mT-10 mB-30">@yield('page-header')</h4>
 
 						@include('admin.partials.messages') 
 						@yield('content')
-
                     </div>
                 </div>
             </main>

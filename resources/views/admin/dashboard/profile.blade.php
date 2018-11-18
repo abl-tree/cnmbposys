@@ -2,6 +2,7 @@
 
 @section('content')
 <!-- ### $App Screen Content ### --> 
+
 <div class="full-container">
     <div class="email-app">
         <div class="email-side-nav remain-height">
@@ -159,7 +160,9 @@
                         </tr>
                     </thead>
                 </table>
+
             </div>
+
         </div>
     </div>
 </div>
