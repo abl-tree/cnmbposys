@@ -37,12 +37,14 @@ function initialize_employee_table(url) {
     if (url == "/terminatedView") {
         image = "image";
         position = "user.access.name";
+        company_id = "user.company_id";
         birthdate = "birthdate";
         gender = "gender";
         contact_number = "contact_number";
         address = "address";
     } else {
         image = "child_info.image";
+        company_id = "child_info.user.company_id";
         position = "child_info.user.access.name";
         birthdate = "child_info.birthdate";
         gender = "child_info.gender";
@@ -63,7 +65,7 @@ function initialize_employee_table(url) {
         autoWidth: false,
         order: [1],
         columns: [
-            { data: "id", name: "id" },
+            { data: company_id, name: "company_id" },
             {
                 width: "10%",
                 data: image,

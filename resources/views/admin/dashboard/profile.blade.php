@@ -146,7 +146,7 @@
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>Employee No.</th>
+                            <th>Company ID</th>
                             <th>Picture</th>
                             <th>Name</th>
                             <th>Position</th>
