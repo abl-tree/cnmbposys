@@ -109,7 +109,7 @@ class EmployeeController extends Controller
             'birthdate' => 'required',
             'gender' => 'required',
             'company_id' => 'required',
-            'p_email' => $pemail,
+            // 'p_email' => $pemail,
             // 'contact' => 'required',
             'email' => $email,
             'position' => 'required',
@@ -335,8 +335,11 @@ class EmployeeController extends Controller
         $access_level->code = $code;
         $access_level->name = $request->position_name;
         $access_level->parent = $request->position_designation;
-        $access_level->save();
-
+        $saved = $access_level->save();
+        if($saved){
+            $etv = new ExcelTemplateValidator;
+            $etv = $etv->updateExcelToken("Add");
+        }
         return $access_level;
     }
     

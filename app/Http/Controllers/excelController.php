@@ -337,16 +337,16 @@ class excelController extends Controller
                             if(in_array(strtolower($email),$taken_email)){
                                 $errorlog++;
                             }
-                            if(in_array(strtolower($p_email),$taken_pemail)){
-                                $errorlog++;
-                            }
+                            // if(in_array(strtolower($p_email),$taken_pemail)){
+                            //     $errorlog++;
+                            // }
                         }
 
-                        if (!filter_var($email, FILTER_VALIDATE_EMAIL)||!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                            $errorlog++;
-                        }
+                        // if (!filter_var($email, FILTER_VALIDATE_EMAIL)||!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        //     $errorlog++;
+                        // }
                         // BLANK strings
-                        if($birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$address==""||$gender==""||$company_id==""||$p_email==""){
+                        if($birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$address==""||$gender==""||$company_id==""){
                             $errorlog++;
                         }
                         //numeric inputs

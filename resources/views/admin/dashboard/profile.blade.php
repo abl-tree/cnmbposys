@@ -22,7 +22,7 @@
                             <div class='container'>
                                 <table class="profile-table" style='' width="100%">
                                     <tr >
-                                        <td align='left'>ID</td>
+                                        <td align='left'>Company ID</td>
                                         <td align="right" id="company_id_P">{{$user->company_id}}</td>
                                     </tr>
                                     <tr >

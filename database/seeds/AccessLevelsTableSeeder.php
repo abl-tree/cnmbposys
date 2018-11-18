@@ -59,9 +59,14 @@ class AccessLevelsTableSeeder extends Seeder
                 'parent' => 3,
             ),
             array(
+                'code' => 'rtasupervisor', 
+                'name' => 'RTA Supervisor', 
+                'parent' => 5,
+            ),
+            array(
                 'code' => 'rtaa', 
                 'name' => 'RTA Analyst', 
-                'parent' => 5,
+                'parent' => 10,
             ),
             array(
                 'code' => 'qa', 
