@@ -16,17 +16,17 @@ class users extends Seeder
          $data = [
             [
             'uid'=>1,
-            'email' => 'owner@cnm.com',
+            'email' => 'marieo@cnmsolutions.net',
             'password' => '123456',
             'access_id' => 1,
             'company_id'=> 0,
             ],
             [
             'uid'=>2,
-            'email' => 'hrm@cnm.com',
+            'email' => 'ken.llanos@cnmsolutions.net',
             'password' => '123456',
             'access_id' => 2,
-            'company_id' => 1,
+            'company_id' => 350,
             ],
             
         ];
