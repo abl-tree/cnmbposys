@@ -346,7 +346,7 @@ class excelController extends Controller
                         //     $errorlog++;
                         // }
                         // BLANK strings
-                        if($birthdate==""||$position==""||$email==""||$contact_number==""||$hired_date==""||$address==""||$gender==""||$company_id==""){
+                        if(($fname=""&&$mname=""&&$lname="")||$position==""){
                             $errorlog++;
                         }
                         //numeric inputs
@@ -379,7 +379,10 @@ class excelController extends Controller
                                 $user->password = str_replace(' ', '', strtolower($fname.$lname));
                                 $user->access_id = $position;
                                 $user->company_id = $company_id;
-                                $user->save();
+                                if(!$user->save()){
+                                    $error_rows[]=$r;
+                                    UserInfo::find($userinfo->id)->delete();
+                                }
                 
                                 $obj_benefit=[];
                                 for($l=0;$l<4;$l++){

@@ -28,8 +28,8 @@ class CreateUserInfosTable extends Migration
             $table->string('image_ext')->nullable();
             $table->string('status')->nullable();
             $table->string('hired_date')->nullable();
-            $table->string('separation_date');
-            $table->string('excel_hash');
+            $table->string('separation_date')->nullable();
+            $table->string('excel_hash')->nullable();
             $table->string('p_email')->nullable();
             $table->timestamps();
         });
