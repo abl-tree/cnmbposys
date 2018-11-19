@@ -65,7 +65,7 @@ function initialize_employee_table(url) {
         autoWidth: false,
         order: [1],
         columns: [
-            { data: company_id, name: "company_id" },
+            { data: "company_id", name: "company_id" },
             {
                 width: "10%",
                 data: image,

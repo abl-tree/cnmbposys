@@ -147,14 +147,14 @@ class ProfileController extends Controller
         ->editColumn('name', function ($data){
             return $data->childInfo->firstname." ".$data->childInfo->middlename." ".$data->childInfo->lastname;
         })
-        ->editColumn('id', function ($data){
+        ->editColumn('company_id', function ($data){
             if($data->parent_id){
-                return $data->childInfo->id;
+                return $data->childInfo->user->company_id;
             }else{
-                return "<span class='badge badge-danger'>NA</span><span style='color:black;'> ".$data->childInfo->id."</span>";
+                return "<span class='badge badge-danger'>NA</span><span style='color:black;'> ".$data->childInfo->user->company_id."</span>";
             }
         })
-        ->rawColumns(['employee_status', 'action', 'id'])
+        ->rawColumns(['employee_status', 'action', 'company_id'])
         ->make(true);
     }
 
