@@ -295,10 +295,12 @@ class excelController extends Controller
             $error_counter=0;
             $reassign_counter = 0;
             $error_rows=[];
+            $loop_c = 0;
+            $loop_climit = 300;
 
             if($action=='Add'){
                 //Add
-                if($file_token==$token[0]){
+                // if($file_token==$token[0]){
                     $handler = $spreadsheet->setActiveSheetIndexByName($action);
                     $rows = $handler->getHighestDataRow();    
                     for($r=2;$r<=$rows;$r++){
@@ -328,7 +330,6 @@ class excelController extends Controller
                         $this_duplicate = 0;
                         //Manual error Filter
                         //email
-                        
         
                         if(in_array($concat,$hash)){
                             $duplicate_counter++;
@@ -398,15 +399,32 @@ class excelController extends Controller
                                     $saved_counter++;
                                     $userinfo->excel_hash = $concat;
                                     $userinfo->save();
+                                    $loop_c++;
                                 }
-                            } 
+                            }
+
                         }else if($errorlog>0){
                             $error_rows[]=$r-1;
                         }
+
+                        if($loop_c == $loop_climit){
+
+                            $return_data[]=[
+                                'saved_counter' => $saved_counter,
+                                'duplicate_counter' => $duplicate_counter,
+                                'error_rows'=>$error_rows,
+                                'reassign_counter'=>$reassign_counter,
+                                'outdated' => $outdated,
+                                'action'=>$action,
+                            ];
+                            return response()->json($return_data);
+                            exit;
+                        }
+                         
                     }
-                }else{
-                    $outdated = true;
-                }   
+                // }else{
+                //     $outdated = true;
+                // }   
             }else if($action=="Reassign"){
                 //Reassign
                 if($file_token == $token[0]){

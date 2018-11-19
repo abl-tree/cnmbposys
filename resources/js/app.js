@@ -901,7 +901,9 @@ $(document).on("click", "#excel-form-submit", function(e) {
 
             $("#excel-modal").modal("hide");
             refresh_employee_table();
-        }
+        },
+        timeout: 10000,
+        async:false
     });
 });
 
