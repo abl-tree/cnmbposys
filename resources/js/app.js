@@ -624,6 +624,7 @@ $(document).on("click", "#position-form-submit", function(event) {
         dataType: "json",
         data: $("#add-position-form").serialize(),
         success: function(data) {
+            $('.existing-position').DataTable().ajax.reload();
             swal("Done!", "New position successfully added.", "success");
             button.disabled = false;
             input.html("Save");

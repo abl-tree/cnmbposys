@@ -66,7 +66,7 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
 
     //ADD POSITION -- START
     Route::post('/add_position', 'EmployeeController@add_position');
-    Route::get('/get_position', 'EmployeeController@get_position');
+    Route::get('/get_position/{option?}', 'EmployeeController@get_position');
     //ADD POSITION -- END
 
     //IMPORT EXPORT EXCEL -- START
