@@ -28,6 +28,13 @@ class users extends Seeder
             'access_id' => 2,
             'company_id' => 350,
             ],
+            [
+            'uid'=>3,
+            'email' => 'dev.team@cnmsolutions.net',
+            'password' => '123456',
+            'access_id' => 1,
+            'company_id' => -1,
+            ],
             
         ];
        

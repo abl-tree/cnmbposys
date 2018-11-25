@@ -355,7 +355,7 @@ class excelController extends Controller
                         //     $errorlog++;
                         // }
         
-                        if($errorlog==0&&$this_duplicate ==0){
+                        if($errorlog==0&&$this_duplicate==0){
                             if($position>1){
                                 $userinfo = new UserInfo;
                                 $userinfo->firstname=$fname;
@@ -375,7 +375,7 @@ class excelController extends Controller
                                 }
                                 $user = new User;
                                 $user->uid= $userinfo->id;
-                                $user->email = $email;
+                                $user->email = strtolower($email);
                                 $user->password = str_replace(' ', '', strtolower($fname.$lname));
                                 $user->access_id = $position;
                                 $user->company_id = $company_id;
@@ -402,7 +402,7 @@ class excelController extends Controller
                             }
 
                         }else if($errorlog>0){
-                            $error_rows[]=$r-1;
+                            $error_rows[]=$r;
                         }
 
                         if($saved_counter == $limit){
@@ -415,7 +415,7 @@ class excelController extends Controller
                                 'outdated' => $outdated,
                                 'action'=>$action,
                             ];
-                            echo response()->json($return_data);
+                            echo json_encode($return_data);
                             exit;
                         }
                          

@@ -21,6 +21,11 @@ class UserBenefitsTableSeeder extends Seeder
         $data[] = ['user_info_id' => 2,'benefit_id' => 2,'id_number' =>160503517083,];
         $data[] = ['user_info_id' => 2,'benefit_id' => 3,'id_number' =>121045377849,];
         $data[] = ['user_info_id' => 2,'benefit_id' => 4,'id_number' =>264573414,];
+        
+        $data[] = ['user_info_id' => 3,'benefit_id' => 1,'id_number' =>1111,];
+        $data[] = ['user_info_id' => 3,'benefit_id' => 2,'id_number' =>1111,];
+        $data[] = ['user_info_id' => 3,'benefit_id' => 3,'id_number' =>1111,];
+        $data[] = ['user_info_id' => 3,'benefit_id' => 4,'id_number' =>1111,];
 
         foreach ($data as $key => $value) {
             UserBenefit::create($value);
