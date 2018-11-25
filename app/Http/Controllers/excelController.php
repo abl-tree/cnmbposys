@@ -295,8 +295,7 @@ class excelController extends Controller
             $error_counter=0;
             $reassign_counter = 0;
             $error_rows=[];
-            $loop_c = 0;
-            $loop_climit = 300;
+            $limit = 10;
 
             if($action=='Add'){
                 //Add
@@ -347,7 +346,7 @@ class excelController extends Controller
                         //     $errorlog++;
                         // }
                         // BLANK strings
-                        if(($fname=""&&$mname=""&&$lname="")||$position==""){
+                        if(($fname==""&&$mname==""&&$lname=="")||$position==""){
                             $errorlog++;
                         }
                         //numeric inputs
@@ -399,7 +398,6 @@ class excelController extends Controller
                                     $saved_counter++;
                                     $userinfo->excel_hash = $concat;
                                     $userinfo->save();
-                                    $loop_c++;
                                 }
                             }
 
@@ -407,7 +405,7 @@ class excelController extends Controller
                             $error_rows[]=$r-1;
                         }
 
-                        if($loop_c == $loop_climit){
+                        if($saved_counter == $limit){
 
                             $return_data[]=[
                                 'saved_counter' => $saved_counter,
@@ -417,7 +415,7 @@ class excelController extends Controller
                                 'outdated' => $outdated,
                                 'action'=>$action,
                             ];
-                            return response()->json($return_data);
+                            echo response()->json($return_data);
                             exit;
                         }
                          

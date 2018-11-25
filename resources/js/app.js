@@ -839,13 +839,16 @@ $(document).on("click", "#excel-form-submit", function(e) {
         url: "/profile/excel_import",
         method: "POST",
         data: formData,
-        dataType: "json",
+        // dataType: "json",
         cache: false,
         contentType: false,
         processData: false,
+        // async: false,
         success: function(result) {
             btn.html("Confirm");
             btn[0].disabled = false;
+            result = jQuery.parseJSON(JSON.stringify(result));
+            console.log(result);
             // alert(result+"success");
             // var reassign = '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>';
             var title = "";
@@ -903,7 +906,7 @@ $(document).on("click", "#excel-form-submit", function(e) {
             refresh_employee_table();
         },
         timeout: 10000,
-        async:false
+        async: false
     });
 });
 
