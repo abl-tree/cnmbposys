@@ -55,6 +55,8 @@ function initialize_employee_table(url) {
     employeetable = $("#employee").DataTable({
         destroy: true,
         processing: true,
+        lengthChange: false,
+        pageLength: 5,
         columnDefs: [
             {
                 targets: "_all", // your case first column
