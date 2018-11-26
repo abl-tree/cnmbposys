@@ -342,7 +342,9 @@
                                     <h5 class="c-grey-900">Update Employee Status</h5>
                                 </label>
                                 <select class="form-control" id="status_data" name="status_data" required>
+                                    <option value="New_Hired">New Hired</option>
                                     <option value="Active">Active</option>
+                                    <option value="Resigned">Resigned</option>
                                     <option value="Terminated">Terminated</option>
                                 </select>
                             </div>

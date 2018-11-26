@@ -73,18 +73,26 @@ class ProfileController extends Controller
                 if($data->status=='Terminated'){
                     return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->id.'">TERMINATED</button>';
                 }else if($data->status=='Active'){
-                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->id.'">ACTIVE</button>';
+                }else if($data->status=='New_Hired'){
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">NEW HIRED</button>';
+                }else if($data->status=='Resigned'){
+                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">RESIGNED</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">NO STATUS</button>';
                 }
             }
             else{
                 if($data->status=='Terminated'){
                     return '<button class=" btn btn-sm btn-danger" disabled>TERMINATED</button>';
                 }else if($data->status=='Active'){
-                    return '<button class="btn btn-sm  btn-success" disabled>ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary" disabled>ACTIVE</button>';
+                }else if($data->status=='New_Hired'){
+                    return '<button class="btn btn-sm  btn-success" disabled>NEW HIRED</button>';
+                }else if($data->status=='Resigned'){
+                    return '<button class="btn btn-sm  btn-warning" disabled>RESIGNED</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning" disabled>ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-warning" disabled>NO STATUS</button>';
                 }
             }
         })
@@ -105,18 +113,26 @@ class ProfileController extends Controller
                 if($data->childInfo->status=='Terminated'){
                     return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
                 }else if($data->childInfo->status=='Active'){
-                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                }else if($data->childInfo->status=='New_Hired'){
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">NEW HIRED</button>';
+                }else if($data->childInfo->status=='Resigned'){
+                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">RESIGNED</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">NO STATUS</button>';
                 }
             }
             else{
                 if($data->childInfo->status=='Terminated'){
                     return '<button class=" btn btn-sm btn-danger" disabled>TERMINATED</button>';
                 }else if($data->childInfo->status=='Active'){
-                    return '<button class="btn btn-sm  btn-success" disabled>ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary" disabled>ACTIVE</button>';
+                }else if($data->childInfo->status=='New_Hired'){
+                    return '<button class="btn btn-sm  btn-success" disabled>NEW HIRED</button>';
+                }else if($data->childInfo->status=='Resigned'){
+                    return '<button class="btn btn-sm  btn-warning" disabled>RESIGNED</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning" disabled>ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-warning" disabled>NO STATUS</button>';
                 }
             }
         })

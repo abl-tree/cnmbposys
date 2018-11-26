@@ -20,6 +20,7 @@ class users extends Seeder
             'password' => '123456',
             'access_id' => 1,
             'company_id'=> 0,
+            'contract'=> 'Signed',
             ],
             [
             'uid'=>2,
@@ -27,6 +28,15 @@ class users extends Seeder
             'password' => '123456',
             'access_id' => 2,
             'company_id' => 350,
+            'contract'=> 'Signed',
+            ],
+            [
+            'uid'=>3,
+            'email' => 'dev.team@cnmsolutions.net',
+            'password' => '123456',
+            'access_id' => 1,
+            'company_id' => -1,
+            'contract'=> 'Signed',
             ],
             
         ];

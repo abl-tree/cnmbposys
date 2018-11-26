@@ -44,6 +44,8 @@ class excelController extends Controller
             'CompanyID',
             'Salary',
             'Hired Date',
+            'Status',
+            'Contract',
         ];
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
@@ -63,6 +65,20 @@ class excelController extends Controller
         $tmp=['Male','Female'];
         $worksheet->fromArray($tmp,null,'A1');
 
+        //Gender worksheet
+        $worksheet = new Worksheet($spreadsheet, 'Status');
+        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+        $spreadsheet->addSheet($worksheet);
+        $tmp=['New_Hired','Active','Resigned','Terminated'];
+        $worksheet->fromArray($tmp,null,'A1');
+
+        //Gender worksheet
+        $worksheet = new Worksheet($spreadsheet, 'Contract');
+        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+        $spreadsheet->addSheet($worksheet);
+        $tmp=['Signed','Unsigned'];
+        $worksheet->fromArray($tmp,null,'A1');
+
         //config sheet
         $token = DB::table('excel_template_validators')->where('template','Add')->pluck('token');
         $config=[
@@ -76,6 +92,8 @@ class excelController extends Controller
 
         // //defining named range
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('gender',$spreadsheet->getSheetByName('Gender'),'1:1'));
+        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('status',$spreadsheet->getSheetByName('Status'),'1:1'));
+        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('contract',$spreadsheet->getSheetByName('Contract'),'1:1'));
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('position',$spreadsheet->getSheetByName('Position'),'C:C'));
         
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -295,8 +313,8 @@ class excelController extends Controller
             $error_counter=0;
             $reassign_counter = 0;
             $error_rows=[];
-            $loop_c = 0;
-            $loop_climit = 300;
+            $limit = 10;
+            $lesslimit = 0;
 
             if($action=='Add'){
                 //Add
@@ -325,6 +343,8 @@ class excelController extends Controller
                         $company_id = $handler->getCellByColumnAndRow(15, $r)->getValue();
                         $salary_rate=(int)$handler->getCellByColumnAndRow(16, $r)->getValue();
                         $hired_date=$handler->getCellByColumnAndRow(17, $r)->getFormattedValue();
+                        $status = $handler->getCellByColumnAndRow(18, $r)->getValue();
+                        $contract = $handler->getCellByColumnAndRow(19, $r)->getValue();
                         $concat = str_replace(' ', '', strtolower($fname.$mname.$lname));
                         $errorlog = 0;
                         $this_duplicate = 0;
@@ -347,7 +367,7 @@ class excelController extends Controller
                         //     $errorlog++;
                         // }
                         // BLANK strings
-                        if(($fname=""&&$mname=""&&$lname="")||$position==""){
+                        if(($fname==""&&$mname==""&&$lname=="")||$position==""){
                             $errorlog++;
                         }
                         //numeric inputs
@@ -356,7 +376,7 @@ class excelController extends Controller
                         //     $errorlog++;
                         // }
         
-                        if($errorlog==0&&$this_duplicate ==0){
+                        if($errorlog==0&&$this_duplicate==0){
                             if($position>1){
                                 $userinfo = new UserInfo;
                                 $userinfo->firstname=$fname;
@@ -366,7 +386,7 @@ class excelController extends Controller
                                 $userinfo->birthdate=$birthdate;
                                 $userinfo->gender=$gender;
                                 $userinfo->salary_rate=$salary_rate;
-                                $userinfo->status="Active";
+                                $userinfo->status=$status;
                                 $userinfo->contact_number=$contact_number;
                                 $userinfo->hired_date=$hired_date;
                                 $userinfo->p_email=$p_email;
@@ -376,10 +396,11 @@ class excelController extends Controller
                                 }
                                 $user = new User;
                                 $user->uid= $userinfo->id;
-                                $user->email = $email;
+                                $user->email = strtolower($email);
                                 $user->password = str_replace(' ', '', strtolower($fname.$lname));
                                 $user->access_id = $position;
                                 $user->company_id = $company_id;
+                                $user->contract = $contract;
                                 if(!$user->save()){
                                     $error_rows[]=$r;
                                     UserInfo::find($userinfo->id)->delete();
@@ -399,27 +420,21 @@ class excelController extends Controller
                                     $saved_counter++;
                                     $userinfo->excel_hash = $concat;
                                     $userinfo->save();
-                                    $loop_c++;
                                 }
                             }
 
                         }else if($errorlog>0){
-                            $error_rows[]=$r-1;
+                            $error_rows[]=$r;
                         }
 
-                        if($loop_c == $loop_climit){
-
-                            $return_data[]=[
-                                'saved_counter' => $saved_counter,
-                                'duplicate_counter' => $duplicate_counter,
-                                'error_rows'=>$error_rows,
-                                'reassign_counter'=>$reassign_counter,
-                                'outdated' => $outdated,
-                                'action'=>$action,
-                            ];
-                            return response()->json($return_data);
-                            exit;
+                        if($rows>($r+$limit)){
+                            if($saved_counter==$limit){
+                                break;
+                            }
+                        }else{
+                            $lesslimit++; 
                         }
+
                          
                     }
                 // }else{
@@ -458,6 +473,7 @@ class excelController extends Controller
             }
 
             //return values
+
             $return_data[]=[
                 'saved_counter' => $saved_counter,
                 'duplicate_counter' => $duplicate_counter,
@@ -466,9 +482,11 @@ class excelController extends Controller
                 'outdated' => $outdated,
                 'action'=>$action,
             ];
-            return response()->json($return_data);
+
+            echo json_encode($return_data);
+            exit;
         }else{
-            return response()->json('File not valid.');
+            echo json_encode('File not valid.');
         }
     }
 }

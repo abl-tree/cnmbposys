@@ -21,6 +21,10 @@ class AccessLevelHierarchiesTableSeeder extends Seeder
                 'parent_id' => 1, 
                 'child_id' => 2, 
             ),
+            array(
+                'parent_id' => null, 
+                'child_id' => 3, 
+            ),
         );
         foreach ($data as $key => $value) {
             AccessLevelHierarchy::create($value);
