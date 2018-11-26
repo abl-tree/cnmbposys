@@ -158,6 +158,7 @@ class EmployeeController extends Controller
             $user->password = str_replace(' ', '', strtolower($userinfo->firstname.$userinfo->lastname));
         }
         $user->access_id = $request->position;
+        $user->contract = $request->contract;
         $user->company_id = $request->company_id;
         $user->save();
 

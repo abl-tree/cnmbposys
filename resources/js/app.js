@@ -42,6 +42,7 @@ function initialize_employee_table(url) {
         gender = "gender";
         contact_number = "contact_number";
         address = "address";
+        contract = "user.contract";
     } else {
         image = "child_info.image";
         company_id = "child_info.user.company_id";
@@ -50,6 +51,7 @@ function initialize_employee_table(url) {
         gender = "child_info.gender";
         contact_number = "child_info.contact_number";
         address = "child_info.address";
+        contract = "child_info.user.contract";
     }
 
     employeetable = $("#employee").DataTable({
@@ -92,6 +94,7 @@ function initialize_employee_table(url) {
             { data: gender, name: "gender" },
             { data: contact_number, name: "contact_number" },
             { data: address, name: "address" },
+            { data: contract, name: "contract" },
             { data: "employee_status" },
             { data: "action", orderable: false, searchable: false }
         ],
@@ -987,6 +990,7 @@ function fetch_edit_data(id) {
         dataType: "json",
         data: { id: id },
         success: function(result) {
+            console.log(result);
             $("#first_name").val(result.userinfo.firstname);
             $("#middle_name").val(result.userinfo.middlename);
             $("#last_name").val(result.userinfo.lastname);
@@ -1008,6 +1012,7 @@ function fetch_edit_data(id) {
             $("#salary").val(result.userinfo.salary_rate);
             $("#p_email").val(result.userinfo.p_email);
             $("#company_id").val(result.user[0].company_id);
+            $("#contract").val(result.user[0].contract);
             $("#hired_date").val(result.userinfo.hired_date);
             fetch(result.user[0].access_id, "", "");
             if (result.userinfo.image != null) {

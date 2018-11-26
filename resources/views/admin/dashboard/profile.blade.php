@@ -155,6 +155,7 @@
                             <th>Gender</th>
                             <th>Contact No.</th>
                             <th>Address</th>
+                            <th>Contract</th>
                             <th>Status</th>
                             <th>Action</th> 
                         </tr>
