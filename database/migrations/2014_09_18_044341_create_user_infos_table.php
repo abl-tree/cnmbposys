@@ -31,6 +31,7 @@ class CreateUserInfosTable extends Migration
             $table->string('separation_date')->nullable();
             $table->string('excel_hash')->nullable();
             $table->string('p_email')->nullable();
+            $table->string('status_reason')->nullable();
             $table->timestamps();
         });
         

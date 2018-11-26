@@ -46,6 +46,8 @@ class excelController extends Controller
             'Hired Date',
             'Status',
             'Contract',
+            'Status Reason',
+            'Separation Date',
         ];
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
@@ -69,15 +71,9 @@ class excelController extends Controller
         $worksheet = new Worksheet($spreadsheet, 'Status');
         $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
         $spreadsheet->addSheet($worksheet);
-        $tmp=['New_Hired','Active','Resigned','Terminated'];
+        $tmp=['New_Hired','Active','Inactive'];
         $worksheet->fromArray($tmp,null,'A1');
 
-        //Gender worksheet
-        $worksheet = new Worksheet($spreadsheet, 'Contract');
-        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-        $spreadsheet->addSheet($worksheet);
-        $tmp=['Signed','Unsigned'];
-        $worksheet->fromArray($tmp,null,'A1');
 
         //config sheet
         $token = DB::table('excel_template_validators')->where('template','Add')->pluck('token');
@@ -93,7 +89,6 @@ class excelController extends Controller
         // //defining named range
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('gender',$spreadsheet->getSheetByName('Gender'),'1:1'));
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('status',$spreadsheet->getSheetByName('Status'),'1:1'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('contract',$spreadsheet->getSheetByName('Contract'),'1:1'));
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('position',$spreadsheet->getSheetByName('Position'),'C:C'));
         
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -313,7 +308,7 @@ class excelController extends Controller
             $error_counter=0;
             $reassign_counter = 0;
             $error_rows=[];
-            $limit = 10;
+            $limit = 100;
             $lesslimit = 0;
 
             if($action=='Add'){
@@ -345,6 +340,8 @@ class excelController extends Controller
                         $hired_date=$handler->getCellByColumnAndRow(17, $r)->getFormattedValue();
                         $status = $handler->getCellByColumnAndRow(18, $r)->getValue();
                         $contract = $handler->getCellByColumnAndRow(19, $r)->getValue();
+                        $s_reason = $handler->getCellByColumnAndRow(20, $r)->getValue();
+                        $s_date = $handler->getCellByColumnAndRow(21, $r)->getFormattedValue();
                         $concat = str_replace(' ', '', strtolower($fname.$mname.$lname));
                         $errorlog = 0;
                         $this_duplicate = 0;
@@ -390,6 +387,8 @@ class excelController extends Controller
                                 $userinfo->contact_number=$contact_number;
                                 $userinfo->hired_date=$hired_date;
                                 $userinfo->p_email=$p_email;
+                                $userinfo->status_reason=$s_reason;
+                                $userinfo->separation_date=$s_date;
                                 $s_userinfo=$userinfo->save();
                                 if(!$s_userinfo){
                                     $error_rows[]=$r;

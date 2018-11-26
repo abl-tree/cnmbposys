@@ -295,7 +295,7 @@ class EmployeeController extends Controller
         $user = UserInfo::where('id', $request->status_id)->first();
         $user->status = $request->status_data;
         $deactive_date=null;
-        if($request->status_data=='Terminated' || $request->status_data=='Resigned'){
+        if($request->status_data=='Inactive'){
             $deactive_date = Carbon::now();
         }else if($request->status_data=='New_Hired' || $request->status_data=='Active'){
             $deactive_date = null;

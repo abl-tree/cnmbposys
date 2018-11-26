@@ -190,10 +190,8 @@
                                  <div class="form-group row" style="border-top:3px;">
                                     <label class="col-sm-4 col-form-label font-xs">Contract</label>
                                     <div class="col-sm-8">
-                                        <select name="contract" id="contract" class="form-control font-xs">
-                                            <option selected>Signed</option>
-                                            <option>Unsigned</option>
-                                        </select>
+                                    <input name="contract" id="contract" type="text" class="form-control font-xs"
+                                            placeholder="Contract">
                                     </div>
                                 </div>
                                 <div class="form-group row">
