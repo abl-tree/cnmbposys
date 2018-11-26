@@ -55,6 +55,8 @@ function initialize_employee_table(url) {
     employeetable = $("#employee").DataTable({
         destroy: true,
         processing: true,
+        lengthChange: false,
+        pageLength: 5,
         columnDefs: [
             {
                 targets: "_all", // your case first column
@@ -104,7 +106,7 @@ function initialize_employee_table(url) {
 
 initialize_employee_table("/refreshEmployeeList");
 
-$(document).on("click", ".passChange", function() {
+$(document).on("click", ".passChange", function(e) {
     if ($("#pass").val() != "") {
         var input = $(this);
         var button = this;
@@ -137,6 +139,7 @@ $(document).on("click", ".passChange", function() {
             }
         });
     } else {
+        e.preventDefault();
         swal("Oh no!", "Please provide a valid password.", "error");
     }
 });

@@ -112,7 +112,7 @@
         <div class="email-wrapper">
             <!-- Content -->
             <div class="bdT pX-40 pY-30 col-md-12">
-                <h4 class="c-grey-900 mB-20">Employee list</h4> 
+                <h4 class="c-grey-900 mB-20 taytol">Employee list</h4> 
 
                 <div class="form-group reposition">
                 <div class="btn-group mR-2" role="group" aria-label="First group">
@@ -142,7 +142,8 @@
                     @endif
                 </div>
                 </div>
-
+                <br>
+                <br>
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
