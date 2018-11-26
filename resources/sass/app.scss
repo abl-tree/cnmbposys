@@ -336,3 +336,66 @@ th {
      max-width:1200px;
     }
   }
+
+  .tab-radio-button {
+    display: none;
+  }
+  
+  
+  .info-button-label{
+      padding:5px;
+      border:#888 solid 1px;
+  }
+  
+  .info-button-label:hover{
+      background-color:rgb(240, 240, 240);
+      cursor:pointer;
+  }
+  
+  .info-radio:checked + .info-button-label{
+      background-color:rgb(233, 233, 233);
+  }
+  
+  #tab1:checked ~ .tab-content-wrapper > #tab-content1,
+  #tab2:checked ~ .tab-content-wrapper > #tab-content2,
+  #tab3:checked ~ .tab-content-wrapper > #tab-content3 {
+    display: block;
+  }
+  
+  .tab-content{
+      display:none;
+  }
+  
+  
+  .hide{
+      display:none;
+  }
+
+  .table-image-cover{
+    height:50px;
+    width:50px;
+    background-size:cover;
+}
+
+.top-image-cover{
+  height:30px;
+  width:30px;
+  background-size:cover;
+}
+
+.profile-image-cover{
+  border: 5px white solid;
+  background-size:cover;
+}
+
+.profile-bg:hover{
+  -moz-box-shadow:inset 0 0 30px #000000;
+  -webkit-box-shadow: inset 0 0 30px #000000;
+  box-shadow:inset 0 0 30px #000000;
+}
+
+.profile-bg{
+  -moz-box-shadow:inset 0 0 10px #000000;
+  -webkit-box-shadow: inset 0 0 10px #000000;
+  box-shadow:inset 0 0 10px #000000;
+}

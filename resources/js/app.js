@@ -219,7 +219,7 @@ function replaceProfile(data) {
                 ? data.profile.benefits[3].id_number
                 : "N/A"
         );
-        $("#profile-image-display").prop("src", data.profile.image);
+        $("#profile-image-display").css("background-image", 'url('+data.profile.image+')');
         $("#birth_P").html(data.profile.birthdate);
     } else {
         $("#sss_P").html("••••••");
@@ -227,13 +227,13 @@ function replaceProfile(data) {
         $("#pagibig_P").html("••••••");
         $("#tin_P").html("••••••");
         $("#birth_P").html("••••••");
-        $("#profile-image-display").prop("src", data.profile.image);
+        $("#profile-image-display").css("background-image", 'url('+data.profile.image+')');
     }
 
     if (data.profile.image != null) {
-        $("#profile-image-display").prop("src", data.profile.image);
+        $("#profile-image-display").css("background-image", 'url('+data.profile.image+')');
     } else {
-        $("#profile-image-display").prop("src", "/images/nobody.jpg");
+        $("#profile-image-display").css("background-image", "url(/images/nobody.jpg)");
     }
 }
 
@@ -499,14 +499,14 @@ $(document).on("click", "#employee-form-submit", function(e) {
                             );
                         }
                         if (result.info.image) {
-                            $("#profile-image-display").attr(
-                                "src",
-                                result.info.image
+                            $("#profile-image-display").css(
+                                "background-image",
+                                'url('+result.info.image+')'
                             );
                         } else {
-                            $("#profile-image-display").attr(
-                                "src",
-                                "/images/nobody.jpg"
+                            $("#profile-image-display").css(
+                                "background-image",
+                                "url(/images/nobody.jpg)"
                             );
                         }
                         console.log(result.user);
