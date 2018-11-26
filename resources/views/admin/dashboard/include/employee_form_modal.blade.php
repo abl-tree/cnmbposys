@@ -432,6 +432,15 @@
                                 </div> 
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-hover existing-position">
+                                    <thead>
+                                        <th>Existing Positions</th>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
                     </center>
                 </form>
             </div>

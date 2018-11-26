@@ -15,6 +15,7 @@ use App\ExcelTemplateValidator;
 use Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Yajra\Datatables\Datatables;
 
 
 class EmployeeController extends Controller
@@ -343,9 +344,14 @@ class EmployeeController extends Controller
         return $access_level;
     }
     
-    public function get_position(Request $request){
-        $access_level = AccessLevel::all();
-        return $access_level;
+    public function get_position(Request $request, $option = null){
+        if($option === 'level') {
+            $access_level = AccessLevel::select('name')->groupBy('name')->get();
+            return Datatables::of($access_level)->toJson();
+        } else {
+            $access_level = AccessLevel::all();
+            return $access_level;
+        }
     }
 
 
