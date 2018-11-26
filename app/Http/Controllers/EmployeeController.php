@@ -293,7 +293,9 @@ class EmployeeController extends Controller
 
     public function update_status(Request $request){
         $user = UserInfo::where('id', $request->status_id)->first();
+        var_dump($request->status_reason);
         $user->status = $request->status_data;
+        $user->status_reason=$request->status_reason;
         $deactive_date=null;
         if($request->status_data=='Inactive'){
             $deactive_date = Carbon::now();
@@ -320,13 +322,14 @@ class EmployeeController extends Controller
         //         ->setBody('Hello Mr/Mrs '.$data['name'].', This is to inform you that your account has been activated by the HR. Thank You!. ');
         //         $message->from('bfjax5@gmail.com','CNM BPO');
         //          });     
-        // }else if($request->status_data=="Terminated"){
+        // }else if($request->status_data=="Inactive"){
         //  Mail::send([],[],function($message) use ($data){
-        //         $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Termination Mail of Mr/Mrs '.$data['name'])
+        //         $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Inactive Mail of Mr/Mrs '.$data['name'])
         //         ->setBody('Hello Mr/Mrs '.$data['name'].', This is to inform you that your account has been terminated by the HR');
         //         $message->from('bfjax5@gmail.com','CNM BPO');
         //          }); 
         // }
+        return json_encode($request->status_reason);
     }
 
     public function get_status(Request $request){

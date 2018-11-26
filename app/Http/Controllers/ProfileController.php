@@ -48,11 +48,11 @@ class ProfileController extends Controller
 
         if(isAdminHRM()){
             $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id', 'asc')->get();
-            $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level)->where('childInfo.status', '<>', 'Terminated');
+            $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level)->where('childInfo.status', '<>', 'Inactive');
         }
         else{
             $emp = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
-            $employeeList = $emp->where('childInfo.status', '<>', 'Terminated');
+            $employeeList = $emp->where('childInfo.status', '<>', 'Inactive');
         }
 
         return $this->reloadDatatable($employeeList);
@@ -65,34 +65,30 @@ class ProfileController extends Controller
     }
 
     public function terminatedView(){
-        $employeeList = UserInfo::with('user.access')->where('status', 'Terminated')->get();
+        $employeeList = UserInfo::with('user.access')->where('status', 'Inactive')->get();
 
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
             if(isAdminHRM()){
-                if($data->status=='Terminated'){
-                    return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->id.'">TERMINATED</button>';
+                if($data->status=='Inactive'){
+                    return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->id.'">Inactive</button>';
                 }else if($data->status=='Active'){
-                    return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->id.'">ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->id.'">Active</button>';
                 }else if($data->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">NEW HIRED</button>';
-                }else if($data->status=='Resigned'){
-                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">RESIGNED</button>';
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">New Hired</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">NO STATUS</button>';
+                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">No Status</button>';
                 }
             }
             else{
-                if($data->status=='Terminated'){
-                    return '<button class=" btn btn-sm btn-danger" disabled>TERMINATED</button>';
+                if($data->status=='Inactive'){
+                    return '<button class=" btn btn-sm btn-danger" disabled>Inactive</button>';
                 }else if($data->status=='Active'){
-                    return '<button class="btn btn-sm  btn-primary" disabled>ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary" disabled>Active</button>';
                 }else if($data->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success" disabled>NEW HIRED</button>';
-                }else if($data->status=='Resigned'){
-                    return '<button class="btn btn-sm  btn-warning" disabled>RESIGNED</button>';
+                    return '<button class="btn btn-sm  btn-success" disabled>New Hired</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning" disabled>NO STATUS</button>';
+                    return '<button class="btn btn-sm  btn-warning" disabled>No Status</button>';
                 }
             }
         })
@@ -102,6 +98,9 @@ class ProfileController extends Controller
         ->editColumn('name', function ($data){
             return $data->firstname." ".$data->middlename." ".$data->lastname;
         })
+        ->editColumn('company_id', function ($data){       
+                return $data->user->company_id;
+        })
         ->rawColumns(['employee_status', 'action'])
         ->make(true);
     }
@@ -110,34 +109,30 @@ class ProfileController extends Controller
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
             if(isAdminHRM()){
-                if($data->childInfo->status=='Terminated'){
-                    return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">TERMINATED</button>';
+                if($data->childInfo->status=='Inactive'){
+                    return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">Inactive</button>';
                 }else if($data->childInfo->status=='Active'){
-                    return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->child_id.'">ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->child_id.'">Active</button>';
                 }else if($data->childInfo->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">NEW HIRED</button>';
-                }else if($data->childInfo->status=='Resigned'){
-                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">RESIGNED</button>';
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">New Hired</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->child_id.'">NO STATUS</button>';
+                    return '<button class="btn btn-sm  btn-warning" disabled>No Status</button>';
                 }
             }
             else{
-                if($data->childInfo->status=='Terminated'){
-                    return '<button class=" btn btn-sm btn-danger" disabled>TERMINATED</button>';
+                if($data->childInfo->status=='Inactive'){
+                    return '<button class=" btn btn-sm btn-danger" disabled>Inactive</button>';
                 }else if($data->childInfo->status=='Active'){
-                    return '<button class="btn btn-sm  btn-primary" disabled>ACTIVE</button>';
+                    return '<button class="btn btn-sm  btn-primary" disabled>Active</button>';
                 }else if($data->childInfo->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success" disabled>NEW HIRED</button>';
-                }else if($data->childInfo->status=='Resigned'){
-                    return '<button class="btn btn-sm  btn-warning" disabled>RESIGNED</button>';
+                    return '<button class="btn btn-sm  btn-success" disabled>New Hired</button>';
                 }else{
-                    return '<button class="btn btn-sm  btn-warning" disabled>NO STATUS</button>';
+                    return '<button class="btn btn-sm  btn-warning" disabled>No Status</button>';
                 }
             }
         })
         ->addColumn('action', function($employeeList){
-            if($employeeList->childInfo->status == 'Terminated'){
+            if($employeeList->childInfo->status == 'Inactive'){
                 return '<h6>No Valid Action</h6>';
             }
 
