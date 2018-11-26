@@ -159,6 +159,11 @@
                         </tr>
                     </thead>
                 </table>
+                
+            <footer class="bdT  bgc-white  ta-c p-30 lh-0 fsz-sm c-grey-600" style='visibility:hidden;position:relative'>
+                <span>Copyright © 2018 Designed by
+                    <a href="https://colorlib.com" target='_blank' title="Colorlib">Colorlib</a> Powered by Solid Script Web Systems. All rights reserved.</span>
+            </footer>
             </div>
         </div>
     </div>
