@@ -910,6 +910,11 @@ $(document).on("click", "#excel-form-submit", function(e) {
 
             $("#excel-modal").modal("hide");
             refresh_employee_table();
+        },
+        error: function (request, status, error) {
+            console.log(error);
+            console.log(request);
+            console.log(status);
         }
     });
 });

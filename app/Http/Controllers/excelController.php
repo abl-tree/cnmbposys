@@ -291,6 +291,8 @@ class excelController extends Controller
 
 
     function import(Request $request){
+        set_time_limit(0);
+        DB::connection()->disableQueryLog();
         if($request->hasFile('excel_file')){
             $path = $request->file('excel_file')->getRealPath();
             $extension =  phpSpreadSheet::identify($path);
