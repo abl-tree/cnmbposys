@@ -129,7 +129,7 @@
     </div>
 
     <!-- <div class="col-md-2 mL-5 p-0"></div> -->
-    <div class="col">
+    <div class="col-md-9">
         <div class="bdT pX-40 pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20 taytol">Employee list</h4> 
 
@@ -154,7 +154,7 @@
                     </div>
 
                     <button type="submit" class="btn cur-p btn-secondary form-action-button" id="addflag" data-action="add" data-url="/employee"  data-toggle="tooltip" data-placement="top" title="Add Employee"><span class="ti-pencil-alt"></span></button>
-                    @endif
+                    @endif 
 
                     @if(isAdminHRM())
                     <button type="submit" class="btn cur-p btn-secondary add-position-button" id="add_position" data-action="add" data-url="/position"  data-toggle="tooltip" data-placement="top" title="Add Position"><span class="ti-user"></span></button>
@@ -166,7 +166,7 @@
                 <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>Company ID</th>
+                            <th style="width: 500px;">Company ID</th>
                             <th>Picture</th>
                             <th>Name</th>
                             <th>Position</th>
@@ -175,6 +175,8 @@
                             <th>Contact No.</th>
                             <th>Address</th>
                             <th>Contract</th>
+                            <th>Email</th>
+                            <th>Personal Email</th>
                             <th>Status</th>
                             <th>Action</th> 
                         </tr>

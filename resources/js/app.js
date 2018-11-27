@@ -6,6 +6,7 @@
 
 window.$ = jQuery;
 
+require('datatables.net-fixedcolumns');
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
@@ -43,6 +44,8 @@ function initialize_employee_table(url) {
         contact_number = "contact_number";
         address = "address";
         contract = "user.contract";
+        email = "p_email";
+        p_email = "user.email";
     } else {
         image = "child_info.image";
         company_id = "child_info.user.company_id";
@@ -52,6 +55,8 @@ function initialize_employee_table(url) {
         contact_number = "child_info.contact_number";
         address = "child_info.address";
         contract = "child_info.user.contract";
+        email = "child_info.p_email";
+        p_email = "child_info.user.email";
     }
 
     employeetable = $("#employee").DataTable({
@@ -59,6 +64,11 @@ function initialize_employee_table(url) {
         processing: true,
         lengthChange: false,
         pageLength: 5,
+        scrollX: true,
+        fixedColumns: {
+            leftColumns: 2,
+            rightColumns: 1
+        },
         columnDefs: [
             {
                 targets: "_all", // your case first column
@@ -95,6 +105,8 @@ function initialize_employee_table(url) {
             { data: contact_number, name: "contact_number" },
             { data: address, name: "address" },
             { data: contract, name: "contract" },
+            { data: email, name: "email" },
+            { data: p_email, name: "p_email" },
             { data: "employee_status" },
             { data: "action", orderable: false, searchable: false }
         ],

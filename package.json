@@ -37,6 +37,9 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
+        "datatables.net-fixedcolumns": "^3.2.6",
+        "datatables.net-fixedcolumns-bs": "^3.2.6",
+        "datatables.net-fixedcolumns-bs4": "^3.2.6",
         "select2": "^4.0.6-rc.1"
     }
 }

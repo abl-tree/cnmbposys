@@ -2260,11 +2260,6 @@ pre code {
   opacity: 1;
 }
 
-.form-control:-ms-input-placeholder {
-  color: #6c757d;
-  opacity: 1;
-}
-
 .form-control::-ms-input-placeholder {
   color: #6c757d;
   opacity: 1;
@@ -81054,5 +81049,29 @@ body {
 .profile-bg {
   -webkit-box-shadow: inset 0 0 10px #000000;
   box-shadow: inset 0 0 10px #000000;
+}
+
+table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(odd) {
+  background: #ecedee;
+}
+
+table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(even) {
+  background: #f9fafb;
+}
+
+.no-footer {
+  border-bottom: 0px !important;
+}
+
+.dataTables_scrollHead,
+.DTFC_LeftHeadWrapper,
+.DTFC_RightHeadWrapper {
+  height: 51px !important;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.DTFC_Cloned th {
+  background: #f9fafb;
 }
 
