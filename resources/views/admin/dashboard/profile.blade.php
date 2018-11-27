@@ -144,7 +144,7 @@
                         <button class="btn cur-p btn-primary" id="showAll" data-toggle="tooltip" data-placement="top" title="Employee"><span class="ti-menu"></span></button>
                         @endif
                         <button class="btn cur-p btn-primary" id="showChild" data-toggle="tooltip" data-placement="top" title="Staff"><span class="ti-menu-alt"></span></button>
-                        <button class="btn cur-p btn-primary" id="showTerminated"  data-toggle="tooltip" data-placement="top" title="Terminated"><span class="ti-na"></span></button>
+                        <button class="btn cur-p btn-primary" id="showTerminated"  data-toggle="tooltip" data-placement="top" title="Inactive"><span class="ti-na"></span></button>
                     </div>
 
                     @if(isAdminHR())
