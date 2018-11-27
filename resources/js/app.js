@@ -109,6 +109,14 @@ function initialize_employee_table(url) {
 
 initialize_employee_table("/refreshEmployeeList");
 
+$(document).on('change', '#status_data', function() {
+        if($(this).val()=="Inactive"){
+            $('#reason').show();
+        }else{
+            $('#reason').hide();
+            $("#status_reason").val("");
+        }
+});
 $(document).on("click", ".passChange", function(e) {
     if ($("#pass").val() != "") {
         var input = $(this);
@@ -759,6 +767,7 @@ $(document).on("click", "#submit_status", function(event) {
 
     var status_id = $("#status_id").val();
     var status_data = $("#status_data").val();
+    var status_reason = $("#status_reason").val();
     var input = $(this);
     var button = this;
     button.disabled = true;
@@ -771,7 +780,7 @@ $(document).on("click", "#submit_status", function(event) {
         },
         url: "/update_status",
         dataType: "text",
-        data: { status_id: status_id, status_data: status_data },
+        data: { status_id: status_id, status_data: status_data, status_reason:status_reason },
         success: function(data) {
             $("#update_status_modal").modal("hide");
             refresh_employee_table();
@@ -800,7 +809,8 @@ $(document).on("click", ".update_status", function(event) {
             var data = JSON.parse(value);
             $("#update_status_modal").modal("show");
             $("#status_id").val(data[0].id);
-            $("#status_data").val(data[0].status);
+            $("#status_data").val(data[0].status).trigger('change');
+            $("#status_reason").val(data[0].status_reason);
             $("#employee_status_name").html(
                 data[0].firstname +
                     " " +

@@ -351,9 +351,14 @@
                                 <select class="form-control" id="status_data" name="status_data" required>
                                     <option value="New_Hired">New Hired</option>
                                     <option value="Active">Active</option>
-                                    <option value="Resigned">Resigned</option>
-                                    <option value="Terminated">Terminated</option>
+                                    <option value="Inactive" id="inactive">Inactive</option>
                                 </select>
+                            </div>
+                            <div class="form-group" style="display:none" id="reason">
+                                <label for="status_data">
+                                    <h5 class="c-grey-900">Reason</h5>
+                                </label>
+                                <textarea  class="form-control" id="status_reason" name="status_reason" ></textarea>
                             </div>
                         </div>
                     </div>
