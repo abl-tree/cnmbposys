@@ -1,124 +1,248 @@
 @extends('admin.default')
 
 @section('content')
-<div class="full-container bgc-grey-100">
+<div class="full-container bgc-white">
 <div class="row">
-<!-- style='position:fixed' -->
-    <div class="col-md-2 mL-5 p-0 bd bgc-white db" >  
-    <!-- profile -->
-        <div class="layers bgc-white">
-            @php
-                if(!empty($profile->image)){
-                    echo '<div id="profile-image-display" class="profile-image-cover bdrs-50p" style="background-image:url('.$profile->image.');width:150px;height:150px;position:absolute; top:50px;-webkit-box-shadow: 0 10px 6px -6px #777;-moz-box-shadow: 0 10px 6px -6px #777;box-shadow: 0 10px 6px -6px #777;"></div>';
-                }else{
-                    echo '<div id="profile-image-display" class="profile-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg);width:150px;height:150px;position:absolute; top:50px;-webkit-box-shadow: 0 10px 6px -6px #777;-moz-box-shadow: 0 10px 6px -6px #777;box-shadow: 0 10px 6px -6px #777;"></div>';
-                }
-            @endphp
-            <div class="layer mB-10 profile-bg" style='background-image:url("/images/bg.jpg");height:150px;width:100%;background-size:cover;background-repeat:no-repeat;'></div>
-            <div class="layer bgc-white w-100p p-10" style="height:calc(100vh - 287px);">
-                <div class="min-content mT-40" style="text-align:center;">
-                    <h6 style='padding:0;margin:0;' id='name_P'>{{$profile->firstname." ".$profile->middlename." ".$profile->lastname}}</h6>
-                    <small style="font-size:.75em" id='email_P'>{{$user->email}}</small></h5>
-                    <div class="bdc-red-a200 bgc-red-a100 c-white p-5 m-10" style="text-align:center;border:2px solid">
-                        <span id='role_P'>{{ $role->name }}</span>
-                    </div>
-                    <div class="layer pX-30">
-                        @if(isAdmin())
-                        <button type="submit" class="btn cur-p btn-dark form-action-button form-control" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
-                        @endif
-                    </div>
-                    <div class="info-container mT-20">
-                        <div class="layer">
-                            <input type="radio" class="info-radio" name="info-nav" id="tab1" style='display:none;' checked> 
-                            <label for="tab1" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:5px 0px 0px 5px;font-weight:700">Info</label>
-                            <input type="radio" class="info-radio" name="info-nav" id="tab2" style='display:none;'> 
-                            <label for="tab2" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;font-weight:700">Identification</label>
-                            <input type="radio" class="info-radio" name="info-nav" id="tab3" style='display:none;'> 
-                            <label for="tab3" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:0px 5px 5px 0px;font-weight:700">Contact</label>
-                            <div class="layer p-20 tab-content-wrapper">
-                                <div id="tab-content1" class="tab-content">
-                                    <table style='width:100%'>
-                                        <tbody>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='font-weight:600;text-align:left'>Gender:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right;' id="gender_P">{{$profile->gender}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td style='font-weight:600;text-align:left'>Birth Date:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right' id="birth_P">{{$profile->birthdate}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td style='font-weight:600;text-align:left'>Hired Date:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right' id="hired_P">{{$profile->hired_date}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td style='font-weight:600;text-align:left'>Status:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right'>{{$profile->status}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+    <!-- style='position:fixed' -->
+    <div class="col-md-3 pL-5 p-0" >  
+        <!-- profile -->
+        <div class="layer profile-fixed-container scroller y-scroller" style='z-index:1;height:calc(100vh - 120px);'>
+            <div class="layers bgc-white">
+                @php
+                    if(!empty($profile->image)){
+                        echo '<div id="profile-image-display" class="profile-image-cover bdrs-50p" style="background-image:url('.$profile->image.');width:150px;height:150px;position:absolute; top:50px;-webkit-box-shadow: 0 10px 6px -6px #777;-moz-box-shadow: 0 10px 6px -6px #777;box-shadow: 0 10px 6px -6px #777;"></div>';
+                    }else{
+                        echo '<div id="profile-image-display" class="profile-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg);width:150px;height:150px;position:absolute; top:50px;-webkit-box-shadow: 0 10px 6px -6px #777;-moz-box-shadow: 0 10px 6px -6px #777;box-shadow: 0 10px 6px -6px #777;"></div>';
+                    }
+                @endphp
+                <div class="layer mB-10 profile-bg" style='background-image:url("/images/bg.jpg");height:150px;width:100%;background-size:cover;background-repeat:no-repeat;'></div>
+                <div class="layer bgc-white w-100p p-10">
+                    <div class="min-content mT-40" style="text-align:center;">
+                        <h6 style='padding:0;margin:0;' id='name_P'>{{$profile->firstname." ".$profile->middlename." ".$profile->lastname}}</h6>
+                        <small style="font-size:.75em" id='email_P'>{{$user->email}}</small></h5>
+                        <div class="bdc-red-a200 bgc-red-a100 c-white p-5 m-10" style="text-align:center;border:2px solid">
+                            <span id='role_P'>{{ $role->name }}</span>
+                        </div>
+                        <div class="layer pX-30">
+                            @if(isAdmin())
+                            <button type="submit" class="btn cur-p btn-dark form-action-button form-control" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
+                            @endif
+                        </div>
+                        <div class="info-container mT-20">
+                            <div class="layer">
+                                <input type="radio" class="info-radio" name="info-nav" id="tab1" style='display:none;' checked> 
+                                <label for="tab1" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:5px 0px 0px 5px;font-weight:700">Info</label>
+                                <input type="radio" class="info-radio" name="info-nav" id="tab2" style='display:none;'> 
+                                <label for="tab2" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;font-weight:700">Identification</label>
+                                <input type="radio" class="info-radio" name="info-nav" id="tab3" style='display:none;'> 
+                                <label for="tab3" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:0px 5px 5px 0px;font-weight:700">Contact</label>
+                                <div class="layer p-20 tab-content-wrapper">
+                                    <div id="tab-content1" class="tab-content">
+                                        <table style='width:100%'>
+                                            <tbody>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>Gender:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id="gender_P">{{$profile->gender}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>Birth Date:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="birth_P">{{$profile->birthdate}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>Hired Date:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="hired_P">{{$profile->hired_date}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>Status:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right'>{{$profile->status}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <div id="tab-content2" class="tab-content">
+                                        <table style='width:100%'>
+                                            <tbody>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>CNM:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id='company_id_P'>{{$profile->company_id}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>SSS:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="sss_P">{{$profile->benefits[0]->id_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>PhilHealth:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="philhealth_P">{{$profile->benefits[1]->id_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>PagIbig:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="pagibig_P">{{$profile->benefits[2]->id_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>TIN:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="tin_P">{{$profile->benefits[3]->id_number}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="tab-content3" class="tab-content">
+                                        <table style='width:100%'>
+                                            <tbody>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>Number:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id='contact_P'>{{$profile->contact_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>Address:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id='address_P'>{{$profile->address}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            <div id="tab-content2" class="tab-content">
-                                    <table style='width:100%'>
-                                        <tbody>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='font-weight:600;text-align:left'>CNM:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right;' id='company_id_P'>{{$profile->company_id}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td style='font-weight:600;text-align:left'>SSS:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right' id="sss_P">{{$profile->benefits[0]->id_number}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td style='font-weight:600;text-align:left'>PhilHealth:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right' id="philhealth_P">{{$profile->benefits[1]->id_number}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td style='font-weight:600;text-align:left'>PagIbig:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right' id="pagibig_P">{{$profile->benefits[2]->id_number}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td style='font-weight:600;text-align:left'>TIN:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right' id="tin_P">{{$profile->benefits[3]->id_number}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div id="tab-content3" class="tab-content">
-                                    <table style='width:100%'>
-                                        <tbody>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='font-weight:600;text-align:left'>Number:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right;' id='contact_P'>{{$profile->contact_number}}</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='font-weight:600;text-align:left'>Address:</td>
-                                            </tr>
-                                            <tr class='m-0 p-0'>
-                                                <td class='m-0 p-0' style='text-align:right;' id='address_P'>{{$profile->address}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layer profile-col-container">
+            <div class="layers bgc-white">
+                @php
+                    if(!empty($profile->image)){
+                        echo '<div id="profile-image-display" class="profile-image-cover bdrs-50p" style="background-image:url('.$profile->image.');width:150px;height:150px;position:absolute; top:50px;-webkit-box-shadow: 0 10px 6px -6px #777;-moz-box-shadow: 0 10px 6px -6px #777;box-shadow: 0 10px 6px -6px #777;"></div>';
+                    }else{
+                        echo '<div id="profile-image-display" class="profile-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg);width:150px;height:150px;position:absolute; top:50px;-webkit-box-shadow: 0 10px 6px -6px #777;-moz-box-shadow: 0 10px 6px -6px #777;box-shadow: 0 10px 6px -6px #777;"></div>';
+                    }
+                @endphp
+                <div class="layer mB-10 profile-bg" style='background-image:url("/images/bg.jpg");height:150px;width:100%;background-size:cover;background-repeat:no-repeat;'></div>
+                <div class="layer bgc-white w-100p p-10">
+                    <div class="min-content mT-40" style="text-align:center;">
+                        <h6 style='padding:0;margin:0;' id='name_P'>{{$profile->firstname." ".$profile->middlename." ".$profile->lastname}}</h6>
+                        <small style="font-size:.75em" id='email_P'>{{$user->email}}</small></h5>
+                        <div class="bdc-red-a200 bgc-red-a100 c-white p-5 m-10" style="text-align:center;border:2px solid">
+                            <span id='role_P'>{{ $role->name }}</span>
+                        </div>
+                        <div class="layer pX-30">
+                            @if(isAdmin())
+                            <button type="submit" class="btn cur-p btn-dark form-action-button form-control" id="profile-edit-button" data-portion="profile" data-action="edit" data-id="{{$profile->id}}"><span class="ti-pencil-alt" style='pointer:none;'></span> Edit</button>
+                            @endif
+                        </div>
+                        <div class="layer mT-20">
+                            <div class="layer">
+                                <input type="radio" class="info-radio" name="info-nav" id="tab1" style='display:none;' checked> 
+                                <label for="tab1" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:5px 0px 0px 5px;font-weight:700">Info</label>
+                                <input type="radio" class="info-radio" name="info-nav" id="tab2" style='display:none;'> 
+                                <label for="tab2" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;font-weight:700">Identification</label>
+                                <input type="radio" class="info-radio" name="info-nav" id="tab3" style='display:none;'> 
+                                <label for="tab3" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:0px 5px 5px 0px;font-weight:700">Contact</label>
+                                <div class="layer p-20 tab-content-wrapper">
+                                    <div id="tab-content1" class=" layer tab-content">
+                                        <table style='width:100%'>
+                                            <tbody>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>Gender:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id="gender_P">{{$profile->gender}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>Birth Date:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="birth_P">{{$profile->birthdate}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>Hired Date:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="hired_P">{{$profile->hired_date}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>Status:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right'>{{$profile->status}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <div id="tab-content2" class=" layer tab-content">
+                                        <table style='width:100%'>
+                                            <tbody>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>CNM:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id='company_id_P'>{{$profile->company_id}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>SSS:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="sss_P">{{$profile->benefits[0]->id_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>PhilHealth:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="philhealth_P">{{$profile->benefits[1]->id_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>PagIbig:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="pagibig_P">{{$profile->benefits[2]->id_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td style='font-weight:600;text-align:left'>TIN:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right' id="tin_P">{{$profile->benefits[3]->id_number}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="tab-content3" class="layer tab-content">
+                                        <table style='width:100%'>
+                                            <tbody>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>Number:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id='contact_P'>{{$profile->contact_number}}</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='font-weight:600;text-align:left'>Address:</td>
+                                                </tr>
+                                                <tr class='m-0 p-0'>
+                                                    <td class='m-0 p-0' style='text-align:right;' id='address_P'>{{$profile->address}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +254,7 @@
 
     <!-- <div class="col-md-2 mL-5 p-0"></div> -->
     <div class="col-md-9">
-        <div class="bdT pX-40 pY-30 col-md-12">
+        <div class="bdT pY-30 col-md-12">
                 <h4 class="c-grey-900 mB-20 taytol">Employee list</h4> 
 
                 <div class="form-group reposition">
@@ -163,22 +287,22 @@
                 </div>
                 <br>
                 <br>
-                <table id="employee" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <table id="employee" class="table table-hover" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th style="width: 500px;">Company ID</th>
+                            <th class="bg-muted">ID</th>
+                            <th class="bg-muted">Name</th>
+                            <th class="bg-muted">Status</th>
+                            <th class="bg-muted">Action</th> 
                             <th>Picture</th>
-                            <th>Name</th>
                             <th>Position</th>
                             <th>Birthday</th>
                             <th>Gender</th>
-                            <th>Contact No.</th>
+                            <th class='no-wrap'>Contact No.</th>
                             <th>Address</th>
                             <th>Contract</th>
-                            <th>Email</th>
                             <th>Personal Email</th>
-                            <th>Status</th>
-                            <th>Action</th> 
+                            <th>Company Email</th> Email</th>
                         </tr>
                     </thead>
                 </table>

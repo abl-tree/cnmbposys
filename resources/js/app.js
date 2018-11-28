@@ -6,7 +6,7 @@
 
 window.$ = jQuery;
 
-require('datatables.net-fixedcolumns');
+require("datatables.net-fixedcolumns")(window, $);
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
@@ -62,26 +62,38 @@ function initialize_employee_table(url) {
     employeetable = $("#employee").DataTable({
         destroy: true,
         processing: true,
-        lengthChange: false,
-        pageLength: 5,
+        blengthChange: false,
         scrollX: true,
+        lengthMenu: [5, 10, 25, 50, "All"],
         fixedColumns: {
-            leftColumns: 2,
-            rightColumns: 1
+            leftColumns: 4
         },
         columnDefs: [
             {
-                targets: "_all", // your case first column
-                className: "text-center"
+                targets: [5,6,7,8,9,10,11,12], // your case all column
+                className: ["dt-center", "no-wrap"],
+                autoWidth: true
+            },
+
+            {
+                targets: [4],
+                className: ["image-center"]
+            },
+
+            {
+                targets: [0, 1, 2, 3],
+                className: "bg-muted"
             }
         ],
         ajax: url,
-        autoWidth: false,
         order: [1],
         columns: [
             { data: "company_id", name: "company_id" },
+            { data: "name", name: "name" },
+
+            { data: "employee_status" },
+            { data: "action", orderable: false, searchable: false },
             {
-                width: "10%",
                 data: image,
                 name: "image",
                 render: function(data, type, row, meta) {
@@ -89,16 +101,17 @@ function initialize_employee_table(url) {
                     if (data) {
                         // console.log(data);
                         return (
-                            '<div class="table-image-cover bdrs-50p" style="background-image:url(' +
+                            '<div class="table-image-cover bdrs-50p" data-img="' +
+                            data +
+                            '" style="background-image:url(' +
                             data +
                             ')"></div>'
                         );
                     } else {
-                        return '<div class="table-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>';
+                        return '<div class="table-image-cover bdrs-50p" data-img="/images/nobody.jpg" style="background-image:url(/images/nobody.jpg)"></div>';
                     }
                 }
             },
-            { data: "name", name: "name" },
             { data: position, name: "position" },
             { data: birthdate, name: "birthdate" },
             { data: gender, name: "gender" },
@@ -106,9 +119,7 @@ function initialize_employee_table(url) {
             { data: address, name: "address" },
             { data: contract, name: "contract" },
             { data: email, name: "email" },
-            { data: p_email, name: "p_email" },
-            { data: "employee_status" },
-            { data: "action", orderable: false, searchable: false }
+            { data: p_email, name: "p_email" }
         ],
         createdRow: function(row, data, index) {
             if (!data["parent_id"]) {
@@ -118,16 +129,28 @@ function initialize_employee_table(url) {
         }
     });
 }
+var popOverSettings = {
+    placement: 'left',
+    container: 'body',
+    trigger:'hover',
+    html: true,
+    selector: '.table-image-cover', //Sepcify the selector here
+    content: function () {
+        return '<img src="'+$(this).data('img')+'" width="500"/>';
+    }
+}
+
+$(document).popover(popOverSettings);
 
 initialize_employee_table("/refreshEmployeeList");
 
-$(document).on('change', '#status_data', function() {
-        if($(this).val()=="Inactive"){
-            $('#reason').show();
-        }else{
-            $('#reason').hide();
-            $("#status_reason").val("");
-        }
+$(document).on("change", "#status_data", function() {
+    if ($(this).val() == "Inactive") {
+        $("#reason").show();
+    } else {
+        $("#reason").hide();
+        $("#status_reason").val("");
+    }
 });
 $(document).on("click", ".passChange", function(e) {
     if ($("#pass").val() != "") {
@@ -239,7 +262,10 @@ function replaceProfile(data) {
                 ? data.profile.benefits[3].id_number
                 : "N/A"
         );
-        $("#profile-image-display").css("background-image", 'url('+data.profile.image+')');
+        $("#profile-image-display").css(
+            "background-image",
+            "url(" + data.profile.image + ")"
+        );
         $("#birth_P").html(data.profile.birthdate);
     } else {
         $("#sss_P").html("••••••");
@@ -247,13 +273,22 @@ function replaceProfile(data) {
         $("#pagibig_P").html("••••••");
         $("#tin_P").html("••••••");
         $("#birth_P").html("••••••");
-        $("#profile-image-display").css("background-image", 'url('+data.profile.image+')');
+        $("#profile-image-display").css(
+            "background-image",
+            "url(" + data.profile.image + ")"
+        );
     }
 
     if (data.profile.image != null) {
-        $("#profile-image-display").css("background-image", 'url('+data.profile.image+')');
+        $("#profile-image-display").css(
+            "background-image",
+            "url(" + data.profile.image + ")"
+        );
     } else {
-        $("#profile-image-display").css("background-image", "url(/images/nobody.jpg)");
+        $("#profile-image-display").css(
+            "background-image",
+            "url(/images/nobody.jpg)"
+        );
     }
 }
 
@@ -504,7 +539,7 @@ $(document).on("click", "#employee-form-submit", function(e) {
                 input.html("Confirm");
                 if ($("#action").val() == "edit") {
                     if ($("#portion").val() == "profile") {
-                        if ($("#employee-id").val() == 1) {
+                        if ($("#logged-position").val() == 1) {
                             var data = result.info.image;
                             $("#top-image-display").css(
                                 "background-image",
@@ -521,7 +556,7 @@ $(document).on("click", "#employee-form-submit", function(e) {
                         if (result.info.image) {
                             $("#profile-image-display").css(
                                 "background-image",
-                                'url('+result.info.image+')'
+                                "url(" + result.info.image + ")"
                             );
                         } else {
                             $("#profile-image-display").css(
@@ -650,7 +685,9 @@ $(document).on("click", "#position-form-submit", function(event) {
         dataType: "json",
         data: $("#add-position-form").serialize(),
         success: function(data) {
-            $('.existing-position').DataTable().ajax.reload();
+            $(".existing-position")
+                .DataTable()
+                .ajax.reload();
             swal("Done!", "New position successfully added.", "success");
             button.disabled = false;
             input.html("Save");
@@ -792,7 +829,11 @@ $(document).on("click", "#submit_status", function(event) {
         },
         url: "/update_status",
         dataType: "text",
-        data: { status_id: status_id, status_data: status_data, status_reason:status_reason },
+        data: {
+            status_id: status_id,
+            status_data: status_data,
+            status_reason: status_reason
+        },
         success: function(data) {
             $("#update_status_modal").modal("hide");
             refresh_employee_table();
@@ -809,6 +850,7 @@ $(document).on("click", "#submit_status", function(event) {
     });
 });
 
+
 $(document).on("click", ".update_status", function(event) {
     event.preventDefault();
     var id = $(this).attr("id");
@@ -821,7 +863,9 @@ $(document).on("click", ".update_status", function(event) {
             var data = JSON.parse(value);
             $("#update_status_modal").modal("show");
             $("#status_id").val(data[0].id);
-            $("#status_data").val(data[0].status).trigger('change');
+            $("#status_data")
+                .val(data[0].status)
+                .trigger("change");
             $("#status_reason").val(data[0].status_reason);
             $("#employee_status_name").html(
                 data[0].firstname +
