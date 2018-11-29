@@ -19,6 +19,10 @@ use App\AccessLevel;
 use App\AccessLevelHierarchy;
 use App\ExcelTemplateValidator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
 
 class excelController extends Controller
 {
@@ -128,7 +132,7 @@ class excelController extends Controller
                 ->join('users','user_infos.id','=','users.uid')
                 ->join('access_levels','users.access_id','=','access_levels.id')
                 ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename, user_infos.lastname) as fullname'),'access_levels.code as code')
-                ->where([['user_infos.id','=',$datum->parent_id],['user_infos.status','!=','Terminated']])
+                ->where([['user_infos.id','=',$datum->parent_id],['user_infos.status','!=','Inactive']])
                 ->get();
             
                 $id = $datum->id;
@@ -163,7 +167,7 @@ class excelController extends Controller
         $employee = DB::table('user_infos')
         ->join('users','user_infos.id','=','users.uid')
         ->select('user_infos.id as id',DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'),'users.access_id as access_id')
-        ->where('user_infos.status','!=','Terminated')
+        ->where('user_infos.status','!=','Inactive')
         ->get();
 
         foreach($employee as $k => $datum){
@@ -183,7 +187,7 @@ class excelController extends Controller
             $tmp[] = DB::table('user_infos')
             ->join('users','users.uid','=','user_infos.id')
             ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'))
-            ->where([['users.access_id','=',$datum],['user_infos.status','!=','Terminated'],])
+            ->where([['users.access_id','=',$datum],['user_infos.status','!=','Inactive'],])
             ->pluck('fullname')->toArray();
             if(empty($datum)){
                 $tmp1[] = 'superadmin';
@@ -301,6 +305,7 @@ class excelController extends Controller
             $handler = $spreadsheet->setActiveSheetIndexByName('config');
             $action = $handler->getCellByColumnAndRow(1, 1)->getValue();
             $file_token = $handler->getCellByColumnAndRow(2, 1)->getValue();
+            $taken_email = User::pluck('email')->toArray();
             $token = DB::table('excel_template_validators')->where('template',$action)->pluck('token');
             $data =[];
             $duplicate_counter = 0;
@@ -308,17 +313,18 @@ class excelController extends Controller
             $error_counter=0;
             $reassign_counter = 0;
             $error_rows=[];
-            $limit = 100;
-            $lesslimit = 0;
+            $limit = 500;
+            $object=[];
+
 
             if($action=='Add'){
                 //Add
                 // if($file_token==$token[0]){
                     $handler = $spreadsheet->setActiveSheetIndexByName($action);
                     $rows = $handler->getHighestDataRow();    
+                    $valid_positions = AccessLevel::pluck('name')->toArray();
                     for($r=2;$r<=$rows;$r++){
-                        $taken_email = User::pluck('email')->toArray();
-                        $taken_pemail = UserInfo::pluck('p_email')->toArray();
+                        // $taken_pemail = UserInfo::pluck('p_email')->toArray();
                         $hash = UserInfo::pluck('excel_hash')->toArray();
                         $fname = $handler->getCellByColumnAndRow(1, $r)->getValue();
                         $mname = $handler->getCellByColumnAndRow(2, $r)->getValue();
@@ -327,7 +333,7 @@ class excelController extends Controller
                         $birthdate = $handler->getCellByColumnAndRow(5, $r)->getFormattedValue();
                         $address=$handler->getCellByColumnAndRow(6, $r)->getValue();
                         $p_email = $handler->getCellByColumnAndRow(7, $r)->getValue();
-                        $email = $handler->getCellByColumnAndRow(8, $r)->getValue();
+                        $email = strtolower($handler->getCellByColumnAndRow(8, $r)->getValue());
                         $contact_number=$handler->getCellByColumnAndRow(9, $r)->getValue();
                         $sss=$handler->getCellByColumnAndRow(10, $r)->getValue();
                         $philhealth=$handler->getCellByColumnAndRow(11, $r)->getValue();
@@ -343,37 +349,29 @@ class excelController extends Controller
                         $s_reason = $handler->getCellByColumnAndRow(20, $r)->getValue();
                         $s_date = $handler->getCellByColumnAndRow(21, $r)->getFormattedValue();
                         $concat = str_replace(' ', '', strtolower($fname.$mname.$lname));
-                        $errorlog = 0;
+                        $error = 0;
                         $this_duplicate = 0;
+
                         //Manual error Filter
                         //email
-        
                         if(in_array($concat,$hash)){
                             $duplicate_counter++;
                             $this_duplicate=1;
-                        }else{
-                            if(in_array(strtolower($email),$taken_email)){
-                                $errorlog++;
-                            }
-                            // if(in_array(strtolower($p_email),$taken_pemail)){
-                            //     $errorlog++;
-                            // }
+                        }
+                        
+                        if(in_array($email,$taken_email)){
+                            $error++;
                         }
 
-                        // if (!filter_var($email, FILTER_VALIDATE_EMAIL)||!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        //     $errorlog++;
-                        // }
-                        // BLANK strings
-                        if(($fname==""&&$mname==""&&$lname=="")||$position==""){
-                            $errorlog++;
+                        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                            $error++;
                         }
-                        //numeric inputs
-                        // if(!is_numeric($contact_number)||!is_numeric($sss)||!is_numeric($phil
-                        //     health)||!is_numeric($pagibig)||!is_numeric($tin)||!is_numeric($salary_rate)){
-                        //     $errorlog++;
-                        // }
         
-                        if($errorlog==0&&$this_duplicate==0){
+                        if(($fname==""&&$mname==""&&$lname=="")||$position==""){
+                            $error++;
+                        }
+        
+                        if(($error==0) && ($this_duplicate==0)){
                             if($position>1){
                                 $userinfo = new UserInfo;
                                 $userinfo->firstname=$fname;
@@ -389,40 +387,60 @@ class excelController extends Controller
                                 $userinfo->p_email=$p_email;
                                 $userinfo->status_reason=$s_reason;
                                 $userinfo->separation_date=$s_date;
+                                $userinfo->excel_hash = $concat;
                                 $s_userinfo=$userinfo->save();
-                                if(!$s_userinfo){
-                                    $error_rows[]=$r;
-                                }
-                                $user = new User;
-                                $user->uid= $userinfo->id;
-                                $user->email = strtolower($email);
-                                $user->password = str_replace(' ', '', strtolower($fname.$lname));
-                                $user->access_id = $position;
-                                $user->company_id = $company_id;
-                                $user->contract = $contract;
-                                if(!$user->save()){
-                                    $error_rows[]=$r;
-                                    UserInfo::find($userinfo->id)->delete();
-                                }
-                
-                                $obj_benefit=[];
-                                for($l=0;$l<4;$l++){
-                                    $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$handler->getCellByColumnAndRow($l+10, $r)->getValue(),];
-                                }
-                                UserBenefit::insert($obj_benefit);
-        
-                                $access_level_hierarchy = new AccessLevelHierarchy;
-                                $access_level_hierarchy->child_id = $userinfo->id;
-                                $access_level_hierarchy->parent_id = null;
-                                $check = $access_level_hierarchy->save();
-                                if($check){
-                                    $saved_counter++;
-                                    $userinfo->excel_hash = $concat;
-                                    $userinfo->save();
-                                }
+
+                                $object['users'][] = [
+                                    'uid' => $userinfo->id,
+                                    'company_id' => $company_id,
+                                    'email'=> $email,
+                                    'password'=> Hash::make(str_replace(' ', '', strtolower($fname.$lname))),
+                                    'access_id' => $position,
+                                    'contract' => $contract,
+                                    'created_at' => date('Y-m-d H:i:s'),
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                ];
+
+                                $object['benefits'][] = [
+                                    'user_info_id' => $userinfo->id,
+                                    'benefit_id' => 1,
+                                    'id_number' => $sss,
+                                    'created_at' => date('Y-m-d H:i:s'),
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                ];
+                                $object['benefits'][] = [
+                                    'user_info_id' => $userinfo->id,
+                                    'benefit_id' => 2,
+                                    'id_number' => $philhealth,
+                                    'created_at' => date('Y-m-d H:i:s'),
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                ];
+                                $object['benefits'][] = [
+                                    'user_info_id' => $userinfo->id,
+                                    'benefit_id' => 3,
+                                    'id_number' => $pagibig,
+                                    'created_at' => date('Y-m-d H:i:s'),
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                ];
+                                $object['benefits'][] = [
+                                    'user_info_id' => $userinfo->id,
+                                    'benefit_id' => 4,
+                                    'id_number' => $tin,
+                                    'created_at' => date('Y-m-d H:i:s'),
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                ];
+                                
+                                $object['hierarchy'][] = [
+                                    'child_id' => $userinfo->id,
+                                    'created_at' => date('Y-m-d H:i:s'),
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                ];
+
+                                $taken_email[]=$email;
+                                $saved_counter++;
                             }
 
-                        }else if($errorlog>0){
+                        }else if($error>0){
                             $error_rows[]=$r;
                         }
 
@@ -430,10 +448,7 @@ class excelController extends Controller
                             if($saved_counter==$limit){
                                 break;
                             }
-                        }else{
-                            $lesslimit++; 
                         }
-
                          
                     }
                 // }else{
@@ -472,6 +487,9 @@ class excelController extends Controller
             }
 
             //return values
+            $object['benefits'] = array_chunk($object['benefits'],100);
+            $object['users'] = array_chunk($object['users'],100);
+            $object['hierarchy'] = array_chunk($object['hierarchy'],100);
 
             $return_data[]=[
                 'saved_counter' => $saved_counter,
@@ -480,6 +498,7 @@ class excelController extends Controller
                 'reassign_counter'=>$reassign_counter,
                 'outdated' => $outdated,
                 'action'=>$action,
+                'object'=>$object,
             ];
 
             echo json_encode($return_data);
@@ -487,5 +506,18 @@ class excelController extends Controller
         }else{
             echo json_encode('File not valid.');
         }
+    }
+
+    function insert_users(Request $request){
+        User::insert($request->obj);
+        echo json_encode('success');
+    }
+    function insert_benefits(Request $request){
+        UserBenefit::insert($request->obj);
+        echo json_encode('success');
+    }
+    function insert_hierarchy(Request $request){
+        AccessLevelHierarchy::insert($request->obj);
+        echo json_encode('success');
     }
 }

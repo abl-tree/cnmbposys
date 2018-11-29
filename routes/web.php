@@ -74,5 +74,9 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
     Route::get('/profile/excel_export_add_template','excelController@Addtemplate')->name('excel.exportaddtemplate');
     Route::get('/profile/excel_export_reassign_template','excelController@Reassigntemplate')->name('excel.exportreassigntemplate');
     Route::post('/profile/excel_import','excelController@import')->name('excel.import');
+    Route::post('/excel/insert/users','excelController@insert_users');
+    Route::post('/excel/insert/benefits','excelController@insert_benefits');
+    Route::post('/excel/insert/hierarchy','excelController@insert_hierarchy');
+    Route::post('/excel/import/validate/add','excelController@importValidateAdd');
     //IMPORT EXPORT EXCEL -- END
 });

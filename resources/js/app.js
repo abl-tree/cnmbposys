@@ -6,7 +6,7 @@
 
 window.$ = jQuery;
 
-require("datatables.net-fixedcolumns")(window, $);
+require("datatables.net-fixedcolumns");
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
@@ -70,7 +70,7 @@ function initialize_employee_table(url) {
         },
         columnDefs: [
             {
-                targets: [5,6,7,8,9,10,11,12], // your case all column
+                targets: [5, 6, 7, 8, 9, 10, 11, 12], // your case all column
                 className: ["dt-center", "no-wrap"],
                 autoWidth: true
             },
@@ -130,15 +130,15 @@ function initialize_employee_table(url) {
     });
 }
 var popOverSettings = {
-    placement: 'left',
-    container: 'body',
-    trigger:'hover',
+    placement: "left",
+    container: "body",
+    trigger: "hover",
     html: true,
-    selector: '.table-image-cover', //Sepcify the selector here
-    content: function () {
-        return '<img src="'+$(this).data('img')+'" width="500"/>';
+    selector: ".table-image-cover", //Sepcify the selector here
+    content: function() {
+        return '<img src="' + $(this).data("img") + '" width="500"/>';
     }
-}
+};
 
 $(document).popover(popOverSettings);
 
@@ -850,7 +850,6 @@ $(document).on("click", "#submit_status", function(event) {
     });
 });
 
-
 $(document).on("click", ".update_status", function(event) {
     event.preventDefault();
     var id = $(this).attr("id");
@@ -882,11 +881,12 @@ $(document).on("click", ".update_status", function(event) {
 });
 
 $(document).on("click", ".excel-action-button", function(e) {
-    $("#action-import").show();
+    $("#action-import")[0].hidden = false;
     $("#action-export").show();
     $("#excel-form-submit").show();
-
     $("#excel-modal").modal("show");
+    $("#import-employee-pbar-container").css("display", "none");
+
     if ($(this).attr("data-action") == "import") {
         $("#action-export").hide();
         $("#excel-modal-header").html("Import");
@@ -895,6 +895,8 @@ $(document).on("click", ".excel-action-button", function(e) {
         $("#excel-file-label")
             .removeClass("btn-info")
             .addClass("btn-secondary");
+        $("#excel-modal-cancel")[0].hidden = false;
+        $("#excel-form-submit")[0].hidden = false;
     } else {
         $("#action-import").hide();
         $("#excel-form-submit").hide();
@@ -905,10 +907,18 @@ $(document).on("click", ".excel-action-button", function(e) {
 $(document).on("click", "#excel-form-submit", function(e) {
     e.preventDefault();
     var formData = new FormData($("#import-excel-form")[0]);
-    var btn = $("#excel-form-submit");
-    btn[0].disabled = true;
-    btn.html("Loading...");
-
+    $("#excel-modal-header").html("Importing...");
+    $("#import-employee-pbar-container").css("display", "block");
+    $("#import-employee-p-bar").css("width", 0);
+    $("#excel-form-submit")[0].hidden = true;
+    $("#excel-modal-cancel")[0].hidden = true;
+    $("#action-import")[0].hidden = true;
+    var dirty = true;
+    window.onbeforeunload = function() {
+        return dirty
+            ? "If you leave this page you will lose your unsaved changes."
+            : null;
+    };
     $.ajax({
         url: "/profile/excel_import",
         method: "POST",
@@ -917,65 +927,45 @@ $(document).on("click", "#excel-form-submit", function(e) {
         contentType: false,
         processData: false,
         success: function(result) {
-            btn.html("Confirm");
-            btn[0].disabled = false;
             result = JSON.parse(result);
             console.log(result);
-            // alert(result+"success");
-            // var reassign = '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>';
-            var title = "";
-            var htmlcontent = "";
-
-            if (result[0].outdated == true) {
-                title = "<strong>Outdated Template</strong>";
-                htmlcontent =
-                    '<div class="alert alert-info"> Please download new template.</div>';
-            } else if (result[0].outdated == false) {
-                if (result[0].action == "Add") {
-                    var err = 0;
-                    if (result[0].error_rows.length > 0) {
-                        err = result[0].error_rows;
-                    } else {
-                        err = 0;
-                    }
-                    title = "<strong>Add Employee Report</strong>";
-                    htmlcontent =
-                        '<div class="alert alert-success"><strong>' +
-                        result[0].saved_counter +
-                        "</strong> record/s added.</div>";
-                    htmlcontent +=
-                        '<div class="alert alert-info"><strong>' +
-                        result[0].duplicate_counter +
-                        "</strong> duplicate/s found.</div>";
-                    htmlcontent +=
-                        '<div class="alert alert-warning">Error rows: ' +
-                        err.toString() +
-                        "</div>";
-                } else if (result[0].action == "Reassign") {
-                    title = "<strong>Reassign Employee Report</strong>";
-                    htmlcontent =
-                        '<div class="alert alert-success"><strong>' +
-                        result[0].reassign_counter +
-                        "</strong> reassigned employee/s.</div>";
-                }
-            }
 
             if (result == "File not valid.") {
-                title = "<strong>Invalid</strong>";
-                htmlcontent =
-                    "<div class='alert alert-danger'>Please upload a <strong>.xlsx</strong> file.</div>";
+                swal({
+                    title: "<strong>Invalid</strong>",
+                    html:
+                        "<div class='alert alert-danger'>Please upload a <strong>.xlsx</strong> file.</div>",
+                    focusConfirm: false,
+                    confirmButtonText: '<i class="fa fa-thumbs-up"></i> Noted!',
+                    confirmButtonAriaLabel: "Thumbs up, great!"
+                });
+            } else {
+                if (result[0].action == "Add") {
+                    max_progress =
+                        result[0].object.benefits.length +
+                        result[0].object.users.length +
+                        result[0].object.hierarchy.length;
+                    progress = 100 / max_progress;
+                    $("#import-employee-p-bar").css("width", progress + "%");
+
+                    $.each(result[0].object.benefits, function(index, value) {
+                        insertemployee(value, "benefits", result);
+                    });
+                    $.each(result[0].object.users, function(index, value) {
+                        insertemployee(value, "users", result);
+                    });
+                    $.each(result[0].object.hierarchy, function(index, value) {
+                        insertemployee(value, "hierarchy", result);
+                    });
+                } else if (result[0].action == "Reassign") {
+                    importResultDisplay(result);
+                }
             }
-
-            swal({
-                title: title,
-                html: htmlcontent,
-                focusConfirm: false,
-                confirmButtonText: '<i class="fa fa-thumbs-up"></i> Noted!',
-                confirmButtonAriaLabel: "Thumbs up, great!"
-            });
-
-            $("#excel-modal").modal("hide");
-            refresh_employee_table();
+        },
+        error: function(req, status, error) {
+            // console.log(req);
+            // console.log(status);
+            // console.log(error);
         }
     });
 });
@@ -1258,6 +1248,78 @@ document.addEventListener("DOMContentLoaded", function() {
         hideUI();
         video.classList.add("visible");
         controls.classList.add("visible");
+    }
+
+    max_progress = 0;
+
+    insertemployee = function(data, table, obj) {
+        $.ajax({
+            url: "/excel/insert/" + table,
+            method: "POST",
+            data: { obj: data },
+            success: function(result) {
+                console.log(JSON.parse(result));
+                max_progress--;
+                progress = 0;
+                if (max_progress == 1) {
+                    progress = 100;
+                    $("#import-employee-p-bar").css("width", progress + "%");
+
+                    setTimeout(function() {
+                        $("#excel-modal").modal("hide");
+                    }, 3000);
+
+                    importResultDisplay(obj);
+                }
+                // console.log(result);
+            },
+            error: function(req, status, error) {
+                // console.log(req);
+                // console.log(status);
+                // console.log(error);
+            }
+        });
+    };
+
+    function importResultDisplay(obj) {
+        var title = "";
+        var htmlcontent = "";
+
+        if (obj[0].outdated == true) {
+            title = "<strong>Outdated Template</strong>";
+            htmlcontent =
+                '<div class="alert alert-info"> Please download new template.</div>';
+        } else if (obj[0].outdated == false) {
+            if (obj[0].action == "Add") {
+                var err = 0;
+                if (obj[0].error_rows.length > 0) {
+                    err = obj[0].error_rows;
+                } else {
+                    err = 0;
+                }
+                title = "<strong>Add Employee Report</strong>";
+                htmlcontent =
+                    '<div class="alert alert-success"><strong>' +
+                    obj[0].saved_counter +
+                    "</strong> record/s added.</div>";
+                htmlcontent +=
+                    '<div class="alert alert-info"><strong>' +
+                    obj[0].duplicate_counter +
+                    "</strong> duplicate/s found.</div>";
+                htmlcontent +=
+                    '<div class="alert alert-warning">Error rows: ' +
+                    err.toString() +
+                    "</div>";
+            } else if (obj[0].action == "Reassign") {
+                title = "<strong>Reassign Employee Report</strong>";
+                htmlcontent =
+                    '<div class="alert alert-success"><strong>' +
+                    obj[0].reassign_counter +
+                    "</strong> reassigned employee/s.</div>";
+            }
+        }
+
+        refresh_employee_table();
     }
 
     function displayErrorMessage(error_msg, error) {

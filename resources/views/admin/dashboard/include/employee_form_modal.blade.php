@@ -392,6 +392,16 @@
                             <label for="excel_file" id="excel-file-label" class="btn btn-default">Select excel file.</label>
                             <input type="file" name='excel_file' id="excel_file" style="display:none;">
                         </div>
+
+                        <div  id='import-employee-pbar-container'>
+                            <div class="alert alert-warning">
+                                <h5><strong><small>Please do not exit or leave the page</small></strong></h5>
+                            </div>
+                            <div class="progress" style="height:30px;">
+                                <div id='import-employee-p-bar' class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        
                         <div id="action-export">
 
                             <a href="/profile/excel_export_report" class="btn btn-sq-lg btn-outline-primary"><br><i

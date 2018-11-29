@@ -302,7 +302,7 @@
                             <th>Address</th>
                             <th>Contract</th>
                             <th>Personal Email</th>
-                            <th>Company Email</th> Email</th>
+                            <th>Company Email</th> 
                         </tr>
                     </thead>
                 </table>

@@ -12,7 +12,7 @@ class AccessLevelHierarchy extends Model
      * @var array
      */
     protected $fillable = [
-        'parent_id', 'child_id',
+        'parent_id', 'child_id','created_at','updated_at'
     ];
 
     public function childInfo() {

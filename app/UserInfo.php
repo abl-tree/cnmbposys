@@ -18,7 +18,7 @@ class UserInfo extends Model
         'birthdate', 'gender', 'contact_number',
         'address', 'image', 'salary_rate','image_ext',
         'status', 'hired_date', 'separation_date', 'excel_hash',
-        'p_email'
+        'p_email','created_at','updated_at'
     ];
 
      //Mutator

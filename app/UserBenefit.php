@@ -12,7 +12,7 @@ class UserBenefit extends Model
      * @var array
      */
     protected $fillable = [
-        'user_info_id', 'benefit_id', 'id_number',
+        'user_info_id', 'benefit_id', 'id_number','created_at','updated_at'
     ];
 
     public function info() {
