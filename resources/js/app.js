@@ -6,7 +6,7 @@
 
 window.$ = jQuery;
 
-require("datatables.net-fixedcolumns")(window, $);
+require("datatables.net-fixedcolumns");
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
