@@ -2260,11 +2260,6 @@ pre code {
   opacity: 1;
 }
 
-.form-control:-ms-input-placeholder {
-  color: #6c757d;
-  opacity: 1;
-}
-
 .form-control::-ms-input-placeholder {
   color: #6c757d;
   opacity: 1;
@@ -80659,8 +80654,8 @@ table.dataTable.no-footer {
   left: calc(50% - 20px);
   background-color: #333;
   border-radius: 100%;
-  -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
-  animation: sk-scaleout 1.0s infinite ease-in-out;
+  -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+  animation: sk-scaleout 1s infinite ease-in-out;
 }
 
 @-webkit-keyframes sk-scaleout {
@@ -81019,6 +81014,7 @@ body {
 #tab2:checked ~ .tab-content-wrapper > #tab-content2,
 #tab3:checked ~ .tab-content-wrapper > #tab-content3 {
   display: block;
+  position: relative;
 }
 
 .tab-content {
@@ -81054,5 +81050,140 @@ body {
 .profile-bg {
   -webkit-box-shadow: inset 0 0 10px #000000;
   box-shadow: inset 0 0 10px #000000;
+}
+
+table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(odd) {
+  background: #ecedee;
+}
+
+table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(even) {
+  background: #f9fafb;
+}
+
+.no-footer {
+  border-bottom: 0px !important;
+}
+
+.dataTables_scrollHead,
+.DTFC_LeftHeadWrapper,
+.DTFC_RightHeadWrapper {
+  height: 51px !important;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.DTFC_Cloned th {
+  background: #f9fafb;
+}
+
+.text-wrap {
+  white-space: normal;
+}
+
+.width-200 {
+  width: 200px;
+}
+
+.image-center {
+  text-align: center center;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+table.dataTable td {
+  padding: 3px 10px;
+  width: 1px;
+  white-space: nowrap;
+}
+
+.profile-fixed-container {
+  overflow-y: scroll;
+  position: fixed;
+}
+
+/* width */
+
+.y-scroller::-webkit-scrollbar {
+  width: 5px;
+}
+
+.x-scroller::-webkit-scrollbar {
+  height: 5px;
+}
+
+/* Track */
+
+.scroller::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+
+.scroller::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+
+.scroller::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar {
+  height: 5px;
+}
+
+/* Track */
+
+.dataTables_scrollBody::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+
+.dataTables_scrollBody::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+
+.dataTables_scrollBody::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.text-center {
+  text-align: center;
+}
+
+table tr {
+  background-color: white;
+}
+
+@media screen and (max-width: 767px) {
+  .profile-fixed-container {
+    display: none;
+  }
+
+  .profile-col-container {
+    visibility: visible;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .profile-col-container {
+    visibility: hidden;
+  }
+
+  .profile-fixed-container {
+    width: 25%;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .profile-fixed-container {
+    padding-left: 25px;
+  }
 }
 

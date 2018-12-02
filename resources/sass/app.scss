@@ -1,8 +1,8 @@
-@import 'spec/settings/index';
-@import 'spec/tools/index';
+@import "spec/settings/index";
+@import "spec/tools/index";
 @import "~bootstrap/scss/bootstrap";
-@import 'spec/index';
-@import 'vendor/index';
+@import "spec/index";
+@import "vendor/index";
 
 #loader {
     transition: all 0.3s ease-in-out;
@@ -20,16 +20,15 @@
     visibility: hidden;
 }
 
-.ni{
- position:relative;
- top:10px;
- margin-right:10px;
-   
+.ni {
+    position: relative;
+    top: 10px;
+    margin-right: 10px;
 }
 .btn-sq-lg {
     width: 150px !important;
     height: 150px !important;
-  }
+}
 .spinner {
     width: 40px;
     height: 40px;
@@ -38,17 +37,17 @@
     left: calc(50% - 20px);
     background-color: #333;
     border-radius: 100%;
-    -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
-    animation: sk-scaleout 1.0s infinite ease-in-out;
+    -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+    animation: sk-scaleout 1s infinite ease-in-out;
 }
 
 @-webkit-keyframes sk-scaleout {
     0% {
-        -webkit-transform: scale(0)
+        -webkit-transform: scale(0);
     }
 
     100% {
-        -webkit-transform: scale(1.0);
+        -webkit-transform: scale(1);
         opacity: 0;
     }
 }
@@ -60,8 +59,8 @@
     }
 
     100% {
-        -webkit-transform: scale(1.0);
-        transform: scale(1.0);
+        -webkit-transform: scale(1);
+        transform: scale(1);
         opacity: 0;
     }
 }
@@ -93,9 +92,9 @@ img {
     min-width: 95px;
 }
 
-.taytol{
-    position:relative;
-    top:14px;
+.taytol {
+    position: relative;
+    top: 14px;
 }
 
 .select2-container--default .select2-selection--single,
@@ -104,19 +103,22 @@ img {
     border-color: #ced4da !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__rendered {
     height: 35px !important;
     line-height: 2.4 !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__arrow {
     height: 35px !important;
 }
 
 .select2-container .select2-selection--single {
     height: 35px !important;
 }
-
 
 .card {
     position: relative;
@@ -160,12 +162,12 @@ img {
     margin: 20px auto;
 }
 .card .box .maoni #role_P {
-    font-size:14px;
-    background:#e91e63;
-    color:#fff;
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:15px;
+    font-size: 14px;
+    background: #e91e63;
+    color: #fff;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 15px;
 }
 
 .card .box p {
@@ -201,16 +203,11 @@ img {
     right: 40px;
 }
 
-;
-
 .reposition {
     position: absolute;
     top: 80px;
     right: 40px;
 }
-
-;
-
 
 .font-xs {
     font-size: 0.79em;
@@ -225,30 +222,29 @@ th {
     font-size: 0.79em !important;
 }
 
-.profile-table tr td{
-    padding-top:5px;
-    padding-bottom:5px;
-    padding-left:5px;
-    border-top:1px solid #ccc;
-    border-bottom:1px solid #ccc;
-    font-size:0.8em;
-  }
+.profile-table tr td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.8em;
+}
 
-  body{
-      background-color:#f9fafb !important;
-  }
+body {
+    background-color: #f9fafb !important;
+}
 
-  
-  .table-image-cover{
-      height:50px;
-      width:50px;
-      background-size:cover;
-  }
+.table-image-cover {
+    height: 50px;
+    width: 50px;
+    background-size: cover;
+}
 
-  .top-image-cover{
-    height:30px;
-    width:30px;
-    background-size:cover;
+.top-image-cover {
+    height: 30px;
+    width: 30px;
+    background-size: cover;
 }
 #profile-image-display {
     border-radius: 5px;
@@ -256,8 +252,9 @@ th {
     transition: 0.3s;
 }
 
-#profile-image-display:hover {opacity: 0.7;}
-
+#profile-image-display:hover {
+    opacity: 0.7;
+}
 
 /* The Modal (background) */
 #full_pic {
@@ -270,8 +267,8 @@ th {
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
 }
 
 /* Modal Content (Image) */
@@ -279,7 +276,7 @@ th {
     margin: auto;
     display: block;
     width: 80%;
-    max-width:100%;
+    max-width: 100%;
 }
 
 /* Caption of Modal Image (Image Text) - Same Width as the Image */
@@ -295,14 +292,19 @@ th {
 }
 
 /* Add Animation - Zoom in the Modal */
-.full_pic_content, #caption { 
+.full_pic_content,
+#caption {
     animation-name: zoom;
     animation-duration: 0.6s;
 }
 
 @keyframes zoom {
-    from {transform:scale(0)} 
-    to {transform:scale(1)}
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
 }
 
 /* The Close Button */
@@ -324,78 +326,213 @@ th {
 }
 
 /* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 100%){
-   .full_pic_content {
+@media only screen and (max-width: 100%) {
+    .full_pic_content {
         width: 100%;
     }
 }
 
 @media (min-width: 768px) {
     .modal-xl {
-      width: 90%;
-     max-width:1200px;
+        width: 90%;
+        max-width: 1200px;
     }
-  }
+}
 
-  .tab-radio-button {
+.tab-radio-button {
     display: none;
-  }
-  
-  
-  .info-button-label{
-      padding:5px;
-      border:#888 solid 1px;
-  }
-  
-  .info-button-label:hover{
-      background-color:rgb(240, 240, 240);
-      cursor:pointer;
-  }
-  
-  .info-radio:checked + .info-button-label{
-      background-color:rgb(233, 233, 233);
-  }
-  
-  #tab1:checked ~ .tab-content-wrapper > #tab-content1,
-  #tab2:checked ~ .tab-content-wrapper > #tab-content2,
-  #tab3:checked ~ .tab-content-wrapper > #tab-content3 {
+}
+
+.info-button-label {
+    padding: 5px;
+    border: #888 solid 1px;
+}
+
+.info-button-label:hover {
+    background-color: rgb(240, 240, 240);
+    cursor: pointer;
+}
+
+.info-radio:checked + .info-button-label {
+    background-color: rgb(233, 233, 233);
+}
+
+#tab1:checked ~ .tab-content-wrapper > #tab-content1,
+#tab2:checked ~ .tab-content-wrapper > #tab-content2,
+#tab3:checked ~ .tab-content-wrapper > #tab-content3 {
     display: block;
-  }
-  
-  .tab-content{
-      display:none;
-  }
-  
-  
-  .hide{
-      display:none;
-  }
-
-  .table-image-cover{
-    height:50px;
-    width:50px;
-    background-size:cover;
+    position: relative;
 }
 
-.top-image-cover{
-  height:30px;
-  width:30px;
-  background-size:cover;
+.tab-content {
+    display: none;
 }
 
-.profile-image-cover{
-  border: 5px white solid;
-  background-size:cover;
+.hide {
+    display: none;
 }
 
-.profile-bg:hover{
-  -moz-box-shadow:inset 0 0 30px #000000;
-  -webkit-box-shadow: inset 0 0 30px #000000;
-  box-shadow:inset 0 0 30px #000000;
+.table-image-cover {
+    height: 50px;
+    width: 50px;
+    background-size: cover;
 }
 
-.profile-bg{
-  -moz-box-shadow:inset 0 0 10px #000000;
-  -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow:inset 0 0 10px #000000;
+.top-image-cover {
+    height: 30px;
+    width: 30px;
+    background-size: cover;
 }
+
+.profile-image-cover {
+    border: 5px white solid;
+    background-size: cover;
+}
+
+.profile-bg:hover {
+    -moz-box-shadow: inset 0 0 30px #000000;
+    -webkit-box-shadow: inset 0 0 30px #000000;
+    box-shadow: inset 0 0 30px #000000;
+}
+
+.profile-bg {
+    -moz-box-shadow: inset 0 0 10px #000000;
+    -webkit-box-shadow: inset 0 0 10px #000000;
+    box-shadow: inset 0 0 10px #000000;
+}
+
+table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(odd) {
+    background: #ecedee;
+}
+
+table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(even) {
+    background: #f9fafb;
+}
+
+.no-footer {
+    border-bottom: 0px !important;
+}
+
+.dataTables_scrollHead,
+.DTFC_LeftHeadWrapper,
+.DTFC_RightHeadWrapper {
+    height: 51px !important;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.DTFC_Cloned th {
+    background: #f9fafb;
+}
+
+.text-wrap {
+    white-space: normal;
+}
+.width-200 {
+    width: 200px;
+}
+.image-center {
+    text-align: center center;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}
+
+table.dataTable td {
+    padding: 3px 10px;
+    width: 1px;
+    white-space: nowrap;
+}
+
+// table.dataTable tr {
+//     background-color: white;
+//     // background-color: #ccc;
+// }
+.profile-fixed-container {
+    overflow-y: scroll;
+    position: fixed;
+}
+/* width */
+.y-scroller::-webkit-scrollbar {
+    width: 5px;
+}
+.x-scroller::-webkit-scrollbar {
+    height: 5px;
+}
+/* Track */
+.scroller::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+.scroller::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+.scroller::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar {
+    height: 5px;
+}
+/* Track */
+.dataTables_scrollBody::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+.dataTables_scrollBody::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+.dataTables_scrollBody::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.text-center{
+    text-align:center;
+}
+
+.dataTables_scrollBody {
+    // z-index: 1;
+}
+
+table tr {
+    background-color: white;
+}
+
+@media screen and (max-width: 767px) {
+    .profile-fixed-container {
+        display: none;
+    }
+    .profile-col-container {
+        visibility: visible;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .profile-col-container {
+        visibility: hidden;
+    }
+    .profile-fixed-container {
+        width: 25%;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .profile-fixed-container {
+        padding-left: 25px;
+    }
+}
+// @media screen and (max-width: 770px) {
+//     .profile-col-container {
+//         visibility: hidden;
+//     }
+//     .profile-fixed-container {
+//         width: 24%;
+//     }
+// }
