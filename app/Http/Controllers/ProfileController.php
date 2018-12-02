@@ -70,23 +70,23 @@ class ProfileController extends Controller
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
             if(isAdminHRM()){
-                if($data->status=='Inactive'){
+                if($data->status=='inactive'){
                     return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->id.'">Inactive</button>';
-                }else if($data->status=='Active'){
+                }else if($data->status=='active'){
                     return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->id.'">Active</button>';
-                }else if($data->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">New Hired</button>';
+                }else if($data->status=='new_hired'){
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->id.'">Newly Hired</button>';
                 }else{
                     return '<button class="btn btn-sm  btn-warning update_status" id="'.$data->id.'">No Status</button>';
                 }
             }
             else{
-                if($data->status=='Inactive'){
+                if($data->status=='inactive'){
                     return '<button class=" btn btn-sm btn-danger" disabled>Inactive</button>';
-                }else if($data->status=='Active'){
+                }else if($data->status=='active'){
                     return '<button class="btn btn-sm  btn-primary" disabled>Active</button>';
-                }else if($data->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success" disabled>New Hired</button>';
+                }else if($data->status=='new_hired'){
+                    return '<button class="btn btn-sm  btn-success" disabled>Newly Hired</button>';
                 }else{
                     return '<button class="btn btn-sm  btn-warning" disabled>No Status</button>';
                 }
@@ -109,23 +109,23 @@ class ProfileController extends Controller
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
             if(isAdminHRM()){
-                if($data->childInfo->status=='Inactive'){
+                if($data->childInfo->status=='inactive'){
                     return '<button class=" btn btn-sm btn-danger update_status" id="'.$data->child_id.'">Inactive</button>';
-                }else if($data->childInfo->status=='Active'){
+                }else if($data->childInfo->status=='active'){
                     return '<button class="btn btn-sm  btn-primary update_status" id="'.$data->child_id.'">Active</button>';
-                }else if($data->childInfo->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">New Hired</button>';
+                }else if($data->childInfo->status=='new_hired'){
+                    return '<button class="btn btn-sm  btn-success update_status" id="'.$data->child_id.'">Newly Hired</button>';
                 }else{
                     return '<button class="btn btn-sm  btn-warning" disabled>No Status</button>';
                 }
             }
             else{
-                if($data->childInfo->status=='Inactive'){
+                if($data->childInfo->status=='inactive'){
                     return '<button class=" btn btn-sm btn-danger" disabled>Inactive</button>';
-                }else if($data->childInfo->status=='Active'){
+                }else if($data->childInfo->status=='active'){
                     return '<button class="btn btn-sm  btn-primary" disabled>Active</button>';
-                }else if($data->childInfo->status=='New_Hired'){
-                    return '<button class="btn btn-sm  btn-success" disabled>New Hired</button>';
+                }else if($data->childInfo->status=='new_hired'){
+                    return '<button class="btn btn-sm  btn-success" disabled>Newly Hired</button>';
                 }else{
                     return '<button class="btn btn-sm  btn-warning" disabled>No Status</button>';
                 }

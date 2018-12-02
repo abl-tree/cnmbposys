@@ -62,7 +62,7 @@
                                                     <td style='font-weight:600;text-align:left'>Status:</td>
                                                 </tr>
                                                 <tr class='m-0 p-0'>
-                                                    <td class='m-0 p-0' style='text-align:right'>{{$profile->status}}</td>
+                                                    <td class='m-0 p-0' style='text-align:right' id='status_P'>{{$profile->status=='new_hired'?'Newly Hired': ucwords($profile->status)}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -184,7 +184,7 @@
                                                     <td style='font-weight:600;text-align:left'>Status:</td>
                                                 </tr>
                                                 <tr class='m-0 p-0'>
-                                                    <td class='m-0 p-0' style='text-align:right'>{{$profile->status}}</td>
+                                                    <td class='m-0 p-0' style='text-align:right' id="status_P">{{$profile->status=='new_hired'?'Newly Hired': ucwords($profile->status)}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -287,7 +287,7 @@
                 </div>
                 <br>
                 <br>
-                <table id="employee" class="table table-hover" cellspacing="0" width="100%">
+                <table id="employee" class="table" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th class="bg-muted">ID</th>
