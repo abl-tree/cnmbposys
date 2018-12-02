@@ -940,6 +940,7 @@ $(document).on("click", "#excel-form-submit", function(e) {
                 result == "Excel Not Recognized." ||
                 result == "Template is outdated."
             ) {
+                leavepagenotif = false;
                 swal({
                     title: "Error",
                     html:
