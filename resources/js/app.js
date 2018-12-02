@@ -941,6 +941,7 @@ $(document).on("click", "#excel-form-submit", function(e) {
                 result == "Template is outdated."
             ) {
                 leavepagenotif = false;
+                $('#excel-modal').modal('hide');
                 swal({
                     title: "Error",
                     html:
