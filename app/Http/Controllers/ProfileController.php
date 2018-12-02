@@ -48,11 +48,11 @@ class ProfileController extends Controller
 
         if(isAdminHRM()){
             $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id', 'asc')->get();
-            $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level)->where('childInfo.status', '<>', 'Inactive');
+            $employeeList = $emp->where('childInfo.user.access_id', '>', $access_level)->where('childInfo.status', '<>', 'inactive');
         }
         else{
             $emp = AccessLevelHierarchy::with('childInfo.user.access')->where('parent_id', $id)->get();
-            $employeeList = $emp->where('childInfo.status', '<>', 'Inactive');
+            $employeeList = $emp->where('childInfo.status', '<>', 'inactive');
         }
 
         return $this->reloadDatatable($employeeList);
@@ -65,7 +65,7 @@ class ProfileController extends Controller
     }
 
     public function terminatedView(){
-        $employeeList = UserInfo::with('user.access')->where('status', 'Inactive')->get();
+        $employeeList = UserInfo::with('user.access')->where('status', 'inactive')->get();
 
         return Datatables::of($employeeList)
         ->addColumn('employee_status', function($data){
@@ -132,7 +132,7 @@ class ProfileController extends Controller
             }
         })
         ->addColumn('action', function($employeeList){
-            if($employeeList->childInfo->status == 'Inactive'){
+            if($employeeList->childInfo->status == 'inactive'){
                 return '<h6>No Valid Action</h6>';
             }
 
