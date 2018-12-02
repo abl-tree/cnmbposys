@@ -311,7 +311,7 @@ class excelController extends Controller
             $object['action'] = $handler->getCellByColumnAndRow(1, 1)->getValue();
             $file_token = $handler->getCellByColumnAndRow(2, 1)->getValue();
             $token = DB::table('excel_template_validators')->where('template',$object['action'])->pluck('token');
-            if(in_array($file_token, $token)){
+            if($file_token==$token[0]){
                 if($object['action']=='Add'){
                     $handler = $spreadsheet->setActiveSheetIndexByName($object['action']);
                     $object['arr'] = $handler->toArray();

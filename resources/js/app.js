@@ -938,12 +938,14 @@ $(document).on("click", "#excel-form-submit", function(e) {
             result = JSON.parse(result);
             if (
                 result == "Excel Not Recognized." ||
-                result == "'Template is outdated.'"
+                result == "Template is outdated."
             ) {
                 swal({
                     title: "Error",
                     html:
-                        '<div class="alert alert-danger">' + result + "</div>",
+                        '<div class="alert alert-info"><strong>' +
+                        result +
+                        "</strong></div>",
                     focusConfirm: false,
                     confirmButtonText: '<i class="fa fa-thumbs-up"></i> Noted!',
                     confirmButtonAriaLabel: "Thumbs up, great!"
