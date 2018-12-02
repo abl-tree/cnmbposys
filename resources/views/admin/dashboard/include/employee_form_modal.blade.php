@@ -349,9 +349,9 @@
                                     <h5 class="c-grey-900">Update Employee Status</h5>
                                 </label>
                                 <select class="form-control" id="status_data" name="status_data" required>
-                                    <option value="New_Hired">New Hired</option>
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive" id="inactive">Inactive</option>
+                                    <option value="new_hired">Newly Hired</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive" id="inactive">Inactive</option>
                                 </select>
                             </div>
                             <div class="form-group" style="display:none" id="reason">
@@ -392,6 +392,16 @@
                             <label for="excel_file" id="excel-file-label" class="btn btn-default">Select excel file.</label>
                             <input type="file" name='excel_file' id="excel_file" style="display:none;">
                         </div>
+
+                        <div  id='import-employee-pbar-container'>
+                            <div class="alert alert-warning">
+                                <h5><strong class='text-danger'>Please do not exit or leave the page...</strong></h5>
+                            </div>
+                            <div class="progress" style="height:30px;">
+                                <div id='import-employee-p-bar' class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        
                         <div id="action-export">
 
                             <a href="/profile/excel_export_report" class="btn btn-sq-lg btn-outline-primary"><br><i

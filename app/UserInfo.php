@@ -18,7 +18,7 @@ class UserInfo extends Model
         'birthdate', 'gender', 'contact_number',
         'address', 'image', 'salary_rate','image_ext',
         'status', 'hired_date', 'separation_date', 'excel_hash',
-        'p_email'
+        'p_email','created_at','updated_at'
     ];
 
      //Mutator
@@ -87,6 +87,7 @@ class UserInfo extends Model
         ->join('access_level_hierarchies','access_level_hierarchies.child_id','=','user_infos.id')
         ->select('users.company_id','user_infos.firstname','user_infos.middlename','user_infos.lastname','user_infos.status','user_infos.gender','user_infos.birthdate','user_infos.address','user_infos.p_email','users.email','user_infos.contact_number',DB::raw('max(case when user_benefits.benefit_id = 1 then id_number end) as col1'),DB::raw('max(case when user_benefits.benefit_id = 2 then id_number end) as col2'),DB::raw('max(case when user_benefits.benefit_id = 3 then id_number end) as col3'),DB::raw('max(case when user_benefits.benefit_id = 4 then id_number end) as col4'),'access_levels.name','user_infos.hired_date','user_infos.separation_date')
         ->groupBy('user_infos.id')
+        ->where('user_infos.id','!=', 3)
         ->orderBy('user_infos.id','asc')->get();
         return $query;
     }

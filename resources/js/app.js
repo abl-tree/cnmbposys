@@ -64,13 +64,13 @@ function initialize_employee_table(url) {
         processing: true,
         blengthChange: false,
         scrollX: true,
-        lengthMenu: [5, 10, 25, 50, "All"],
+        lengthMenu: [5, 10, 25, 50, 100],
         fixedColumns: {
             leftColumns: 4
         },
         columnDefs: [
             {
-                targets: [5,6,7,8,9,10,11,12], // your case all column
+                targets: [5, 6, 7, 8, 9, 10, 11, 12], // your case all column
                 className: ["dt-center", "no-wrap"],
                 autoWidth: true
             },
@@ -130,22 +130,22 @@ function initialize_employee_table(url) {
     });
 }
 var popOverSettings = {
-    placement: 'left',
-    container: 'body',
-    trigger:'hover',
+    placement: "left",
+    container: "body",
+    trigger: "hover",
     html: true,
-    selector: '.table-image-cover', //Sepcify the selector here
-    content: function () {
-        return '<img src="'+$(this).data('img')+'" width="500"/>';
+    selector: ".table-image-cover", //Sepcify the selector here
+    content: function() {
+        return '<img src="' + $(this).data("img") + '" width="500"/>';
     }
-}
+};
 
 $(document).popover(popOverSettings);
 
 initialize_employee_table("/refreshEmployeeList");
 
 $(document).on("change", "#status_data", function() {
-    if ($(this).val() == "Inactive") {
+    if ($(this).val() == "inactive") {
         $("#reason").show();
     } else {
         $("#reason").hide();
@@ -233,6 +233,12 @@ function replaceProfile(data) {
     );
     $("#role_P").html(data.role.name);
     $("#company_id_P").html(data.user.company_id);
+    if (data.profile.status == "new_hired") {
+        data.profile.status = "Newly Hired";
+    } else {
+        data.profile.status = ucword(data.profile.status);
+    }
+    $("#status_P").html(data.profile.status);
     $("#gender_P").html(data.profile.gender);
     $("#contact_P").html(data.profile.contact_number);
     $("#address_P").html(data.profile.address);
@@ -566,6 +572,12 @@ $(document).on("click", "#employee-form-submit", function(e) {
                         }
                         console.log(result.user);
                         $("#company_id_P").html(result.user.company_id);
+                        if (result.info.status == "new_hired") {
+                            result.info.status = "Newly Hired";
+                        } else {
+                            result.info.status = ucword(result.info.status);
+                        }
+                        $("#status_P").html(result.info.status);
                         $("#contact_P").html(result.info.contact_number);
                         $("#email_P").html(result.user.email);
                         $("#address_P").html(result.info.address);
@@ -850,7 +862,6 @@ $(document).on("click", "#submit_status", function(event) {
     });
 });
 
-
 $(document).on("click", ".update_status", function(event) {
     event.preventDefault();
     var id = $(this).attr("id");
@@ -882,103 +893,172 @@ $(document).on("click", ".update_status", function(event) {
 });
 
 $(document).on("click", ".excel-action-button", function(e) {
-    $("#action-import").show();
-    $("#action-export").show();
-    $("#excel-form-submit").show();
-
     $("#excel-modal").modal("show");
     if ($(this).attr("data-action") == "import") {
-        $("#action-export").hide();
+        $("#action-export")[0].hidden = true;
+        $("#import-employee-pbar-container")[0].hidden = true;
         $("#excel-modal-header").html("Import");
         $("#excel-file-label").html("Select Excel File.");
+        $("#action-import")[0].hidden = false;
         $("#excel_file").val("");
         $("#excel-file-label")
             .removeClass("btn-info")
             .addClass("btn-secondary");
+        $("#excel-modal-cancel")[0].hidden = false;
+        $("#excel-form-submit")[0].disabled = false;
+        $("#excel-form-submit")[0].hidden = false;
     } else {
-        $("#action-import").hide();
-        $("#excel-form-submit").hide();
+        $("#action-import")[0].hidden = true;
+        $("#excel-form-submit")[0].hidden = true;
         $("#excel-modal-header").html("Export");
+        $("#import-employee-pbar-container").css("display", "none");
+        $("#action-export")[0].hidden = false;
+        $("#excel-modal-cancel")[0].hidden = false;
     }
 });
-
+leavepagenotif = false;
 $(document).on("click", "#excel-form-submit", function(e) {
     e.preventDefault();
+    $("#excel-form-submit")[0].disabled = true;
     var formData = new FormData($("#import-excel-form")[0]);
-    var btn = $("#excel-form-submit");
-    btn[0].disabled = true;
-    btn.html("Loading...");
-
+    leavepagenotif = true;
+    window.onbeforeunload = function() {
+        return leavepagenotif
+            ? "If you leave this page you will lose your unsaved changes."
+            : null;
+    };
     $.ajax({
-        url: "/profile/excel_import",
+        url: "/excel/import/toarray",
         method: "POST",
         data: formData,
         cache: false,
         contentType: false,
         processData: false,
         success: function(result) {
-            btn.html("Confirm");
-            btn[0].disabled = false;
             result = JSON.parse(result);
-            console.log(result);
-            // alert(result+"success");
-            // var reassign = '<li><strong>' + result[0].reassign_counter+'</strong> employee/s reassigned.</li>';
-            var title = "";
-            var htmlcontent = "";
-
-            if (result[0].outdated == true) {
-                title = "<strong>Outdated Template</strong>";
-                htmlcontent =
-                    '<div class="alert alert-info"> Please download new template.</div>';
-            } else if (result[0].outdated == false) {
-                if (result[0].action == "Add") {
-                    var err = 0;
-                    if (result[0].error_rows.length > 0) {
-                        err = result[0].error_rows;
-                    } else {
-                        err = 0;
-                    }
-                    title = "<strong>Add Employee Report</strong>";
-                    htmlcontent =
-                        '<div class="alert alert-success"><strong>' +
-                        result[0].saved_counter +
-                        "</strong> record/s added.</div>";
-                    htmlcontent +=
+            if (
+                result == "Excel Not Recognized." ||
+                result == "Template is outdated."
+            ) {
+                leavepagenotif = false;
+                $('#excel-modal').modal('hide');
+                swal({
+                    title: "Error",
+                    html:
                         '<div class="alert alert-info"><strong>' +
-                        result[0].duplicate_counter +
-                        "</strong> duplicate/s found.</div>";
-                    htmlcontent +=
-                        '<div class="alert alert-warning">Error rows: ' +
-                        err.toString() +
-                        "</div>";
-                } else if (result[0].action == "Reassign") {
-                    title = "<strong>Reassign Employee Report</strong>";
-                    htmlcontent =
-                        '<div class="alert alert-success"><strong>' +
-                        result[0].reassign_counter +
-                        "</strong> reassigned employee/s.</div>";
+                        result +
+                        "</strong></div>",
+                    focusConfirm: false,
+                    confirmButtonText: '<i class="fa fa-thumbs-up"></i> Noted!',
+                    confirmButtonAriaLabel: "Thumbs up, great!"
+                });
+            } else {
+                if (result.action == "Add") {
+                    $("#excel-modal-header").html("Importing...");
+                    $("#import-employee-pbar-container")[0].hidden = false;
+                    // $("#import-employee-pbar-container").css("display", "block");
+                    $("#import-employee-p-bar").css("width", 0);
+                    $("#excel-form-submit")[0].hidden = true;
+                    $("#excel-modal-cancel")[0].hidden = true;
+                    $("#action-import")[0].hidden = true;
+                    excelstore(1, result);
+                } else if (result.action == "Reassign") {
+                    leavepagenotif = false;
+                    importResultDisplay(result);
                 }
             }
-
-            if (result == "File not valid.") {
-                title = "<strong>Invalid</strong>";
-                htmlcontent =
-                    "<div class='alert alert-danger'>Please upload a <strong>.xlsx</strong> file.</div>";
-            }
-
-            swal({
-                title: title,
-                html: htmlcontent,
-                focusConfirm: false,
-                confirmButtonText: '<i class="fa fa-thumbs-up"></i> Noted!',
-                confirmButtonAriaLabel: "Thumbs up, great!"
-            });
-
-            $("#excel-modal").modal("hide");
-            refresh_employee_table();
+        },
+        error: function(req, status, error) {
+            console.log(req);
         }
     });
 });
+
+excelstore = function(i, obj) {
+    console.log(row);
+
+    //index,obj
+    var index = i;
+    if (i <= obj.arr.length - 1) {
+        var row = obj.arr[i][0];
+        $.ajax({
+            url: "/excel/import/store/add",
+            method: "POST",
+            data: { obj: row },
+            success: function(result) {
+                result = JSON.parse(result);
+                var progress = (100 / (obj.arr.length - 1)) * index;
+                $("#import-employee-p-bar").css("width", progress + "%");
+                console.log(result.status);
+                if (obj.action == "Add") {
+                    if (result.status == 0) {
+                        obj.saved = obj.saved + 1;
+                    } else if (result.status == 1) {
+                        obj.duplicate = obj.duplicate + 1;
+                    } else if (result.status == 2) {
+                        obj.error.push(result.row);
+                    }
+                } else if (obj.action == "Reassign") {
+                    importResultDisplay(obj);
+                }
+                excelstore(++i, obj);
+            },
+            error: function(request) {
+                console.log(request);
+            }
+        });
+    } else {
+        leavepagenotif = false;
+        importResultDisplay(obj);
+    }
+};
+
+importResultDisplay = function(obj) {
+    setTimeout(function() {
+        $("#excel-modal").modal("hide");
+    }, 3000);
+    if (obj.outdated == true) {
+        title = "<strong>Outdated Template</strong>";
+        htmlcontent =
+            '<div class="alert alert-info"> Please download new template.</div>';
+    } else if (obj.outdated == false) {
+        if (obj.action == "Add") {
+            var err = 0;
+            if (obj.error.length > 0) {
+                err = obj.error;
+            } else {
+                err = 0;
+            }
+            title = "<strong>Add Employee Report</strong>";
+            htmlcontent =
+                '<div class="alert alert-success"><strong>' +
+                obj.saved +
+                "</strong> record/s added.</div>";
+            htmlcontent +=
+                '<div class="alert alert-info"><strong>' +
+                obj.duplicate +
+                "</strong> duplicate/s found.</div>";
+            htmlcontent +=
+                '<div class="alert alert-warning">Error rows: ' +
+                err.toString() +
+                "</div>";
+        } else if (obj.action == "Reassign") {
+            title = "<strong>Reassign Employee Report</strong>";
+            htmlcontent =
+                '<div class="alert alert-success"><strong>' +
+                obj.reassign +
+                "</strong> reassigned employee/s.</div>";
+        }
+    }
+    swal({
+        title: title,
+        html: htmlcontent,
+        focusConfirm: false,
+        confirmButtonText: '<i class="fa fa-thumbs-up"></i> Noted!',
+        confirmButtonAriaLabel: "Thumbs up, great!"
+    });
+    refresh_employee_table();
+};
 
 $(document).on("click", "#excel-modal-cancel", function() {
     $("#excel-modal").modal("hide");

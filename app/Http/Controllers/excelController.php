@@ -19,6 +19,10 @@ use App\AccessLevel;
 use App\AccessLevelHierarchy;
 use App\ExcelTemplateValidator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
 
 class excelController extends Controller
 {
@@ -105,7 +109,7 @@ class excelController extends Controller
         $spreadsheet = new Spreadsheet();
         //reassign sheet
         $header = [
-            'ID',
+            'SID',
             'Full Name',
             'Position',
             'Current Parent',
@@ -121,14 +125,14 @@ class excelController extends Controller
         ->join('access_levels','users.access_id','=','access_levels.id')
         ->join('access_level_hierarchies','user_infos.id','=','access_level_hierarchies.child_id')
         ->select('user_infos.id as id',DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'),'access_levels.name as position','access_level_hierarchies.parent_id as parent_id')
-        ->where([['user_infos.status','=','Active'],['access_levels.id','>',1]])
+        ->where([['user_infos.status','=','active'],['access_levels.id','>',1]])
         ->get();
         foreach($employee as $k => $datum){
             $tmp = DB::table('user_infos')
                 ->join('users','user_infos.id','=','users.uid')
                 ->join('access_levels','users.access_id','=','access_levels.id')
                 ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename, user_infos.lastname) as fullname'),'access_levels.code as code')
-                ->where([['user_infos.id','=',$datum->parent_id],['user_infos.status','!=','Terminated']])
+                ->where([['user_infos.id','=',$datum->parent_id],['user_infos.status','!=','inactive']])
                 ->get();
             
                 $id = $datum->id;
@@ -163,7 +167,7 @@ class excelController extends Controller
         $employee = DB::table('user_infos')
         ->join('users','user_infos.id','=','users.uid')
         ->select('user_infos.id as id',DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'),'users.access_id as access_id')
-        ->where('user_infos.status','!=','Terminated')
+        ->where('user_infos.status','!=','inactive')
         ->get();
 
         foreach($employee as $k => $datum){
@@ -183,7 +187,7 @@ class excelController extends Controller
             $tmp[] = DB::table('user_infos')
             ->join('users','users.uid','=','user_infos.id')
             ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'))
-            ->where([['users.access_id','=',$datum],['user_infos.status','!=','Terminated'],])
+            ->where([['users.access_id','=',$datum],['user_infos.status','!=','inactive'],['user_infos.id','!=',3]])
             ->pluck('fullname')->toArray();
             if(empty($datum)){
                 $tmp1[] = 'superadmin';
@@ -290,161 +294,36 @@ class excelController extends Controller
 
 
 
-    function import(Request $request){
+    function importToArray(Request $request){
         if($request->hasFile('excel_file')){
+            $object=[];
             $path = $request->file('excel_file')->getRealPath();
             $extension =  phpSpreadSheet::identify($path);
             $reader = phpSpreadSheet::createReader($extension);
             $spreadsheet = $reader->load($path);
-            $action = "";
-            $outdated = false;
+            $object['outdated'] = false;
+            $sheets = $spreadsheet->getSheetNames();
+            if(!in_array('config',$sheets)){
+                echo json_encode('Excel Not Recognized.');
+                exit;
+            }
             $handler = $spreadsheet->setActiveSheetIndexByName('config');
-            $action = $handler->getCellByColumnAndRow(1, 1)->getValue();
+            $object['action'] = $handler->getCellByColumnAndRow(1, 1)->getValue();
             $file_token = $handler->getCellByColumnAndRow(2, 1)->getValue();
-            $token = DB::table('excel_template_validators')->where('template',$action)->pluck('token');
-            $data =[];
-            $duplicate_counter = 0;
-            $saved_counter=0;
-            $error_counter=0;
-            $reassign_counter = 0;
-            $error_rows=[];
-            $limit = 100;
-            $lesslimit = 0;
-
-            if($action=='Add'){
-                //Add
-                // if($file_token==$token[0]){
-                    $handler = $spreadsheet->setActiveSheetIndexByName($action);
-                    $rows = $handler->getHighestDataRow();    
-                    for($r=2;$r<=$rows;$r++){
-                        $taken_email = User::pluck('email')->toArray();
-                        $taken_pemail = UserInfo::pluck('p_email')->toArray();
-                        $hash = UserInfo::pluck('excel_hash')->toArray();
-                        $fname = $handler->getCellByColumnAndRow(1, $r)->getValue();
-                        $mname = $handler->getCellByColumnAndRow(2, $r)->getValue();
-                        $lname = $handler->getCellByColumnAndRow(3, $r)->getValue();
-                        $gender=$handler->getCellByColumnAndRow(4, $r)->getValue();
-                        $birthdate = $handler->getCellByColumnAndRow(5, $r)->getFormattedValue();
-                        $address=$handler->getCellByColumnAndRow(6, $r)->getValue();
-                        $p_email = $handler->getCellByColumnAndRow(7, $r)->getValue();
-                        $email = $handler->getCellByColumnAndRow(8, $r)->getValue();
-                        $contact_number=$handler->getCellByColumnAndRow(9, $r)->getValue();
-                        $sss=$handler->getCellByColumnAndRow(10, $r)->getValue();
-                        $philhealth=$handler->getCellByColumnAndRow(11, $r)->getValue();
-                        $pagibig=$handler->getCellByColumnAndRow(12, $r)->getValue();
-                        $tin=$handler->getCellByColumnAndRow(13, $r)->getValue();
-                        $position_id = new AccessLevel;
-                        $position = $position_id->getIdByPositionName($handler->getCellByColumnAndRow(14, $r)->getValue());
-                        $company_id = $handler->getCellByColumnAndRow(15, $r)->getValue();
-                        $salary_rate=(int)$handler->getCellByColumnAndRow(16, $r)->getValue();
-                        $hired_date=$handler->getCellByColumnAndRow(17, $r)->getFormattedValue();
-                        $status = $handler->getCellByColumnAndRow(18, $r)->getValue();
-                        $contract = $handler->getCellByColumnAndRow(19, $r)->getValue();
-                        $s_reason = $handler->getCellByColumnAndRow(20, $r)->getValue();
-                        $s_date = $handler->getCellByColumnAndRow(21, $r)->getFormattedValue();
-                        $concat = str_replace(' ', '', strtolower($fname.$mname.$lname));
-                        $errorlog = 0;
-                        $this_duplicate = 0;
-                        //Manual error Filter
-                        //email
-        
-                        if(in_array($concat,$hash)){
-                            $duplicate_counter++;
-                            $this_duplicate=1;
-                        }else{
-                            if(in_array(strtolower($email),$taken_email)){
-                                $errorlog++;
-                            }
-                            // if(in_array(strtolower($p_email),$taken_pemail)){
-                            //     $errorlog++;
-                            // }
-                        }
-
-                        // if (!filter_var($email, FILTER_VALIDATE_EMAIL)||!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        //     $errorlog++;
-                        // }
-                        // BLANK strings
-                        if(($fname==""&&$mname==""&&$lname=="")||$position==""){
-                            $errorlog++;
-                        }
-                        //numeric inputs
-                        // if(!is_numeric($contact_number)||!is_numeric($sss)||!is_numeric($phil
-                        //     health)||!is_numeric($pagibig)||!is_numeric($tin)||!is_numeric($salary_rate)){
-                        //     $errorlog++;
-                        // }
-        
-                        if($errorlog==0&&$this_duplicate==0){
-                            if($position>1){
-                                $userinfo = new UserInfo;
-                                $userinfo->firstname=$fname;
-                                $userinfo->lastname=$lname;
-                                $userinfo->middlename=$mname;
-                                $userinfo->address=$address;
-                                $userinfo->birthdate=$birthdate;
-                                $userinfo->gender=$gender;
-                                $userinfo->salary_rate=$salary_rate;
-                                $userinfo->status=$status;
-                                $userinfo->contact_number=$contact_number;
-                                $userinfo->hired_date=$hired_date;
-                                $userinfo->p_email=$p_email;
-                                $userinfo->status_reason=$s_reason;
-                                $userinfo->separation_date=$s_date;
-                                $s_userinfo=$userinfo->save();
-                                if(!$s_userinfo){
-                                    $error_rows[]=$r;
-                                }
-                                $user = new User;
-                                $user->uid= $userinfo->id;
-                                $user->email = strtolower($email);
-                                $user->password = str_replace(' ', '', strtolower($fname.$lname));
-                                $user->access_id = $position;
-                                $user->company_id = $company_id;
-                                $user->contract = $contract;
-                                if(!$user->save()){
-                                    $error_rows[]=$r;
-                                    UserInfo::find($userinfo->id)->delete();
-                                }
-                
-                                $obj_benefit=[];
-                                for($l=0;$l<4;$l++){
-                                    $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$handler->getCellByColumnAndRow($l+10, $r)->getValue(),];
-                                }
-                                UserBenefit::insert($obj_benefit);
-        
-                                $access_level_hierarchy = new AccessLevelHierarchy;
-                                $access_level_hierarchy->child_id = $userinfo->id;
-                                $access_level_hierarchy->parent_id = null;
-                                $check = $access_level_hierarchy->save();
-                                if($check){
-                                    $saved_counter++;
-                                    $userinfo->excel_hash = $concat;
-                                    $userinfo->save();
-                                }
-                            }
-
-                        }else if($errorlog>0){
-                            $error_rows[]=$r;
-                        }
-
-                        if($rows>($r+$limit)){
-                            if($saved_counter==$limit){
-                                break;
-                            }
-                        }else{
-                            $lesslimit++; 
-                        }
-
-                         
-                    }
-                // }else{
-                //     $outdated = true;
-                // }   
-            }else if($action=="Reassign"){
-                //Reassign
-                if($file_token == $token[0]){
-                    $handler = $spreadsheet->setActiveSheetIndexByName($action);
+            $token = DB::table('excel_template_validators')->where('template',$object['action'])->pluck('token');
+            if($file_token==$token[0]){
+                if($object['action']=='Add'){
+                    $handler = $spreadsheet->setActiveSheetIndexByName($object['action']);
+                    $object['arr'] = $handler->toArray();
+                    $object['arr'] = array_chunk($object['arr'],1);
+                    $object['saved'] = 0;
+                    $object['error'] = 0;
+                    $object['duplicate'] = 0;
+                }else if($object['action']=='Reassign'){
+                    $object['reassign'] = 0;
+                    $handler = $spreadsheet->setActiveSheetIndexByName($object['action']);
                     $rows = $handler->getHighestDataRow();
-                    for($r=2;$r<=$rows;$r++){
+                     for($r=2;$r<=$rows;$r++){
                         $id = $handler->getCellByColumnAndRow(1, $r)->getValue();
                         $parent_id = $handler->getCellByColumnAndRow(7, $r)->getOldCalculatedValue();
                         if($parent_id!=""){
@@ -455,37 +334,133 @@ class excelController extends Controller
                             $new->child_id = $id;
                             $new->parent_id = $parent_id;
                             $new->save();
-                            $reassign_counter++;
+                            $object['reassign']++;
                         }
-                        
                     }
-                }else{
-                    $outdated = true;
+                    if($object['reassign']>0){
+                        $etv = new ExcelTemplateValidator;
+                        $etv = $etv->updateExcelToken("Reassign");
+                    }
                 }
                 
+            }else{
+                echo json_encode('Template is outdated.');
+                exit;
             }
-
-
-            if(($saved_counter>0)||($reassign_counter>0)){
-                $etv = new ExcelTemplateValidator;
-                $etv = $etv->updateExcelToken("Reassign");
-            }
-
-            //return values
-
-            $return_data[]=[
-                'saved_counter' => $saved_counter,
-                'duplicate_counter' => $duplicate_counter,
-                'error_rows'=>$error_rows,
-                'reassign_counter'=>$reassign_counter,
-                'outdated' => $outdated,
-                'action'=>$action,
-            ];
-
-            echo json_encode($return_data);
+            echo json_encode($object);
             exit;
         }else{
             echo json_encode('File not valid.');
         }
     }
+
+    function importStoreAdd(Request $request){
+        $concat = str_replace(' ','',strtolower($request->obj[0].$request->obj[1].$request->obj[2]));
+        $hash = UserInfo::pluck('excel_hash')->toArray();
+        $email = str_replace(' ','',strtolower($request->obj[7]));
+        $taken_email = User::pluck('email')->toArray();
+        $position_id = new AccessLevel;
+        $position = $position_id->getIdByPositionName($request->obj[13]);
+        $sys_position = AccessLevel::pluck('name')->toArray();
+        $error=0;
+        $duplicate=0;
+        $insertstatus=0; //0=saved, 1=duplicate, 2=error
+
+        
+        if(in_array($concat,$hash)){
+            $duplicate=1;
+        }
+
+        if(in_array($email,$taken_email)){
+            $error++;
+        }
+        if(in_array($position,$sys_position)){
+            $error++;
+        }
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error++;
+        }
+
+        if(($request->obj[0]==""&&$request->obj[1]==""&&$request->obj[2]=="")||$request->obj[13]==""){
+            $error++;
+        }
+        if(($error==0) && ($duplicate==0)){
+            if($position>1){
+                $userinfo = new UserInfo;
+                $userinfo->firstname= $request->obj[0];
+                $userinfo->lastname= $request->obj[1];
+                $userinfo->middlename= $request->obj[2];
+                $userinfo->address= $request->obj[5];
+                $userinfo->birthdate= $request->obj[4];
+                $userinfo->gender= $request->obj[3];
+                $userinfo->salary_rate= $request->obj[15];
+                $userinfo->status= $request->obj[17];
+                $userinfo->contact_number= $request->obj[8];
+                $userinfo->hired_date= $request->obj[16];
+                $userinfo->p_email= $request->obj[6];
+                $userinfo->status_reason= $request->obj[19];
+                $userinfo->separation_date= $request->obj[20];
+                $userinfo->excel_hash = $concat;
+                $s_userinfo=$userinfo->save();
+
+                $user = new User;
+                $user->uid =  $userinfo->id;
+                $user->company_id =  $request->obj[14];
+                $user->access_id =  $position;
+                $user->email =  strtolower($request->obj[7]);
+                $user->password =  str_replace(' ','', strtolower($request->obj[0].$request->obj[2]));
+                $user->contract =  $request->obj[18];
+                $user->save();
+
+                $benefit = new UserBenefit;
+                $benefit->user_info_id = $userinfo->id;
+                $benefit->benefit_id = 1;
+                $benefit->id_number = $request->obj[9];
+                $benefit->save();
+
+                $benefit = new UserBenefit;
+                $benefit->user_info_id = $userinfo->id;
+                $benefit->benefit_id = 2;
+                $benefit->id_number = $request->obj[10];
+                $benefit->save();
+
+                $benefit = new UserBenefit;
+                $benefit->user_info_id = $userinfo->id;
+                $benefit->benefit_id = 3;
+                $benefit->id_number = $request->obj[11];
+                $benefit->save();
+
+                $benefit = new UserBenefit;
+                $benefit->user_info_id = $userinfo->id;
+                $benefit->benefit_id = 4;
+                $benefit->id_number = $request->obj[12];
+                $benefit->save();
+
+                $alh = new AccessLevelHierarchy;
+                $alh->child_id = $userinfo->id;
+                $alh->save();
+                $insertstatus = 0;
+            }
+        }
+
+        if($duplicate>0){
+            $insertstatus=1;
+        }
+        
+        if($error>0){
+            $insertstatus=2;
+        }
+
+        if($duplicate>0&&$error>0){
+            $insertstatus=1;
+        }
+
+        if(($insertstatus>0)){
+            $etv = new ExcelTemplateValidator;
+            $etv = $etv->updateExcelToken("Reassign");
+        }
+        
+        echo json_encode(['status'=>$insertstatus,'row'=>$request->obj]);
+    }
+
 }
