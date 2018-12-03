@@ -183,7 +183,7 @@ class excelController extends Controller
         }
         //parent worksheet
         $worksheet = new Worksheet($spreadsheet, 'Parent');
-        // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
         $spreadsheet->addSheet($worksheet);
         $parent_id_array = AccessLevel::groupBy('parent')->pluck('parent')->toArray();
         $tmp=[];
@@ -192,7 +192,7 @@ class excelController extends Controller
             $tmp[] = DB::table('user_infos')
             ->join('users','users.uid','=','user_infos.id')
             ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'))
-            ->where([['users.access_id','=',$datum]])
+            ->where([['users.access_id','=',$datum],['user_infos.status','!=','inactive'],['user_infos.id','!=',3]])
             ->pluck('fullname')->toArray();
             if(empty($datum)){
                 $tmp1[] = 'superadmin';
@@ -205,10 +205,7 @@ class excelController extends Controller
             $worksheet->fromArray($datum,null,'A'.($k));
             $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange($tmp1[$k],$spreadsheet->getSheetByName('Parent'),($k).':'.($k)));
         }
-        // //get code
-        foreach($tmp1 as $k => $datum){
-            
-        }
+       
         //config sheet
         $token = DB::table('excel_template_validators')->where('template','Reassign')->pluck('token');
         $config=[
