@@ -49,7 +49,7 @@ class AccessLevelsTableSeeder extends Seeder
                 'parent' => 2,
             ),
             array(
-                'code' => 't&qmanager', 
+                'code' => 'tqmanager', 
                 'name' => 'T & Q Manager',
                 'parent' => 1,
             ),
@@ -59,12 +59,12 @@ class AccessLevelsTableSeeder extends Seeder
                 'parent' => 8,
             ),
             array(
-                'code' => ' qasupervisor', 
+                'code' => 'qasupervisor', 
                 'name' => 'QA Supervisor',
                 'parent' => 8,
             ),
             array(
-                'code' => 'qualityassuranceanalyst', 
+                'code' => 'qaanalyst', 
                 'name' => 'Quality Assurance Analyst',
                 'parent' => 10,
             ),

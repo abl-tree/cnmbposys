@@ -39,7 +39,13 @@ class ProfileController extends Controller
         $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id')->get();
 
         $userInfo = AccessLevel::all();
-        return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo', 'emp'));
+
+        if($access_level>3){
+            $underconstruction = "/images/underconstruction.png";
+            return view('admin.dashboard.underconstruction', compact('profile', 'role', 'user', 'userInfo', 'emp','underconstruction'));
+        }else{
+            return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo', 'emp'));
+        }
     }
 
     public function refreshEmployeeList(){//Used when loading default datatable and in showAll f or Admin/HRs

@@ -17,7 +17,7 @@
 
 </head>
 
-<body class="app">
+<body class="app" style="{{isset($underconstruction)? 'background-image:url(/images/underconstruction.png);background-position:center;background-repeat:no-repeat;overflow-y:hidden':''}}">
 
     @include('admin.partials.spinner')
 
@@ -31,6 +31,7 @@
             @include('admin.partials.topbar')
 
             <!-- ### $App Screen Content ### -->
+            @if(!isset($underconstruction))
             <main class='main-content bgc-grey-100'>
                 <div id='mainContent'>
                     <div class="container-fluid">
@@ -43,7 +44,7 @@
                     </div>
                 </div>
             </main>
-
+            @endif
             <!-- ### $App Screen Footer ### -->
             <footer class="bdT  bgc-white  ta-c p-30 lh-0 fsz-sm c-grey-600">
                 <span>Copyright © 2018 Designed by

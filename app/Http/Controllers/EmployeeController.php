@@ -133,9 +133,11 @@ class EmployeeController extends Controller
         $userinfo->birthdate=$request->birthdate;
         $userinfo->gender=$request->gender;
         $userinfo->salary_rate=$request->salary;
-        $userinfo->status="Active";
         $userinfo->contact_number=$request->contact;
         $userinfo->hired_date=$request->hired_date;
+        if($request->action == "add"){
+            $userinfo->status="new_hired";
+        }
         $userinfo->excel_hash = $fullname_hash;
         $userinfo->p_email = $request->p_email;
         if($request->hasFile('photo')){

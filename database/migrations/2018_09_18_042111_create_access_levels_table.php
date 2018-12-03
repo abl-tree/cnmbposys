@@ -15,7 +15,7 @@ class CreateAccessLevelsTable extends Migration
     {
         Schema::create('access_levels', function (Blueprint $table) {
             $table->increments('id');
-            $table->char('code', 20);
+            $table->string('code');
             $table->string('name');
             $table->integer('parent')->nullable();
         });

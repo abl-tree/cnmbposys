@@ -116,6 +116,7 @@ class excelController extends Controller
             'New Parent',
             'Parent Code',
             'Parent ID',
+            'CID'
         ];
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
@@ -124,8 +125,8 @@ class excelController extends Controller
         ->join('users','user_infos.id','=','users.uid')
         ->join('access_levels','users.access_id','=','access_levels.id')
         ->join('access_level_hierarchies','user_infos.id','=','access_level_hierarchies.child_id')
-        ->select('user_infos.id as id',DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'),'access_levels.name as position','access_level_hierarchies.parent_id as parent_id')
-        ->where([['user_infos.status','=','active'],['access_levels.id','>',1]])
+        ->select('user_infos.id as id',DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'),'access_levels.name as position','access_level_hierarchies.parent_id as parent_id','users.company_id as company_id')
+        ->where([['user_infos.status','!=','inactive'],['access_levels.id','>',1]])
         ->get();
         foreach($employee as $k => $datum){
             $tmp = DB::table('user_infos')
@@ -140,6 +141,7 @@ class excelController extends Controller
                 $emp_pos = $datum->position;
                 $pa_pcode = '';
                 $pa_name = '';
+                $pa_cid = $datum->company_id;
 
             if($datum->parent_id!=null){
                 $pa_pcode = $tmp[0]->code;
@@ -155,9 +157,12 @@ class excelController extends Controller
             $worksheet->setCellValue('C'.($k+2),$emp_pos);
             $worksheet->setCellValue('D'.($k+2),$pa_name);
             $worksheet->setCellValue('F'.($k+2),$pa_pcode);
+            $worksheet->setCellValue('H'.($k+2),$pa_cid);
+
             if($k==0){
             $worksheet->setCellValue('G'.($k+2),'"=IF([New Parent]<>"",INDEX(Employee!A:A,MATCH([New Parent],Employee!B:B,0),0),"")');
             }
+
         }
 
         //employee sheet
@@ -178,7 +183,7 @@ class excelController extends Controller
         }
         //parent worksheet
         $worksheet = new Worksheet($spreadsheet, 'Parent');
-        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+        // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
         $spreadsheet->addSheet($worksheet);
         $parent_id_array = AccessLevel::groupBy('parent')->pluck('parent')->toArray();
         $tmp=[];
@@ -187,7 +192,7 @@ class excelController extends Controller
             $tmp[] = DB::table('user_infos')
             ->join('users','users.uid','=','user_infos.id')
             ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename,user_infos.lastname) as fullname'))
-            ->where([['users.access_id','=',$datum],['user_infos.status','!=','inactive'],['user_infos.id','!=',3]])
+            ->where([['users.access_id','=',$datum]])
             ->pluck('fullname')->toArray();
             if(empty($datum)){
                 $tmp1[] = 'superadmin';
@@ -198,10 +203,11 @@ class excelController extends Controller
         }
         foreach($tmp as $k => $datum){
             $worksheet->fromArray($datum,null,'A'.($k));
+            $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange($tmp1[$k],$spreadsheet->getSheetByName('Parent'),($k).':'.($k)));
         }
-        //get code
+        // //get code
         foreach($tmp1 as $k => $datum){
-            $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange($datum,$spreadsheet->getSheetByName('Parent'),($k).':'.($k)));
+            
         }
         //config sheet
         $token = DB::table('excel_template_validators')->where('template','Reassign')->pluck('token');
@@ -256,6 +262,8 @@ class excelController extends Controller
             'TIN',
             'Position',
             'Hired Date',
+            'Status',
+            'Separation Reason',
             'Separation Date',
         ];
         $worksheet = $spreadsheet->getActiveSheet(0);
@@ -281,7 +289,21 @@ class excelController extends Controller
             $worksheet->setCellValue('O'.($k+2),$datum->col4);
             $worksheet->setCellValue('P'.($k+2),$datum->name);
             $worksheet->setCellValue('Q'.($k+2),$datum->hired_date);
-            $worksheet->setCellValue('R'.($k+2),$datum->separation_date);
+            $worksheet->setCellValue('R'.($k+2),$datum->status);
+            $worksheet->setCellValue('S'.($k+2),$datum->status_reason);
+            $worksheet->setCellValue('T'.($k+2),$datum->separation_date);
+            // if(!empty($datum->image)){
+            //     $drawing = new \PHPExcel_Worksheet_MemoryDrawing();
+            //     $drawing->setName('PhpSpreadsheet logo');
+            //     $drawing->setImageResource($datum->image);
+            //     $drawing->setRenderingFunction(\PHPExcel_Worksheet_MemoryDrawing::RENDERING_JPEG);
+            //     $drawing->setMimeType(\PHPExcel_Worksheet_MemoryDrawing::MIMETYPE_DEFAULT);
+            //     $drawing->setHeight(36);
+            //     $drawing->setCoordinates('U'.($k+2));
+            //     $drawing->setWorksheet($worksheet);
+            //     $objWriter = \PHPExcel_IOFactory::createWriter($worksheet, 'Excel2007');
+            //     $objWriter->save(str_replace('.php', '.xlsx', __FILE__));
+            // }
         }
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->setPreCalculateFormulas(false);
@@ -388,11 +410,11 @@ class excelController extends Controller
             if($position>1){
                 $userinfo = new UserInfo;
                 $userinfo->firstname= $request->obj[0];
-                $userinfo->lastname= $request->obj[1];
-                $userinfo->middlename= $request->obj[2];
+                $userinfo->middlename= $request->obj[1];
+                $userinfo->lastname= $request->obj[2];
                 $userinfo->address= $request->obj[5];
                 $userinfo->birthdate= $request->obj[4];
-                $userinfo->gender= $request->obj[3];
+                $userinfo->gender= ucfirst(strtolower($request->obj[3]));
                 $userinfo->salary_rate= $request->obj[15];
                 $userinfo->status= $request->obj[17];
                 $userinfo->contact_number= $request->obj[8];
@@ -457,7 +479,7 @@ class excelController extends Controller
 
         if(($insertstatus>0)){
             $etv = new ExcelTemplateValidator;
-            $etv = $etv->updateExcelToken("Reassign");
+            $etv = $etv->updateExcelToken("Reassign");  
         }
         
         echo json_encode(['status'=>$insertstatus,'eid'=>$request->obj[14]]);

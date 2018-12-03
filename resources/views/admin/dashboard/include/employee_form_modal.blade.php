@@ -119,8 +119,8 @@
                                     <label class="col-sm-4 col-form-label font-xs">Gender</label>
                                     <div class="col-sm-8">
                                         <select name="gender" id="gender" class="form-control font-xs">
-                                            <option selected>Male</option>
-                                            <option>Female</option>
+                                            <option value="Male" selected>Male</option>
+                                            <option value="Female">Female</option>
                                         </select>
                                     </div>
                                 </div>
@@ -145,13 +145,9 @@
                                             @foreach($userInfo as $datum)
                                                 @if($role->id==1)
                                                     <option value="{{$datum->id}}">{{$datum->name}}</option>
-                                                @elseif($role->id==2)
+                                                @elseif($role->id==2||$role->id==3)
                                                     @if($datum->id>2)
                                                     <option value="{{$datum->id}}">{{$datum->name}}</option>
-                                                    @endif
-                                                @elseif($role->id==6||$role->id==7)
-                                                    @if($datum->id>2)
-                                                        <option value="{{$datum->id}}">{{$datum->name}}</option>
                                                     @endif
                                                 @endif
                                             @endforeach
