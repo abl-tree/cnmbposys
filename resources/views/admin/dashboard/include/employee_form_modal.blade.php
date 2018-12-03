@@ -176,13 +176,13 @@
                                             placeholder="Company ID">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-xs">Salary</label>
                                     <div class="col-sm-8">
                                         <input name="salary" id="salary" type="number" class="form-control font-xs"
                                             placeholder="Salary">
                                     </div>
-                                </div>
+                                </div> -->
                                  <div class="form-group row" style="border-top:3px;">
                                     <label class="col-sm-4 col-form-label font-xs">Contract</label>
                                     <div class="col-sm-8">
