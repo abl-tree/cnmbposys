@@ -911,7 +911,7 @@ $(document).on("click", ".excel-action-button", function(e) {
         $("#action-import")[0].hidden = true;
         $("#excel-form-submit")[0].hidden = true;
         $("#excel-modal-header").html("Export");
-        $("#import-employee-pbar-container").css("display", "none");
+        $("#import-employee-pbar-container")[0].hidden = true;
         $("#action-export")[0].hidden = false;
         $("#excel-modal-cancel")[0].hidden = false;
     }
@@ -996,7 +996,11 @@ excelstore = function(i, obj) {
                     } else if (result.status == 1) {
                         obj.duplicate = obj.duplicate + 1;
                     } else if (result.status == 2) {
-                        obj.error.push(result.row);
+                        if(obj.error==""){
+                            obj.error= result.eid;
+                        }else{
+                            obj.error= obj.error+','+result.eid;
+                        }
                     }
                 } else if (obj.action == "Reassign") {
                     importResultDisplay(obj);

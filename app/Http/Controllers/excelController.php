@@ -317,7 +317,7 @@ class excelController extends Controller
                     $object['arr'] = $handler->toArray();
                     $object['arr'] = array_chunk($object['arr'],1);
                     $object['saved'] = 0;
-                    $object['error'] = 0;
+                    $object['error'] = "";
                     $object['duplicate'] = 0;
                 }else if($object['action']=='Reassign'){
                     $object['reassign'] = 0;
@@ -460,7 +460,7 @@ class excelController extends Controller
             $etv = $etv->updateExcelToken("Reassign");
         }
         
-        echo json_encode(['status'=>$insertstatus,'row'=>$request->obj]);
+        echo json_encode(['status'=>$insertstatus,'eid'=>$request->obj[14]]);
     }
 
 }
