@@ -318,19 +318,20 @@ class EmployeeController extends Controller
                'name' => $userInfo->firstname,
                'email' => $account->email
                 );
-        // if($request->status_data=="New Hired"){
+        // if($request->status_data=="new_hired"){
         //  Mail::send([],[],function($message) use ($data){
         //         $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Activation Of Account of Mr/Mrs '.$data['name'])
         //         ->setBody('Hello Mr/Mrs '.$data['name'].', This is to inform you that your account has been activated by the HR. Thank You!. ');
         //         $message->from('bfjax5@gmail.com','CNM BPO');
-        //          });     
-        // }else if($request->status_data=="Inactive"){
-        //  Mail::send([],[],function($message) use ($data){
-        //         $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Inactive Mail of Mr/Mrs '.$data['name'])
-        //         ->setBody('Hello Mr/Mrs '.$data['name'].', This is to inform you that your account has been terminated by the HR');
-        //         $message->from('bfjax5@gmail.com','CNM BPO');
-        //          }); 
-        // }
+//          });     
+        // }else 
+            if($request->status_data=="inactive"){
+            Mail::send([],[],function($message) use ($data){
+                    $message->to($data['email'],'Hello Mr/Mrs '.$data['name'])->subject('Inactive Mail of Mr/Mrs '.$data['name'])
+                    ->setBody('Hello Mr/Mrs '.$data['name'].', This is to inform you that your account has been terminated by the HR');
+                    $message->from('hr@cnmsolutions.net','CNM Solutions');
+            }); 
+        }
         return json_encode($request->status_reason);
     }
 

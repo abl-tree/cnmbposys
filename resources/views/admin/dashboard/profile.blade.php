@@ -70,7 +70,6 @@
                                 <div id="tab-con2" class="tab-con">
                                         <table style='width:100%'>
                                             <tbody>
-
                                                 <tr class='m-0 p-0'>
                                                     <td class='m-0 p-0' style='font-weight:600;text-align:left'>CNM:</td>
                                                 </tr>
