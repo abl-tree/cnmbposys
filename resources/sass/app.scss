@@ -357,14 +357,14 @@ body {
     background-color: rgb(233, 233, 233);
 }
 
-#tab1:checked ~ .tab-content-wrapper > #tab-content1,
-#tab2:checked ~ .tab-content-wrapper > #tab-content2,
-#tab3:checked ~ .tab-content-wrapper > #tab-content3 {
+#tab1:checked ~ .tab-con-wrapper > #tab-con1,
+#tab2:checked ~ .tab-con-wrapper > #tab-con2,
+#tab3:checked ~ .tab-con-wrapper > #tab-con3 {
     display: block;
     position: relative;
 }
 
-.tab-content {
+.tab-con {
     display: none;
 }
 
@@ -493,8 +493,8 @@ table.dataTable td {
     background: #555;
 }
 
-.text-center{
-    text-align:center;
+.text-center {
+    text-align: center;
 }
 
 .dataTables_scrollBody {

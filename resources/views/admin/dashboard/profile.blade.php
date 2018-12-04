@@ -36,8 +36,8 @@
                                 <label for="tab2" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;font-weight:700">Identification</label>
                                 <input type="radio" class="info-radio" name="info-nav" id="tab3" style='display:none;'> 
                                 <label for="tab3" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:0px 5px 5px 0px;font-weight:700">Contact</label>
-                                <div class="layer p-20 tab-content-wrapper">
-                                    <div id="tab-content1" class="tab-content">
+                                <div class="layer p-20 tab-con-wrapper">
+                                    <div id="tab-con1" class="tab-con">
                                         <table style='width:100%'>
                                             <tbody>
                                                 <tr class='m-0 p-0'>
@@ -67,9 +67,10 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                <div id="tab-content2" class="tab-content">
+                                <div id="tab-con2" class="tab-con">
                                         <table style='width:100%'>
                                             <tbody>
+
                                                 <tr class='m-0 p-0'>
                                                     <td class='m-0 p-0' style='font-weight:600;text-align:left'>CNM:</td>
                                                 </tr>
@@ -103,7 +104,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div id="tab-content3" class="tab-content">
+                                    <div id="tab-con3" class="tab-con">
                                         <table style='width:100%'>
                                             <tbody>
                                                 <tr class='m-0 p-0'>
@@ -158,8 +159,8 @@
                                 <label for="tab2" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;font-weight:700">Identification</label>
                                 <input type="radio" class="info-radio" name="info-nav" id="tab3" style='display:none;'> 
                                 <label for="tab3" class="info-button-label" style="font-size:.8em;margin:0px -5px 0px 0px;border-radius:0px 5px 5px 0px;font-weight:700">Contact</label>
-                                <div class="layer p-20 tab-content-wrapper">
-                                    <div id="tab-content1" class=" layer tab-content">
+                                <div class="layer p-20 tab-con-wrapper">
+                                    <div id="tab-con1" class=" layer tab-con">
                                         <table style='width:100%'>
                                             <tbody>
                                                 <tr class='m-0 p-0'>
@@ -189,7 +190,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                <div id="tab-content2" class=" layer tab-content">
+                                <div id="tab-con2" class=" layer tab-con">
                                         <table style='width:100%'>
                                             <tbody>
                                                 <tr class='m-0 p-0'>
@@ -225,7 +226,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div id="tab-content3" class="layer tab-content">
+                                    <div id="tab-con3" class="layer tab-con">
                                         <table style='width:100%'>
                                             <tbody>
                                                 <tr class='m-0 p-0'>
