@@ -247,7 +247,7 @@ function replaceProfile(data) {
 
     console.log(data.viewer);
 
-    if (data.viewer == 1 || data.viewer == 2 || showBenefits == 0) {
+    if (data.viewer == 1 || data.viewer == 2 || data.viewer == 3 || showBenefits == 0) {
         $("#sss_P").html(
             !!data.profile.benefits[0].id_number
                 ? data.profile.benefits[0].id_number
