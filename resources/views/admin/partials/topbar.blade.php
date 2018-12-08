@@ -176,23 +176,18 @@
             <li class="dropdown">
                 <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
                     <div class="peer mR-10">
-
-                        @php
-                            if(!empty($profile->image)){
-                                $p1 = substr($profile->image,0,strpos($profile->image,','));
-                                $p2 = substr($profile->image,strpos($profile->image,','));
-
-                                echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url('.$profile->image.')"></div>';
-                            }else{
-                                echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>';
-                            }
-                        @endphp
-                        
-                        <input type="hidden" id="logged-position" value="{{$role->id}}">
-                        <input type="hidden" id="uid" value="{{$profile->id}}">
+                         @if(!empty(Auth::user()->info->image))
+                            $p1 = substr(Auth::user()->info->image,0,strpos(Auth::user()->info->image,','));
+                            $p2 = substr(Auth::user()->info->image,strpos(Auth::user()->info->image,','));
+                            echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url('.Auth::user()->info->image.')"></div>'; 
+                        @else
+                            echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>';
+                        @endif
+                        <input type="hidden" id="logged-position" value="{{Auth::user()->access->id}}">
+                        <input type="hidden" id="uid" value="{{Auth::user()->info->id}}">
                     </div>
                     <div class="peer">
-                        <span id='top-bar-name' class="fsz-sm c-grey-900">{!! topBarName()->firstname." ".topBarName()->middlename." ".topBarName()->lastname !!}</span>
+                        <span id='top-bar-name' class="fsz-sm c-grey-900">{{Auth::user()->info->firstname }} {{Auth::user()->info->middlename }} {{Auth::user()->info->lastname }}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu fsz-sm">
