@@ -15,9 +15,7 @@ Route::group([ 'middleware'=>['firstLogin']], function () {
 });
 
 Route::group([ 'middleware'=>['loginVerif']], function () {
-    // Route::get('/test', function () {
-    //     return view('admin.dashboard.index');
-    // });
+
     Route::get('/', 'ProfileController@index')->name('dashboard');
     Route::resource('users', 'UserController');
     /*Route::get('/email', function () {
