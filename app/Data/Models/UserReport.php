@@ -1,10 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-class UserReport extends Model
+use App\Data\Models\BaseModel;
+
+class UserReport extends BaseModel
 {
  	protected $table = 'user_reports';
 

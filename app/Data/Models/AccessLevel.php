@@ -1,12 +1,13 @@
 <?php
 
-namespace App;
+namespace App\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Data\Models\BaseModel;
 
-class AccessLevel extends Model
+class AccessLevel extends BaseModel
 {
     public $timestamps = false;
 
@@ -35,11 +36,11 @@ class AccessLevel extends Model
     }
 
     public function children() {
-        return $this->hasMany('\App\AccessLevelHierarchy', 'parent_id', 'id');
+        return $this->hasMany('\App\Data\Models\AccessLevelHierarchy', 'parent_id', 'id');
     }
 
     public function parents() {
-        return $this->hasMany('\App\AccessLevelHierarchy', 'child_id', 'id');
+        return $this->hasMany('\App\Data\Models\\AccessLevelHierarchy', 'child_id', 'id');
     }
 
     public function getParentLevel($position){

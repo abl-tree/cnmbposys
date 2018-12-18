@@ -1,12 +1,13 @@
 <?php
 
-namespace App;
+namespace App\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\UserBenefit;
+use App\Data\Models\UserBenefit;
+use App\Data\Models\BaseModel;
 
-class UserInfo extends Model
+class UserInfo extends BaseModel
 {
     /**
      * The attributes that are mass assignable.
@@ -76,7 +77,7 @@ class UserInfo extends Model
     }
 
     public function benefits() {
-        return $this->hasMany('\App\UserBenefit', 'user_info_id', 'id');
+        return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'id');
     }
 
     public function getAllEmployee(){

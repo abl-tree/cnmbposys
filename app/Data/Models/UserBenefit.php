@@ -1,10 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Data\Models\BaseModel;
 
-class UserBenefit extends Model
+class UserBenefit extends BaseModel
 {
     /**
      * The attributes that are mass assignable.
@@ -16,10 +17,10 @@ class UserBenefit extends Model
     ];
 
     public function info() {
-        return $this->belongsTo('\App\UserInfo', 'id', 'user_info_id')->with('id_number','benefit_id');
+        return $this->belongsTo('\App\Data\Models\UserInfo', 'id', 'user_info_id')->with('id_number','benefit_id');
     }
 
     public function benefit() {
-        return $this->belongsTo('\App\Benefit', 'id', 'benefit_id');
+        return $this->belongsTo('\App\Data\Models\Benefit', 'id', 'benefit_id');
     }
 }

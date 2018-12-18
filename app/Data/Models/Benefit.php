@@ -1,10 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Data\Models\BaseModel;
 
-class Benefit extends Model
+class Benefit extends BaseModel
 {
     /**
      * The attributes that are mass assignable.
@@ -27,6 +28,6 @@ class Benefit extends Model
     }
 
     public function users() {
-        return $this->hasMany('\App\UserBenefit', 'benefit_id', 'id');
+        return $this->hasMany('\App\Data\Models\UserBenefit', 'benefit_id', 'id');
     }
 }

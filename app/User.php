@@ -99,11 +99,11 @@ class User extends Authenticatable
     }
 
     public function info() {
-        return $this->hasOne('\App\UserInfo', 'id', 'uid');
+        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'uid');
     }
 
     public function access() {
-        return $this->hasOne('\App\AccessLevel', 'id', 'access_id');
+        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
 
 }

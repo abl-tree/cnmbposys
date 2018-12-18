@@ -1,11 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Data\Models\BaseModel;
 
-class ExcelTemplateValidator extends Model
+class ExcelTemplateValidator extends BaseModel
 {
     protected $fillable = ['template','token'];
 
