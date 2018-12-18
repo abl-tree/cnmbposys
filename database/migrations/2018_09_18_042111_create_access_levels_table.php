@@ -18,6 +18,7 @@ class CreateAccessLevelsTable extends Migration
             $table->string('code');
             $table->string('name');
             $table->integer('parent')->nullable();
+            $table->softDeletes();
         });
     }
 

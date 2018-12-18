@@ -32,6 +32,7 @@ class CreateUserInfosTable extends Migration
             $table->string('excel_hash')->nullable();
             $table->string('p_email')->nullable();
             $table->string('status_reason')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
         

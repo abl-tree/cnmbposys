@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->integer('company_id');
             $table->string('contract')->nullable();
+            $table->softDeletes();
             $table->timestamps();
             $table->boolean('loginFlag');
         });

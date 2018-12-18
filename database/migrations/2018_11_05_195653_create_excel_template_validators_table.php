@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Str;
-use App\ExcelTemplateValidator as etv;
+use App\Data\Models\ExcelTemplateValidator as etv;
 class CreateExcelTemplateValidatorsTable extends Migration
 {
     /**
@@ -18,6 +18,7 @@ class CreateExcelTemplateValidatorsTable extends Migration
             $table->increments('id');
             $table->string('template');
             $table->string('token');
+            $table->softDeletes();
             $table->timestamps();
         });
         //insert initial tokens
