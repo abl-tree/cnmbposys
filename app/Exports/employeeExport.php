@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use App\UserInfo;
+use App\Data\Models\UserInfo;
 
 class employeeExport implements FromQuery,ShouldAutoSize,WithHeadings,WithTitle
 {

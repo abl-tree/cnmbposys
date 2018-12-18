@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\AccessLevelHierarchy;
+use App\Data\Models\AccessLevelHierarchy;
 
 class AccessLevelHierarchiesTableSeeder extends Seeder
 {

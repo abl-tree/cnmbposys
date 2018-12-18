@@ -6,7 +6,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use App\AccessLevel;
+use App\Data\Models\AccessLevel;
 
 class employeePositionExport implements FromQuery,ShouldAutoSize,WithHeadings,WithTitle
 {

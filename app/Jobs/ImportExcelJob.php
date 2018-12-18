@@ -17,12 +17,12 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use App\Exports\exportTemplateSheet;
 use App\Exports\exportReportSheet;
 use App\Imports\importEmployee;
-use App\UserInfo;
+use App\Data\Models\UserInfo;
 use App\User;
-use App\UserBenefit;
-use App\AccessLevel;
-use App\AccessLevelHierarchy;
-use App\ExcelTemplateValidator;
+use App\Data\Models\UserBenefit;
+use App\Data\Models\AccessLevel;
+use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\ExcelTemplateValidator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Support\Collection;
 

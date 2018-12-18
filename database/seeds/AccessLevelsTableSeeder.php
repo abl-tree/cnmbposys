@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\AccessLevel;
+use App\Data\Models\AccessLevel;
 
 class AccessLevelsTableSeeder extends Seeder
 {

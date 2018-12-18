@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Benefit;
+use App\Data\Models\Benefit;
 
 class BenefitsTableSeeder extends Seeder
 {

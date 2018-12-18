@@ -3,11 +3,11 @@
 namespace App\Imports;
 
 use Illuminate\Support\Facades\Hash;
-use App\UserInfo;
+use App\Data\Models\UserInfo;
 use App\User;
-use App\UserBenefit;
-use App\AccessLevelHierarchy;
-use App\AccessLevel;
+use App\Data\Models\UserBenefit;
+use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\AccessLevel;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;

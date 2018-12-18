@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\UserInfo;
+use App\Data\Models\UserInfo;
 use Carbon\Carbon;
 
 class UserInfosTableSeeder extends Seeder
