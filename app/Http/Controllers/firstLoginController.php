@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Auth;
 use App\User;
 use Illuminate\Support\Facades\Validator;
-class firstLoginController extends Controller
+use App\Http\Controllers\BaseController;
+
+class firstLoginController extends BaseController
 {
     public function __construct()
     {

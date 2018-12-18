@@ -12,19 +12,20 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use App\Exports\exportTemplateSheet;
 use App\Exports\exportReportSheet;
 use App\Imports\importEmployee;
-use App\UserInfo;
+use App\Data\Models\UserInfo;
 use App\User;
-use App\UserBenefit;
-use App\AccessLevel;
-use App\AccessLevelHierarchy;
-use App\ExcelTemplateValidator;
+use App\Data\Models\UserBenefit;
+use App\Data\Models\AccessLevel;
+use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\ExcelTemplateValidator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Http\Controllers\BaseController;
 
 
-class excelController extends Controller
+class excelController extends BaseController
 {
     function Addtemplate(){
         $filename = "Add-Template-".now().".xlsx"; //filename

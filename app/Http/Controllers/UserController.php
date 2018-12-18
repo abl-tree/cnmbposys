@@ -8,12 +8,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Yajra\Datatables\Datatables;
 use App\User;
-use App\UserReport;
-use App\UserInfo;
+use App\Data\Models\UserReport;
+use App\Data\Models\UserInfo;
 use Mail;
 use Auth;
+use App\Http\Controllers\BaseController;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * Display a listing of the resource.

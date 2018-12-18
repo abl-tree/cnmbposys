@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\UserBenefit;
-use App\AccessLevel;
-use App\AccessLevelHierarchy;
-use App\UserInfo;
+use App\Data\Models\UserBenefit;
+use App\Data\Models\AccessLevel;
+use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\UserInfo;
 use App\User;
 use Yajra\Datatables\Datatables;
+use App\Http\Controllers\BaseController;
 
-class ProfileController extends Controller
+class ProfileController extends BaseController
 {
     /**
      * Create a new controller instance.
