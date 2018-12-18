@@ -1,0 +1,3 @@
+[submodule "Common/Traits"]
+	path = Common/Traits
+	url = https://github.com/floydignified/submodule-traits.git
