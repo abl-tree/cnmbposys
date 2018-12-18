@@ -40,7 +40,7 @@ if (! function_exists('move_file')) {
 
 function topBarName(){
     $id = Auth::id();
-    $userinfo = \App\UserInfo::find($id);
+    $userinfo = \App\Data\Models\UserInfo::find($id);
 
     return $userinfo;
 }
