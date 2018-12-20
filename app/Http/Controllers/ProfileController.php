@@ -41,11 +41,13 @@ class ProfileController extends BaseController
 
         $userInfo = AccessLevel::all();
 
-        if($access_level>3){
+        if($access_level==12 || $access_level==13 || $access_level==14){
+            return view('admin.dashboard.rta', compact('profile', 'role', 'user', 'userInfo', 'emp'));
+        }else if($access_level<4){
+            return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo', 'emp'));
+        }else{
             $underconstruction = "/images/underconstruction.png";
             return view('admin.dashboard.underconstruction', compact('profile', 'role', 'user', 'userInfo', 'emp','underconstruction'));
-        }else{
-            return view('admin.dashboard.profile', compact('profile', 'role', 'user', 'userInfo', 'emp'));
         }
     }
 

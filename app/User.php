@@ -106,4 +106,7 @@ class User extends Authenticatable
         return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
 
+    public function schedule(){
+        return $this->hasMany('App\AgentSchedule','user_id','uid');
+    }
 }

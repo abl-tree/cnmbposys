@@ -7,11 +7,12 @@
     </a>
 </li>
 -->
-<li class="nav-item">
-	<a class='sidebar-link' href="/profile">
-	<span class="icon-holder">
-		<i class="c-brown-500 ti-user"></i>
-	</span>
-	<span class="title">Employee Profile</span>
-	</a>
-</li>
+    <li class="nav-item">
+        <a class='sidebar-link' href="/profile">
+        <span class="icon-holder">
+            <i class="c-brown-500 ti-user"></i>
+        </span>
+        <span class="title">Employee Profile</span>
+        </a>
+    </li>
+

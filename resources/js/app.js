@@ -10,6 +10,9 @@ require("datatables.net-fixedcolumns");
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
+
+console.log($("#logged-position").val());
+console.log($('#uid').val());
 // window.Vue = require('vue');
 
 /**

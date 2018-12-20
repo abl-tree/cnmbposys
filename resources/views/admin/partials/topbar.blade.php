@@ -176,18 +176,18 @@
             <li class="dropdown">
                 <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
                     <div class="peer mR-10">
-                         @if(!empty(Auth::user()->info->image))
-                            $p1 = substr(Auth::user()->info->image,0,strpos(Auth::user()->info->image,','));
-                            $p2 = substr(Auth::user()->info->image,strpos(Auth::user()->info->image,','));
-                            echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url('.Auth::user()->info->image.')"></div>'; 
+                         @if(!empty($pageOnload->image))
+                            $p1 = substr($pageOnload->image,0,strpos($pageOnload->image,','));
+                            $p2 = substr($pageOnload->image,strpos($pageOnload->image,','));
+                            <div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url('.$pageOnload->image.')"></div> 
                         @else
-                            echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>';
+                            <div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>
                         @endif
-                        <input type="hidden" id="logged-position" value="{{Auth::user()->access->id}}">
-                        <input type="hidden" id="uid" value="{{Auth::user()->info->id}}">
+                        <input type="hidden" id="logged-position" value="{{$pageOnload->user->access_id}}">
+                        <input type="hidden" id="uid" value="{{$pageOnload->id}}">
                     </div>
                     <div class="peer">
-                        <span id='top-bar-name' class="fsz-sm c-grey-900">{{Auth::user()->info->firstname }} {{Auth::user()->info->middlename }} {{Auth::user()->info->lastname }}</span>
+                        <span id='top-bar-name' class="fsz-sm c-grey-900">{{$pageOnload->firstname }} {{$pageOnload->middlename }} {{$pageOnload->lastname }}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu fsz-sm">
