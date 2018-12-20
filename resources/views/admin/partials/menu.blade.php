@@ -8,11 +8,11 @@
 </li>
 -->
     <li class="nav-item">
-        <a class='sidebar-link' href="/profile">
+        <a class='sidebar-link' href="/">
         <span class="icon-holder">
-            <i class="c-brown-500 ti-user"></i>
+            <i class="c-brown-500 ti-calendar"></i>
         </span>
-        <span class="title">Employee Profile</span>
+        <span class="">Schedule</span>
         </a>
     </li>
 

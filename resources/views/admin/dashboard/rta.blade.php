@@ -451,12 +451,7 @@
             </div>
           </div>
           <div class="email-content-wrapper">
-            <!-- Header -->
-                  <div id='full-calendar' class="pR-15"></div>
-            
-
-            <!-- Content -->
-            
+            <div id='full-calendar' class="pR-15"  ></div>
           </div>
         </div>
       </div>
