@@ -22,13 +22,35 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
         return view('admin.dashboard.email');
     });*/
     
+//////////////////////////////////// PAGE ROUTES
+
+    Route::get('/', 'pageController@dashboard')->name('dashboard');
+    Route::get('/dashboard', 'pageController@dashboard')->name('dashboard');
+    Route::get('/schedule', 'pageController@schedule')->name('schedule');
+
+
+
+
+
+
+
+
+
+
+
+
+
+// END PAGE ROUTES ///////////////////////////////
+
+
+
+
     Route::get('/forms', function () {
         return view('admin.dashboard.forms');
     });
 
     //PROFILE -- START
 
-    Route::get('/profile', 'ProfileController@index')->name('profile');
     Route::get('/logstat', 'ProfileController@checkLoginStat')->name('logstat');
 
     Route::get('/refreshEmployeeList', 'ProfileController@refreshEmployeeList');

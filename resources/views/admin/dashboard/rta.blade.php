@@ -8,7 +8,7 @@
       <div class="email-side-nav remain-height ov-h">
         <div class="h-100 layers">
           <div class="p-20 bgc-grey-100 layer w-100">
-            <a href="/compose" class="btn btn-danger btn-block">New Message</a>
+            <a href="/compose" class="btn btn-danger btn-block">Import excel</a>
           </div>
           <div class="scrollable pos-r bdT layer w-100 fxg-1">
             <ul class="p-20 nav flex-column">
@@ -451,7 +451,7 @@
             </div>
           </div>
           <div class="email-content-wrapper">
-            <div id='full-calendar' class="pR-15"  ></div>
+            <div id='full-calendar' class="pR-15"></div>
           </div>
         </div>
       </div>
@@ -459,7 +459,4 @@
     </div>
   </div>
 </div>
-      <script>
-        // console.log({!! $emp !!})
-      </script>
 @endsection
