@@ -41,6 +41,7 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
         ],
+        
     ];
 
     /**
@@ -62,6 +63,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'firstLogin' => \App\Http\Middleware\firstLogin::class,
         'loginVerif' => \App\Http\Middleware\loginVerifier::class,
+        'pageAccess' => \App\Http\Middleware\pageAccess::class,
         'Role' => \App\Http\Middleware\Role::class,
 
     ];

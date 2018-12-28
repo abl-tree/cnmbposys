@@ -22,9 +22,7 @@ class firstLogin
             return $next($request);
         }
         if (Auth::check() && Auth::user()->loginFlag == true){
-            return redirect('/profile');
+            return redirect('/dashboard');
         }
-       
-       
     }
 }

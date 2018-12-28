@@ -1,462 +1,256 @@
 @extends('admin.default')
 
 @section('content')
-<!-- ### $App Screen Content ### --> 
-<div id='mainContent'>
-  <div class="full-container">
-    <div class="email-app">
-      <div class="email-side-nav remain-height ov-h">
-        <div class="h-100 layers">
-          <div class="p-20 bgc-grey-100 layer w-100">
-            <a href="/compose" class="btn btn-danger btn-block">Import excel</a>
-          </div>
-          <div class="scrollable pos-r bdT layer w-100 fxg-1">
-            <ul class="p-20 nav flex-column">
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-email"></i>
-                      <span>Inbox</span>
+
+    <div class="row gap-20 masonry pos-r">
+        <div class="masonry-sizer col-md-6"></div>
+        <div class="masonry-item  w-100">
+            <div class="row gap-20">
+                <!-- #Toatl Visits ==================== -->
+                <div class='col-md-3'>
+                    <div class="layers bd bgc-white p-20">
+                        <div class="layer w-100 mB-10">
+                            <h6 class="lh-1">Scheduled</h6>
+                        </div>
+                        <div class="layer w-100">
+                            <div class="peers ai-sb fxw-nw">
+                                <div class="peer peer-greed">
+                                    <span id="sparklinedash"></span>
+                                </div>
+                                <div class="peer">
+                                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500">+10%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
+                </div>
+
+                <!-- #Total Page Views ==================== -->
+                <div class='col-md-3'>
+                    <div class="layers bd bgc-white p-20">
+                        <div class="layer w-100 mB-10">
+                            <h6 class="lh-1">Working</h6>
+                        </div>
+                        <div class="layer w-100">
+                            <div class="peers ai-sb fxw-nw">
+                                <div class="peer peer-greed">
+                                    <span id="sparklinedash2"></span>
+                                </div>
+                                <div class="peer">
+                                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500">-7%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="" class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-share"></i>
-                      <span>Sent</span>
+                </div>
+
+                <!-- #Unique Visitors ==================== -->
+                <div class='col-md-3'>
+                    <div class="layers bd bgc-white p-20">
+                        <div class="layer w-100 mB-10">
+                            <h6 class="lh-1">Absent</h6>
+                        </div>
+                        <div class="layer w-100">
+                            <div class="peers ai-sb fxw-nw">
+                                <div class="peer peer-greed">
+                                    <span id="sparklinedash3"></span>
+                                </div>
+                                <div class="peer">
+                                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500">~12%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-green-50 c-green-700">12</span>
+                </div>
+
+                <!-- #Bounce Rate ==================== -->
+                <div class='col-md-3'>
+                    <div class="layers bd bgc-white p-20">
+                        <div class="layer w-100 mB-10">
+                            <h6 class="lh-1">Off-duty</h6>
+                        </div>
+                        <div class="layer w-100">
+                            <div class="peers ai-sb fxw-nw">
+                                <div class="peer peer-greed">
+                                    <span id="sparklinedash4"></span>
+                                </div>
+                                <div class="peer">
+                                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500">33%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="" class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-star"></i>
-                      <span>Important</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-blue-50 c-blue-700">3</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="" class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-file"></i>
-                      <span>Drafts</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-amber-50 c-amber-700">5</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="" class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-alert"></i>
-                      <span>Spam</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">1</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="" class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-trash"></i>
-                      <span>Trash</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">+99</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-            </ul>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
-    <div class="email-wrapper row remain-height bgc-white ov-h">
-      <div class="email-list h-100 layers">
-        <div class="layer w-100">
-          <div class="bgc-grey-100 peers ai-c jc-sb p-20 fxw-nw">
-            <div class="peer">
-              <div class="btn-group" role="group">
-                <button type="button" class="email-side-toggle d-n@md+ btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-menu"></i>
-                </button>
-                <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-folder"></i>
-                </button>
-                <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-tag"></i>
-                </button>
-                <div class="btn-group" role="group">
-                  <button id="btnGroupDrop1" type="button" class="btn cur-p bgc-white no-after dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="ti-more-alt"></i>
-                  </button>
-                  <ul class="dropdown-menu fsz-sm" aria-labelledby="btnGroupDrop1">
-                    <li>
-                      <a href="" class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                        <i class="ti-trash mR-10"></i>
-                        <span>Delete</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="" class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                        <i class="ti-alert mR-10"></i>
-                        <span>Mark as Spam</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="" class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                        <i class="ti-star mR-10"></i>
-                        <span>Star</span>
-                      </a>
-                    </li>
-                  </ul>
+        
+        <div class="masonry-item col-md-6">
+            <!-- #Sales Report ==================== -->
+            <div class="bd bgc-white">
+                <div class="layers">
+                    <div class="layer w-100 p-20">
+                        <h6 class="lh-1">Today's Activity</h6>
+                    </div>
+                    <div class="layer w-100">
+                        <div class="bgc-light-blue-500 c-white p-20">
+                            <div class="peers ai-c jc-sb gap-40">
+                                <div class="peer peer-greed">
+                                    <h5>{{date("F d, Y (l)")}}</h5>
+                                    <!-- <p class="mB-0">Today's Activity</p> -->
+                                </div>
+                                <div class="peer">
+                                    <h3 class="text-right">$6,000</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive p-20">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class=" bdwT-0">Name</th>
+                                        <th class=" bdwT-0">Status</th>
+                                        <th class=" bdwT-0">Work Time</th>
+                                        <th class=" bdwT-0">Breakdown</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-600">Item #1 Name</td>
+                                        <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill">Unavailable</span> </td>
+                                        <td>Nov 18</td>
+                                        <td><span class="text-success">$12</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-600">Item #2 Name</td>
+                                        <td><span class="badge bgc-deep-purple-50 c-deep-purple-700 p-10 lh-0 tt-c badge-pill">New</span></td>
+                                        <td>Nov 19</td>
+                                        <td><span class="text-info">$34</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-600">Item #3 Name</td>
+                                        <td><span class="badge bgc-pink-50 c-pink-700 p-10 lh-0 tt-c badge-pill">New</span></td>
+                                        <td>Nov 20</td>
+                                        <td><span class="text-danger">-$45</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-600">Item #4 Name</td>
+                                        <td><span class="badge bgc-green-50 c-green-700 p-10 lh-0 tt-c badge-pill">Unavailable</span></td>
+                                        <td>Nov 21</td>
+                                        <td><span class="text-success">$65</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-600">Item #5 Name</td>
+                                        <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill">Used</span></td>
+                                        <td>Nov 22</td>
+                                        <td><span class="text-success">$78</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-600">Item #6 Name</td>
+                                        <td><span class="badge bgc-orange-50 c-orange-700 p-10 lh-0 tt-c badge-pill">Used</span> </td>
+                                        <td>Nov 23</td>
+                                        <td><span class="text-danger">-$88</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-600">Item #7 Name</td>
+                                        <td><span class="badge bgc-yellow-50 c-yellow-700 p-10 lh-0 tt-c badge-pill">Old</span></td>
+                                        <td>Nov 22</td>
+                                        <td><span class="text-success">$56</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                         </div>
+                    </div>
                 </div>
-              </div>
+                <div class="ta-c bdT w-100 p-20">
+                    <a href="#">Check all the activities</a>
+                </div>
             </div>
-            <div class="peer">
-              <div class="btn-group" role="group">
-                <button type="button" class="fsz-xs btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-angle-left"></i>
-                </button>
-                <button type="button" class="fsz-xs btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-angle-right"></i>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
-        <div class="layer w-100">
-          <div class="bdT bdB">
-            <input type="text" class="form-control m-0 bdw-0 pY-15 pX-20" placeholder="Search...">
-          </div>
+
+
+        <div class="masonry-item col-md-6">
+            <!-- #Todo ==================== -->
+            <div class="bd bgc-white p-20">
+                <div class="layers">
+                    <div class="layer w-100 mB-10">
+                        <h6 class="lh-1">Request</h6>
+                    </div>
+                    <div class="layer w-100">
+                        <ul class="list-task list-group" data-role="tasklist">
+                            <li class="list-group-item bdw-0" data-role="task">
+                                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                                    <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
+                                    <label for="inputCall1" class=" peers peer-greed js-sb ai-c">
+                                        <span class="peer peer-greed">Call John for Dinner</span>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="list-group-item bdw-0" data-role="task">
+                                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                                    <input type="checkbox" id="inputCall2" name="inputCheckboxesCall" class="peer">
+                                    <label for="inputCall2" class=" peers peer-greed js-sb ai-c">
+                                        <span class="peer peer-greed">Book Boss Flight</span>
+                                        <span class="peer">
+                                            <span class="badge badge-pill fl-r badge-success lh-0 p-10">2 Days</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="list-group-item bdw-0" data-role="task">
+                                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                                    <input type="checkbox" id="inputCall3" name="inputCheckboxesCall" class="peer">
+                                    <label for="inputCall3" class=" peers peer-greed js-sb ai-c">
+                                        <span class="peer peer-greed">Hit the Gym</span>
+                                        <span class="peer">
+                                            <span class="badge badge-pill fl-r badge-danger lh-0 p-10">3 Minutes</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="list-group-item bdw-0" data-role="task">
+                                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                                    <input type="checkbox" id="inputCall4" name="inputCheckboxesCall" class="peer">
+                                    <label for="inputCall4" class=" peers peer-greed js-sb ai-c">
+                                        <span class="peer peer-greed">Give Purchase Report</span>
+                                        <span class="peer">
+                                            <span class="badge badge-pill fl-r badge-warning lh-0 p-10">not important</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="list-group-item bdw-0" data-role="task">
+                                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                                    <input type="checkbox" id="inputCall5" name="inputCheckboxesCall" class="peer">
+                                    <label for="inputCall5" class=" peers peer-greed js-sb ai-c">
+                                        <span class="peer peer-greed">Watch Game of Thrones Episode</span>
+                                        <span class="peer">
+                                            <span class="badge badge-pill fl-r badge-info lh-0 p-10">Tomorrow</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="list-group-item bdw-0" data-role="task">
+                                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                                    <input type="checkbox" id="inputCall6" name="inputCheckboxesCall" class="peer">
+                                    <label for="inputCall6" class=" peers peer-greed js-sb ai-c">
+                                        <span class="peer peer-greed">Give Purchase report</span>
+                                        <span class="peer">
+                                            <span class="badge badge-pill fl-r badge-success lh-0 p-10">Done</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="layer w-100 fxg-1 scrollable pos-r">
-          <div class="">
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
+
+        
+
                 </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
             </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-            <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
-              <div class="peer mR-10">
-                <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                  <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
-                  <label for="inputCall1" class=" peers peer-greed js-sb ai-c"></label>
-                </div>
-              </div>
-              <div class="peer peer-greed ov-h">
-                <div class="peers ai-c">
-                  <div class="peer peer-greed">
-                    <h6>John Doe</h6>
-                  </div>
-                  <div class="peer">
-                    <small>1 min ago</small>
-                  </div>
-                </div>
-                <h5 class="fsz-def tt-c c-grey-900">title goes here</h5>
-                <span class="whs-nw w-100 ov-h tov-e d-b">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</span>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-      <div class="email-content h-100">
-        <div class="h-100 scrollable pos-r">
-          <div class="bgc-grey-100 peers ai-c jc-sb p-20 fxw-nw d-n@md+">
-            <div class="peer">
-              <div class="btn-group" role="group">
-                <button type="button" class="back-to-mailbox btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-angle-left"></i>
-                </button>
-                <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-folder"></i>
-                </button>
-                <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-tag"></i>
-                </button>
-                <div class="btn-group" role="group">
-                  <button id="btnGroupDrop1" type="button" class="btn cur-p bgc-white no-after dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="ti-more-alt"></i>
-                  </button>
-                  <ul class="dropdown-menu fsz-sm" aria-labelledby="btnGroupDrop1">
-                    <li>
-                      <a href="" class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                        <i class="ti-trash mR-10"></i>
-                        <span>Delete</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="" class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                        <i class="ti-alert mR-10"></i>
-                        <span>Mark as Spam</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="" class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                        <i class="ti-star mR-10"></i>
-                        <span>Star</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="peer">
-              <div class="btn-group" role="group">
-                <button type="button" class="fsz-xs btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-angle-left"></i>
-                </button>
-                <button type="button" class="fsz-xs btn bgc-white bdrs-2 mR-3 cur-p">
-                  <i class="ti-angle-right"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="email-content-wrapper">
-            <div id='full-calendar' class="pR-15"></div>
-          </div>
-        </div>
-      </div>
     </div>
-    </div>
-  </div>
-</div>
+
 @endsection

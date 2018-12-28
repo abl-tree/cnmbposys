@@ -9,6 +9,7 @@ use App\Data\Models\AccessLevel;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\UserInfo;
 use App\User;
+
 class pageController extends Controller
 {
 
@@ -16,6 +17,7 @@ class pageController extends Controller
     public function __construct()
     {
         $this->middleware('loginVerif');
+        $this->middleware('pageAccess');
     }
 
 
@@ -29,17 +31,17 @@ class pageController extends Controller
 
         $userInfo = AccessLevel::all();
 
-        if($access_level==12 || $access_level==13 || $access_level==14){
-            
-        }else if($access_level<4){
-            return view('admin.dashboard.hr', compact('profile', 'role', 'user', 'userInfo', 'emp'));
-        }else{
-            $underconstruction = "/images/underconstruction.png";
-            return view('admin.dashboard.underconstruction', compact('profile', 'role', 'user', 'userInfo', 'emp','underconstruction'));
+        $position = '';
+        switch($access_level){
+            case 2: $position = 'hr'; break;
+            case 12: $position = 'rta'; break;
         }
+                return view('admin.dashboard.'.$position, compact('profile', 'role', 'user', 'userInfo', 'emp'));
+
+
     }
 
     public function schedule(){
-        return view('admin.dashboard.rta');
+        return view('admin.schedule.rta');
     }
 }
