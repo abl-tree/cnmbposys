@@ -31,6 +31,6 @@ class AgentSchedule extends BaseModel
     }
 
     public function user_info(){
-        return $this->hasOne('App\User',"id", "user_id" );
+        return $this->hasOne('App\Data\Models\UserInfo',"id", "user_id" );
     }
 }
