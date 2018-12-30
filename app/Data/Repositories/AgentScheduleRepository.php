@@ -224,10 +224,24 @@ class AgentScheduleRepository extends BaseRepository
                     "operator" => "=",
                     "value"    => $data['id'],
                 ],
+                [
+                    "target"   => "access_id",
+                    "operator" => "=",
+                    "value"    => '17',
+                ],
             ];
 
             $parameters['agent_id'] = $data['id'];
 
+        } else {
+            
+            $data['where']  = [
+                [
+                    "target"   => "access_id",
+                    "operator" => "=",
+                    "value"    => '17',
+                ],
+            ];
         }
 
         $count_data = $data;
@@ -239,7 +253,7 @@ class AgentScheduleRepository extends BaseRepository
         if (!$result) {
             return $this->setResponse([
                 'code'       => 404,
-                'title'      => "No agent schedules are found",
+                'title'      => "No agents with schedules are found",
                 "meta"       => [
                     $meta_index => $result,
                 ],
