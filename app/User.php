@@ -107,6 +107,6 @@ class User extends Authenticatable
     }
 
     public function schedule(){
-        return $this->hasMany('App\AgentSchedule','user_id','uid');
+        return $this->hasMany('App\Data\Models\AgentSchedule','user_id','uid');
     }
 }
