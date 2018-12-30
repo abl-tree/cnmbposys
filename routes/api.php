@@ -17,16 +17,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::group([
-//     "namespace" => "Sample",
-//     "prefix"    => "sample",
-// ], function () {
+Route::group([
+    "prefix"    => "schedules",
+], function () {
 
-//     Route::get("/", "SampleController@all");
-//     Route::get("search", "SampleController@search");
-//     Route::post("create", "SampleController@create");
-//     Route::get("fetch/{id}", "SampleController@fetch");
-//     Route::post('update/{id}', 'SampleController@update');
-//     Route::post('delete/{id}', 'SampleController@delete');
+    Route::get("/", "AgentScheduleController@all");
+    Route::post("create", "AgentScheduleController@create");
+    Route::post('delete/{id}', 'AgentScheduleController@delete');
+    Route::get("fetch/{id}", "AgentScheduleController@fetch");
+    Route::post('update/{id}', 'AgentScheduleController@update');
 
-// });
+});
+
+
+Route::get("/", function(){ //test lang kung working
+    return 'ano yan kapatid?';
+});
