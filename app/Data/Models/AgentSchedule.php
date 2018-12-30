@@ -11,13 +11,26 @@ class AgentSchedule extends BaseModel
     protected $fillable = [
         'user_id',
         'title',
-        'event_start',
-        'event_end',
+        'start_event',
+        'end_event',
     ];
 
     public $timestamps = true;
 
+    protected $rules = [
+        'user_id' => 'sometimes|required|numeric',
+        'title' => 'sometimes|required|max:500',
+        'start_event' => 'sometimes|required|date',
+        'end_event' => 'sometimes|required|date',
+    ];
+
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
     public function agentschedule(){
-        return $this->belongsTo('App/User');
+        return $this->belongsTo('App\User');
+    }
+
+    public function user_info(){
+        return $this->hasOne('App\User',"id", "user_id" );
     }
 }
