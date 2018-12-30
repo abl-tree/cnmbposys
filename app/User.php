@@ -3,14 +3,21 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use App\Data\Models\UserInfo;
+use App\Data\Models\AccessLevelHierarchy;
+use App\BaseAuthModel;
 
-class User extends Authenticatable
+class User extends BaseAuthModel
 {
     use Notifiable;
     protected $primaryKey = 'id';
     protected $table = 'users';
+    protected $appends = [
+        'team_leader',
+        'operations_manager',
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -26,7 +33,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'hierarchy'
     ];
 
     /*
@@ -109,4 +116,34 @@ class User extends Authenticatable
     public function schedule(){
         return $this->hasMany('\App\Data\Models\AgentSchedule','user_id','uid');
     }
+
+    public function hierarchy(){
+        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy','child_id','uid');
+    }
+
+    public function getTeamLeaderAttribute(){
+        $id =  $this->hierarchy->parent_id;
+        $info = UserInfo::find($id);
+        $name = null;
+        if(isset($info)){
+            $name = $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname;
+        }
+        return $name;
+    }
+
+    public function getOperationsManagerAttribute(){
+        $name = null;
+        $tl_id =  $this->hierarchy->parent_id;
+        if(isset($tl_id)){
+            $om_id = AccessLevelHierarchy::where('child_id', $tl_id)->get()->first()->parent_id;
+        }
+        if(isset($om_id)){
+            $info = UserInfo::find($om_id);
+        }
+        if(isset($info)){
+            $name = $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname;
+        }
+        return $name;
+    }
+
 }
