@@ -247,7 +247,7 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
-        $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->user->getModel()));
 
         return $this->setResponse([
             "code"       => 200,
