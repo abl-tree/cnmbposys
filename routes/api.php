@@ -30,6 +30,18 @@ Route::group([
 
 });
 
+Route::group([
+    "prefix"    => "agents",
+], function () {
+
+    Route::get("/", "AgentController@all");
+    // Route::post("create", "AgentController@create");
+    // Route::post('delete/{id}', 'AgentController@delete');
+    Route::get("fetch/{id}", "AgentController@fetch");
+    // Route::post('update/{id}', 'AgentController@update');
+
+});
+
 
 Route::get("/", function(){ //test lang kung working
     return 'ano yan kapatid?';
