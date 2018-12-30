@@ -10,17 +10,22 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
+use App\User;
 use App\Data\Repositories\BaseRepository;
 
 class AgentScheduleRepository extends BaseRepository
 {
 
-    protected $agent_schedule;
+    protected 
+        $agent_schedule,
+        $user;
 
     public function __construct(
-        AgentSchedule $agentSchedule
+        AgentSchedule $agentSchedule,
+        User $user
     ) {
         $this->agent_schedule = $agentSchedule;
+        $this->user = $user;
     }
 
     public function defineAgentSchedule($data = [])
@@ -177,6 +182,59 @@ class AgentScheduleRepository extends BaseRepository
         $data['relations'] = "user_info";
 
         $result     = $this->fetchGeneric($data, $this->agent_schedule);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No agent schedules are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved agent schedules",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+    public function fetchAllAgentsWithSchedule($data = [])
+    {
+        $meta_index = "agents";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "agent";
+            $data['single'] = true;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['agent_id'] = $data['id'];
+
+        }
+
+        $count_data = $data;
+
+        $data['relations'] = "schedule";
+
+        $result     = $this->fetchGeneric($data, $this->user);
 
         if (!$result) {
             return $this->setResponse([

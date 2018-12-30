@@ -22,6 +22,7 @@ Route::group([
 ], function () {
 
     Route::get("/", "AgentScheduleController@all");
+    Route::get('agents', 'AgentScheduleController@fetchAllAgentsWithSchedule');
     Route::post("create", "AgentScheduleController@create");
     Route::post('delete/{id}', 'AgentScheduleController@delete');
     Route::get("fetch/{id}", "AgentScheduleController@fetch");
