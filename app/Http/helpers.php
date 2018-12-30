@@ -1,6 +1,7 @@
 <?php 
 
 use App\Data\Models\BaseModel;
+use App\BaseAuthModel;
 use Illuminate\Database\Eloquent\Builder;
 
 if (! function_exists('move_file')) {
@@ -111,11 +112,16 @@ if( !function_exists( "refresh_model") ){
      * @param array $data
      * @return mixed
      */
+    /**
+     * @param \App\BaseAuthModel $model
+     * @param array $data
+     * @return mixed
+     */
     function refresh_model( $model, $data=[] ){
         $class = $model->getClass();
         $new_model = new $class( $data );
 
-        if( !$new_model instanceof BaseModel ){
+        if( !$new_model instanceof BaseModel && !$new_model instanceof BaseAuthModel ){
             return false;
         }
 
