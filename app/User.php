@@ -16,6 +16,7 @@ class User extends BaseAuthModel
     protected $appends = [
         'team_leader',
         'operations_manager',
+        'full_name'
     ];
 
     /**
@@ -119,6 +120,13 @@ class User extends BaseAuthModel
 
     public function hierarchy(){
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy','child_id','uid');
+    }
+
+    public function getFullNameAttribute(){
+        $name = null;
+        $name = $this->info->firstname . ' ' . $this->info->middlename . ' ' . $this->info->lastname;
+        
+        return $name;
     }
 
     public function getTeamLeaderAttribute(){

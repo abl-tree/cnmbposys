@@ -246,7 +246,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = "schedule";
+        $data['relations'] = ['info', 'schedule'];
 
         $result     = $this->fetchGeneric($data, $this->user);
 
