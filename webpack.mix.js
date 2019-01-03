@@ -20,6 +20,12 @@ mix.webpackConfig(webpack => {
                 'window.jQuery': 'jquery',
                 Popper: ['popper.js', 'default'],
                 Modal: 'exports-loader?Modal!bootstrap/js/dist/modal',
+                resolve: {
+                    alias: {
+                        'vue$': 'vue/dist/vue.esm.js'
+                    },
+                    extensions: ['*', '.js', '.vue', '.json']
+                },
             })
         ]
     };
@@ -28,7 +34,7 @@ mix.webpackConfig(webpack => {
 
 mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
-    .copyDirectory('resources/static/images','public/images')
+    .copyDirectory('resources/static/images', 'public/images')
     .browserSync('laradminator.local')
     .version()
     .sourceMaps();

@@ -10,27 +10,26 @@ require("datatables.net-fixedcolumns");
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
-
-console.log($("#logged-position").val());
-console.log($('#uid').val());
-// window.Vue = require('vue');
-
+window.Vue = require('vue');
+import Vue from 'vue';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+import rtaVue from './components/rtaSchedPage.vue';
+import FullCalendar from 'vue-full-calendar';
+Vue.use(FullCalendar);
+Vue.component('date-time-picker', VueCtkDateTimePicker);
+Vue.component('rta-sched-section', rtaVue);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-// Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
-// const app = new Vue({
-//     el: '#app'
-// });
+const app = new Vue({
+    el: '#app',
+});
 
-// include CU employee form JS by EJEL
-// -- START
-
-// -- END
 //global variables
 var ir_id;
 var description;
@@ -71,8 +70,7 @@ function initialize_employee_table(url) {
         fixedColumns: {
             leftColumns: 4
         },
-        columnDefs: [
-            {
+        columnDefs: [{
                 targets: [5, 6, 7, 8, 9, 10, 11, 12], // your case all column
                 className: ["dt-center", "no-wrap"],
                 autoWidth: true
@@ -90,16 +88,27 @@ function initialize_employee_table(url) {
         ],
         ajax: url,
         order: [1],
-        columns: [
-            { data: "company_id", name: "company_id" },
-            { data: "name", name: "name" },
+        columns: [{
+                data: "company_id",
+                name: "company_id"
+            },
+            {
+                data: "name",
+                name: "name"
+            },
 
-            { data: "employee_status" },
-            { data: "action", orderable: false, searchable: false },
+            {
+                data: "employee_status"
+            },
+            {
+                data: "action",
+                orderable: false,
+                searchable: false
+            },
             {
                 data: image,
                 name: "image",
-                render: function(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     // var data = btoa(data.substr(data.indexOf(',')));
                     if (data) {
                         // console.log(data);
@@ -115,16 +124,40 @@ function initialize_employee_table(url) {
                     }
                 }
             },
-            { data: position, name: "position" },
-            { data: birthdate, name: "birthdate" },
-            { data: gender, name: "gender" },
-            { data: contact_number, name: "contact_number" },
-            { data: address, name: "address" },
-            { data: contract, name: "contract" },
-            { data: email, name: "email" },
-            { data: p_email, name: "p_email" }
+            {
+                data: position,
+                name: "position"
+            },
+            {
+                data: birthdate,
+                name: "birthdate"
+            },
+            {
+                data: gender,
+                name: "gender"
+            },
+            {
+                data: contact_number,
+                name: "contact_number"
+            },
+            {
+                data: address,
+                name: "address"
+            },
+            {
+                data: contract,
+                name: "contract"
+            },
+            {
+                data: email,
+                name: "email"
+            },
+            {
+                data: p_email,
+                name: "p_email"
+            }
         ],
-        createdRow: function(row, data, index) {
+        createdRow: function (row, data, index) {
             if (!data["parent_id"]) {
                 // $('td', row).eq(2).css("background-color", "#FF9999");
                 // $('td', row).eq(3).css("background-color", "#FF9999");
@@ -138,16 +171,21 @@ var popOverSettings = {
     trigger: "hover",
     html: true,
     selector: ".table-image-cover", //Sepcify the selector here
-    content: function() {
+    content: function () {
         return '<img src="' + $(this).data("img") + '" width="500"/>';
     }
 };
 
 $(document).popover(popOverSettings);
 
-initialize_employee_table("/refreshEmployeeList");
+if ($('#logged-in').val() > 0 && $('#logged-in').val() < 4) {
+    initialize_employee_table("/refreshEmployeeList");
+    document.getElementById("photo").onchange = function (evt) {};
 
-$(document).on("change", "#status_data", function() {
+}
+
+
+$(document).on("change", "#status_data", function () {
     if ($(this).val() == "inactive") {
         $("#reason").show();
     } else {
@@ -155,7 +193,7 @@ $(document).on("change", "#status_data", function() {
         $("#status_reason").val("");
     }
 });
-$(document).on("click", ".passChange", function(e) {
+$(document).on("click", ".passChange", function (e) {
     if ($("#pass").val() != "") {
         var input = $(this);
         var button = this;
@@ -169,7 +207,7 @@ $(document).on("click", ".passChange", function(e) {
             method: "POST",
             dataType: "text",
             data: $("#update_password_form").serialize(),
-            success: function(data) {
+            success: function (data) {
                 button.disabled = false;
                 input.html("Confirm");
                 swal("Success!", "Password Changed.", "success");
@@ -181,7 +219,7 @@ $(document).on("click", ".passChange", function(e) {
                 $("#addflag").prop("disabled", false);
                 window.location.replace("/");
             },
-            error: function(data) {
+            error: function (data) {
                 swal("Oh no!", "Something went wrong, try again.", "error");
                 button.disabled = false;
                 input.html("Save");
@@ -207,7 +245,7 @@ function getCurrentProfile() {
     $.ajax({
         url: "/getCurrentProfile",
         method: "get",
-        success: function(data) {
+        success: function (data) {
             prevProfiles.push(data); //data of current user considered as first profile in history
         }
     });
@@ -217,7 +255,7 @@ function getCurrentTab() {
     $.ajax({
         url: "/getCurrentTab",
         method: "get",
-        success: function(data) {
+        success: function (data) {
             currentTab = data;
         }
     });
@@ -229,10 +267,10 @@ getCurrentTab();
 function replaceProfile(data) {
     $("#name_P").html(
         data.profile.firstname +
-            " " +
-            data.profile.middlename +
-            " " +
-            data.profile.lastname
+        " " +
+        data.profile.middlename +
+        " " +
+        data.profile.lastname
     );
     $("#role_P").html(data.role.name);
     $("#company_id_P").html(data.user.company_id);
@@ -252,24 +290,24 @@ function replaceProfile(data) {
 
     if (data.viewer == 1 || data.viewer == 2 || data.viewer == 3 || showBenefits == 0) {
         $("#sss_P").html(
-            !!data.profile.benefits[0].id_number
-                ? data.profile.benefits[0].id_number
-                : "N/A"
+            !!data.profile.benefits[0].id_number ?
+            data.profile.benefits[0].id_number :
+            "N/A"
         );
         $("#philhealth_P").html(
-            !!data.profile.benefits[1].id_number
-                ? data.profile.benefits[1].id_number
-                : "N/A"
+            !!data.profile.benefits[1].id_number ?
+            data.profile.benefits[1].id_number :
+            "N/A"
         );
         $("#pagibig_P").html(
-            !!data.profile.benefits[2].id_number
-                ? data.profile.benefits[2].id_number
-                : "N/A"
+            !!data.profile.benefits[2].id_number ?
+            data.profile.benefits[2].id_number :
+            "N/A"
         );
         $("#tin_P").html(
-            !!data.profile.benefits[3].id_number
-                ? data.profile.benefits[3].id_number
-                : "N/A"
+            !!data.profile.benefits[3].id_number ?
+            data.profile.benefits[3].id_number :
+            "N/A"
         );
         $("#profile-image-display").css(
             "background-image",
@@ -301,7 +339,7 @@ function replaceProfile(data) {
     }
 }
 
-$(document).on("click", ".view-employee", function() {
+$(document).on("click", ".view-employee", function () {
     id = $(this).attr("id");
     $("#profile-edit-button").attr("data-id", id);
     prevProfiles.push(id);
@@ -310,8 +348,10 @@ $(document).on("click", ".view-employee", function() {
         url: "/viewProfile",
         method: "get",
         dataType: "json",
-        data: { id: id },
-        success: function(data) {
+        data: {
+            id: id
+        },
+        success: function (data) {
             replaceProfile(data);
 
             initialize_employee_table("/updateEmployeeList/" + id);
@@ -320,7 +360,7 @@ $(document).on("click", ".view-employee", function() {
     });
 });
 
-$(document).on("click", "#prevProfile", function() {
+$(document).on("click", "#prevProfile", function () {
     id = prevProfiles[prevProfiles.length - 2];
     $("#profile-edit-button").attr("data-id", id);
     if (prevProfiles.length > 1) {
@@ -328,8 +368,10 @@ $(document).on("click", "#prevProfile", function() {
             url: "/viewProfile",
             method: "get",
             dataType: "json",
-            data: { id: id },
-            success: function(data) {
+            data: {
+                id: id
+            },
+            success: function (data) {
                 showBenefits = prevProfiles.length - 2;
                 replaceProfile(data);
                 if (prevProfiles.length - 2 == 0 && currentTab == "showAll") {
@@ -353,14 +395,14 @@ function backToProfile() {
         url: "/backToProfile",
         method: "get",
         dataType: "json",
-        success: function(data) {
+        success: function (data) {
             showBenefits = 0;
             replaceProfile(data);
         }
     });
 }
 
-$(document).on("click", "#showAll", function() {
+$(document).on("click", "#showAll", function () {
     resetPrevButton();
     backToProfile();
 
@@ -368,7 +410,7 @@ $(document).on("click", "#showAll", function() {
     currentTab = "showAll";
 });
 
-$(document).on("click", "#showChild", function() {
+$(document).on("click", "#showChild", function () {
     resetPrevButton();
     backToProfile();
 
@@ -377,7 +419,7 @@ $(document).on("click", "#showChild", function() {
     currentTab = "childView";
 });
 
-$(document).on("click", "#showTerminated", function() {
+$(document).on("click", "#showTerminated", function () {
     resetPrevButton();
     backToProfile();
 
@@ -407,13 +449,13 @@ $.ajaxSetup({
 //EVENT
 
 // reset modal on cancel button click
-$(document).on("click", "#employee-modal-cancel", function(e) {
+$(document).on("click", "#employee-modal-cancel", function (e) {
     e.preventDefault();
     employee_form_reset();
 });
 
 //get group leaders on position change
-$(document).on("change", "#position", function() {
+$(document).on("change", "#position", function () {
     var a_position = $(this).val(); //applicant positon a_position
     var u_position = $("#user-access-level").val(); //logged position
     var eid = $("#employee-id").val();
@@ -421,17 +463,17 @@ $(document).on("change", "#position", function() {
 });
 
 //display input file image before upload on change
-$("#photo").change(function() {
+$("#photo").change(function () {
     readURL(this);
     // console.log(this);
 });
-$(document).on("change", "#excel_file", function() {
+$(document).on("change", "#excel_file", function () {
     if (
         $(this)
-            .val()
-            .split(".")
-            .pop()
-            .toLowerCase() == "xlsx"
+        .val()
+        .split(".")
+        .pop()
+        .toLowerCase() == "xlsx"
     ) {
         $("#excel-file-label")
             .removeClass("btn-secondary")
@@ -447,9 +489,8 @@ $(document).on("change", "#excel_file", function() {
     }
 });
 
-document.getElementById("photo").onchange = function(evt) {};
 //ajax request for CU action on from submission
-$(document).on("click", "#employee-form-submit", function(e) {
+$(document).on("click", "#employee-form-submit", function (e) {
     e.preventDefault();
     var input = $(this);
     var button = input[0];
@@ -465,7 +506,7 @@ $(document).on("click", "#employee-form-submit", function(e) {
         cache: false,
         contentType: false,
         processData: false,
-        success: function(result) {
+        success: function (result) {
             if (result.errors) {
                 $(".alert-danger").html("");
                 // console.log(result.errors);
@@ -474,7 +515,7 @@ $(document).on("click", "#employee-form-submit", function(e) {
                 var unique_name_msg = "false";
                 var email_error = "false";
                 var image_file = "false";
-                $.each(result.errors, function(key, value) {
+                $.each(result.errors, function (key, value) {
                     $("#" + key).addClass("is-invalid");
                     value = "" + value;
                     console.log(value.indexOf("is required."));
@@ -556,10 +597,10 @@ $(document).on("click", "#employee-form-submit", function(e) {
                             );
                             $("#top-bar-name").html(
                                 result.info.firstname +
-                                    " " +
-                                    result.info.middlename +
-                                    " " +
-                                    result.info.lastname
+                                " " +
+                                result.info.middlename +
+                                " " +
+                                result.info.lastname
                             );
                         }
                         if (result.info.image) {
@@ -592,10 +633,10 @@ $(document).on("click", "#employee-form-submit", function(e) {
                         $("#hired_P").html(result.info.hired_date);
                         $("#name_P").html(
                             result.info.firstname +
-                                " " +
-                                result.info.middlename +
-                                " " +
-                                result.info.lastname
+                            " " +
+                            result.info.middlename +
+                            " " +
+                            result.info.lastname
                         );
 
                         // $('#profile-image-display').attr('src',result.image);
@@ -609,7 +650,7 @@ $(document).on("click", "#employee-form-submit", function(e) {
 });
 
 //preload data on employee form on action add/update button click
-$(document).on("click", ".form-action-button", function() {
+$(document).on("click", ".form-action-button", function () {
     var action = $(this).attr("data-action");
     $("#action").val(action);
     var access_id = $("#logged-position").val();
@@ -641,7 +682,7 @@ $(document).on("click", ".form-action-button", function() {
 ///////////////////////////////////////////////////////////// START ADD POSITION
 /////////////////////////////////////////////////////////////
 
-$(document).on("click", ".add-position-button", function() {
+$(document).on("click", ".add-position-button", function () {
     var action = $(this).attr("data-action");
     $("#action").val(action);
     if (action == "add") {
@@ -654,36 +695,36 @@ $(document).on("click", ".add-position-button", function() {
             url: "/get_position",
             method: "GET",
             dataType: "json",
-            success: function(data) {
+            success: function (data) {
                 $("#position_designation")
                     .find("option")
                     .remove();
                 for (x = 0; x < data.length; x++) {
                     $("#position_designation").append(
                         '<option value="' +
-                            data[x].id +
-                            '">' +
-                            data[x].name +
-                            "</option>"
+                        data[x].id +
+                        '">' +
+                        data[x].name +
+                        "</option>"
                     );
                 }
             },
-            error: function(data) {
+            error: function (data) {
                 console.log(data);
             }
         });
     }
 
-    $.when(ajax1()).done(function(a1) {
+    $.when(ajax1()).done(function (a1) {
         $("#position-modal-form").modal("show");
     });
 });
 
-$(document).on("click", "#position-modal-cancel", function() {
+$(document).on("click", "#position-modal-cancel", function () {
     $("#position-modal-form").modal("hide");
 });
 
-$(document).on("click", "#position-form-submit", function(event) {
+$(document).on("click", "#position-form-submit", function (event) {
     event.preventDefault();
     var input = $(this);
     var button = this;
@@ -699,7 +740,7 @@ $(document).on("click", "#position-form-submit", function(event) {
         method: "POST",
         dataType: "json",
         data: $("#add-position-form").serialize(),
-        success: function(data) {
+        success: function (data) {
             $(".existing-position")
                 .DataTable()
                 .ajax.reload();
@@ -709,7 +750,7 @@ $(document).on("click", "#position-form-submit", function(event) {
             $("#position-modal-form").modal("hide");
             $("#add-position-form")[0].reset();
         },
-        error: function(data) {
+        error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error");
             button.disabled = false;
             input.html("Save");
@@ -723,12 +764,12 @@ $(document).on("click", "#position-form-submit", function(event) {
 
 var ir_list;
 
-$("#nod_modal").on("hidden.bs.modal", function(e) {
+$("#nod_modal").on("hidden.bs.modal", function (e) {
     ir_list.destroy();
 });
 
 //OPEN MODAL for Incident Report
-$(document).on("click", ".add_nod", function(event) {
+$(document).on("click", ".add_nod", function (event) {
     event.preventDefault();
     $('.nav-tabs a[href="#ir_list"]').tab("show");
     ir_id = $(this).attr("id");
@@ -738,26 +779,31 @@ $(document).on("click", ".add_nod", function(event) {
     $.ajax({
         url: "/get_ir",
         method: "get",
-        data: { id: ir_id },
+        data: {
+            id: ir_id
+        },
         dataType: "json",
-        success: function(data) {
+        success: function (data) {
             //Incident Repots View List Datatable
             ir_list = $("#ir_table_list").DataTable({
                 processing: true,
-                columnDefs: [
-                    {
-                        targets: "_all", // your case first column
-                        className: "text-center"
-                    }
-                ],
+                columnDefs: [{
+                    targets: "_all", // your case first column
+                    className: "text-center"
+                }],
                 serverside: true,
                 data: data.data,
-                columns: [
-                    { data: "description", name: "description" },
-                    { data: "date_filed", name: "date_filed" },
+                columns: [{
+                        data: "description",
+                        name: "description"
+                    },
+                    {
+                        data: "date_filed",
+                        name: "date_filed"
+                    },
                     {
                         data: "filed_by",
-                        render: function(data, type, full, meta) {
+                        render: function (data, type, full, meta) {
                             return (
                                 full.firstname +
                                 " " +
@@ -770,7 +816,7 @@ $(document).on("click", ".add_nod", function(event) {
                 ]
             });
         },
-        error: function(data) {
+        error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error");
             button.disabled = false;
             input.html("SAVE CHANGES");
@@ -779,7 +825,7 @@ $(document).on("click", ".add_nod", function(event) {
 }); //end for OPEN MODAL for Incident Report
 
 //ADD Incident Report
-$(document).on("click", "#add_IR", function(event) {
+$(document).on("click", "#add_IR", function (event) {
     event.preventDefault();
     var input = $(this);
     var button = this;
@@ -794,8 +840,11 @@ $(document).on("click", "#add_IR", function(event) {
         url: "/add_IR",
         method: "POST",
         dataType: "json",
-        data: { id: ir_id, description: description },
-        success: function(data) {
+        data: {
+            id: ir_id,
+            description: description
+        },
+        success: function (data) {
             if (data == "Error") {
                 swal("Input Missing!", "Please Enter Description.", "error");
                 button.disabled = false;
@@ -817,7 +866,7 @@ $(document).on("click", "#add_IR", function(event) {
                 refresh_employee_table();
             }
         },
-        error: function(data) {
+        error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error");
             button.disabled = false;
             input.html("Save");
@@ -826,7 +875,7 @@ $(document).on("click", "#add_IR", function(event) {
 });
 
 //UPDATE EMPLOYEE STATUS
-$(document).on("click", "#submit_status", function(event) {
+$(document).on("click", "#submit_status", function (event) {
     event.preventDefault();
 
     var status_id = $("#status_id").val();
@@ -849,14 +898,14 @@ $(document).on("click", "#submit_status", function(event) {
             status_data: status_data,
             status_reason: status_reason
         },
-        success: function(data) {
+        success: function (data) {
             $("#update_status_modal").modal("hide");
             refresh_employee_table();
             swal("Success!", "Status has been updated", "success");
             button.disabled = false;
             input.html("Confirm");
         },
-        error: function(data) {
+        error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error");
             // console.log(data)
             button.disabled = false;
@@ -865,15 +914,17 @@ $(document).on("click", "#submit_status", function(event) {
     });
 });
 
-$(document).on("click", ".update_status", function(event) {
+$(document).on("click", ".update_status", function (event) {
     event.preventDefault();
     var id = $(this).attr("id");
     $.ajax({
         method: "GET",
         url: "/get_status",
         dataType: "text",
-        data: { id: id },
-        success: function(value) {
+        data: {
+            id: id
+        },
+        success: function (value) {
             var data = JSON.parse(value);
             $("#update_status_modal").modal("show");
             $("#status_id").val(data[0].id);
@@ -883,19 +934,19 @@ $(document).on("click", ".update_status", function(event) {
             $("#status_reason").val(data[0].status_reason);
             $("#employee_status_name").html(
                 data[0].firstname +
-                    " " +
-                    data[0].middlename +
-                    " " +
-                    data[0].lastname
+                " " +
+                data[0].middlename +
+                " " +
+                data[0].lastname
             );
         },
-        error: function(data) {
+        error: function (data) {
             swal("Oh no!", "Something went wrong, try again.", "error");
         }
     });
 });
 
-$(document).on("click", ".excel-action-button", function(e) {
+$(document).on("click", ".excel-action-button", function (e) {
     $("#excel-modal").modal("show");
     if ($(this).attr("data-action") == "import") {
         $("#action-export")[0].hidden = true;
@@ -919,16 +970,16 @@ $(document).on("click", ".excel-action-button", function(e) {
         $("#excel-modal-cancel")[0].hidden = false;
     }
 });
-leavepagenotif = false;
-$(document).on("click", "#excel-form-submit", function(e) {
+let leavepagenotif = false;
+$(document).on("click", "#excel-form-submit", function (e) {
     e.preventDefault();
     $("#excel-form-submit")[0].disabled = true;
     var formData = new FormData($("#import-excel-form")[0]);
     leavepagenotif = true;
-    window.onbeforeunload = function() {
-        return leavepagenotif
-            ? "If you leave this page you will lose your unsaved changes."
-            : null;
+    window.onbeforeunload = function () {
+        return leavepagenotif ?
+            "If you leave this page you will lose your unsaved changes." :
+            null;
     };
     $.ajax({
         url: "/excel/import/toarray",
@@ -937,7 +988,7 @@ $(document).on("click", "#excel-form-submit", function(e) {
         cache: false,
         contentType: false,
         processData: false,
-        success: function(result) {
+        success: function (result) {
             result = JSON.parse(result);
             if (
                 result == "Excel Not Recognized." ||
@@ -947,8 +998,7 @@ $(document).on("click", "#excel-form-submit", function(e) {
                 $('#excel-modal').modal('hide');
                 swal({
                     title: "Error",
-                    html:
-                        '<div class="alert alert-info"><strong>' +
+                    html: '<div class="alert alert-info"><strong>' +
                         result +
                         "</strong></div>",
                     focusConfirm: false,
@@ -971,13 +1021,13 @@ $(document).on("click", "#excel-form-submit", function(e) {
                 }
             }
         },
-        error: function(req, status, error) {
+        error: function (req, status, error) {
             console.log(req);
         }
     });
 });
 
-excelstore = function(i, obj) {
+excelstore = function (i, obj) {
     console.log(row);
 
     //index,obj
@@ -987,8 +1037,10 @@ excelstore = function(i, obj) {
         $.ajax({
             url: "/excel/import/store/add",
             method: "POST",
-            data: { obj: row },
-            success: function(result) {
+            data: {
+                obj: row
+            },
+            success: function (result) {
                 result = JSON.parse(result);
                 var progress = (100 / (obj.arr.length - 1)) * index;
                 $("#import-employee-p-bar").css("width", progress + "%");
@@ -999,10 +1051,10 @@ excelstore = function(i, obj) {
                     } else if (result.status == 1) {
                         obj.duplicate = obj.duplicate + 1;
                     } else if (result.status == 2) {
-                        if(obj.error==""){
-                            obj.error= result.eid;
-                        }else{
-                            obj.error= obj.error+','+result.eid;
+                        if (obj.error == "") {
+                            obj.error = result.eid;
+                        } else {
+                            obj.error = obj.error + ',' + result.eid;
                         }
                     }
                 } else if (obj.action == "Reassign") {
@@ -1010,7 +1062,7 @@ excelstore = function(i, obj) {
                 }
                 excelstore(++i, obj);
             },
-            error: function(request) {
+            error: function (request) {
                 console.log(request);
             }
         });
@@ -1020,8 +1072,8 @@ excelstore = function(i, obj) {
     }
 };
 
-importResultDisplay = function(obj) {
-    setTimeout(function() {
+importResultDisplay = function (obj) {
+    setTimeout(function () {
         $("#excel-modal").modal("hide");
     }, 3000);
     if (obj.outdated == true) {
@@ -1067,11 +1119,11 @@ importResultDisplay = function(obj) {
     refresh_employee_table();
 };
 
-$(document).on("click", "#excel-modal-cancel", function() {
+$(document).on("click", "#excel-modal-cancel", function () {
     $("#excel-modal").modal("hide");
 });
 
-$(document).on("click", "#import", function() {
+$(document).on("click", "#import", function () {
     $("#excel-form-submit")[0].disabled = false;
 });
 ////////////////////////////////////////////////////////////////////////////////////
@@ -1096,7 +1148,7 @@ function readURL(input) {
 
     var reader = new FileReader();
     if (input.files && input.files[0]) {
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             $("#upload-image-display").attr("src", e.target.result);
             //  console.log($('#photo').attr());
         };
@@ -1110,7 +1162,7 @@ function readURL(input) {
 
 //ucword
 function ucword(str) {
-    return (str = str.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+    return (str = str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
         return letter.toUpperCase();
     }));
 }
@@ -1125,7 +1177,7 @@ function fetch(a_position, u_position, eid) {
             user_position: u_position,
             employee_id: eid
         },
-        success: function(result) {
+        success: function (result) {
             $("#designation").html(result);
             //    console.log(eid);
         }
@@ -1141,8 +1193,10 @@ function fetch_edit_data(id) {
         url: "employee/fetch_employee_data",
         method: "POST",
         dataType: "json",
-        data: { id: id },
-        success: function(result) {
+        data: {
+            id: id
+        },
+        success: function (result) {
             console.log(result);
             $("#first_name").val(result.userinfo.firstname);
             $("#middle_name").val(result.userinfo.middlename);
@@ -1174,11 +1228,11 @@ function fetch_edit_data(id) {
                 $("#upload-image-display").attr("src", "/images/nobody.jpg");
             }
 
-            var designation = function() {
+            var designation = function () {
                 $(
                     '#designation option[value="' +
-                        result.accesslevelhierarchy[0].parent_id +
-                        '"]'
+                    result.accesslevelhierarchy[0].parent_id +
+                    '"]'
                 ).prop("selected", true);
                 $("#employee-form-submit")[0].disabled = false;
                 $("#employee-form-submit").html("Confirm");
@@ -1192,7 +1246,7 @@ function refresh_employee_table() {
     employeetable.ajax.reload(); //reload datatable ajax
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // References to all the element we will need.
     var video = document.querySelector("#camera-stream"),
         image = document.querySelector("#snap"),
@@ -1204,19 +1258,19 @@ document.addEventListener("DOMContentLoaded", function() {
         download_photo_btn = document.querySelector("#download-photo"),
         error_message = document.querySelector("#error-message");
 
-    $(document).on("click", "#done", function(event) {
+    $(document).on("click", "#done", function (event) {
         event.preventDefault();
         $("#show_camera").attr("hidden", "");
     });
 
-    $("#employee-form-modal").on("hidden.bs.modal", function(e) {
+    $("#employee-form-modal").on("hidden.bs.modal", function (e) {
         video.pause();
         $("#show_camera").attr("hidden", "");
     });
 
     // The getUserMedia interface is used for handling camera input.
     // Some browsers need a prefix so here we're covering all the options
-    $(document).on("click", "#start-camera", function() {
+    $(document).on("click", "#start-camera", function () {
         $("#show_camera").removeAttr("hidden");
 
         navigator.getMedia =
@@ -1231,28 +1285,27 @@ document.addEventListener("DOMContentLoaded", function() {
             );
         } else {
             // Request the camera.
-            navigator.getMedia(
-                {
+            navigator.getMedia({
                     video: true
                 },
                 // Success Callback
-                function(stream) {
+                function (stream) {
                     // Create an object URL for the video stream and
                     // set it as src of our HTLM video element.
                     video.srcObject = stream;
 
                     // Play the video element to start the stream.
                     video.play();
-                    video.onplay = function() {
+                    video.onplay = function () {
                         showVideo();
                     };
-                    $(document).on("click", "#done", function(event) {
+                    $(document).on("click", "#done", function (event) {
                         event.preventDefault();
                         $("#show_camera").attr("hidden", "");
                         stream.getTracks().forEach(track => track.stop());
                     });
 
-                    $("#employee-form-modal").on("hidden.bs.modal", function(
+                    $("#employee-form-modal").on("hidden.bs.modal", function (
                         e
                     ) {
                         $("#show_camera").attr("hidden", "");
@@ -1260,10 +1313,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     });
                 },
                 // Error Callback
-                function(err) {
+                function (err) {
                     displayErrorMessage(
                         "There was an error with accessing the camera stream: " +
-                            err.name,
+                        err.name,
                         err
                     );
                 }
@@ -1274,7 +1327,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Mobile browsers cannot play video without user input,
     // so here we're using a button to start it manually.
 
-    start_camera.addEventListener("click", function(e) {
+    start_camera.addEventListener("click", function (e) {
         e.preventDefault();
 
         // Start video playback manually.
@@ -1282,7 +1335,7 @@ document.addEventListener("DOMContentLoaded", function() {
         showVideo();
     });
 
-    take_photo_btn.addEventListener("click", function(e) {
+    take_photo_btn.addEventListener("click", function (e) {
         e.preventDefault();
         readURL(takeSnapshot());
         // var snap = takeSnapshot();
@@ -1305,7 +1358,7 @@ document.addEventListener("DOMContentLoaded", function() {
         video.pause();
     });
 
-    delete_photo_btn.addEventListener("click", function(e) {
+    delete_photo_btn.addEventListener("click", function (e) {
         e.preventDefault();
 
         // Hide image.
@@ -1374,7 +1427,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var img = document.getElementById("profile-image-display");
     var modalImg = document.getElementById("img01");
     var captionText = document.getElementById("caption");
-    img.onclick = function() {
+    img.onclick = function () {
         modal.style.display = "block";
         modalImg.src = this.src;
         captionText.innerHTML = this.alt;
@@ -1384,7 +1437,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var span = document.getElementsByClassName("close_pic")[0];
 
     // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
+    span.onclick = function () {
         modal.style.display = "none";
     };
 });
