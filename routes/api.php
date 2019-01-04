@@ -28,6 +28,7 @@ Route::group([
     Route::post('delete/{schedule_id}', 'AgentScheduleController@delete');
     Route::get("fetch/{schedule_id}", "AgentScheduleController@fetch");
     Route::post('update/{schedule_id}', 'AgentScheduleController@update');
+    Route::get('search', 'AgentScheduleController@search');
 
 });
 
@@ -40,6 +41,18 @@ Route::group([
     // Route::post('delete/{id}', 'AgentController@delete');
     Route::get("fetch/{agent_id}", "AgentController@fetch");
     // Route::post('update/{id}', 'AgentController@update');
+
+});
+
+Route::group([
+    "prefix"    => "events",
+], function () {
+
+    Route::get("/", "EventTitleController@all");
+    Route::post("create", "EventTitleController@create");
+    Route::post('delete/{schedule_id}', 'EventTitleController@delete');
+    Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
+    Route::post('update/{schedule_id}', 'EventTitleController@update');
 
 });
 
