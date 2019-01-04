@@ -10,7 +10,14 @@ class AgentSchedule extends BaseModel
     protected $table = 'agent_schedules';
     protected $fillable = [
         'user_id',
-        'title',
+        'title_id',
+        'start_event',
+        'end_event',
+    ];
+
+    protected $searchable = [
+        'user_id',
+        'title_id',
         'start_event',
         'end_event',
     ];
@@ -19,7 +26,7 @@ class AgentSchedule extends BaseModel
 
     protected $rules = [
         'user_id' => 'sometimes|required|numeric',
-        'title' => 'sometimes|required|max:500',
+        'title_id' => 'sometimes|required|numeric',
         'start_event' => 'sometimes|required|date',
         'end_event' => 'sometimes|required|date',
     ];
@@ -32,5 +39,9 @@ class AgentSchedule extends BaseModel
 
     public function user_info(){
         return $this->hasOne('App\Data\Models\UserInfo',"id", "user_id" );
+    }
+
+    public function title(){
+        return $this->hasOne('App\Data\Models\EventTitle',"id", "title_id" );
     }
 }

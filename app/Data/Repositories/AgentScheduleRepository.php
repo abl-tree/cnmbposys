@@ -10,6 +10,7 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
+use App\Data\Models\EventTitle;
 use App\User;
 use App\Data\Repositories\BaseRepository;
 
@@ -42,10 +43,10 @@ class AgentScheduleRepository extends BaseRepository
                 ]);
             }
 
-            if (!isset($data['title'])) {
+            if (!isset($data['title_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "Title is not set.",
+                    'title' => "Title ID is not set.",
                 ]);
             }
 
@@ -73,6 +74,15 @@ class AgentScheduleRepository extends BaseRepository
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "User ID is not available.",
+                ]);
+            }
+        }
+
+        if (isset($data['title_id'])) {
+            if (!EventTitle::find($data['user_id'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Title ID is not available.",
                 ]);
             }
         }
@@ -179,7 +189,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = "user_info";
+        $data['relations'] = ["user_info", 'title'];
 
         $result     = $this->fetchGeneric($data, $this->agent_schedule);
 
@@ -224,29 +234,29 @@ class AgentScheduleRepository extends BaseRepository
                     "operator" => "=",
                     "value"    => $data['id'],
                 ],
-                [
-                    "target"   => "access_id",
-                    "operator" => "=",
-                    "value"    => '17',
-                ],
+                // [
+                //     "target"   => "access_id",
+                //     "operator" => "=",
+                //     "value"    => '17',
+                // ],
             ];
 
             $parameters['agent_id'] = $data['id'];
 
         } else {
             
-            $data['where']  = [
-                [
-                    "target"   => "access_id",
-                    "operator" => "=",
-                    "value"    => '17',
-                ],
-            ];
+            // $data['where']  = [
+            //     [
+            //         "target"   => "access_id",
+            //         "operator" => "=",
+            //         "value"    => '17',
+            //     ],
+            // ];
         }
 
         $count_data = $data;
 
-        $data['relations'] = ['info', 'schedule'];
+        $data['relations'] = ['info', 'schedule.title'];
 
         $result     = $this->fetchGeneric($data, $this->user);
 
@@ -273,5 +283,44 @@ class AgentScheduleRepository extends BaseRepository
             "parameters" => $parameters,
         ]);
     }
+
+    public function searchAgentSchedule($data)
+    {
+        $result = $this->agent_schedule;
+
+        $meta_index = "agent_schedules";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        $data['relations'] = ['user_info', 'title'];
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if ($result == null) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No agent schedules are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully searched agent schedules",
+            "meta" => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
 
 }
