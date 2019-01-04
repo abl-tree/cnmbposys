@@ -18,41 +18,50 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group([
-    "prefix"    => "schedules",
+    "prefix"    => "v1",
 ], function () {
 
-    Route::get("/", "AgentScheduleController@all");
-    Route::get('agents', 'AgentScheduleController@fetchAllAgentsWithSchedule');
-    Route::get('agents/{agent_id}', 'AgentScheduleController@fetchAgentWithSchedule');
-    Route::post("create", "AgentScheduleController@create");
-    Route::post('delete/{schedule_id}', 'AgentScheduleController@delete');
-    Route::get("fetch/{schedule_id}", "AgentScheduleController@fetch");
-    Route::post('update/{schedule_id}', 'AgentScheduleController@update');
-    Route::get('search', 'AgentScheduleController@search');
 
-});
+    Route::group([
+        "prefix"    => "schedules",
+    ], function () {
 
-Route::group([
-    "prefix"    => "agents",
-], function () {
+        Route::get("/", "AgentScheduleController@all");
+        Route::get('agents', 'AgentScheduleController@fetchAllAgentsWithSchedule');
+        Route::get('agents/{agent_id}', 'AgentScheduleController@fetchAgentWithSchedule');
+        Route::post("create", "AgentScheduleController@create");
+        Route::post("create/bulk", "AgentScheduleController@bulkScheduleInsertion");
+        Route::post('delete/{schedule_id}', 'AgentScheduleController@delete');
+        Route::get("fetch/{schedule_id}", "AgentScheduleController@fetch");
+        Route::post('update/{schedule_id}', 'AgentScheduleController@update');
+        Route::get('search', 'AgentScheduleController@search');
 
-    Route::get("/", "AgentController@all");
-    // Route::post("create", "AgentController@create");
-    // Route::post('delete/{id}', 'AgentController@delete');
-    Route::get("fetch/{agent_id}", "AgentController@fetch");
-    // Route::post('update/{id}', 'AgentController@update');
+    });
 
-});
+    Route::group([
+        "prefix"    => "agents",
+    ], function () {
 
-Route::group([
-    "prefix"    => "events",
-], function () {
+        Route::get("/", "AgentController@all");
+        // Route::post("create", "AgentController@create");
+        // Route::post('delete/{id}', 'AgentController@delete');
+        Route::get("fetch/{agent_id}", "AgentController@fetch");
+        // Route::post('update/{id}', 'AgentController@update');
 
-    Route::get("/", "EventTitleController@all");
-    Route::post("create", "EventTitleController@create");
-    Route::post('delete/{schedule_id}', 'EventTitleController@delete');
-    Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
-    Route::post('update/{schedule_id}', 'EventTitleController@update');
+    });
+
+    Route::group([
+        "prefix"    => "events",
+    ], function () {
+
+        Route::get("/", "EventTitleController@all");
+        Route::post("create", "EventTitleController@create");
+        Route::post('delete/{schedule_id}', 'EventTitleController@delete');
+        Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
+        Route::post('update/{schedule_id}', 'EventTitleController@update');
+
+    });
+
 
 });
 
