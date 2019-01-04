@@ -126,6 +126,28 @@ class BaseRepository
 
         });
 
+        if (isset($data['where'])) {
+            foreach ((array) $data['where'] as $key => $conditions) {
+                $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
+            }
+        }
+
+        if (isset($data['limit']) && $data['limit'] && is_numeric($data['limit'])) {
+            $model = $model->take($data['limit']);
+        }
+
+        if (isset($data['offset']) && $data['offset'] && is_numeric($data['offset'])) {
+            $model = $model->offset($data['offset']);
+        }
+
+        if (isset($data['sort']) && !in_array( $data['sort'], $this->no_sort )) {
+            $model = $model->orderBy($data["sort"], $data['order']);
+        }
+
+        if( isset( $data['relations'] ) ){
+            $model = $model->with( $data['relations'] );
+        }
+
         // dd( dump_query ( $model), $data );
         return $model;
     }
