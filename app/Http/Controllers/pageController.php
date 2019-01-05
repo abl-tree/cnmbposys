@@ -33,8 +33,16 @@ class pageController extends Controller
 
         $position = '';
         switch($access_level){
-            case 2: $position = 'hr'; break;
-            case 12: $position = 'rta'; break;
+            case 1:
+            case 2:
+            case 3:
+                $position = 'hr';
+            break;
+            case 12:
+            case 13:
+            case 14:
+                $position = 'rta';
+            break;
         }
                 return view('admin.dashboard.'.$position, compact('profile', 'role', 'user', 'userInfo', 'emp'));
 
