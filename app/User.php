@@ -115,7 +115,7 @@ class User extends BaseAuthModel
     }
 
     public function schedule(){
-        return $this->hasOne('\App\Data\Models\AgentSchedule','user_id','uid')->latest();
+        return $this->hasMany('\App\Data\Models\AgentSchedule','user_id','uid');
     }
 
     public function hierarchy(){

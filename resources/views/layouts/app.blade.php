@@ -19,7 +19,6 @@
 
     <div class="peers ai-s fxw-nw h-100vh">
       <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv" style='background-image: url("/images/finalbanner.png")'>
-     
         <div class="pos-a centerXY">
           <div class="bgc-white bdrs-50p pos-r" style='width:153px; height: 153px;'>
             <img class="pos-a centerXY" src="/images/logo-bordered.png" style="width:150px; height:150px" alt="">

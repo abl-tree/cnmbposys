@@ -107,14 +107,15 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th class=" bdwT-0">Name</th>
+                                        <th class=" bdwT-0">Agent Name</th>
                                         <th class=" bdwT-0">Status</th>
                                         <th class=" bdwT-0">Work Time</th>
+                                        <th class=" bdwT-0">Break Time</th>
                                         <th class=" bdwT-0">Breakdown</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <!-- <tr>
                                         <td class="fw-600">Item #1 Name</td>
                                         <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill">Unavailable</span> </td>
                                         <td>Nov 18</td>
@@ -155,7 +156,7 @@
                                         <td><span class="badge bgc-yellow-50 c-yellow-700 p-10 lh-0 tt-c badge-pill">Old</span></td>
                                         <td>Nov 22</td>
                                         <td><span class="text-success">$56</span></td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                          </div>
@@ -171,11 +172,33 @@
         <div class="masonry-item col-md-6">
             <!-- #Todo ==================== -->
             <div class="bd bgc-white p-20">
+                <h6 class="c-grey-900">Request</h6>
+                <div class="mT-30">
+                    <div class="list-group" style='font-size:0.83em'>
+                        <div class="list-group-item list-group-item-action">
+                            <div>
+                                <b>Ice Cream</b> requested for <span class='text-danger'>Leave Type 1</span> under supervision of <b>Mango Float</b> dated 02-18-2019 to 02-25-2019 <br>
+                            </div>
+                            <div class='peers'>
+                                <span class="peer peer-greed">
+                                     <span class="text-muted"><small>Request Date: 01-03-2019 12:00:00</small></span>
+                                </span>
+                                <span class="peer">
+                                    <button class='btn btn-outline-secondary' style='font-size:0.8em;padding:3px 10px 3px 10px;'><i class="ti-close"></i></button>
+                                    <button class='btn btn-outline-danger'  style='font-size:0.8em;padding:3px 10px 3px 10px;'>Manage</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bd bgc-white p-20 mY-20">
                 <div class="layers">
                     <div class="layer w-100 mB-10">
-                        <h6 class="lh-1">Request</h6>
+                        <h6 class="lh-1">Incident Report</h6>
                     </div>
-                    <div class="layer w-100">
+                    <!-- <div class="layer w-100">
                         <ul class="list-task list-group" data-role="tasklist">
                             <li class="list-group-item bdw-0" data-role="task">
                                 <div class="checkbox checkbox-circle checkbox-info peers ai-c">
@@ -241,7 +264,7 @@
                                 </div>
                             </li>
                         </ul>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
