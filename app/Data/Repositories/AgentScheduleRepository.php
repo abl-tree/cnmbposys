@@ -247,24 +247,24 @@ class AgentScheduleRepository extends BaseRepository
                     "operator" => "=",
                     "value"    => $data['id'],
                 ],
-                // [
-                //     "target"   => "access_id",
-                //     "operator" => "=",
-                //     "value"    => '17',
-                // ],
+                [
+                    "target"   => "access_id",
+                    "operator" => "=",
+                    "value"    => '17',
+                ],
             ];
 
             $parameters['agent_id'] = $data['id'];
 
         } else {
             
-            // $data['where']  = [
-            //     [
-            //         "target"   => "access_id",
-            //         "operator" => "=",
-            //         "value"    => '17',
-            //     ],
-            // ];
+            $data['where']  = [
+                [
+                    "target"   => "access_id",
+                    "operator" => "=",
+                    "value"    => '17',
+                ],
+            ];
         }
 
         $count_data = $data;
