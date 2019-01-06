@@ -12,6 +12,8 @@ use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
 use App\Data\Models\EventTitle;
 use App\User;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
 
 class AgentScheduleRepository extends BaseRepository
@@ -27,6 +29,25 @@ class AgentScheduleRepository extends BaseRepository
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
+    }
+
+    public function excelData($data)
+    {
+        $data = Excel::toArray(new ExcelRepository, $data);
+        $filteredData = [];
+        // for ($x = 0; count($data); $x++) {
+        //     if ($data[$]){
+        //         $filteredData = $data[$x];
+        //     }
+        // }
+        return $this->setResponse([
+            "code"        => 200,
+            "title"       => "Convert excel to a digital data ng ina mo.",
+            "description" => "PHP SUCKS.",
+            "meta"        => [
+                "data" => $data,
+            ],
+        ]);
     }
 
     public function bulkScheduleInsertion($data = []){
