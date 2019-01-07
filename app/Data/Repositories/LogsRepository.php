@@ -3,7 +3,7 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\UserInfo;
 use App\User;
-use App\ActionLogs;
+use App\Data\Models\ActionLogs;
 use App\Data\Repositories\BaseRepository;
 
 class LogsRepository extends BaseRepository
@@ -11,12 +11,12 @@ class LogsRepository extends BaseRepository
 
     protected 
         $user_info,
-        $user;
+        $user,
         $action_logs;
 
     public function __construct(
         UserInfo $user_info,
-        User $user
+        User $user,
         ActionLogs $action_logs
     ) {
         $this->user_info = $user_info;
