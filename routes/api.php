@@ -62,6 +62,15 @@ Route::group([
 
     });
 
+    Route::group([
+        "prefix"    => "logs",
+    ], function () {
+
+        Route::get("/", "LogsController@index");
+        Route::get("user/{id}", "LogsController@log");
+        Route::post("create", "LogsController@create");
+    });
+
 
 });
 

@@ -96,7 +96,7 @@ class User extends BaseAuthModel
     public static function boot()
     {
         parent::boot();
-        static::updating(function($user)
+        static::updating(function($user) 
         {
             $original = $user->getOriginal();
             
@@ -122,12 +122,23 @@ class User extends BaseAuthModel
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy','child_id','uid');
     }
 
+    public function user_info() {
+        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'uid');
+    }
+     public function user_logs() {
+        return $this->hasMany('\App\Data\Models\ActionLogs', 'user_id', 'id');
+    }
+    public function accesslevel(){
+       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+    }
     public function getFullNameAttribute(){
         $name = null;
         $name = $this->info->firstname . ' ' . $this->info->middlename . ' ' . $this->info->lastname;
         
         return $name;
     }
+
+
 
     public function getTeamLeaderAttribute(){
         $id =  $this->hierarchy->parent_id;
