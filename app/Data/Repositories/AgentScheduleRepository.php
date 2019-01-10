@@ -30,7 +30,7 @@ class AgentScheduleRepository extends BaseRepository
     }
 
     public function bulkScheduleInsertion($data = []){
-        foreach($data as $save){
+        foreach($data as $save){ 
            $result = $this->defineAgentSchedule($save);
 
            if($result->code != 200){
@@ -50,7 +50,7 @@ class AgentScheduleRepository extends BaseRepository
             if (!isset($data['user_id']) ||
                 !is_numeric($data['user_id']) ||
                 $data['user_id'] <= 0) {
-                return $this->setResponse([
+                return $this->setResponse([ 
                     'code'  => 500,
                     'title' => "User ID is not set.",
                 ]);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use App\Data\Repositories\LogsRepository;
+use App\Data\Models\ActionLogs;
 
 class LogsController extends BaseController
 {
@@ -21,7 +22,7 @@ class LogsController extends BaseController
         return $this->absorb($this->action_logs->logs($data))->json();
     }
 
-    /**
+    /** 
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -29,16 +30,8 @@ class LogsController extends BaseController
 
     public function create(Request $request)
     {
-        $log= $request->isMethod('put')? ActionLogs::findOrFail($request->id): New ActionLogs;
-
-        $log->id = $request->input('user_id');
-        $log->action = $request->input('action');
-        $log->affected_data = $request->input('affected_data');
-
-        if($log->save()){
-          return $log->json();
-        }
-        
+        $data = $request->all();
+        return $this->absorb($this->action_logs->logsInputCheck($data))->json();     
     }
 
     /**
@@ -47,9 +40,20 @@ class LogsController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function log(Request $request, $id)
     {
-        //
+        $data['id'] = $id;
+
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Schedule ID is invalid.",
+            ]);
+        }
+
+        return $this->absorb($this->action_logs->fetchUserLog($data))->json();
     }
 
     /**
