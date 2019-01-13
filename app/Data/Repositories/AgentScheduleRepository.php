@@ -34,18 +34,30 @@ class AgentScheduleRepository extends BaseRepository
     public function excelData($data)
     {
         $data = Excel::toArray(new ExcelRepository, $data);
-        $filteredData = [];
-        // for ($x = 0; count($data); $x++) {
-        //     if ($data[$]){
-        //         $filteredData = $data[$x];
-        //     }
-        // }
+        $filteredData1 = [];
+        $filteredData2 = [];
+        $filteredData3 = [];
+        $firstPage  = $data[0];
+        for ($x = 0; $x < count($firstPage); $x++) {
+            if(isset($firstPage[$x+3])){
+                if($firstPage[$x+3][1] != null)
+                {
+                    $filteredData1[] = array(
+                        "email" => $firstPage[$x+3][1],
+                        "title" => 'work schedule',
+                        "start_event" => $firstPage[$x+3][4],
+                        "end_event" => $firstPage[$x+3][5],
+                    );
+                }
+            }
+        }
+        
         return $this->setResponse([
             "code"        => 200,
-            "title"       => "Convert excel to a digital data ng ina mo.",
-            "description" => "PHP SUCKS.",
+            "title"       => "Conversion success.",
+            "description" => "Successfully converted excel data into formatted data.",
             "meta"        => [
-                "data" => $data,
+                "schedules" => $filteredData1 ,
             ],
         ]);
     }
