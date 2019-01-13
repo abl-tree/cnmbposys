@@ -5,7 +5,8 @@
       <div class="email-side-nav remain-height ov-h">
         <div class="h-100 layers">
           <div class="p-20 bgc-grey-100 layer w-100">
-            <a href="/compose" class="btn btn-danger btn-block">Import excel</a>
+            <input  ref="file" type='file' id="file" name="file" hidden/>
+            <button @click="$refs.file.click()"   class="btn btn-danger btn-block">Import excel</button>
           </div>
           <div class="scrollable pos-r bdT layer w-100 fxg-1">
             <ul class="p-20 nav flex-column">
