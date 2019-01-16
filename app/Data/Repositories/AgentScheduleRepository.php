@@ -12,6 +12,8 @@ use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
 use App\Data\Models\EventTitle;
 use App\User;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
 
 class AgentScheduleRepository extends BaseRepository
@@ -29,8 +31,39 @@ class AgentScheduleRepository extends BaseRepository
         $this->user = $user;
     }
 
+    public function excelData($data)
+    {
+        $data = Excel::toArray(new ExcelRepository, $data);
+        $filteredData1 = [];
+        $filteredData2 = [];
+        $filteredData3 = [];
+        $firstPage  = $data[0];
+        for ($x = 0; $x < count($firstPage); $x++) {
+            if(isset($firstPage[$x+3])){
+                if($firstPage[$x+3][1] != null)
+                {
+                    $filteredData1[] = array(
+                        "email" => $firstPage[$x+3][1],
+                        "title" => 'work schedule',
+                        "start_event" => $firstPage[$x+3][4],
+                        "end_event" => $firstPage[$x+3][5],
+                    );
+                }
+            }
+        }
+        
+        return $this->setResponse([
+            "code"        => 200,
+            "title"       => "Conversion success.",
+            "description" => "Successfully converted excel data into formatted data.",
+            "meta"        => [
+                "schedules" => $filteredData1 ,
+            ],
+        ]);
+    }
+
     public function bulkScheduleInsertion($data = []){
-        foreach($data as $save){
+        foreach($data as $save){ 
            $result = $this->defineAgentSchedule($save);
 
            if($result->code != 200){
@@ -50,7 +83,7 @@ class AgentScheduleRepository extends BaseRepository
             if (!isset($data['user_id']) ||
                 !is_numeric($data['user_id']) ||
                 $data['user_id'] <= 0) {
-                return $this->setResponse([
+                return $this->setResponse([ 
                     'code'  => 500,
                     'title' => "User ID is not set.",
                 ]);

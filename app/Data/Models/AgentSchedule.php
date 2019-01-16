@@ -19,7 +19,7 @@ class AgentSchedule extends BaseModel
         'user_id',
         'title_id',
         'start_event',
-        'end_event',
+        'end_event', 
     ];
 
     public $timestamps = true;

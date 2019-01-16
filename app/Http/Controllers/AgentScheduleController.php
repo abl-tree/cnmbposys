@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use App\Data\Repositories\AgentScheduleRepository;
-
 class AgentScheduleController extends BaseController
 {
     protected $agent_schedule_repo;
@@ -20,6 +19,13 @@ class AgentScheduleController extends BaseController
     {
         $data = $request->all();
         return $this->absorb($this->agent_schedule_repo->fetchAgentSchedule($data))->json();
+    }
+
+    public function excelData(Request $request)
+    {
+        $data = $request->file;
+        return $this->absorb($this->agent_schedule_repo->excelData($data))->json();
+        
     }
 
     public function bulkScheduleInsertion(Request $request)

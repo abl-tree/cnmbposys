@@ -31,6 +31,7 @@ Route::group([
         Route::get('agents/{agent_id}', 'AgentScheduleController@fetchAgentWithSchedule');
         Route::post("create", "AgentScheduleController@create");
         Route::post("create/bulk", "AgentScheduleController@bulkScheduleInsertion");
+        Route::post("create/bulk/excel", "AgentScheduleController@excelData");
         Route::post('delete/{schedule_id}', 'AgentScheduleController@delete');
         Route::get("fetch/{schedule_id}", "AgentScheduleController@fetch");
         Route::post('update/{schedule_id}', 'AgentScheduleController@update');
@@ -60,6 +61,15 @@ Route::group([
         Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
         Route::post('update/{schedule_id}', 'EventTitleController@update');
 
+    });
+
+    Route::group([
+        "prefix"    => "logs",
+    ], function () {
+
+        Route::get("/", "LogsController@index");
+        Route::get("user/{id}", "LogsController@log");
+        Route::post("create", "LogsController@create");
     });
 
 
