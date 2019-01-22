@@ -28,11 +28,64 @@ class BaseRepository
             }
         }
 
+        if (isset($data['join'])) {
+            foreach ((array) $data['join'] as $key => $conditions) {
+                $model = $model->join($conditions['table1'], $conditions['table1.column'], $conditions['operator'], $conditions['table2.column'], $conditions['join_clause']);
+            }
+        }
+
+        // Start WHERE clauses
         if (isset($data['where'])) {
             foreach ((array) $data['where'] as $key => $conditions) {
                 $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
             }
         }
+
+        if (isset($data['whereNull'])) {
+            foreach ((array) $data['whereNull'] as $key => $conditions) {
+                $model = $model->whereNull($conditions);
+            }
+        }
+
+        if (isset($data['whereNotNull'])) {
+            foreach ((array) $data['whereNotNull'] as $key => $conditions) {
+                $model = $model->whereNotNull($conditions);
+            }
+        }
+
+        if (isset($data['whereBetween'])) {
+            foreach ((array) $data['whereBetween'] as $key => $conditions) {
+                $model = $model->whereBetween($conditions['target'], [$conditions['from'], $conditions['to']]);
+            }
+        }
+
+        if (isset($data['whereNotBetween'])) {
+            foreach ((array) $data['whereNotBetween'] as $key => $conditions) {
+                $model = $model->whereNotBetween($conditions['target'], [$conditions['from'], $conditions['to']]);
+            }
+        }
+
+        if (isset($data['advanceWhere'])) {
+            foreach ((array) $data['advanceWhere'] as $key => $conditions) {
+                $model = $model->where(function ($query) use ($conditions){
+                    if(isset($conditions['orderby'])) {
+                        $query->whereBetween($conditions['target'], [$conditions['from'], $conditions['to']])
+                                    ->orWhereNull($conditions['target'])
+                                    ->orderBy($conditions['target'], $conditions['orderby']);
+                    } else {
+                        $query->whereBetween($conditions['target'], [$conditions['from'], $conditions['to']])
+                                    ->orWhereNull($conditions['target']);
+                    }
+                });
+            }
+        }
+
+        if (isset($data['whereDate'])) {
+            foreach ((array) $data['whereDate'] as $key => $conditions) {
+                $model = $model->whereDate($conditions['target'], $conditions['value']);
+            }
+        }
+        //End WHERE Clauses
 
         if (isset($data['limit']) && $data['limit'] && is_numeric($data['limit'])) {
             $model = $model->take($data['limit']);
@@ -50,6 +103,18 @@ class BaseRepository
             $model = $model->with( $data['relations'] );
         }
 
+        if (isset($data['orderBy'])) {
+            foreach ((array) $data['orderBy'] as $key => $conditions) {
+                $model = $model->orderBy($conditions['target'], $conditions['option']);
+            }
+        }
+
+        if (isset($data['groupby'])) {
+            foreach ((array) $data['groupby'] as $key => $conditions) {
+                $model = $model->groupBy($conditions);
+            }
+        }
+
 
         // dd( dump_query ( $model) );
 
@@ -58,9 +123,9 @@ class BaseRepository
         }
 
         if (isset($data['single']) && $data['single'] === true) {
-            $result = $model->get()->first();
+            $result = $model->first();
         } else {
-            $result = $model->get()->all();
+            $result = $model->get();
         }
 
         return $result;

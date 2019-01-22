@@ -15,6 +15,8 @@ use App\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
+use Carbon\Carbon;
+use DB;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -363,6 +365,196 @@ class AgentScheduleRepository extends BaseRepository
             "meta" => [
                 $meta_index => $result,
                 "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+    public function agentScheduleStats($data)
+    {
+        $result = $this->agent_schedule;
+        
+        $meta_index = "agent_schedules";
+
+        $title = null;
+
+        if(isset($data['filter'])) {
+            $parameters = [
+                'filter' => $data['filter']
+            ];
+        } else {
+            $parameters = [];
+        }
+
+        $data['columns'] = ['agent_schedules.*'];
+
+        $data['join'] = [
+            [
+                'table1' => 'users',
+                'table1.column' => 'users.id',
+                'operator' => '=',
+                'table2.column' => 'agent_schedules.user_id',
+                'join_clause' => 'inner'
+            ],
+            [
+                'table1' => 'access_levels',
+                'table1.column' => 'access_levels.id',
+                'operator' => '=',
+                'table2.column' => 'users.access_id',
+                'join_clause' => 'inner'
+            ],
+            [
+                'table1' => 'user_infos',
+                'table1.column' => 'user_infos.id',
+                'operator' => '=',
+                'table2.column' => 'users.uid',
+                'join_clause' => 'inner'
+            ]
+        ];
+
+        $data['where'] = [
+            [
+                'target' => 'access_levels.code',
+                'operator' => '=',
+                'value' => 'agent'
+            ],
+            [
+                'target' => 'user_infos.status',
+                'operator' => '!=',
+                'value' => 'inactive'
+            ]
+        ];
+
+        $data['relations'] = ['user_info'];
+
+        if(isset($data['filter']) && $data['filter'] === 'working') {
+
+            $title = "Agent Working.";
+
+            $data['columns'] = array_merge($data['columns'], ['attendances.time_in', 'attendances.time_out']);
+
+            $data['join'] = array_merge($data['join'], 
+            array([
+                'table1' => 'attendances',
+                'table1.column' => 'attendances.user_id',
+                'operator' => '=',
+                'table2.column' => 'users.id',
+                'join_clause' => 'left'
+            ]));
+            
+            $data['whereNotNull'] = ['attendances.time_in'];
+
+            $data['whereNull'] = ['attendances.time_out'];
+
+            $data['advanceWhere'] = array(
+                [
+                    'target' => 'attendances.time_in',
+                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+                    'to' => DB::raw('agent_schedules.end_event')
+                ],
+                [
+                    'target' => 'attendances.time_out',
+                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+                    'to' => DB::raw('agent_schedules.end_event')
+                ]
+            );
+
+        } else if(isset($data['filter']) && $data['filter'] === 'absent') {
+
+            $title = "Agent Absent.";
+
+            $data['columns'] = array_merge($data['columns'], ['attendances.time_in']);
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'agent_schedules.start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'agent_schedules.end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ]));
+
+            $data['join'] = array_merge($data['join'], 
+            array([
+                'table1' => 'attendances',
+                'table1.column' => 'attendances.user_id',
+                'operator' => '=',
+                'table2.column' => 'users.id',
+                'join_clause' => 'left'
+            ]));
+            
+            $data['whereNull'] = ['attendances.time_in'];
+
+            $data['advanceWhere'] = array(
+                [
+                    'target' => 'attendances.time_in',
+                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+                    'to' => DB::raw('agent_schedules.end_event')
+                ]
+            );
+
+        } else if(isset($data['filter']) && $data['filter'] === 'off-duty') {
+
+            $title = "Agent Off-Duty.";
+
+            $data['columns'] = ['agent_schedules.title_id', 'agent_schedules.user_id'];
+
+            // $data['whereDate'] = array(
+            //     [
+            //         'target' => 'agent_schedules.start_event',
+            //         'value' => Carbon::now()->toDateString()
+            //     ]
+            // );
+
+            $data['whereNotBetween'] = array(
+                [
+                    'target' => DB::raw('NOW()'),
+                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+                    'to' => DB::raw('agent_schedules.end_event')
+                ]
+            );
+
+        } else {
+
+            $title = "Agent Working.";
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'agent_schedules.start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'agent_schedules.end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ]));
+
+        }
+
+        $data['groupby'] = ['user_id'];
+
+        $result = $this->fetchGeneric($data, $result);
+
+        if ($result == null) {
+            return $this->setResponse([
+                "code" => 404,
+                "title" => "No agent schedules are found",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $result->count()
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => $title,
+            "meta" => [
+                $meta_index => $result,
+                "count"     => $result->count()
             ],
             "parameters" => $parameters,
         ]);
