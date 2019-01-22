@@ -11,14 +11,24 @@ require("./bootstrap");
 window.swal = require("sweetalert2");
 
 window.Vue = require('vue');
+import VPopover from 'vue-js-popover';
 import Vue from 'vue';
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 import rtaVue from './components/rtaSchedPage.vue';
+import IrResponseModal from './components/IrResponseModal.vue';
+import rtaDashboard from './components/rtaDashboardPage.vue';
 import FullCalendar from 'vue-full-calendar';
+Vue.use(VPopover, {
+    tooltip: true
+});
 Vue.use(FullCalendar);
+// Vue.use(require('vue-moment'));
 Vue.component('date-time-picker', VueCtkDateTimePicker);
 Vue.component('rta-sched-section', rtaVue);
+Vue.component('ir-response-modal', IrResponseModal);
+Vue.component('rta-dashboard-section', rtaDashboard);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -165,22 +175,26 @@ function initialize_employee_table(url) {
         }
     });
 }
-var popOverSettings = {
-    placement: "left",
-    container: "body",
-    trigger: "hover",
-    html: true,
-    selector: ".table-image-cover", //Sepcify the selector here
-    content: function () {
-        return '<img src="' + $(this).data("img") + '" width="500"/>';
-    }
-};
 
-$(document).popover(popOverSettings);
+// $('#profile-preview-modal').appendTo("body");
+
 
 if ($('#logged-in').val() > 0 && $('#logged-in').val() < 4) {
     initialize_employee_table("/refreshEmployeeList");
     document.getElementById("photo").onchange = function (evt) {};
+    var popOverSettings = {
+        placement: "left",
+        container: "body",
+        trigger: "hover",
+        html: true,
+        selector: ".table-image-cover", //Sepcify the selector here
+        content: function () {
+            return '<img src="' + $(this).data("img") + '" width="500"/>';
+        }
+    };
+
+    $(document).popover(popOverSettings);
+} else if ($('#logged-in').val() > 11 && $('#logged-in').val() < 15) {
 
 }
 
@@ -1421,6 +1435,22 @@ document.addEventListener("DOMContentLoaded", function () {
         snap.classList.remove("visible");
         error_message.classList.remove("visible");
     }
+
+    function profilePreviewTemplate(uid) {
+        $.ajax({
+            url: "/viewProfile",
+            method: "get",
+            dataType: "json",
+            data: {
+                id: uid
+            },
+            success: function (data) {
+                console.log(data);
+            }
+        });
+    }
+
+
     var modal = document.getElementById("full_pic");
 
     // Get the image and insert it inside the modal - use its "alt" text as a caption
