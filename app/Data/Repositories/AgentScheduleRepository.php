@@ -518,7 +518,7 @@ class AgentScheduleRepository extends BaseRepository
 
         } else {
 
-            $title = "Agent Working.";
+            $title = "Agent Scheduled.";
 
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'agent_schedules.start_event',
