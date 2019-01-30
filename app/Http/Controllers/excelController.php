@@ -414,7 +414,7 @@ class excelController extends BaseController
                 $userinfo->birthdate= $request->obj[4];
                 $userinfo->gender= ucfirst(strtolower($request->obj[3]));
                 $userinfo->salary_rate= $request->obj[15];
-                $userinfo->status= $request->obj[17];
+                $userinfo->status= strtolower($request->obj[17]);
                 $userinfo->contact_number= $request->obj[8];
                 $userinfo->hired_date= $request->obj[16];
                 $userinfo->p_email= $request->obj[6];

@@ -10,24 +10,24 @@ require("datatables.net-fixedcolumns");
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
-window.Vue = require('vue');
-import VPopover from 'vue-js-popover';
-import Vue from 'vue';
-import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
-import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
-import rtaVue from './components/rtaSchedPage.vue';
-import IrResponseModal from './components/IrResponseModal.vue';
-import rtaDashboard from './components/rtaDashboardPage.vue';
-import FullCalendar from 'vue-full-calendar';
-Vue.use(VPopover, {
-    tooltip: true
-});
-Vue.use(FullCalendar);
-Vue.use(require('vue-moment'));
-Vue.component('date-time-picker', VueCtkDateTimePicker);
-Vue.component('rta-sched-section', rtaVue);
-Vue.component('ir-response-modal', IrResponseModal);
-Vue.component('rta-dashboard-section', rtaDashboard);
+// window.Vue = require('vue');
+// import VPopover from 'vue-js-popover';
+// import Vue from 'vue';
+// import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+// import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+// import rtaVue from './components/rtaSchedPage.vue';
+// import IrResponseModal from './components/IrResponseModal.vue';
+// import rtaDashboard from './components/rtaDashboardPage.vue';
+// import FullCalendar from 'vue-full-calendar';
+// Vue.use(VPopover, {
+//     tooltip: true
+// });
+// Vue.use(FullCalendar);
+// Vue.use(require('vue-moment'));
+// Vue.component('date-time-picker', VueCtkDateTimePicker);
+// Vue.component('rta-sched-section', rtaVue);
+// Vue.component('ir-response-modal', IrResponseModal);
+// Vue.component('rta-dashboard-section', rtaDashboard);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -36,9 +36,9 @@ Vue.component('rta-dashboard-section', rtaDashboard);
  */
 
 
-const app = new Vue({
-    el: '#app',
-});
+// const app = new Vue({
+//     el: '#app',
+// });
 
 //global variables
 var ir_id;
@@ -47,6 +47,16 @@ var description;
 
 //PROFILE EMPLOYEE LIST -- START
 function initialize_employee_table(url) {
+    let image = "";
+    let company_id = "";
+    let position = "";
+    let birthdate = "";
+    let gender = "";
+    let contact_number = "";
+    let address = "";
+    let contract = "";
+    let email = "";
+    let p_email = "";
     if (url == "/terminatedView") {
         image = "image";
         position = "user.access.name";
@@ -71,7 +81,7 @@ function initialize_employee_table(url) {
         p_email = "child_info.user.email";
     }
 
-    employeetable = $("#employee").DataTable({
+    let employeetable = $("#employee").DataTable({
         destroy: true,
         processing: true,
         blengthChange: false,
@@ -179,7 +189,7 @@ function initialize_employee_table(url) {
 // $('#profile-preview-modal').appendTo("body");
 
 
-if ($('#logged-in').val() > 0 && $('#logged-in').val() < 4) {
+if ($('#logged-position').val() > 0 && $('#logged-position').val() < 4) {
     initialize_employee_table("/refreshEmployeeList");
     document.getElementById("photo").onchange = function (evt) {};
     var popOverSettings = {
@@ -194,7 +204,7 @@ if ($('#logged-in').val() > 0 && $('#logged-in').val() < 4) {
     };
 
     $(document).popover(popOverSettings);
-} else if ($('#logged-in').val() > 11 && $('#logged-in').val() < 15) {
+} else if ($('#logged-position').val() > 11 && $('#logged-position').val() < 15) {
 
 }
 
@@ -1041,7 +1051,7 @@ $(document).on("click", "#excel-form-submit", function (e) {
     });
 });
 
-excelstore = function (i, obj) {
+let excelstore = function (i, obj) {
     console.log(row);
 
     //index,obj
@@ -1086,7 +1096,7 @@ excelstore = function (i, obj) {
     }
 };
 
-importResultDisplay = function (obj) {
+let importResultDisplay = function (obj) {
     setTimeout(function () {
         $("#excel-modal").modal("hide");
     }, 3000);
@@ -1464,10 +1474,10 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close_pic")[0];
+    let span = document.getElementsByClassName("close_pic")[0];
 
     // When the user clicks on <span> (x), close the modal
-    span.onclick = function () {
-        modal.style.display = "none";
-    };
+    // span.onclick = function () {
+    //     modal.style.display = "none";
+    // };
 });
