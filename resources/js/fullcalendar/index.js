@@ -8,7 +8,7 @@ export default (function () {
         const m = date.getMonth();
         const y = date.getFullYear();
 
-        fetchAgentList();
+        // fetchAgentList();
 
         var events = [{
                 title: "All Day Event",

@@ -11,23 +11,23 @@ require("./bootstrap");
 window.swal = require("sweetalert2");
 
 window.Vue = require('vue');
-import VPopover from 'vue-js-popover';
-import Vue from 'vue';
-import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
-import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
-import rtaVue from './components/rtaSchedPage.vue';
-import IrResponseModal from './components/IrResponseModal.vue';
-import rtaDashboard from './components/rtaDashboardPage.vue';
-import FullCalendar from 'vue-full-calendar';
-Vue.use(VPopover, {
-    tooltip: true
-});
-Vue.use(FullCalendar);
+// import VPopover from 'vue-js-popover';
+// import Vue from 'vue';
+// import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+// import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+// import rtaVue from './components/rtaSchedPage.vue';
+// import IrResponseModal from './components/IrResponseModal.vue';
+// import rtaDashboard from './components/rtaDashboardPage.vue';
+// import FullCalendar from 'vue-full-calendar';
+// Vue.use(VPopover, {
+//     tooltip: true
+// });
+// Vue.use(FullCalendar);
 // Vue.use(require('vue-moment'));
-Vue.component('date-time-picker', VueCtkDateTimePicker);
-Vue.component('rta-sched-section', rtaVue);
-Vue.component('ir-response-modal', IrResponseModal);
-Vue.component('rta-dashboard-section', rtaDashboard);
+// Vue.component('date-time-picker', VueCtkDateTimePicker);
+// Vue.component('rta-sched-section', rtaVue);
+// Vue.component('ir-response-modal', IrResponseModal);
+// Vue.component('rta-dashboard-section', rtaDashboard);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
