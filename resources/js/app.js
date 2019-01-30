@@ -10,24 +10,24 @@ require("datatables.net-fixedcolumns");
 require("./bootstrap");
 window.swal = require("sweetalert2");
 
-// window.Vue = require('vue');
-// import VPopover from 'vue-js-popover';
-// import Vue from 'vue';
-// import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
-// import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
-// import rtaVue from './components/rtaSchedPage.vue';
-// import IrResponseModal from './components/IrResponseModal.vue';
-// import rtaDashboard from './components/rtaDashboardPage.vue';
-// import FullCalendar from 'vue-full-calendar';
-// Vue.use(VPopover, {
-//     tooltip: true
-// });
-// Vue.use(FullCalendar);
-// Vue.use(require('vue-moment'));
-// Vue.component('date-time-picker', VueCtkDateTimePicker);
-// Vue.component('rta-sched-section', rtaVue);
-// Vue.component('ir-response-modal', IrResponseModal);
-// Vue.component('rta-dashboard-section', rtaDashboard);
+window.Vue = require('vue');
+import VPopover from 'vue-js-popover';
+import Vue from 'vue';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+import rtaVue from './components/rtaSchedPage.vue';
+import IrResponseModal from './components/IrResponseModal.vue';
+import rtaDashboard from './components/rtaDashboardPage.vue';
+import FullCalendar from 'vue-full-calendar';
+Vue.use(VPopover, {
+    tooltip: true
+});
+Vue.use(FullCalendar);
+Vue.use(require('vue-moment'));
+Vue.component('date-time-picker', VueCtkDateTimePicker);
+Vue.component('rta-sched-section', rtaVue);
+Vue.component('ir-response-modal', IrResponseModal);
+Vue.component('rta-dashboard-section', rtaDashboard);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -36,9 +36,9 @@ window.swal = require("sweetalert2");
  */
 
 
-// const app = new Vue({
-//     el: '#app',
-// });
+const app = new Vue({
+    el: '#app',
+});
 
 //global variables
 var ir_id;
@@ -204,6 +204,70 @@ if ($('#logged-position').val() > 0 && $('#logged-position').val() < 4) {
     };
 
     $(document).popover(popOverSettings);
+    start_camera.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        // Start video playback manually.
+        video.play();
+        showVideo();
+    });
+    take_photo_btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        readURL(takeSnapshot());
+        // var snap = takeSnapshot();
+
+        // video.setAttribute('src', "");
+        // video.classList.remove("visible");
+        // // Show image.
+        // image.setAttribute('src', snap);
+        // image.classList.add("visible");
+
+        // Enable delete and save buttons
+        delete_photo_btn.classList.remove("disabled");
+        download_photo_btn.classList.remove("disabled");
+        done.classList.remove("disabled");
+
+        // // Set the href attribute of the download button to the snap url.
+        download_photo_btn.href = takeSnapshot();
+
+        // Pause video playback of stream.
+        video.pause();
+    });
+
+    delete_photo_btn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        // Hide image.
+        image.setAttribute("src", "");
+        image.classList.remove("visible");
+
+        // Disable delete and save buttons
+        delete_photo_btn.classList.add("disabled");
+        download_photo_btn.classList.add("disabled");
+        done.classList.add("disabled");
+        // Resume playback of stream.
+        video.play();
+    });
+
+    var modal = document.getElementById("full_pic");
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var img = document.getElementById("profile-image-display");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+    img.onclick = function () {
+        modal.style.display = "block";
+        modalImg.src = this.src;
+        captionText.innerHTML = this.alt;
+    };
+
+    // Get the <span> element that closes the modal
+    let span = document.getElementsByClassName("close_pic")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
 } else if ($('#logged-position').val() > 11 && $('#logged-position').val() < 15) {
 
 }
@@ -1351,51 +1415,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Mobile browsers cannot play video without user input,
     // so here we're using a button to start it manually.
 
-    start_camera.addEventListener("click", function (e) {
-        e.preventDefault();
 
-        // Start video playback manually.
-        video.play();
-        showVideo();
-    });
 
-    take_photo_btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        readURL(takeSnapshot());
-        // var snap = takeSnapshot();
 
-        // video.setAttribute('src', "");
-        // video.classList.remove("visible");
-        // // Show image.
-        // image.setAttribute('src', snap);
-        // image.classList.add("visible");
-
-        // Enable delete and save buttons
-        delete_photo_btn.classList.remove("disabled");
-        download_photo_btn.classList.remove("disabled");
-        done.classList.remove("disabled");
-
-        // // Set the href attribute of the download button to the snap url.
-        download_photo_btn.href = takeSnapshot();
-
-        // Pause video playback of stream.
-        video.pause();
-    });
-
-    delete_photo_btn.addEventListener("click", function (e) {
-        e.preventDefault();
-
-        // Hide image.
-        image.setAttribute("src", "");
-        image.classList.remove("visible");
-
-        // Disable delete and save buttons
-        delete_photo_btn.classList.add("disabled");
-        download_photo_btn.classList.add("disabled");
-        done.classList.add("disabled");
-        // Resume playback of stream.
-        video.play();
-    });
 
     function takeSnapshot() {
         // Here we're using a trick that involves a hidden canvas element.
@@ -1461,23 +1483,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    var modal = document.getElementById("full_pic");
-
-    // Get the image and insert it inside the modal - use its "alt" text as a caption
-    var img = document.getElementById("profile-image-display");
-    var modalImg = document.getElementById("img01");
-    var captionText = document.getElementById("caption");
-    img.onclick = function () {
-        modal.style.display = "block";
-        modalImg.src = this.src;
-        captionText.innerHTML = this.alt;
-    };
-
-    // Get the <span> element that closes the modal
-    let span = document.getElementsByClassName("close_pic")[0];
-
-    // When the user clicks on <span> (x), close the modal
-    // span.onclick = function () {
-    //     modal.style.display = "none";
-    // };
 });
