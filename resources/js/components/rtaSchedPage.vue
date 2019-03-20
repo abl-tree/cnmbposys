@@ -107,7 +107,11 @@
                   <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
                     <i class="ti-folder"></i>
                   </button>
-                  <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
+                  <button
+                    type="button"
+                    @click="showCUstomModal = true"
+                    class="btn bgc-white bdrs-2 mR-3 cur-p"
+                  >
                     <i class="ti-tag"></i>
                   </button>
                   <div class="btn-group" role="group">
@@ -583,6 +587,8 @@ export default {
   },
   data() {
     return {
+      showCustomModal: false,
+      selectedOpt: "",
       agentListPage: 0,
       agentListMin: 0,
       agentListMax: 0,
@@ -609,15 +615,25 @@ export default {
       config: {
         eventClick: event => {
           console.log(event);
+          this.scheduleTitleOptions();
+          this.form.title = event.title;
+          this.form.event.start = event.start;
+          console.log(event.start);
+          console.log(event.start._i);
         },
         eventRender: function(event, element) {
           element.attr({
             "data-toggle": "modal",
             "data-target": "#cu-schedule-modal"
           });
+        },
+        defaultView: "listMonth",
+        header: {
+          left: "title",
+          center: "",
+          right: "today listMonth,month prev,next"
         }
-      },
-      selected: {}
+      }
     };
   },
   methods: {
@@ -692,22 +708,25 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
+          ``;
           let temp = [];
           if (res.meta.agent.schedule != null) {
             $.each(res.meta.agent.schedule, function(k, v) {
+              console.log(v);
               let temp1 = {
                 title: v.title.title,
                 start: v.start_event,
                 end: v.end_event,
                 color: v.title.color,
-                id: v.id
+                id: v.id,
+                _tid: v.title.title_id
               };
               temp.push(temp1);
             });
           }
           this.events = temp;
           console.log(this.events);
-          // this.refreshEvents();
+          this.refreshEvents();
         })
         .catch(err => console.log(err));
     },
@@ -723,9 +742,9 @@ export default {
 
       if (this.form.event.end == null) {
         dates.push(moment(moment(this.form.event.start)).format("YYYY-MM-DD"));
-        console.log(moment(moment(this.form.event.start)).format("YYYY-MM-DD"));
-        console.log(moment(this.form.event.start));
-        console.log("mao ni " + dates);
+        // console.log(moment(moment(this.form.event.start)).format("YYYY-MM-DD"));
+        // console.log(moment(this.form.event.start));
+        // console.log("mao ni " + dates);
       } else {
         dates = this.getDates(this.form.event.start, this.form.event.end);
       }
@@ -745,10 +764,10 @@ export default {
         };
         obj.push(obj_element);
       });
-      console.log(dates);
-      console.log(obj);
+      // console.log(dates);
+      // console.log(obj);
       //submiting the object
-      // this.insertSchedule(obj);
+      this.insertSchedule(obj);
     },
     scheduleTitleOptions: function() {
       let pageurl = "api/v1/events";
@@ -758,6 +777,7 @@ export default {
           let result = res.meta;
           // console.log(result.event_titles);
           this.titleOptions = result.event_titles;
+          return result.event_titles;
         })
         .catch(err => console.log(err));
     },
