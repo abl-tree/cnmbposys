@@ -11,7 +11,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-	<link href="{{ mix('/css/app.css') }}" rel="stylesheet"> 
+    <link href="{{ mix('/css/app.css') }}" rel="stylesheet"> 
+    
 	
 	@yield('css')
 

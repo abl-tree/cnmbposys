@@ -5,36 +5,113 @@
  */
 
 window.$ = jQuery;
-
+window.swal = require("sweetalert2");
+window.Vue = require("vue");
 require("./bootstrap");
 require("datatables.net-fixedcolumns");
 // require("./page/dashboard");
-window.swal = require("sweetalert2");
-
-window.Vue = require("vue");
 import VPopover from "vue-js-popover";
-import Vue from "vue";
-import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
-import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
-import rtaVue from "./components/rtaSchedPage.vue";
-import IrResponseModal from "./components/IrResponseModal.vue";
-import rtaDashboard from "./components/rtaDashboardPage.vue";
-import FullCalendar from "vue-full-calendar";
 Vue.use(VPopover, {
     tooltip: true
 });
+
+
+Vue.mixin({
+    data() {
+        return {
+            fetchObj: [],
+            profile: {
+                id: "",
+                name: {
+                    first: "",
+                    middle: "",
+                    last: "",
+                },
+                gender: "",
+                birth: "",
+                address: "",
+                mobile: "",
+                email: "",
+                position: "",
+                benifit: {
+                    sss: "",
+                    tin: "",
+                    ph: "",
+                    pibg: "",
+                }
+            }
+        }
+    },
+    methods: {
+        //fetch
+        fetchProfile: function () {
+            let pageurl = "";
+            fetch(pageurl)
+                .then(res => res.json())
+                .then(res => {
+                    var temp = res;
+                    // this.profile.name.first =
+                    // this.profile.name.middle =
+                    // this.profile.name.last =
+                    // this.profile.id =
+                    // this.profile.gender =
+                    // this.profile.birth =
+                    // this.profile.address =
+                    // this.profile.mobile =
+                    // this.profile.email =
+                    // this.profile.position =
+                    // this.profile.benifit.sss =
+                    // this.profile.benifit.tin =
+                    // this.profile.benifit.ph =
+                    // this.profile.benifit.pibg =
+                })
+                .catch(err => console.log(err));
+        },
+        //modal toggler
+        showModal: function (modalName) {
+            this.$modal.show(modalName);
+        },
+        hideModal: function (modalName) {
+            this.$modal.hide(modalName);
+        },
+
+
+    }
+});
+
+import FullCalendar from "vue-full-calendar";
 Vue.use(FullCalendar);
 
-Vue.use(require("vue-moment"));
+import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
+import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
 Vue.component("date-time-picker", VueCtkDateTimePicker);
+
+import rtaVue from "./components/rtaSchedPage.vue";
 Vue.component("rta-sched-section", rtaVue);
+
+import IrResponseModal from "./components/IrResponseModal.vue";
 Vue.component("ir-response-modal", IrResponseModal);
+
+import rtaDashboard from "./components/rtaDashboardPage.vue";
 Vue.component("rta-dashboard-section", rtaDashboard);
+
+import profilePreview from "./components/profilePreview.vue";
+Vue.component("profile-preview-modal", profilePreview);
+
+import VModal from "vue-js-modal";
+Vue.use(VModal);
+
+// import {
+//     VSelect
+// } from 'vue-search-select';
+// Vue.use(VSelect);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+//GLOBAL VUE FUNCTIONS
 
 const app = new Vue({
     el: "#app"

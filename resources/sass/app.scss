@@ -25,10 +25,12 @@
     top: 10px;
     margin-right: 10px;
 }
+
 .btn-sq-lg {
     width: 150px !important;
     height: 150px !important;
 }
+
 .spinner {
     width: 40px;
     height: 40px;
@@ -103,16 +105,12 @@ img {
     border-color: #ced4da !important;
 }
 
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__rendered {
+.select2-container--default .select2-selection--single .select2-selection__rendered {
     height: 35px !important;
     line-height: 2.4 !important;
 }
 
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__arrow {
+.select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 35px !important;
 }
 
@@ -161,6 +159,7 @@ img {
     color: #262626;
     margin: 20px auto;
 }
+
 .card .box .maoni #role_P {
     font-size: 14px;
     background: #e91e63;
@@ -246,6 +245,7 @@ body {
     width: 30px;
     background-size: cover;
 }
+
 #profile-image-display {
     border-radius: 5px;
     cursor: pointer;
@@ -258,17 +258,26 @@ body {
 
 /* The Modal (background) */
 #full_pic {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0); /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9);
+    /* Black w/ opacity */
 }
 
 /* Modal Content (Image) */
@@ -302,6 +311,7 @@ body {
     from {
         transform: scale(0);
     }
+
     to {
         transform: scale(1);
     }
@@ -353,13 +363,13 @@ body {
     cursor: pointer;
 }
 
-.info-radio:checked + .info-button-label {
+.info-radio:checked+.info-button-label {
     background-color: rgb(233, 233, 233);
 }
 
-#tab1:checked ~ .tab-con-wrapper > #tab-con1,
-#tab2:checked ~ .tab-con-wrapper > #tab-con2,
-#tab3:checked ~ .tab-con-wrapper > #tab-con3 {
+#tab1:checked~.tab-con-wrapper>#tab-con1,
+#tab2:checked~.tab-con-wrapper>#tab-con2,
+#tab3:checked~.tab-con-wrapper>#tab-con3 {
     display: block;
     position: relative;
 }
@@ -428,9 +438,11 @@ table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(even) {
 .text-wrap {
     white-space: normal;
 }
+
 .width-200 {
     width: 200px;
 }
+
 .image-center {
     text-align: center center;
 }
@@ -453,13 +465,16 @@ table.dataTable td {
     overflow-y: scroll;
     position: fixed;
 }
+
 /* width */
 .y-scroller::-webkit-scrollbar {
     width: 5px;
 }
+
 .x-scroller::-webkit-scrollbar {
     height: 5px;
 }
+
 /* Track */
 .scroller::-webkit-scrollbar-track {
     background: #f1f1f1;
@@ -478,6 +493,7 @@ table.dataTable td {
 .dataTables_scrollBody::-webkit-scrollbar {
     height: 5px;
 }
+
 /* Track */
 .dataTables_scrollBody::-webkit-scrollbar-track {
     background: #f1f1f1;
@@ -509,6 +525,7 @@ table tr {
     .profile-fixed-container {
         display: none;
     }
+
     .profile-col-container {
         visibility: visible;
     }
@@ -518,6 +535,7 @@ table tr {
     .profile-col-container {
         visibility: hidden;
     }
+
     .profile-fixed-container {
         width: 25%;
     }
@@ -528,11 +546,31 @@ table tr {
         padding-left: 25px;
     }
 }
-// @media screen and (max-width: 770px) {
-//     .profile-col-container {
-//         visibility: hidden;
-//     }
-//     .profile-fixed-container {
-//         width: 24%;
-//     }
-// }
+
+@media screen and (max-width: 770px) {
+    .profile-col-container {
+        visibility: hidden;
+    }
+
+    .profile-fixed-container {
+        width: 24%;
+    }
+}
+
+.v--modal-overlay .v--modal-box {
+    position: relative;
+    overflow: visible;
+    box-sizing: border-box;
+}
+
+.e-modal-header,
+.e-modal-footer {
+    padding: 20px 20px 20px 20px;
+    width: 100%;
+}
+
+.e-modal-header {
+    min-height: 50px;
+    position: absolute;
+    top: 0px;
+}

@@ -27,3 +27,15 @@
     </li>
 
 @endif
+
+@if($pageOnload->user->access_id == 1)
+    <li class="nav-item">
+        <a class='sidebar-link' href="/schedule">
+        <span class="icon-holder">
+            <i class="c-brown-500 ti-calendar"></i>
+        </span>
+        <span class="">RTA Schedule</span>
+        </a>
+    </li>
+
+@endif

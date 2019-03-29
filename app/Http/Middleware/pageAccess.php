@@ -15,9 +15,10 @@ class pageAccess
     public function handle($request, Closure $next)
     {
         $uri = $request->path();
+        $position="";
         $pageAccess['hr'] = ['/','dashboard']; 
         $pageAccess['rta'] = ['/','dashboard','schedule']; 
-
+        $pageAccess['admin'] = ['/','dashboard','schedule'];
         // if($request->user()->access->id < 15 && $request->user()->access->id > 11){
         //     // if(in_array($route,$pageAccess['rta'])){
         //     //     return redirect($route);
@@ -26,26 +27,24 @@ class pageAccess
         //     return back();
         // }
 
-
         switch(\Auth::user()->access->id){
-            case 1:case 2:case 3:
-                    $tmp = $this->pass($uri,$pageAccess['hr']);
-                    if($tmp){
-                        return $next($request);
-                    }else{
-                        return abort(404);
-                    }
-                break;
+            case 1:
+                $position = 'admin';
+            break;
+            case 2:case 3:
+                $position = 'hr';
+            break;
             case 12:case 13:case 14:
-                    $tmp = $this->pass($uri,$pageAccess['rta']);
-                    if($tmp){
-                        return $next($request);
-                    }else{
-                        return back();
-                    }
-                break;
+                $position = 'rta';
+            break;
         }
 
+        $tmp = $this->pass($uri,$pageAccess[$position]);
+        if($tmp){
+            return $next($request);
+        }else{
+            return abort(404);
+        }
         // return $next($request);
     }
 

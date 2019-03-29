@@ -104,7 +104,11 @@
                   >
                     <i class="ti-menu"></i>
                   </button>
-                  <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
+                  <button
+                    type="button"
+                    @click="showModal('ir-form-modal')"
+                    class="btn bgc-white bdrs-2 mR-3 cur-p"
+                  >
                     <i class="ti-folder"></i>
                   </button>
                   <button
@@ -213,7 +217,7 @@
                   <button type="button" class="back-to-mailbox btn bgc-white bdrs-2 mR-3 cur-p">
                     <i class="ti-angle-left"></i>
                   </button>
-                  <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
+                  <button type="button" @click="show()" class="btn bgc-white bdrs-2 mR-3 cur-p">
                     <i class="ti-folder"></i>
                   </button>
                   <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
@@ -289,9 +293,7 @@
                   <button
                     class="btn btn-danger bdrs-50p p-15 lh-0"
                     type="button"
-                    data-toggle="modal"
-                    data-target="#cu-schedule-modal"
-                    @click="scheduleTitleOptions()"
+                    @click="showModal('schedule-form-modal')"
                   >
                     <i class="ti-plus"></i>
                   </button>
@@ -313,267 +315,168 @@
       </div>
       <!-- popover -->
       <!-- Modal -->
-      <div class="modal fade" id="cu-schedule-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="cu-schedule-modal-title"></h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="container">
-                <form action>
-                  <div class="row">
-                    <div class="col">
-                      <div class="form-group">
-                        <label for="exampleFormControlSelect1">Example select</label>
-                        <select class="form-control" v-model="form.title">
-                          <option
-                            v-for="option in titleOptions"
-                            :key="option.id"
-                            :value="option.id"
-                          >{{option.title}}</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label>Date</label>
-                      <date-time-picker
-                        v-model="form.event"
-                        range-mode
-                        overlay-background
-                        color="red"
-                        format="YYYY-MM-DD"
-                        formatted="ddd D MMM YYYY"
-                        label="Select range"
-                      />
+      <!-- Schedule Form Modal -->
+      <modal name="schedule-form-modal" pivotY="0.2" scrollable="true" height="auto">
+        <div class="layer">
+          <div class="e-modal-header bd">
+            <h5 style="margin-bottom:0px">Schedule</h5>
+          </div>
+          <div class="w-100 p-15 pT-80" style>
+            <div class="container">
+              <form action>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="exampleFormControlSelect1">Event</label>
+                      <select class="form-control" v-model="form.title">
+                        <option
+                          v-for="option in titleOptions"
+                          :key="option.id"
+                          :value="option.id"
+                        >{{option.title}}</option>
+                      </select>
                     </div>
                   </div>
-                  <div class="row pT-5">
-                    <div class="col">
-                      <label>Time IN</label>
-                      <date-time-picker
-                        v-model="form.time_in"
-                        formatted="HH:mm"
-                        format="HH:mm"
-                        time-format="HH:mm"
-                        label="Choose time"
-                        disable-date
-                        overlay-background
-                        color="red"
-                        :minute-interval="1"
-                      />
-                    </div>
-                    <div class="col">
-                      <label>Hours</label>
-                      <date-time-picker
-                        v-model="form.hours"
-                        formatted="HH:mm"
-                        format="HH:mm"
-                        time-format="HH:mm"
-                        label="Choose time"
-                        disable-date
-                        overlay-background
-                        color="red"
-                        :minute-interval="1"
-                      />
-                    </div>
+                  <div class="col">
+                    <label>Date</label>
+                    <date-time-picker
+                      class="s-modal"
+                      v-model="form.event"
+                      range-mode
+                      overlay-background
+                      color="red"
+                      format="YYYY-MM-DD"
+                      formatted="ddd D MMM YYYY"
+                      label="Select range"
+                    />
                   </div>
-                </form>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-danger" @click="submitScheduleForm">Save changes</button>
+                </div>
+                <div class="row pT-5">
+                  <div class="col">
+                    <label>Time IN</label>
+                    <date-time-picker
+                      class="s-modal"
+                      v-model="form.time_in"
+                      formatted="HH:mm"
+                      format="HH:mm"
+                      time-format="HH:mm"
+                      label="Choose time"
+                      disable-date
+                      overlay-background
+                      color="red"
+                      :minute-interval="1"
+                    />
+                  </div>
+                  <div class="col">
+                    <label>Hours</label>
+                    <date-time-picker
+                      v-model="form.hours"
+                      formatted="HH:mm"
+                      format="HH:mm"
+                      time-format="HH:mm"
+                      label="Choose time"
+                      disable-date
+                      overlay-background
+                      color="red"
+                      :minute-interval="1"
+                    />
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div
-        class="modal fade"
-        id="profile-preview-modal"
-        tabindex="-1"
-        role="dialog"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Profile</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="container">
-                <!-- test -->
-                <div class="row">
-                  <div class="col-md-3 p-0">
-                    <img :src="agent.image" alt>
-                  </div>
-                  <div class="col-md-9">
-                    <!-- NAME -->
-                    <div class="form-row">
-                      <div class="col-md-9">
-                        <small>Last Name.First Name.Middle Name</small>
-                      </div>
-                      <div class="col-md-3">
-                        <small>ID no.</small>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="col-md-9">
-                        <small>
-                          <b>LAJOM, EMMANUEL JAMES ENG</b>
-                        </small>
-                      </div>
-                      <div class="col-md-3">
-                        <small>
-                          <b>1000</b>
-                        </small>
-                      </div>
-                    </div>
-
-                    <!-- EMAIL -->
-                    <div class="form-row">
-                      <div class="col">
-                        <small>Email</small>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="col">
-                        <small>
-                          <b>jamesenglajom@cnmsolutions.net</b>
-                        </small>
-                      </div>
-                    </div>
-
-                    <!-- Position -->
-                    <div class="form-row">
-                      <div class="col-md-6">
-                        <small>Position</small>
-                      </div>
-                      <div class="col-md-2">
-                        <small>Gender</small>
-                      </div>
-                      <div class="col-md-2">
-                        <small>Birth</small>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="col-md-6">
-                        <small>
-                          <b>OPERATIONS MANAGER</b>
-                        </small>
-                      </div>
-                      <div class="col-md-2">
-                        <small>
-                          <b>MALE</b>
-                        </small>
-                      </div>
-                      <div class="col-md-2">
-                        <small>
-                          <b>12/25/1991</b>
-                        </small>
-                      </div>
-                    </div>
-
-                    <!-- ADDRESS -->
-                    <div class="form-row">
-                      <div class="col">
-                        <small>Address</small>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="col">
-                        <small>
-                          <b>LOWER BINUGAO, TORIL, DAVAO CITY</b>
-                        </small>
-                      </div>
-                    </div>
-
-                    <!-- CONTACT -->
-                    <div class="form-row">
-                      <div class="col">
-                        <small>Mobile</small>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="col">
-                        <small>
-                          <b>093964*****</b>
-                        </small>
-                      </div>
-                    </div>
-                    <br>
-
-                    <div class="form-row">
-                      <div class="col-md-6">
-                        <small>PhilHealth</small>
-                      </div>
-                      <div class="col-md-6">
-                        <small>SSS</small>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="col-md-6">
-                        <small>
-                          <b>Pht-00001</b>
-                        </small>
-                      </div>
-                      <div class="col-md-6">
-                        <small>
-                          <b>SSS-00001</b>
-                        </small>
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="col-md-6">
-                        <small>TIN</small>
-                      </div>
-                      <div class="col-md-6">
-                        <small>PagIbig</small>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="col-md-6">
-                        <small>
-                          <b>TIN-00001</b>
-                        </small>
-                      </div>
-                      <div class="col-md-6">
-                        <small>
-                          <b>PBG-00001</b>
-                        </small>
-                      </div>
-                    </div>
-                  </div>
+          <div class="e-modal-footer bd">
+            <div style="text-align:right">
+              <div class="peers w-100">
+                <div class="peer peer-greed">
+                  <button v-if="form.delete_btn" type="button" class="btn btn-info">Delete</button>
+                </div>
+                <div class="peer">
+                  <button type="button" class="btn btn-secondary" @click="hideModal('schedule-form-modal')">Close</button>
+                  <button type="button" class="btn btn-danger" @click="submitScheduleForm">Confirm</button>
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </modal>
+      <!-- IR Form Modal -->
+      <modal name="ir-form-modal" pivotY="0.2" scrollable="true" height="auto">
+        <div class="layer">
+          <div class="e-modal-header bd">
+            <h5 style="margin-bottom:0px">Incident Report</h5>
+          </div>
+          <div class="w-100 p-15 pT-80" style>
+            <div class="container">
+              <form action>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="exampleFormControlSelect1">To:</label>
+                      <basic-select placeholder="Names"></basic-select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row pT-5">
+                  <div class="col">
+                    <label>Sanction Level:</label>
+                    <basic-select placeholder="Level"></basic-select>
+                  </div>
+                  <div class="col">
+                    <label>Sanction Type:</label>
+                    <basic-select placeholder="Type"></basic-select>
+                  </div>
+                </div>
+                <div class="row pT-15">
+                  <div class="col">
+                    <label>Report Description</label>
+                    <textarea name id cols="74" rows="5"></textarea>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="e-modal-footer bd">
+            <div style="text-align:right">
+              <button class="btn btn-secondary" @click="hideModal('ir-form-modal')">Cancel</button>
+              <button class="btn btn-danger">Confirm</button>
             </div>
           </div>
         </div>
-      </div>
-
+      </modal>
+      <!-- IR Response Form Modal -->
       <ir-response-modal></ir-response-modal>
+      <profile-preview-modal v-bind:user-profile="userProfile"></profile-preview-modal>
       <!-- Modal -->
     </div>
   </div>
 </template>
-​<style scoped>
+​<style>
+.e-modal-header,
+.e-modal-footer {
+  min-height: 50px;
+  padding: 20px 20px 20px 20px;
+  width: 100%;
+}
+.e-modal-header {
+  position: absolute;
+  top: 0px;
+}
+.v--modal-overlay .v--modal-box {
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
+}
 </style>
 
 <script>
 import moment from "moment";
+import { BasicSelect } from "vue-search-select";
+
 export default {
   props: ["userProfile"],
+  components: { BasicSelect },
   mounted() {
     console.log("rtapage mounted");
     console.log(this.userProfile);
@@ -608,18 +511,43 @@ export default {
         event: { start: "", end: "" },
         time_in: "",
         hours: "",
-        edit: ""
+        edit: false,
+        label: "Add Schedule",
+        delete_btn: false
       },
       titleOptions: [],
 
       config: {
         eventClick: event => {
           console.log(event);
+          this.form.edit = true;
+          this.form.label = "Edit Schedule";
+          this.form.delete_btn = true;
           this.scheduleTitleOptions();
-          this.form.title = event.title;
+          let pageurl = "/api/v1/schedules/fetch/" + event.id;
+          let fetched_event = "";
+          fetch(pageurl)
+            .then(res => res.json())
+            .then(res => {
+              // return res.meta.agent_schedule;
+              let temp = res.meta.agent_schedule;
+              this.form.title = temp.title.id;
+              this.form.id = temp.id;
+            })
+            .catch(err => console.log(err));
+          // this.form.title = fetched_event.title.id;
           this.form.event.start = event.start;
-          console.log(event.start);
-          console.log(event.start._i);
+          this.form.time_in =
+            event.start._i.split(" ")[1].split(":")[0] +
+            ":" +
+            event.start._i.split(" ")[1].split(":")[1];
+          let duration = moment.duration(event.end.diff(event.start));
+          if (duration._data.minutes == 0) {
+            this.form.hours = duration._data.hours + ":00";
+          } else {
+            this.form.hours =
+              duration._data.hours + ":" + duration._data.minutes;
+          }
         },
         eventRender: function(event, element) {
           element.attr({
@@ -637,6 +565,12 @@ export default {
     };
   },
   methods: {
+    // modal Toggle Functions
+    resetScheduleForm: function() {
+      this.form.label = "Add Schedule";
+      this.form.edit = false;
+      this.form.delete_btn = false;
+    },
     refreshEvents: function() {
       this.$refs.calendar.$emit("reload-events");
     },
@@ -732,28 +666,44 @@ export default {
     },
     submitScheduleForm: function() {
       //format object to be sent backend
-      let obj = [];
-      let id = this.form.id;
-      let title_id = this.form.title;
-      let time_in = this.form.time_in;
-      let hours = this.form.hours;
-      let agent_id = this.agent.id;
-      var dates = [];
-
-      if (this.form.event.end == null) {
-        dates.push(moment(moment(this.form.event.start)).format("YYYY-MM-DD"));
-        // console.log(moment(moment(this.form.event.start)).format("YYYY-MM-DD"));
-        // console.log(moment(this.form.event.start));
-        // console.log("mao ni " + dates);
+      if (!this.form.edit) {
+        let obj = [];
+        let id = this.form.id;
+        let title_id = this.form.title;
+        let time_in = this.form.time_in;
+        let hours = this.form.hours;
+        let agent_id = this.agent.id;
+        var dates = [];
+        if (this.form.event.end == null) {
+          dates.push(
+            moment(moment(this.form.event.start)).format("YYYY-MM-DD")
+          );
+        } else {
+          dates = this.getDates(this.form.event.start, this.form.event.end);
+        }
+        $.each(dates, function(k, v) {
+          let start = v + " " + time_in + ":00";
+          let hr = hours.split(":");
+          let obj_element = {
+            title_id: title_id,
+            user_id: agent_id,
+            start_event: start,
+            end_event: moment(
+              moment(start)
+                .add(hr[0], "h")
+                .add(hr[1], "m")
+                .toDate()
+            ).format("YYYY-MM-DD HH:mm:ss")
+          };
+          obj.push(obj_element);
+        });
+        this.insertSchedule(obj);
       } else {
-        dates = this.getDates(this.form.event.start, this.form.event.end);
-      }
-      $.each(dates, function(k, v) {
-        let start = v + " " + time_in + ":00";
-        let hr = hours.split(":");
-        let obj_element = {
-          title_id: title_id,
-          user_id: agent_id,
+        let start = this.form.event.start._i;
+        let hr = this.form.hours.split(":");
+        let obj = {
+          id: this.form.id,
+          title_id: this.form.title,
           start_event: start,
           end_event: moment(
             moment(start)
@@ -762,12 +712,12 @@ export default {
               .toDate()
           ).format("YYYY-MM-DD HH:mm:ss")
         };
-        obj.push(obj_element);
-      });
+        console.log(obj);
+        this.editSchedule(obj);
+      }
       // console.log(dates);
       // console.log(obj);
       //submiting the object
-      this.insertSchedule(obj);
     },
     scheduleTitleOptions: function() {
       let pageurl = "api/v1/events";
@@ -802,10 +752,27 @@ export default {
         })
         .catch(err => console.log(err));
     },
-    editSchedule: function() {
-      console.log("WAPAKPAKPAK");
+    editSchedule: function(data) {
+      let pageurl = "/api/v1/schedules/update/" + data.id;
+      fetch(pageurl, {
+        method: "post",
+        body: JSON.stringify(data),
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          this.form.id = "";
+          this.form.title = "";
+          this.form.time_in = "";
+          this.form.hours = "";
+          this.form.event.start = "";
+          this.form.event.end = "";
+        })
+        .catch(err => console.log(err));
     },
-
     //full calendar functions
     eventRender: function(event, element) {
       element.attr({
@@ -815,6 +782,8 @@ export default {
     eventClick: function(event) {
       console.log(event.id);
     }
+
+    //MODALS
   }
 };
 </script>

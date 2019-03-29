@@ -244,7 +244,20 @@
       <div class="bd bgc-white p-20 mY-20">
         <div class="layers">
           <div class="layer w-100 mB-10">
-            <h6 class="lh-1">Incident Report</h6>
+            <div class="peers">
+              <div class="peer peer-greed">
+                <h6 class="lh-1">Incident Reports</h6>
+              </div>
+              <div class="peer">
+                <button
+                  class="btn btn-secondary"
+                  style="font-size:0.8em;padding:3px 10px 3px 10px;"
+                  @click="showModal('ir-form-modal')"
+                >
+                  <i class="ti-plus"></i>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="table-responsive">
@@ -304,20 +317,222 @@
           </div>
         </div>
       </div>
+      <!-- Sanction Levels -->
+      <div class="bd bgc-white p-20 mY-20">
+        <div class="layers">
+          <div class="layer w-100 mB-10">
+            <div class="peers">
+              <div class="peer peer-greed">
+                <h6 class="lh-1">Sanction Levels</h6>
+              </div>
+              <div class="peer">
+                <button
+                  class="btn btn-secondary"
+                  style="font-size:0.8em;padding:3px 10px 3px 10px;"
+                  @click="showModal('sanction-level-form-modal')"
+                >
+                  <i class="ti-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Level</th>
+                  <th>Description</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Written</td>
+                  <td>
+                    <button class="btn btn-dark">
+                      <i class="ti-pencil"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Sanction Types -->
+      <div class="bd bgc-white p-20 mY-20">
+        <div class="layers">
+          <div class="layer w-100 mB-10">
+            <div class="peers">
+              <div class="peer peer-greed">
+                <h6 class="lh-1">Sanction Types</h6>
+              </div>
+              <div class="peer">
+                <button
+                  class="btn btn-secondary"
+                  style="font-size:0.8em;padding:3px 10px 3px 10px;"
+                  @click="showModal('sanction-type-form-modal')"
+                >
+                  <i class="ti-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Type ID</th>
+                  <th>Description</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Absentism</td>
+                  <td>
+                    <button class="btn btn-dark">
+                      <i class="ti-pencil"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Modals -->
     <ir-response-modal></ir-response-modal>
+
+    <!-- IR Form Modal -->
+    <modal name="ir-form-modal" pivotY="0.2" scrollable="true" height="auto">
+      <div class="layer">
+        <div class="e-modal-header bd">
+          <h5 style="margin-bottom:0px">Incident Report</h5>
+        </div>
+        <div class="w-100 p-15 pT-80" style>
+          <div class="container">
+            <form action>
+              <div class="row">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="exampleFormControlSelect1">To:</label>
+                    <basic-select placeholder="Names"></basic-select>
+                  </div>
+                </div>
+              </div>
+              <div class="row pT-5">
+                <div class="col">
+                  <label>Sanction Level:</label>
+                  <basic-select placeholder="Level"></basic-select>
+                </div>
+                <div class="col">
+                  <label>Sanction Type:</label>
+                  <basic-select placeholder="Type"></basic-select>
+                </div>
+              </div>
+              <div class="row pT-15">
+                <div class="col">
+                  <label>Report Description</label>
+                  <textarea name id cols="74" rows="5"></textarea>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="e-modal-footer bd">
+          <div style="text-align:right">
+            <button class="btn btn-secondary" @click="hideModal('ir-form-modal')">Cancel</button>
+            <button class="btn btn-danger">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </modal>
+    <!-- Sanction Level Form Modal -->
+    <modal name="sanction-level-form-modal" pivotY="0.2" scrollable="true" height="auto">
+      <div class="layer">
+        <div class="e-modal-header bd">
+          <h5 style="margin-bottom:0px">Sanction Level</h5>
+        </div>
+        <div class="w-100 p-15 pT-80" style>
+          <div class="container">
+            <form action>
+              <div class="row pT-5">
+                <div class="col">
+                  <label>No:</label>
+                  <basic-select placeholder="Level"></basic-select>
+                </div>
+                <div class="col">
+                  <label>Description:</label>
+                  <basic-select placeholder="Type"></basic-select>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="e-modal-footer bd">
+          <div style="text-align:right">
+            <button class="btn btn-secondary" @click="hideModal('sanction-level-form-modal')">Cancel</button>
+            <button class="btn btn-danger">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </modal>
+    <!-- Sanction Form Modal -->
+    <modal name="sanction-type-form-modal" pivotY="0.2" scrollable="true" height="auto">
+      <div class="layer">
+        <div class="e-modal-header bd">
+          <h5 style="margin-bottom:0px">Sanction Level</h5>
+        </div>
+        <div class="w-100 p-15 pT-80" style>
+          <div class="container">
+            <form action>
+              <div class="row pT-5">
+                <div class="col">
+                  <label>No:</label>
+                  <basic-select placeholder="Level"></basic-select>
+                </div>
+                <div class="col">
+                  <label>Description:</label>
+                  <basic-select placeholder="Type"></basic-select>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="e-modal-footer bd">
+          <div style="text-align:right">
+            <button class="btn btn-secondary" @click="hideModal('sanction-type-form-modal')">Cancel</button>
+            <button class="btn btn-danger">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </modal>
   </div>
 </template>
 
 <script>
+import { BasicSelect } from "vue-search-select";
+
 export default {
+  components: {
+    BasicSelect
+  },
   mounted() {
     console.log("PAGE");
+    this.alertTO();
   },
   data() {
     return {
       james: ""
     };
-  }
+  },
+  methods: {}
 };
 </script>
