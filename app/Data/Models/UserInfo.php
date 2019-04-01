@@ -68,7 +68,7 @@ class UserInfo extends BaseModel
     {
         return ucwords($value);
     }    
-
+  
 
 
     //Relationships
@@ -79,7 +79,12 @@ class UserInfo extends BaseModel
     public function benefits() {
         return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'id');
     }
-
+     public function reports() {
+        return $this->hasMany('\App\Data\Models\UserReport' ,'user_reports_id', 'id')->with("SanctionType","SanctionLevel","filedby","agentResponse");
+    }
+      public function sanctiontype() {
+        return $this->belongsTo('\App\Data\Models\SanctionType', 'saction_type_id', 'type_number');
+    }
     public function getAllEmployee(){
         $query = DB::table('user_infos')
         ->join('users','users.uid','=','user_infos.id')
