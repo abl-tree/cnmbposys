@@ -83,10 +83,16 @@ class AgentScheduleRepository extends BaseRepository
             if (!isset($data['user_id']) ||
                 !is_numeric($data['user_id']) ||
                 $data['user_id'] <= 0) {
-                return $this->setResponse([ 
-                    'code'  => 500,
-                    'title' => "User ID is not set.",
-                ]);
+                
+                if(isset($data['email'])){
+                    $user = $this->user->where('email', $data['email'])->first();
+                    $data['user_id'] = $user->id;
+                }else{
+                    return $this->setResponse([ 
+                        'code'  => 500,
+                        'title' => "User ID is not set.",
+                    ]);
+                }    
             }
 
             if (!isset($data['title_id'])) {
