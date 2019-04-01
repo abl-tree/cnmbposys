@@ -72,6 +72,18 @@ Route::group([
         Route::post("create", "LogsController@create");
     });
 
+    Route::group([
+        "prefix"    => "reports",
+    ], function () {
+
+        Route::get("/", "ReportsController@index");
+        Route::get("user/{id}", "ReportsController@report");
+        Route::post("create", "ReportsController@create");
+        Route::post("addSanctionType", "ReportsController@addSanctionType");
+        Route::post("addSanctionLevel", "ReportsController@addSanctionLevel");
+        Route::post("userResponse", "ReportsController@userResponse");
+    });
+
 
 });
 
