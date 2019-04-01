@@ -13,6 +13,11 @@ class EventTitle extends BaseModel
         'color',
     ];
 
+    protected $searchable = [
+        'title',
+        'color',
+    ];
+
     public $timestamps = true;
 
     protected $rules = [

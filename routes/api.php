@@ -61,6 +61,7 @@ Route::group([
         Route::post('delete/{schedule_id}', 'EventTitleController@delete');
         Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
         Route::post('update/{schedule_id}', 'EventTitleController@update');
+        Route::get('search', 'EventTitleController@search');
 
     });
 
