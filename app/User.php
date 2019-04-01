@@ -28,6 +28,19 @@ class User extends BaseAuthModel
         'uid','email', 'password', 'access_id','loginFlag','company_id','created_at','updated_at'
     ];
 
+    protected $searchable = [
+        'info.firstname',
+        'info.middlename',
+        'info.lastname',
+        'id',
+        'uid',
+        'email', 
+        'password', 
+        'access_id',
+        'loginFlag',
+        'company_id'
+    ];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -133,7 +146,9 @@ class User extends BaseAuthModel
     }
     public function getFullNameAttribute(){
         $name = null;
-        $name = $this->info->firstname . ' ' . $this->info->middlename . ' ' . $this->info->lastname;
+        if(isset($this->info)){
+            $name = $this->info->full_name;
+        }
         
         return $name;
     }
@@ -141,8 +156,16 @@ class User extends BaseAuthModel
 
 
     public function getTeamLeaderAttribute(){
-        $id =  $this->hierarchy->parent_id;
-        $info = UserInfo::find($id);
+        if(isset($this->hierarchy)){
+            $id =  $this->hierarchy->parent_id;
+        }else{
+            $id = null;
+        }
+        if(isset($id)){
+            $info = UserInfo::find($id);
+        }else{
+            $info = null;
+        }
         $name = null;
         if(isset($info)){
             $name = $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname;
@@ -152,7 +175,11 @@ class User extends BaseAuthModel
 
     public function getOperationsManagerAttribute(){
         $name = null;
-        $tl_id =  $this->hierarchy->parent_id;
+        if(isset($this->hierarchy)){
+            $tl_id =  $this->hierarchy->parent_id;
+        }else{
+            $tl_id = null;
+        }
         if(isset($tl_id)){
             $om_id = AccessLevelHierarchy::where('child_id', $tl_id)->get()->first()->parent_id;
         }

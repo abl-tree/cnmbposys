@@ -22,6 +22,18 @@ class UserInfo extends BaseModel
         'p_email','created_at','updated_at'
     ];
 
+    protected $searchable = [
+        'firstname','middlename', 'lastname',
+        'birthdate', 'gender', 'contact_number',
+        'address', 'image', 'salary_rate','image_ext',
+        'status', 'hired_date', 'separation_date', 'excel_hash',
+        'p_email','created_at','updated_at'
+    ];
+
+    protected $appends = [
+        'full_name',
+    ];
+
      //Mutator
     public function setFirstnameAttribute($value)
     {
@@ -69,6 +81,14 @@ class UserInfo extends BaseModel
         return ucwords($value);
     }    
   
+
+    public function getFullNameAttribute(){
+        $name = null;
+        $name = $this->firstname . ' ' . $this->middlename . ' ' . $this->lastname;
+        
+        return $name;
+    }
+
 
 
     //Relationships
