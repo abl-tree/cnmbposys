@@ -333,6 +333,110 @@ class ReportsRepository extends BaseRepository
     }
 
 
+    public function getSanctionType($data = [])
+    {
+        $meta_index = "Sanction Types";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "Sanction Types";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['sanction_type_id'] = $data['id'];
+
+        }
+        $count_data = $data;
+        $data['relations'] = [];   
+        $result = $this->fetchGeneric($data, $this->sanction_type);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Types are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_type->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Type List",
+            "description"=>"Sanction Type",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+     public function getSanctionLevel($data = [])
+    {
+        $meta_index = "Sanction Level";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "Sanction Types";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['sanction_level_id'] = $data['id'];
+
+        }
+        $count_data = $data;
+        $data['relations'] = [];   
+        $result = $this->fetchGeneric($data, $this->sanction_level);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Levels are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_level->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Level List",
+            "description"=>"Sanction Level",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
+
 
 
 }

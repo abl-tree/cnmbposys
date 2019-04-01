@@ -52,6 +52,17 @@ class ReportsController extends BaseController
         return $this->absorb($this->user_reports->userResponse($data))->json();     
     }
 
+     public function getSanctionType(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getSanctionType($data))->json();     
+    }
+     public function getSanctionLevel(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getSanctionLevel($data))->json();     
+    }
+
     /**
      * Store a newly created resource in storage.
      *

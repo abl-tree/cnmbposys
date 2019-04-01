@@ -78,6 +78,8 @@ Route::group([
 
         Route::get("/", "ReportsController@index");
         Route::get("user/{id}", "ReportsController@report");
+        Route::get("getSanctionType", "ReportsController@getSanctionType");
+        Route::get("getSanctionLevel", "ReportsController@getSanctionLevel");
         Route::post("create", "ReportsController@create");
         Route::post("addSanctionType", "ReportsController@addSanctionType");
         Route::post("addSanctionLevel", "ReportsController@addSanctionLevel");
