@@ -48,6 +48,7 @@ Route::group([
         // Route::post('delete/{id}', 'AgentController@delete');
         Route::get("fetch/{agent_id}", "AgentController@fetch");
         // Route::post('update/{id}', 'AgentController@update');
+        Route::get("search", "AgentController@search");
 
     });
 
