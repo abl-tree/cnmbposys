@@ -176,7 +176,13 @@
           </div>
           <div class="layer w-100">
             <div class="bdT bdB">
-              <input type="text" class="form-control m-0 bdw-0 pY-15 pX-20" placeholder="Search...">
+              <input
+                type="text"
+                class="form-control m-0 bdw-0 pY-15 pX-20"
+                v-model="agentListSearch"
+                @keyup="searchFromAgentList(0)"
+                placeholder="Search..."
+              >
             </div>
           </div>
           <div class="layer w-100 fxg-1 pos-r" style="overflow-y:auto">
@@ -393,7 +399,11 @@
                   <button v-if="form.delete_btn" type="button" class="btn btn-info">Delete</button>
                 </div>
                 <div class="peer">
-                  <button type="button" class="btn btn-secondary" @click="hideModal('schedule-form-modal')">Close</button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="hideModal('schedule-form-modal')"
+                  >Close</button>
                   <button type="button" class="btn btn-danger" @click="submitScheduleForm">Confirm</button>
                 </div>
               </div>
@@ -452,6 +462,8 @@
     </div>
   </div>
 </template>
+
+
 ​<style>
 .e-modal-header,
 .e-modal-footer {
@@ -478,15 +490,15 @@ export default {
   props: ["userProfile"],
   components: { BasicSelect },
   mounted() {
-    console.log("rtapage mounted");
-    console.log(this.userProfile);
+    // console.log("rtapage mounted");
+    // console.log(this.userProfile);
   },
   created() {
     //on create function
     this.fetchAgentList(0);
     //TEST function create
     // this.getDates("2018-12-25", "2019-01-05");
-    this.submitScheduleForm();
+    // this.submitScheduleForm();
   },
   data() {
     return {
@@ -496,6 +508,7 @@ export default {
       agentListMin: 0,
       agentListMax: 0,
       agentList: {},
+      agentListSearch: "",
       agent: {
         image: "",
         full_name: "",
@@ -617,7 +630,11 @@ export default {
       } else {
         this.agentListPage--;
       }
-      this.fetchAgentList(this.agentListPage);
+      if (agentListSearch != "") {
+        this.searchFromAgentList(this.agentListPage);
+      } else {
+        this.fetchAgentList(this.agentListPage);
+      }
     },
     displayAgentSchedule: function(id) {
       //fetch for agent info
@@ -772,6 +789,36 @@ export default {
           this.form.event.end = "";
         })
         .catch(err => console.log(err));
+    },
+    searchFromAgentList: function(listpage) {
+      if (this.agentListSearch == "") {
+        this.fetchAgentList(0);
+      } else {
+        const limit = 10;
+        const sort = "email";
+        const order = "asc";
+        let offset = listpage * limit;
+        let pageurl =
+          "/api/v1/agents/search?query=" +
+          this.agentListSearch +
+          "&target[]=full_name&target[]=email&limit=" +
+          limit +
+          "&order=" +
+          order +
+          "&sort=" +
+          sort +
+          "&offset=" +
+          offset;
+        fetch(pageurl)
+          .then(res => res.json())
+          .then(res => {
+            this.agentList = res.meta.agents;
+            this.agentListMax = Math.ceil(res.meta.count / limit) - 1;
+            this.displayAgentSchedule(this.agentList[0].id);
+            console.log(res.meta.agents);
+          })
+          .catch(err => console.log(err));
+      }
     },
     //full calendar functions
     eventRender: function(event, element) {
