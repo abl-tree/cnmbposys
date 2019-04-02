@@ -39,4 +39,10 @@ class AgentController extends BaseController
         return $this->absorb($this->agent_repo->fetchAgent($data))->json();
     }
 
+    public function search(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->agent_repo->searchAgent($data))->json();
+    }
+
 }

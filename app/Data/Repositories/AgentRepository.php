@@ -55,13 +55,13 @@ class AgentRepository extends BaseRepository
 
         } else {
 
-            $data['where']  = [
-                [
-                    "target"   => "access_id",
-                    "operator" => "=",
-                    "value"    => '17',
-                ],
-            ];
+            // $data['where']  = [
+            //     [
+            //         "target"   => "access_id",
+            //         "operator" => "=",
+            //         "value"    => '17',
+            //     ],
+            // ];
         }
 
         
@@ -89,6 +89,73 @@ class AgentRepository extends BaseRepository
             "code"       => 200,
             "title"      => "Successfully retrieved agents",
             "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+    public function searchAgent($data)
+    {
+        if(!isset($data['query'])){
+            return $this->setResponse([
+                "code"       => 500,
+                "title"      => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+
+        $result = $this->user;
+
+        $meta_index = "agents";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        $data['relations'] = ['info'];
+
+        $data['where']  = [
+            [
+                "target"   => "access_id",
+                "operator" => "=",
+                "value"    => '17',
+            ],
+        ];
+
+        if(isset($data['target'])){
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'info.firstname';
+                    $data['target'][] = 'info.middlename';
+                    $data['target'][] = 'info.lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if ($result == null) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No agents are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+        
+
+        $count_data['search'] = true;
+        $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully searched agents",
+            "meta" => [
                 $meta_index => $result,
                 "count"     => $count,
             ],

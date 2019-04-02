@@ -62,6 +62,11 @@ class ReportsController extends BaseController
         $data = $request->all();
         return $this->absorb($this->user_reports->getSanctionLevel($data))->json();     
     }
+     public function getAllUser(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getAllUser($data))->json();     
+    }
 
     /**
      * Store a newly created resource in storage.

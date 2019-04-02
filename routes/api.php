@@ -48,6 +48,7 @@ Route::group([
         // Route::post('delete/{id}', 'AgentController@delete');
         Route::get("fetch/{agent_id}", "AgentController@fetch");
         // Route::post('update/{id}', 'AgentController@update');
+        Route::get("search", "AgentController@search");
 
     });
 
@@ -60,6 +61,7 @@ Route::group([
         Route::post('delete/{schedule_id}', 'EventTitleController@delete');
         Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
         Route::post('update/{schedule_id}', 'EventTitleController@update');
+        Route::get('search', 'EventTitleController@search');
 
     });
 
@@ -80,10 +82,12 @@ Route::group([
         Route::get("user/{id}", "ReportsController@report");
         Route::get("getSanctionType", "ReportsController@getSanctionType");
         Route::get("getSanctionLevel", "ReportsController@getSanctionLevel");
+        Route::get("getAllUser", "ReportsController@getAllUser");
         Route::post("create", "ReportsController@create");
         Route::post("addSanctionType", "ReportsController@addSanctionType");
         Route::post("addSanctionLevel", "ReportsController@addSanctionLevel");
         Route::post("userResponse", "ReportsController@userResponse");
+
     });
 
 

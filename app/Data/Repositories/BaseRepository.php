@@ -5,6 +5,7 @@ namespace App\Data\Repositories;
 use App\Data\Models\BaseModel;
 use Common\Traits\Response;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class BaseRepository
 {
@@ -13,6 +14,9 @@ class BaseRepository
     protected $no_sort = [];
 
     /**
+     * A generic fetch function to retrieve data
+     * based on provided parameters
+     *
      * @param $data
      * @param \App\Data\Models\BaseModel $model
      * @return null
@@ -30,7 +34,19 @@ class BaseRepository
 
         if (isset($data['where'])) {
             foreach ((array) $data['where'] as $key => $conditions) {
-                $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
+                if(is_array($conditions['value']) && $conditions['operator'] == '='){
+                    $model = $model->whereIn($conditions['target'], $conditions['value']);
+                }else if(is_array($conditions['value']) && $conditions['operator'] == '!='){
+                    $model = $model->whereNotIn($conditions['target'], $conditions['value']);
+                }else{
+                    $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
+                }
+            }
+        }
+
+        if (isset($data['where_year'])) {
+            foreach ((array) $data['where_year'] as $key => $conditions) {
+                $model = $model->whereYear($conditions['target'], $conditions['operator'], $conditions['value']);
             }
         }
 
@@ -50,6 +66,10 @@ class BaseRepository
             $model = $model->with( $data['relations'] );
         }
 
+        if( isset($data['user_issues']) && $data['user_issues'] == true){
+            $model = $model->has( 'issue' );
+        }
+
 
         // dd( dump_query ( $model) );
 
@@ -59,6 +79,16 @@ class BaseRepository
 
         if (isset($data['single']) && $data['single'] === true) {
             $result = $model->get()->first();
+        } else if (isset($data['sort']) && in_array( $data['sort'], $this->no_sort )){
+            $result = $model->get();
+
+            if(in_array( $data['sort'], $this->no_sort )){
+                if(isset($data['order']) && $data['order'] == 'desc'){
+                    $result = $result->sortByDesc($data['sort'])->values()->all();
+                }else{
+                    $result = $result->sortBy($data['sort'])->values()->all();
+                }
+            }
         } else {
             $result = $model->get()->all();
         }
@@ -66,6 +96,13 @@ class BaseRepository
         return $result;
     }
 
+    /**
+     * Counts the number of elements in a given data set.
+     *
+     * @param $data
+     * @param $model
+     * @return null
+     */
     public function countData($data, $model)
     {
         $remove = [
@@ -82,7 +119,12 @@ class BaseRepository
 
         $data['count'] = true;
 
-        return $this->fetchGeneric($data, $model);
+        if(isset($data['search']) && $data['search'] == true){
+            return $this->genericSearch($data, $model);
+        } else {
+            return $this->fetchGeneric($data, $model);
+        }
+
     }
 
     /**
@@ -125,10 +167,16 @@ class BaseRepository
             }
 
         });
-
+        
         if (isset($data['where'])) {
             foreach ((array) $data['where'] as $key => $conditions) {
-                $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
+                if(is_array($conditions['value']) && $conditions['operator'] == '='){
+                    $model = $model->whereIn($conditions['target'], $conditions['value']);
+                }else if(is_array($conditions['value']) && $conditions['operator'] == '!='){
+                    $model = $model->whereNotIn($conditions['target'], $conditions['value']);
+                }else{
+                    $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
+                }
             }
         }
 
@@ -148,11 +196,19 @@ class BaseRepository
             $model = $model->with( $data['relations'] );
         }
 
+        // dd( dump_query ( $model) );
+
+        if (isset($data['count']) && $data['count'] === true) {
+            return $model->get()->count();
+        }
+
         // dd( dump_query ( $model), $data );
         return $model;
     }
 
     /**
+     * Creates search term used by genericSearch
+     *
      * @param array $data
      * @param string $column
      * @return string

@@ -21,14 +21,20 @@ class AgentScheduleRepository extends BaseRepository
 
     protected 
         $agent_schedule,
-        $user;
+        $user,
+        $user_info,
+        $event_title;
 
     public function __construct(
         AgentSchedule $agentSchedule,
-        User $user
+        User $user,
+        UserInfo $userInfo,
+        EventTitle $eventTitle
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
+        $this->user_info = $userInfo;
+        $this->event_title = $eventTitle;
     }
 
     public function excelData($data)
@@ -83,10 +89,16 @@ class AgentScheduleRepository extends BaseRepository
             if (!isset($data['user_id']) ||
                 !is_numeric($data['user_id']) ||
                 $data['user_id'] <= 0) {
-                return $this->setResponse([ 
-                    'code'  => 500,
-                    'title' => "User ID is not set.",
-                ]);
+                
+                if(isset($data['email'])){
+                    $user = $this->user->where('email', $data['email'])->first();
+                    $data['user_id'] = $user->id;
+                }else{
+                    return $this->setResponse([ 
+                        'code'  => 500,
+                        'title' => "User ID is not set.",
+                    ]);
+                }    
             }
 
             if (!isset($data['title_id'])) {
@@ -116,7 +128,7 @@ class AgentScheduleRepository extends BaseRepository
         // existence check
 
         if (isset($data['user_id'])) {
-            if (!UserInfo::find($data['user_id'])) {
+            if (!$this->user_info->find($data['user_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "User ID is not available.",
@@ -125,7 +137,7 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         if (isset($data['title_id'])) {
-            if (!EventTitle::find($data['title_id'])) {
+            if (!$this->event_title->find($data['title_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "Title ID is not available.",

@@ -436,6 +436,66 @@ class ReportsRepository extends BaseRepository
         ]);
     }
 
+     public function getAllUser($data = [])
+    {
+        $meta_index = "All Users";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "Users";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "!=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['sanction_type_id'] = $data['id'];
+
+        }
+        $count_data = $data;
+        $data['relations'] = ["accesslevel"];   
+        $result = $this->fetchGeneric($data, $this->user);
+         $results=(object)[];
+        foreach ($result as $key => $value) {
+             if($value->email!="dev.team@cnmsolutions.net"){        
+                $results->$key = $value;
+                $count++;
+             }
+         } 
+
+
+        if (!$results) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Types are found",
+                "meta"       => [
+                    $meta_index => $results,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+       // $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Type List",
+            "description"=>"Sanction Type",
+            "meta"       => [
+                $meta_index => $results,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
 
 
 
