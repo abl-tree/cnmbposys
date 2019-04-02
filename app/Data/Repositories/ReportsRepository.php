@@ -2,6 +2,7 @@
 namespace App\Data\Repositories;
 
 use App\Data\Models\UserInfo;
+use App\Data\Models\Users;
 use App\User;
 use App\Data\Models\UserReport;
 use App\Data\Models\SanctionType;
@@ -14,6 +15,7 @@ class ReportsRepository extends BaseRepository
 
     protected 
         $user_info,
+        $users,
         $user,
         $user_reports,
         $sanction_type,
@@ -22,6 +24,7 @@ class ReportsRepository extends BaseRepository
 
     public function __construct(
         UserInfo $user_info,
+        Users $users,
         User $user,
         SanctionType $sanction_type,
         SanctionLevel $sanction_level,
@@ -29,6 +32,7 @@ class ReportsRepository extends BaseRepository
         UserReport $user_reports
     ) {
         $this->user_info = $user_info;
+        $this->users = $users;
         $this->user = $user;
         $this->user_reports = $user_reports;
         $this->sanction_level = $sanction_level;
@@ -63,8 +67,10 @@ class ReportsRepository extends BaseRepository
         $result = $this->fetchGeneric($data, $this->user_info);
         $results=(object)[];
         foreach ($result as $key => $value) {
+            $keys=0;
              if($value->reports!="[]"){        
-                $results->$key = $value;
+                $results->$keys = $value;
+                $keys++;
              }
          } 
 
@@ -438,7 +444,7 @@ class ReportsRepository extends BaseRepository
 
      public function getAllUser($data = [])
     {
-        $meta_index = "All Users";
+        $meta_index = "Users";
         $parameters = [];
         $count      = 0;
 
@@ -449,9 +455,9 @@ class ReportsRepository extends BaseRepository
             $data['single'] = false;
             $data['where']  = [
                 [
-                    "target"   => "id",
+                    "target"   => "uid",
                     "operator" => "!=",
-                    "value"    => $data['id'],
+                    "value"    => "3",
                 ],
             ];
 
@@ -460,35 +466,34 @@ class ReportsRepository extends BaseRepository
         }
         $count_data = $data;
         $data['relations'] = ["accesslevel"];   
-        $result = $this->fetchGeneric($data, $this->user);
-         $results=(object)[];
-        foreach ($result as $key => $value) {
-             if($value->email!="dev.team@cnmsolutions.net"){        
-                $results->$key = $value;
-                $count++;
-             }
-         } 
+        $data['where']  = [
+            [
+                "target"   => "email",
+                "operator" => "!=",
+                "value"    => "dev.team@cnmsolutions.net",
+            ],
+        ];
 
-
-        if (!$results) {
+        $result = $this->fetchGeneric($data, $this->users);
+        if (!$result) {
             return $this->setResponse([
                 'code'       => 404,
-                'title'      => "No Sanction Types are found",
+                'title'      => "No Users are found",
                 "meta"       => [
-                    $meta_index => $results,
+                    $meta_index => $result,
                 ],
                 "parameters" => $parameters,
             ]);
         }
        
-       // $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->users->getModel()));
 
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved Sanction Type List",
             "description"=>"Sanction Type",
             "meta"       => [
-                $meta_index => $results,
+                $meta_index => $result,
                 "count"     => $count
             ],
             

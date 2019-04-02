@@ -106,8 +106,11 @@ class UserInfo extends BaseModel
         return $this->belongsTo('\App\Data\Models\SanctionType', 'saction_type_id', 'type_number');
     }
     public function accesslevel(){
-       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'user_id');
+       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
+    public function access(){
+        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+     }
 
     public function getAllEmployee(){
         $query = DB::table('user_infos')
