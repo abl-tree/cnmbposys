@@ -501,6 +501,57 @@ class ReportsRepository extends BaseRepository
         ]);
     }
 
+    public function userFiledIR($data = [])
+    {
+       $meta_index = "ReportData";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "ReportData";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "filed_by",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['filed_by'] = $data['id'];
+
+        }
+        $count_data = $data;
+        $data['relations'] = ['filedby'];   
+        $result = $this->fetchGeneric($data, $this->user_reports);
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No IR are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->user_reports->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Filed IR by this User",
+            "description"=>"Filed Incident Reports",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
 
 
 

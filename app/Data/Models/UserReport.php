@@ -15,11 +15,15 @@ class UserReport extends BaseModel
        'user_reports_id', 'description','filed_by','sanction_type_id','sanction_level_id'
     ];
 
+    protected $hidden = [
+        'user_info'
+    ];
+
+
 
      public function user() {
         return $this->hasOne('\App\User', 'uid', 'user_reports_id');
     }
-
     public function SanctionType(){
         return $this->belongsTo('\App\Data\Models\SanctionType','sanction_type_id','id');
     }
