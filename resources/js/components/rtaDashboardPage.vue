@@ -252,7 +252,7 @@
                 <button
                   class="btn btn-secondary"
                   style="font-size:0.8em;padding:3px 10px 3px 10px;"
-                  @click="showModal('ir-form-modal')"
+                  @click="fetchSanctionLevel(),fetchSanctionType(),showModal('ir-form-modal')"
                 >
                   <i class="ti-plus"></i>
                 </button>
@@ -430,11 +430,19 @@
               <div class="row pT-5">
                 <div class="col">
                   <label>Sanction Level:</label>
-                  <basic-select placeholder="Level"></basic-select>
+                  <model-select
+                    placeholder="Level"
+                    :options="select_option.sanction_level"
+                    v-model="selected.sanction_level"
+                  ></model-select>
                 </div>
                 <div class="col">
                   <label>Sanction Type:</label>
-                  <basic-select placeholder="Type"></basic-select>
+                  <model-select
+                    placeholder="Type"
+                    :options="select_option.sanction_type"
+                    v-model="selected.sanction_type"
+                  ></model-select>
                 </div>
               </div>
               <div class="row pT-15">
@@ -519,20 +527,68 @@
 
 <script>
 import { BasicSelect } from "vue-search-select";
+import { ModelSelect } from "vue-search-select";
 
 export default {
   components: {
-    BasicSelect
+    BasicSelect,
+    ModelSelect
   },
-  mounted() {
-    console.log("PAGE");
-    this.alertTO();
-  },
+  mounted() {},
   data() {
     return {
-      james: ""
+      select_option: {
+        sanction_level: [],
+        sanction_type: []
+      },
+      selected: {
+        sanction_level: { value: "", text: "" },
+        sanction_type: { value: "", text: "" }
+      }
     };
   },
-  methods: {}
+  methods: {
+    fetchSanctionLevel: function() {
+      let pageurl = "/api/v1/reports/getSanctionLevel";
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          this.select_option.sanction_level = this.injectSelectOptiontoObject(
+            res.meta["Sanction Level"],
+            "level_description"
+          );
+          console.log(this.select_option.sanction_level);
+        })
+        .catch(err => console.log(err));
+    },
+
+    fetchSanctionType: function() {
+      let pageurl = "/api/v1/reports/getSanctionType";
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          this.select_option.sanction_type = this.injectSelectOptiontoObject(
+            res.meta["Sanction Types"],
+            "type_description"
+          );
+          console.log(this.select_option.sanction_type);
+        })
+        .catch(err => console.log(err));
+    },
+
+    injectSelectOptiontoObject: function(obj, description) {
+      let desc_text = description;
+      let result = [];
+      obj.forEach(function(v, i) {
+        console.log();
+        let tmp = {
+          value: v.id,
+          text: v[desc_text]
+        };
+        result.push(tmp);
+      });
+      return result;
+    }
+  }
 };
 </script>
