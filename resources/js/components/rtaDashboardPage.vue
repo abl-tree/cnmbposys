@@ -543,13 +543,11 @@ export default {
     return {
       select_option: {
         sanction_level: [],
-        sanction_type: [],
-        all_employee: []
       },
+        sanction_type: []
       selected: {
         sanction_level: { value: "", text: "" },
-        sanction_type: { value: "", text: "" },
-        all_employee: { value: "", text: "" }
+        sanction_type: { value: "", text: "" }
       }
     };
   },
@@ -578,20 +576,6 @@ export default {
             "type_description"
           );
           console.log(this.select_option.sanction_type);
-        })
-        .catch(err => console.log(err));
-    },
-
-    fetchAllEmployee: function() {
-      let pageurl = "/api/v1/reports/getAllUser";
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-        //   this.select_option.all_employee = this.injectSelectOptiontoObject(
-        //     res.meta["All Users"],
-        //     "full_name"
-        //   );
-        //   console.log(this.select_option.sanction_type);
         })
         .catch(err => console.log(err));
     },

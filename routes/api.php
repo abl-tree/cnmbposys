@@ -80,6 +80,7 @@ Route::group([
 
         Route::get("/", "ReportsController@index");
         Route::get("user/{id}", "ReportsController@report");
+        Route::get("user_filed_ir/{id}", "ReportsController@userFiledIR");
         Route::get("getSanctionType", "ReportsController@getSanctionType");
         Route::get("getSanctionLevel", "ReportsController@getSanctionLevel");
         Route::get("getAllUser", "ReportsController@getAllUser");
