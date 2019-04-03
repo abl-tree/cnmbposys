@@ -101,6 +101,15 @@ Vue.component("profile-preview-modal", profilePreview);
 import VModal from "vue-js-modal";
 Vue.use(VModal);
 
+
+import Notifications from 'vue-notification';
+import velocity from 'velocity-animate';
+
+Vue.use(Notifications, {
+    velocity
+})
+
+
 // import {
 //     VSelect
 // } from 'vue-search-select';
