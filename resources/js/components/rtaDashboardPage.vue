@@ -224,16 +224,10 @@
                   </span>
                 </span>
                 <span class="peer">
-                  <button
-                    class="btn btn-outline-secondary"
-                    style="font-size:0.8em;padding:3px 10px 3px 10px;"
-                  >
+                  <button class="btn btn-outline-secondary btn-custom-size">
                     <i class="ti-close"></i>
                   </button>
-                  <button
-                    class="btn btn-outline-danger"
-                    style="font-size:0.8em;padding:3px 10px 3px 10px;"
-                  >Manage</button>
+                  <button class="btn btn-outline-danger btn-custom-size">Manage</button>
                 </span>
               </div>
             </div>
@@ -250,9 +244,8 @@
               </div>
               <div class="peer">
                 <button
-                  class="btn btn-secondary"
-                  style="font-size:0.8em;padding:3px 10px 3px 10px;"
-                  @click="fetchSanctionLevel(),fetchSanctionType(),showModal('ir-form-modal')"
+                  class="btn btn-secondary btn-custom-size"
+                  @click="clearForm('incident_report'),fetchSanctionLevel(),fetchSanctionType(),fetchAllEmployee(),showModal('incident_report')"
                 >
                   <i class="ti-plus"></i>
                 </button>
@@ -286,11 +279,7 @@
                   </td>
                   <td>
                     <div class="btn-group">
-                      <button
-                        class="btn btn-xs btn-info ti-eye view-employee"
-                        data-toggle="modal"
-                        data-target="#ir-response-modal"
-                      ></button>
+                      <button class="btn btn-xs btn-info ti-eye view-employee btn-custom-size"></button>
                     </div>
                   </td>
                 </tr>
@@ -317,91 +306,102 @@
           </div>
         </div>
       </div>
-      <!-- Sanction Levels -->
-      <div class="bd bgc-white p-20 mY-20">
-        <div class="layers">
-          <div class="layer w-100 mB-10">
-            <div class="peers">
-              <div class="peer peer-greed">
-                <h6 class="lh-1">Sanction Levels</h6>
-              </div>
-              <div class="peer">
-                <button
-                  class="btn btn-secondary"
-                  style="font-size:0.8em;padding:3px 10px 3px 10px;"
-                  @click="showModal('sanction-level-form-modal')"
-                >
-                  <i class="ti-plus"></i>
-                </button>
+
+      <div>
+        <div class="container">
+          <div class="row">
+            <!-- Sanction Levels -->
+            <div class="bd bgc-white p-20 col mR-5">
+              <div class="layers">
+                <div class="layer w-100 mB-10">
+                  <div class="peers">
+                    <div class="peer peer-greed">
+                      <h6 class="lh-1">Sanction Levels</h6>
+                    </div>
+                    <div class="peer">
+                      <button
+                        class="btn btn-secondary btn-custom-size"
+                        @click="showModal('sanction_level')"
+                      >
+                        <i class="ti-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Level</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="levels in table.sanction_level['Sanction Level']"
+                        v-bind:key="levels.id"
+                      >
+                        <td>{{levels.level_number}}</td>
+                        <td>{{levels.level_description}}</td>
+                        <td>
+                          <button class="btn btn-dark btn-custom-size">
+                            <i class="ti-pencil"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
+            <!-- Sanction Types -->
+            <div class="bd bgc-white p-20 col mL-5">
+              <div class="layers">
+                <div class="layer w-100 mB-10">
+                  <div class="peers">
+                    <div class="peer peer-greed">
+                      <h6 class="lh-1">Sanction Types</h6>
+                    </div>
+                    <div class="peer">
+                      <button
+                        class="btn btn-secondary btn-custom-size"
+                        @click="showModal('sanction_type')"
+                      >
+                        <i class="ti-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Level</th>
-                  <th>Description</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Written</td>
-                  <td>
-                    <button class="btn btn-dark">
-                      <i class="ti-pencil"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- Sanction Types -->
-      <div class="bd bgc-white p-20 mY-20">
-        <div class="layers">
-          <div class="layer w-100 mB-10">
-            <div class="peers">
-              <div class="peer peer-greed">
-                <h6 class="lh-1">Sanction Types</h6>
-              </div>
-              <div class="peer">
-                <button
-                  class="btn btn-secondary"
-                  style="font-size:0.8em;padding:3px 10px 3px 10px;"
-                  @click="showModal('sanction-type-form-modal')"
-                >
-                  <i class="ti-plus"></i>
-                </button>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Type ID</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="types in table.sanction_type['Sanction Types']"
+                        v-bind:key="types.id"
+                      >
+                        <td>{{types.type_number}}</td>
+                        <td>{{types.type_description}}</td>
+                        <td>
+                          <button class="btn btn-dark btn-custom-size">
+                            <i class="ti-pencil"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Type ID</th>
-                  <th>Description</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Absentism</td>
-                  <td>
-                    <button class="btn btn-dark">
-                      <i class="ti-pencil"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
@@ -411,7 +411,7 @@
     <ir-response-modal></ir-response-modal>
 
     <!-- IR Form Modal -->
-    <modal name="ir-form-modal" pivotY="0.2" scrollable="true" height="auto">
+    <modal name="incident_report" pivotY="0.2" scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Incident Report</h5>
@@ -425,8 +425,8 @@
                     <label for="exampleFormControlSelect1">To:</label>
                     <model-select
                       placeholder="Names"
-                      :options="select_option.all_employee"
-                      v-model="selected.all_employee"
+                      :options="form.incident_report.select_option.all_employee"
+                      v-model="form.incident_report.selected.all_employee"
                     ></model-select>
                   </div>
                 </div>
@@ -436,16 +436,16 @@
                   <label>Sanction Level:</label>
                   <model-select
                     placeholder="Level"
-                    :options="select_option.sanction_level"
-                    v-model="selected.sanction_level"
+                    :options="form.incident_report.select_option.sanction_level"
+                    v-model="form.incident_report.selected.sanction_level"
                   ></model-select>
                 </div>
                 <div class="col">
                   <label>Sanction Type:</label>
                   <model-select
                     placeholder="Type"
-                    :options="select_option.sanction_type"
-                    v-model="selected.sanction_type"
+                    :options="form.incident_report.select_option.sanction_type"
+                    v-model="form.incident_report.selected.sanction_type"
                   ></model-select>
                 </div>
               </div>
@@ -460,14 +460,14 @@
         </div>
         <div class="e-modal-footer bd">
           <div style="text-align:right">
-            <button class="btn btn-secondary" @click="hideModal('ir-form-modal')">Cancel</button>
+            <button class="btn btn-secondary" @click="hideModal('incident_report')">Cancel</button>
             <button class="btn btn-danger">Confirm</button>
           </div>
         </div>
       </div>
     </modal>
     <!-- Sanction Level Form Modal -->
-    <modal name="sanction-level-form-modal" pivotY="0.2" scrollable="true" height="auto">
+    <modal name="sanction_level" pivotY="0.2" scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Sanction Level</h5>
@@ -477,12 +477,18 @@
             <form action>
               <div class="row pT-5">
                 <div class="col">
-                  <label>No:</label>
-                  <basic-select placeholder="Level"></basic-select>
+                  <label>Number:</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="1"
+                    step="1"
+                    v-model="form.sanction_level.level"
+                  >
                 </div>
                 <div class="col">
                   <label>Description:</label>
-                  <basic-select placeholder="Type"></basic-select>
+                  <input type="text" class="form-control" v-model="form.sanction_level.description">
                 </div>
               </div>
             </form>
@@ -490,14 +496,17 @@
         </div>
         <div class="e-modal-footer bd">
           <div style="text-align:right">
-            <button class="btn btn-secondary" @click="hideModal('sanction-level-form-modal')">Cancel</button>
-            <button class="btn btn-danger">Confirm</button>
+            <button class="btn btn-secondary" @click="hideModal('sanction_level')">Cancel</button>
+            <button
+              class="btn btn-danger"
+              @click="submitForm('sanction_level',form.sanction_level.action)"
+            >Confirm</button>
           </div>
         </div>
       </div>
     </modal>
     <!-- Sanction Form Modal -->
-    <modal name="sanction-type-form-modal" pivotY="0.2" scrollable="true" height="auto">
+    <modal name="sanction_type" pivotY="0.2" scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Sanction Level</h5>
@@ -520,12 +529,13 @@
         </div>
         <div class="e-modal-footer bd">
           <div style="text-align:right">
-            <button class="btn btn-secondary" @click="hideModal('sanction-type-form-modal')">Cancel</button>
+            <button class="btn btn-secondary" @click="hideModal('sanction_type')">Cancel</button>
             <button class="btn btn-danger">Confirm</button>
           </div>
         </div>
       </div>
     </modal>
+    <notifications group="foo" animation-type="velocity" position="bottom right"/>
   </div>
 </template>
 
@@ -538,16 +548,59 @@ export default {
     BasicSelect,
     ModelSelect
   },
-  mounted() {},
+  mounted() {
+    this.fetchTableObject("sanction_level");
+    this.fetchTableObject("sanction_type");
+    console.log(this.received_incident_report);
+  },
   data() {
     return {
-      select_option: {
-        sanction_level: [],
+      user_id: "",
+      endpoints: {
+        get: {
+          sanction_level: "/api/v1/reports/getSanctionLevel",
+          sanction_type: "/api/v1/reports/getSanctionType",
+          all_employee: "/api/v1/reports/getAllUsers",
+          received_incident_report: "/api/v1/reports/user/" + this.user_id
+        },
+        create: {
+          sanction_level: "/api/v1/reports/addSanctionLevel",
+          sanction_type: "/api/v1/reports/addSanctionType"
+        },
+        table: {
+          sanction_level: "/api/v1/reports/getSanctionLevel",
+          sanction_type: "/api/v1/reports/getSanctionType"
+        }
       },
+      form: {
+        incident_report: {
+          select_option: {
+            sanction_level: [],
+            sanction_type: [],
+            all_employee: []
+          },
+          selected: {
+            sanction_level: { value: "", text: "" },
+            sanction_level: { value: "", text: "" },
+            all_employee: { value: "", text: "" }
+          },
+          action: "create"
+        },
+        sanction_level: {
+          level: "",
+          description: "",
+          action: "create"
+        },
+        sanction_type: {
+          type: "",
+          description: "",
+          action: "create"
+        }
+      },
+      table: {
+        received_incident_report: [],
+        sanction_level: [],
         sanction_type: []
-      selected: {
-        sanction_level: { value: "", text: "" },
-        sanction_type: { value: "", text: "" }
       }
     };
   },
@@ -557,11 +610,11 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.select_option.sanction_level = this.injectSelectOptiontoObject(
+          this.form.incident_report.select_option.sanction_level = this.injectSelectOptiontoObject(
             res.meta["Sanction Level"],
             "level_description"
           );
-          console.log(this.select_option.sanction_level);
+          console.log(this.form.incident_report.select_option.sanction_level);
         })
         .catch(err => console.log(err));
     },
@@ -571,11 +624,24 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.select_option.sanction_type = this.injectSelectOptiontoObject(
+          this.form.incident_report.select_option.sanction_type = this.injectSelectOptiontoObject(
             res.meta["Sanction Types"],
             "type_description"
           );
-          console.log(this.select_option.sanction_type);
+          console.log(this.form.incident_report.select_option.sanction_type);
+        })
+        .catch(err => console.log(err));
+    },
+
+    fetchAllEmployee: function() {
+      let pageurl = "/api/v1/reports/getAllUser";
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          this.form.incident_report.select_option.all_employee = this.injectSelectOptiontoObject(
+            res.meta["Users"],
+            "full_name"
+          );
         })
         .catch(err => console.log(err));
     },
@@ -592,6 +658,93 @@ export default {
         result.push(tmp);
       });
       return result;
+    },
+
+    fetchTableObject: function(tableName) {
+      let pageurl = this.endpoints.table[tableName];
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          this.table[tableName] = res.meta;
+        })
+        .catch(err => console.log(err));
+    },
+
+    clearForm: function(formName) {
+      switch (formName) {
+        case "incident_report":
+          this.form.incident_report.selected.sanction_level = [];
+          this.form.incident_report.selected.sanction_type = [];
+          this.form.incident_report.selected.all_employee = [];
+          break;
+        case "sanction_level":
+          this.form.sanction_level.level = "";
+          this.form.sanction_level.description = "";
+          break;
+        case "sanction_type":
+          this.form.sanction_type.type = "";
+          this.form.sanction_type.description = "";
+          break;
+      }
+    },
+
+    submitForm: function(formName, action) {
+      let obj = [];
+      let pageurl = "";
+      let validated = false;
+      switch (formName) {
+        case "incident_report":
+          break;
+
+        case "sanction_level":
+          if (
+            this.form.sanction_level.level != "" &&
+            this.form.sanction_level.description != ""
+          ) {
+            validated = true;
+            pageurl = this.endpoints[action].sanction_level;
+            obj = {
+              level_number: this.form.sanction_level.level,
+              level_description: this.form.sanction_level.description
+            };
+          }
+          break;
+
+        case "sanction_type":
+          break;
+      }
+      if (validated == true) {
+        this.store(obj, pageurl);
+        this.fetchTableObject(formName);
+        this.clearForm(formName);
+        this.hideModal(formName);
+        this.notify();
+      }
+    },
+
+    store: function(obj, pageurl) {
+      fetch(pageurl, {
+        method: "post",
+        body: JSON.stringify(obj),
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+        })
+        .catch(err => console.log(err));
+    },
+    notify: function(status) {
+      this.$notify({
+        group: "foo",
+        title: "Success Notification",
+        text:
+          "Your database has been updated!<br/><small>CNM Solutions WebApp</small>",
+        type: "success"
+      });
     }
   }
 };

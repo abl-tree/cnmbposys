@@ -4,7 +4,7 @@
     <div class="email-app">
       <div class="email-side-nav remain-height ov-h">
         <div class="h-100 layers">
-          <div class="p-20 bgc-grey-100 layer w-100">
+          <div class="p-20 bgc-grey-200 layer w-100">
             <input ref="file" type="file" id="file" name="file" hidden>
             <button @click="$refs.file.click()" class="btn btn-danger btn-block">Import excel</button>
           </div>
@@ -95,7 +95,7 @@
       <div class="email-wrapper row remain-height bgc-white ov-h">
         <div class="email-list h-100 layers">
           <div class="layer w-100">
-            <div class="bgc-grey-100 peers ai-c jc-sb p-20 fxw-nw">
+            <div class="bgc-grey-200 peers ai-c jc-sb p-20 fxw-nw">
               <div class="peer">
                 <div class="btn-group" role="group">
                   <button
@@ -111,11 +111,7 @@
                   >
                     <i class="ti-folder"></i>
                   </button>
-                  <button
-                    type="button"
-                    @click="showCUstomModal = true"
-                    class="btn bgc-white bdrs-2 mR-3 cur-p"
-                  >
+                  <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
                     <i class="ti-tag"></i>
                   </button>
                   <div class="btn-group" role="group">
@@ -217,7 +213,7 @@
         </div>
         <div class="email-content h-100">
           <div class="h-100 pos-r" style="overflow-y:auto">
-            <div class="bgc-grey-100 peers ai-c jc-sb p-20 fxw-nw d-n@md+">
+            <div class="bgc-grey-200 peers ai-c jc-sb p-20 fxw-nw d-n@md+">
               <div class="peer">
                 <div class="btn-group" role="group">
                   <button type="button" class="back-to-mailbox btn bgc-white bdrs-2 mR-3 cur-p">
