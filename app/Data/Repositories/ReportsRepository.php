@@ -572,10 +572,22 @@ class ReportsRepository extends BaseRepository
                   $last_child=$value->accesslevelhierarchy->child_id;
                   $results->$keys = $value;
                 foreach ($result as $key => $val) {
+                    $last_child2=null;
                     if($val->accesslevelhierarchy->parent_id==$last_child){
                         $keys++;
                         $count++;  
                         $results->$keys = $val;
+                        foreach ($result as $key => $vals) {
+                            $last_child2=$val->accesslevelhierarchy->child_id;
+                            if($vals->accesslevelhierarchy->parent_id==$last_child2){
+                                $keys++;
+                                $count++;  
+                                $results->$keys = $vals;
+                                
+                            }
+        
+                        } 
+                        
                     }
 
                 } 
