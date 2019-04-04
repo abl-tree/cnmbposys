@@ -67,6 +67,16 @@ class ReportsController extends BaseController
         $data = $request->all();
         return $this->absorb($this->user_reports->getAllUser($data))->json();     
     }
+    public function getSanctionTypes(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getSanctionTypes($data))->json();     
+    }
+     public function getSanctionLevels(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getSanctionLevels($data))->json();     
+    }
    
     /**
      * Store a newly created resource in storage.
@@ -119,6 +129,22 @@ class ReportsController extends BaseController
         }
 
         return $this->absorb($this->user_reports->getAllUserUnder($data))->json();
+    }
+
+    public function getSelectAllUserUnder(Request $request, $id)
+    {
+        $data['id'] = $id;
+        
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "User ID is invalid.",
+            ]);
+        }
+
+        return $this->absorb($this->user_reports->getSelectAllUserUnder($data))->json();
     }
 
 

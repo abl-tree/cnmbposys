@@ -81,8 +81,11 @@ Route::group([
         Route::get("/", "ReportsController@index");
         Route::get("user/{id}", "ReportsController@report");
         Route::get("user_filed_ir/{id}", "ReportsController@userFiledIR");
-        Route::get("sanction_types", "ReportsController@getSanctionType");
-        Route::get("sanction_levels", "ReportsController@getSanctionLevel");
+        Route::get("select_sanction_types", "ReportsController@getSanctionType");
+        Route::get("select_sanction_levels", "ReportsController@getSanctionLevel");
+        Route::get("select_all_users/{id}", "ReportsController@getSelectAllUserUnder");
+        Route::get("sanction_types", "ReportsController@getSanctionTypes");
+        Route::get("sanction_levels", "ReportsController@getSanctionLevels");
         Route::get("all_users", "ReportsController@getAllUser");
         Route::get("all_users/{id}", "ReportsController@getAllUserUnder");
         Route::post("create", "ReportsController@create");
