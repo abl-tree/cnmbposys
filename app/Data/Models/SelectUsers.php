@@ -8,7 +8,7 @@ use App\Data\Models\UserInfo;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\BaseModel;
 
-class Users extends BaseModel
+class SelectUsers extends BaseModel
 {
     use Notifiable;
     protected $primaryKey = 'id';
@@ -46,7 +46,9 @@ class Users extends BaseModel
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'hierarchy','user_info','accesslevel','accesslevelhierarchy'
+        'password', 'remember_token', 'hierarchy','user_info',
+        'accesslevel','accesslevelhierarchy','uid','email', 'password', 
+        'access_id','loginFlag','company_id','created_at','updated_at','deleted_at','contract','id'
     ];
 
   

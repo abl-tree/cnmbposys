@@ -3,10 +3,13 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\UserInfo;
 use App\Data\Models\Users;
+use App\Data\Models\SelectUsers;
 use App\User;
 use App\Data\Models\UserReport;
 use App\Data\Models\SanctionType;
 use App\Data\Models\SanctionLevel;
+use App\Data\Models\SanctionTypes;
+use App\Data\Models\SanctionLevels;
 use App\Data\Models\ReportResponse;
 use App\Data\Repositories\BaseRepository;
 
@@ -16,27 +19,36 @@ class ReportsRepository extends BaseRepository
     protected 
         $user_info,
         $users,
+        $select_users,
         $user,
         $user_reports,
         $sanction_type,
+        $sanction_types,
+        $sanction_levels,
         $report_response,
         $sanction_level;
 
     public function __construct(
         UserInfo $user_info,
         Users $users,
+        SelectUsers $select_users,
         User $user,
         SanctionType $sanction_type,
         SanctionLevel $sanction_level,
+        SanctionTypes $sanction_types,
+        SanctionLevels $sanction_levels,
         ReportResponse $report_response,
         UserReport $user_reports
     ) {
         $this->user_info = $user_info;
         $this->users = $users;
+        $this->select_users = $select_users;
         $this->user = $user;
         $this->user_reports = $user_reports;
         $this->sanction_level = $sanction_level;
         $this->sanction_type = $sanction_type;
+        $this->sanction_levels = $sanction_levels;
+        $this->sanction_types = $sanction_types;
         $this->report_response = $report_response;
     } 
 
@@ -65,12 +77,10 @@ class ReportsRepository extends BaseRepository
         $count_data = $data;
         $data['relations'] = ["reports"];   
         $result = $this->fetchGeneric($data, $this->user_info);
-        $results=(object)[];
+        $results=[];
         foreach ($result as $key => $value) {
-            $keys=0;
              if($value->reports!="[]"){        
-                $results->$keys = $value;
-                $keys++;
+                array_push($results,$value);
              }
          } 
 
@@ -182,11 +192,11 @@ class ReportsRepository extends BaseRepository
         $count_data = $data;
         $data['relations'] = ["reports"];   
         $result = $this->fetchGeneric($data, $this->user_info);
-        $results=(object)[];
+        $results=[];
         $keys=0;
         foreach ($result as $key => $value) {
              if($value->reports!="[]"){        
-                $results->$keys = $value;
+                array_push($results,$value);
                 $keys++;
              }
          } 
@@ -343,14 +353,14 @@ class ReportsRepository extends BaseRepository
 
     public function getSanctionType($data = [])
     {
-        $meta_index = "sanction_types";
+        $meta_index = "options";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "sanction_types";
+            $meta_index     = "options";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -394,14 +404,14 @@ class ReportsRepository extends BaseRepository
     }
      public function getSanctionLevel($data = [])
     {
-        $meta_index = "santion_levels";
+        $meta_index = "options";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "santion_levels";
+            $meta_index     = "options";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -564,25 +574,25 @@ class ReportsRepository extends BaseRepository
         $count_data = $data;
         $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
         $result = $this->fetchGeneric($data, $this->users);
-        $results=(object)[];
+        $results=[];
         $keys=0;
         $last_child=null;
         foreach ($result as $key => $value) {
               if($value->accesslevelhierarchy->parent_id==$data['id']){
                   $last_child=$value->accesslevelhierarchy->child_id;
-                  $results->$keys = $value;
+                  array_push($results,$value);
                 foreach ($result as $key => $val) {
                     $last_child2=null;
                     if($val->accesslevelhierarchy->parent_id==$last_child){
                         $keys++;
                         $count++;  
-                        $results->$keys = $val;
+                        array_push($results,$val);
                         foreach ($result as $key => $vals) {
                             $last_child2=$val->accesslevelhierarchy->child_id;
                             if($vals->accesslevelhierarchy->parent_id==$last_child2){
                                 $keys++;
                                 $count++;  
-                                $results->$keys = $vals;
+                                array_push($results,$vals);
                                 
                             }
         
@@ -617,6 +627,179 @@ class ReportsRepository extends BaseRepository
             "description"=>"Users under this Parent",
             "meta"       => [
                 $meta_index => $results,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
+    public function getSelectAllUserUnder($data = [])
+    {
+        $meta_index = "metadata";
+        $parameters = [];
+        $count      = 0;
+         
+
+        $count_data = $data;
+        $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
+        $result = $this->fetchGeneric($data, $this->select_users);
+        $results=[];
+        $keys=0;
+        $last_child=null;
+        foreach ($result as $key => $value) {
+              if($value->accesslevelhierarchy->parent_id==$data['id']){
+                  $last_child=$value->accesslevelhierarchy->child_id;
+                  array_push($results,$value);
+                foreach ($result as $key => $val) {
+                    $last_child2=null;
+                    if($val->accesslevelhierarchy->parent_id==$last_child){
+                        $keys++;
+                        $count++;  
+                        array_push($results,$val);
+                        foreach ($result as $key => $vals) {
+                            $last_child2=$val->accesslevelhierarchy->child_id;
+                            if($vals->accesslevelhierarchy->parent_id==$last_child2){
+                                $keys++;
+                                $count++;  
+                                array_push($results,$vals);
+                                
+                            }
+        
+                        } 
+                        
+                    }
+
+                } 
+                
+                $keys++;
+                $count++;  
+            }
+            
+         } 
+
+        if (!$results) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No users found",
+                "meta"       => [
+                    $meta_index => $results,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        // $count = $this->countData($count_data, refresh_model($this->users->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Users under this Parent",
+            "description"=>"Users under this Parent",
+            "meta"       => [
+                $meta_index => $results,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
+    public function getSanctionTypes($data = [])
+    {
+        $meta_index = "options";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "options";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['sanction_type_id'] = $data['id'];
+
+        }
+        $count_data = $data;
+        $data['relations'] = [];   
+        $result = $this->fetchGeneric($data, $this->sanction_types);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Types are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_types->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Type List",
+            "description"=>"Sanction Type",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+     public function getSanctionLevels($data = [])
+    {
+        $meta_index = "options";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "options";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['sanction_level_id'] = $data['id'];
+
+        }
+        $count_data = $data;
+        $data['relations'] = [];   
+        $result = $this->fetchGeneric($data, $this->sanction_levels);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Levels are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_levels->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Level List",
+            "description"=>"Sanction Level",
+            "meta"       => [
+                $meta_index => $result,
                 "count"     => $count
             ],
             
