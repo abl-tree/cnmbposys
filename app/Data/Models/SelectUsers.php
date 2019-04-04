@@ -14,7 +14,7 @@ class SelectUsers extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'value','name'
+       'value','text'
     ];
 
 
@@ -64,7 +64,7 @@ class SelectUsers extends BaseModel
     public function accesslevelhierarchy(){
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
      }
-    public function getNameAttribute(){
+    public function getTextAttribute(){
         $name = null;
         if(isset($this->user_info)){
             $name = $this->user_info->full_name;
