@@ -253,7 +253,7 @@
             </div>
           </div>
 
-          <div class="table-responsive">
+          <div class="table-scroll-200">
             <table class="table">
               <thead>
                 <tr>
@@ -330,7 +330,7 @@
                 </div>
 
                 <div class="table-responsive">
-                  <table class="table">
+                  <table class="table table-scroll-200">
                     <thead>
                       <tr>
                         <th>Level</th>
@@ -375,7 +375,7 @@
                   </div>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-scroll-200">
                   <table class="table">
                     <thead>
                       <tr>
@@ -411,7 +411,7 @@
     <ir-response-modal></ir-response-modal>
 
     <!-- IR Form Modal -->
-    <modal name="incident_report" pivotY="0.2" scrollable="true" height="auto">
+    <modal name="incident_report" pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Incident Report</h5>
@@ -452,7 +452,7 @@
               <div class="row pT-15">
                 <div class="col">
                   <label>Report Description</label>
-                  <textarea name id cols="74" rows="5"></textarea>
+                  <textarea name id cols="74" rows="5" v-model="form.incident_report.textarea"></textarea>
                 </div>
               </div>
             </form>
@@ -467,7 +467,7 @@
       </div>
     </modal>
     <!-- Sanction Level Form Modal -->
-    <modal name="sanction_level" pivotY="0.2" scrollable="true" height="auto">
+    <modal name="sanction_level" pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Sanction Level</h5>
@@ -506,7 +506,7 @@
       </div>
     </modal>
     <!-- Sanction Form Modal -->
-    <modal name="sanction_type" pivotY="0.2" scrollable="true" height="auto">
+    <modal name="sanction_type" pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Sanction Level</h5>
@@ -584,6 +584,7 @@ export default {
             sanction_level: { value: "", text: "" },
             all_employee: { value: "", text: "" }
           },
+          rea: "",
           action: "create"
         },
         sanction_level: {
@@ -695,6 +696,7 @@ export default {
       let validated = false;
       switch (formName) {
         case "incident_report":
+          console.log(this.form.incident_report.textarea);
           break;
 
         case "sanction_level":
@@ -712,6 +714,17 @@ export default {
           break;
 
         case "sanction_type":
+          if (
+            this.form.sanction_type.type != "" &&
+            this.form.sanction_type.description != ""
+          ) {
+            validated = true;
+            pageurl = this.endpoints[action].sanction_type;
+            obj = {
+              type_number: this.form.sanction_type.type,
+              type_description: this.form.sanction_type.description
+            };
+          }
           break;
       }
       if (validated == true) {
