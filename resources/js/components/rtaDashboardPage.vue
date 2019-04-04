@@ -558,18 +558,26 @@ export default {
       user_id: "",
       endpoints: {
         get: {
-          sanction_level: "/api/v1/reports/getSanctionLevel",
-          sanction_type: "/api/v1/reports/getSanctionType",
-          all_employee: "/api/v1/reports/getAllUsers",
-          received_incident_report: "/api/v1/reports/user/" + this.user_id
+          sanction_level: "/api/v1/reports/sanction_levels",
+          sanction_type: "/api/v1/reports/sanction_types",
+          all_employee: "/api/v1/reports/all_users",
+          received_incident_report: "/api/v1/reports/user/" + this.user_id,
+          filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id
         },
         create: {
-          sanction_level: "/api/v1/reports/addSanctionLevel",
-          sanction_type: "/api/v1/reports/addSanctionType"
+          sanction_level: "/api/v1/reports/add_sanction_level",
+          sanction_type: "/api/v1/reports/add_sanction_type"
         },
         table: {
-          sanction_level: "/api/v1/reports/getSanctionLevel",
-          sanction_type: "/api/v1/reports/getSanctionType"
+          sanction_level: "/api/v1/reports/sanction_levels",
+          sanction_type: "/api/v1/reports/sanction_types",
+          received_incident_report: "/api/v1/reports/user/" + this.user_id,
+          filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id
+        },
+        select: {
+          sanction_level: "/api/v1/reports/sanction_levels",
+          sanction_type: "/api/v1/reports/sanction_types",
+          child_list: "/api/v1/reports/select_all_users/" + this.user_id
         }
       },
       form: {
@@ -606,59 +614,14 @@ export default {
     };
   },
   methods: {
-    fetchSanctionLevel: function() {
-      let pageurl = "/api/v1/reports/getSanctionLevel";
+    fetchSelectOptions: function(url, formName, element) {
+      let pageurl = url;
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.form.incident_report.select_option.sanction_level = this.injectSelectOptiontoObject(
-            res.meta["Sanction Level"],
-            "level_description"
-          );
-          console.log(this.form.incident_report.select_option.sanction_level);
+          this.form[formName].select_option[element] = res.meta.options;
         })
         .catch(err => console.log(err));
-    },
-
-    fetchSanctionType: function() {
-      let pageurl = "/api/v1/reports/getSanctionType";
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          this.form.incident_report.select_option.sanction_type = this.injectSelectOptiontoObject(
-            res.meta["Sanction Types"],
-            "type_description"
-          );
-          console.log(this.form.incident_report.select_option.sanction_type);
-        })
-        .catch(err => console.log(err));
-    },
-
-    fetchAllEmployee: function() {
-      let pageurl = "/api/v1/reports/getAllUser";
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          this.form.incident_report.select_option.all_employee = this.injectSelectOptiontoObject(
-            res.meta["Users"],
-            "full_name"
-          );
-        })
-        .catch(err => console.log(err));
-    },
-
-    injectSelectOptiontoObject: function(obj, description) {
-      let desc_text = description;
-      let result = [];
-      obj.forEach(function(v, i) {
-        console.log();
-        let tmp = {
-          value: v.id,
-          text: v[desc_text]
-        };
-        result.push(tmp);
-      });
-      return result;
     },
 
     fetchTableObject: function(tableName) {
