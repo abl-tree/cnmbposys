@@ -636,7 +636,7 @@ class ReportsRepository extends BaseRepository
 
     public function getSelectAllUserUnder($data = [])
     {
-        $meta_index = "metadata";
+        $meta_index = "options";
         $parameters = [];
         $count      = 0;
          
