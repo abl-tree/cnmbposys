@@ -579,3 +579,13 @@ table tr {
     font-size: 0.8em;
     padding: 3px 10px 3px 10px;
 }
+
+.table-scroll-200 {
+    overflow-y: auto;
+    height: 200px;
+}
+
+.table-scroll-200 th {
+    position: sticky;
+    top: 0;
+}
