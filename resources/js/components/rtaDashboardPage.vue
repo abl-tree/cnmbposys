@@ -245,7 +245,11 @@
               <div class="peer">
                 <button
                   class="btn btn-secondary btn-custom-size"
-                  @click="clearForm('incident_report'),fetchSanctionLevel(),fetchSanctionType(),fetchAllEmployee(),showModal('incident_report')"
+                  @click="clearForm('incident_report'),
+                  fetchSelectOptions(endpoints.select.child_list,'incident_report','child_list'),
+                  fetchSelectOptions(endpoints.select.sanction_level,'incident_report','sanction_level'),
+                  fetchSelectOptions(endpoints.select.sanction_type,'incident_report','sanction_type'),
+                  showModal('incident_report')"
                 >
                   <i class="ti-plus"></i>
                 </button>
@@ -253,7 +257,7 @@
             </div>
           </div>
 
-          <div class="table-scroll-200">
+          <div class="table-responsive">
             <table class="table">
               <thead>
                 <tr>
@@ -329,7 +333,7 @@
                   </div>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive table-scroll-200">
                   <table class="table table-scroll-200">
                     <thead>
                       <tr>
@@ -339,10 +343,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr
-                        v-for="levels in table.sanction_level['Sanction Level']"
-                        v-bind:key="levels.id"
-                      >
+                      <tr v-for="levels in table.sanction_level" v-bind:key="levels.id">
                         <td>{{levels.level_number}}</td>
                         <td>{{levels.level_description}}</td>
                         <td>
@@ -375,7 +376,7 @@
                   </div>
                 </div>
 
-                <div class="table-scroll-200">
+                <div class="table-scroll-200 table-responsive">
                   <table class="table">
                     <thead>
                       <tr>
@@ -385,10 +386,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr
-                        v-for="types in table.sanction_type['Sanction Types']"
-                        v-bind:key="types.id"
-                      >
+                      <tr v-for="types in table.sanction_type" v-bind:key="types.id">
                         <td>{{types.type_number}}</td>
                         <td>{{types.type_description}}</td>
                         <td>
@@ -411,7 +409,7 @@
     <ir-response-modal></ir-response-modal>
 
     <!-- IR Form Modal -->
-    <modal name="incident_report" pivotY="0.2" :scrollable="true" height="auto">
+    <modal name="incident_report" :pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Incident Report</h5>
@@ -425,8 +423,8 @@
                     <label for="exampleFormControlSelect1">To:</label>
                     <model-select
                       placeholder="Names"
-                      :options="form.incident_report.select_option.all_employee"
-                      v-model="form.incident_report.selected.all_employee"
+                      :options="form.incident_report.select_option.child_list"
+                      v-model="form.incident_report.selected.child_list"
                     ></model-select>
                   </div>
                 </div>
@@ -467,7 +465,7 @@
       </div>
     </modal>
     <!-- Sanction Level Form Modal -->
-    <modal name="sanction_level" pivotY="0.2" :scrollable="true" height="auto">
+    <modal name="sanction_level" :pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Sanction Level</h5>
@@ -506,7 +504,7 @@
       </div>
     </modal>
     <!-- Sanction Form Modal -->
-    <modal name="sanction_type" pivotY="0.2" :scrollable="true" height="auto">
+    <modal name="sanction_type" :pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Sanction Level</h5>
@@ -544,6 +542,7 @@ import { BasicSelect } from "vue-search-select";
 import { ModelSelect } from "vue-search-select";
 
 export default {
+  props: ["userId"],
   components: {
     BasicSelect,
     ModelSelect
@@ -551,16 +550,16 @@ export default {
   mounted() {
     this.fetchTableObject("sanction_level");
     this.fetchTableObject("sanction_type");
-    console.log(this.received_incident_report);
+    console.log(this.user_id);
   },
   data() {
     return {
-      user_id: "",
+      user_id: this.userId,
       endpoints: {
         get: {
           sanction_level: "/api/v1/reports/sanction_levels",
           sanction_type: "/api/v1/reports/sanction_types",
-          all_employee: "/api/v1/reports/all_users",
+          child_list: "/api/v1/reports/all_users",
           received_incident_report: "/api/v1/reports/user/" + this.user_id,
           filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id
         },
@@ -575,9 +574,9 @@ export default {
           filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id
         },
         select: {
-          sanction_level: "/api/v1/reports/sanction_levels",
-          sanction_type: "/api/v1/reports/sanction_types",
-          child_list: "/api/v1/reports/select_all_users/" + this.user_id
+          sanction_level: "/api/v1/reports/select_sanction_levels",
+          sanction_type: "/api/v1/reports/select_sanction_types",
+          child_list: "/api/v1/reports/select_all_users/1"
         }
       },
       form: {
@@ -585,14 +584,14 @@ export default {
           select_option: {
             sanction_level: [],
             sanction_type: [],
-            all_employee: []
+            child_list: []
           },
           selected: {
-            sanction_level: { value: "", text: "" },
-            sanction_level: { value: "", text: "" },
-            all_employee: { value: "", text: "" }
+            sanction_level: [],
+            sanction_type: [],
+            child_list: []
           },
-          rea: "",
+          textarea: "",
           action: "create"
         },
         sanction_level: {
@@ -619,7 +618,10 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.form[formName].select_option[element] = res.meta.options;
+          if (res.code == 200) {
+            this.form[formName].select_option[element] = res.meta.options;
+          }
+          // console.log(res.meta.options);
         })
         .catch(err => console.log(err));
     },
@@ -629,8 +631,10 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          console.log(res);
-          this.table[tableName] = res.meta;
+          // console.log(res);
+          if (res.code == 200) {
+            this.table[tableName] = res.meta.options;
+          }
         })
         .catch(err => console.log(err));
     },
@@ -640,7 +644,7 @@ export default {
         case "incident_report":
           this.form.incident_report.selected.sanction_level = [];
           this.form.incident_report.selected.sanction_type = [];
-          this.form.incident_report.selected.all_employee = [];
+          this.form.incident_report.selected.child_list = [];
           break;
         case "sanction_level":
           this.form.sanction_level.level = "";

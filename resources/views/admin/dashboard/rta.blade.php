@@ -2,5 +2,5 @@
 
 @section('content')
 
-   <rta-dashboard-section></rta-dashboard-section>
+   <rta-dashboard-section v-bind:user-Id="{{json_encode($pageOnload->id)}}"></rta-dashboard-section>
 @endsection

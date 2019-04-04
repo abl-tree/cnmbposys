@@ -453,7 +453,7 @@
       </modal>
       <!-- IR Response Form Modal -->
       <ir-response-modal></ir-response-modal>
-      <profile-preview-modal v-bind:user-profile="userProfile"></profile-preview-modal>
+      <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
       <!-- Modal -->
     </div>
   </div>
@@ -483,7 +483,7 @@ import moment from "moment";
 import { BasicSelect } from "vue-search-select";
 
 export default {
-  props: ["userProfile"],
+  props: ["userId"],
   components: { BasicSelect },
   mounted() {
     // console.log("rtapage mounted");
