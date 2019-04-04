@@ -67,7 +67,7 @@ class ReportsController extends BaseController
         $data = $request->all();
         return $this->absorb($this->user_reports->getAllUser($data))->json();     
     }
-
+   
     /**
      * Store a newly created resource in storage.
      *
@@ -105,6 +105,23 @@ class ReportsController extends BaseController
 
         return $this->absorb($this->user_reports->userFiledIR($data))->json();
     }
+    public function getAllUserUnder(Request $request, $id)
+    {
+        $data['id'] = $id;
+        
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "User ID is invalid.",
+            ]);
+        }
+
+        return $this->absorb($this->user_reports->getAllUserUnder($data))->json();
+    }
+
+
 
     /**
      * Display the specified resource.

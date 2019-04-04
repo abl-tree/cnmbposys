@@ -42,14 +42,14 @@ class ReportsRepository extends BaseRepository
 
     public function getAllReports($data = [])
     {
-        $meta_index = "ReportData";
+        $meta_index = "all_reports";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "ReportData";
+            $meta_index     = "all_reports";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -159,14 +159,14 @@ class ReportsRepository extends BaseRepository
 
       public function fetchUserReport($data = [])
     {
-       $meta_index = "ReportData";
+       $meta_index = "reports_data";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "ReportData";
+            $meta_index     = "reports_data";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -183,9 +183,11 @@ class ReportsRepository extends BaseRepository
         $data['relations'] = ["reports"];   
         $result = $this->fetchGeneric($data, $this->user_info);
         $results=(object)[];
+        $keys=0;
         foreach ($result as $key => $value) {
              if($value->reports!="[]"){        
-                $results->$key = $value;
+                $results->$keys = $value;
+                $keys++;
              }
          } 
 
@@ -341,14 +343,14 @@ class ReportsRepository extends BaseRepository
 
     public function getSanctionType($data = [])
     {
-        $meta_index = "Sanction Types";
+        $meta_index = "sanction_types";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "Sanction Types";
+            $meta_index     = "sanction_types";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -392,14 +394,14 @@ class ReportsRepository extends BaseRepository
     }
      public function getSanctionLevel($data = [])
     {
-        $meta_index = "Sanction Level";
+        $meta_index = "santion_levels";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "Sanction Types";
+            $meta_index     = "santion_levels";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -444,14 +446,14 @@ class ReportsRepository extends BaseRepository
 
      public function getAllUser($data = [])
     {
-        $meta_index = "Users";
+        $meta_index = "all_users";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "Users";
+            $meta_index     = "all_users";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -503,14 +505,14 @@ class ReportsRepository extends BaseRepository
 
     public function userFiledIR($data = [])
     {
-       $meta_index = "ReportData";
+       $meta_index = "meta_data";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "ReportData";
+            $meta_index     = "meta_data";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -545,6 +547,76 @@ class ReportsRepository extends BaseRepository
             "description"=>"Filed Incident Reports",
             "meta"       => [
                 $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
+    public function getAllUserUnder($data = [])
+    {
+        $meta_index = "metadata";
+        $parameters = [];
+        $count      = 0;
+         
+
+        $count_data = $data;
+        $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
+        $result = $this->fetchGeneric($data, $this->users);
+        $results=(object)[];
+        $keys=0;
+        $last_child=null;
+        foreach ($result as $key => $value) {
+              if($value->accesslevelhierarchy->parent_id==$data['id']){
+                  $last_child=$value->accesslevelhierarchy->child_id;
+                  $results->$keys = $value;
+                foreach ($result as $key => $val) {
+                    $last_child2=null;
+                    if($val->accesslevelhierarchy->parent_id==$last_child){
+                        $keys++;
+                        $count++;  
+                        $results->$keys = $val;
+                        foreach ($result as $key => $vals) {
+                            $last_child2=$val->accesslevelhierarchy->child_id;
+                            if($vals->accesslevelhierarchy->parent_id==$last_child2){
+                                $keys++;
+                                $count++;  
+                                $results->$keys = $vals;
+                                
+                            }
+        
+                        } 
+                        
+                    }
+
+                } 
+                
+                $keys++;
+                $count++;  
+            }
+            
+         } 
+
+        if (!$results) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No users found",
+                "meta"       => [
+                    $meta_index => $results,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        // $count = $this->countData($count_data, refresh_model($this->users->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Users under this Parent",
+            "description"=>"Users under this Parent",
+            "meta"       => [
+                $meta_index => $results,
                 "count"     => $count
             ],
             

@@ -58,6 +58,9 @@ class Users extends BaseModel
     public function accesslevel(){
        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
+    public function accesslevelhierarchy(){
+        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
+     }
     public function getFullNameAttribute(){
         $name = null;
         if(isset($this->user_info)){
