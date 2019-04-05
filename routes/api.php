@@ -94,6 +94,16 @@ Route::group([
         Route::post("user_reponse", "ReportsController@userResponse");
     });
 
+     Route::group([
+        "prefix"    => "users",
+    ], function () {
+
+        Route::get("/", "UserController@usersInfo");
+        Route::get("/{id}", "UserController@userInfo");
+    });
+
+
+
 
 });
 

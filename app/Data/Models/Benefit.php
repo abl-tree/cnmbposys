@@ -27,7 +27,7 @@ class Benefit extends BaseModel
         $this->attributes['name'] = ucwords($value);
     }
 
-    public function users() {
-        return $this->hasMany('\App\Data\Models\UserBenefit', 'benefit_id', 'id');
+    public function benefits() {
+        return $this->hasOne('\App\Data\Models\UserBenefit', 'benefit_id', 'id');
     }
 }

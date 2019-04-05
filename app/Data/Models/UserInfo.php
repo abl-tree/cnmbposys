@@ -109,7 +109,7 @@ class UserInfo extends BaseModel
        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
     public function accesslevelhierarchy(){
-        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'id', 'child_id');
+        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'id', 'access_id');
      }
     public function access(){
         return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
