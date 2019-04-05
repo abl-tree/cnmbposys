@@ -18,7 +18,7 @@ class pageAccess
         $position="";
         $pageAccess['hr'] = ['/','dashboard']; 
         $pageAccess['rta'] = ['/','dashboard','schedule']; 
-        $pageAccess['admin'] = ['/','dashboard','schedule'];
+        $pageAccess['admin'] = ['/','dashboard','rtadashboard','rtaschedule'];
         // if($request->user()->access->id < 15 && $request->user()->access->id > 11){
         //     // if(in_array($route,$pageAccess['rta'])){
         //     //     return redirect($route);

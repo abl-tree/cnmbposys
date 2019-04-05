@@ -30,7 +30,15 @@
 
 @if($pageOnload->user->access_id == 1)
     <li class="nav-item">
-        <a class='sidebar-link' href="/schedule">
+        <a class='sidebar-link' href="/rtadashboard">
+        <span class="icon-holder">
+            <i class="c-brown-500 ti-calendar"></i>
+        </span>
+        <span class="">RTA Dashboard</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class='sidebar-link' href="/rtaschedule">
         <span class="icon-holder">
             <i class="c-brown-500 ti-calendar"></i>
         </span>
