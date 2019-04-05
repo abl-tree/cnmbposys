@@ -270,38 +270,35 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr
+                  v-for="rir in table.received_incident_report.reports_data[0].reports"
+                  v-bind:key="rir.id"
+                >
                   <td>
-                    2
+                    {{rir.id}}
                     <span class="badge badge-pill badge-warning">NEW!</span>
                   </td>
-                  <td>10/20/18</td>
-                  <td>Written</td>
-                  <td>Absentism</td>
+                  <td>{{rir.created_at}}</td>
+                  <td>{{rir.sanction_level.text}}</td>
+                  <td>{{rir.sanction_type.text}}</td>
                   <td>
-                    <span class="badge badge-pill badge-danger">NO Reply</span>
-                  </td>
-                  <td>
-                    <div class="btn-group">
-                      <button class="btn btn-xs btn-info ti-eye view-employee btn-custom-size"></button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>10/01/18</td>
-                  <td>Verbal</td>
-                  <td>Absentism</td>
-                  <td>
-                    <span class="badge badge-pill badge-success">10/02/18</span>
+                    <span
+                      v-if="rir.agent_response==null"
+                      class="badge badge-pill badge-danger"
+                    >NO Reply</span>
+                    <span
+                      v-else
+                      class="badge badge-pill badge-success"
+                    >{{rir.agent_response.created_at}}</span>
                   </td>
                   <td>
                     <div class="btn-group">
                       <button
-                        class="btn btn-xs btn-info ti-eye view-employee"
-                        data-toggle="modal"
-                        data-target="#ir-response-modal"
-                      ></button>
+                        class="btn btn-xs btn-info view-employee btn-custom-size"
+                        @click="loadIRResponseForm(rir.id),showModal('incident_report_response')"
+                      >
+                        <i class="ti-eye"></i>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -343,7 +340,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="levels in table.sanction_level" v-bind:key="levels.id">
+                      <tr v-for="levels in table.sanction_level.options" v-bind:key="levels.id">
                         <td>{{levels.level_number}}</td>
                         <td>{{levels.level_description}}</td>
                         <td>
@@ -386,7 +383,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="types in table.sanction_type" v-bind:key="types.id">
+                      <tr v-for="types in table.sanction_type.options" v-bind:key="types.id">
                         <td>{{types.type_number}}</td>
                         <td>{{types.type_description}}</td>
                         <td>
@@ -406,9 +403,72 @@
     </div>
 
     <!-- Modals -->
-    <ir-response-modal></ir-response-modal>
-
-    <!-- IR Form Modal -->
+    <!-- Incident Report Response Modal -->
+    <modal
+      name="incident_report_response"
+      :pivotY="0.2"
+      :scrollable="true"
+      width="900px"
+      height="auto"
+    >
+      <div class="layer">
+        <div class="e-modal-header bd">
+          <h5 style="margin-bottom:0px">Incident Report Response</h5>
+        </div>
+        <div class="w-100 p-15 pT-80" style>
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="layer p-0">
+                  <!-- level -->
+                  <span
+                    class="badge badge-pill badge-primary"
+                  >{{this.form.incident_report_response.sanction.level}}</span>
+                  <!-- type -->
+                  <span
+                    class="badge badge-pill badge-dark"
+                  >{{this.form.incident_report_response.sanction.type}}</span>
+                </div>
+                <div class="layer bd mT-5 pY-20 pX-15">
+                  To: <h6>{{this.form.incident_report_response.received_by}},</h6>
+                  <br>
+                  <br>
+                  <!-- message content -->
+                  <div class="cntent">
+                    <pre class='ir_description'>{{this.form.incident_report_response.ir_description}}</pre>
+                    </div>
+                  <br>
+                  <h6>{{this.form.incident_report_response.filed_by}}</h6>
+                </div>
+                
+                <div
+                  class="alert-danger p-20 m-10"
+                >You have 24hours to submit a response for this report. Refusal of response will be penalize.</div>
+              </div>
+              <div class="col" style="padding-top:25px">
+                <textarea
+                  name
+                  id
+                  class="form-control"
+                  rows="15"
+                  v-model="form.incident_report_response.response"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="e-modal-footer bd">
+          <div style="text-align:right">
+            <button class="btn btn-secondary" @click="hideModal('incident_report_response')">Cancel</button>
+            <button
+              class="btn btn-danger"
+              @click="submitForm('incident_report_response',form.incident_report_response.action)"
+            >Confirm</button>
+          </div>
+        </div>
+      </div>
+    </modal>
+    <!-- Incident Report Modal -->
     <modal name="incident_report" :pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
@@ -459,7 +519,10 @@
         <div class="e-modal-footer bd">
           <div style="text-align:right">
             <button class="btn btn-secondary" @click="hideModal('incident_report')">Cancel</button>
-            <button class="btn btn-danger">Confirm</button>
+            <button
+              class="btn btn-danger"
+              @click="submitForm('incident_report',form.incident_report.action)"
+            >Confirm</button>
           </div>
         </div>
       </div>
@@ -514,12 +577,18 @@
             <form action>
               <div class="row pT-5">
                 <div class="col">
-                  <label>No:</label>
-                  <basic-select placeholder="Level"></basic-select>
+                  <label>Number:</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="1"
+                    step="1"
+                    v-model="form.sanction_type.type"
+                  >
                 </div>
                 <div class="col">
                   <label>Description:</label>
-                  <basic-select placeholder="Type"></basic-select>
+                  <input type="text" class="form-control" v-model="form.sanction_type.description">
                 </div>
               </div>
             </form>
@@ -528,7 +597,10 @@
         <div class="e-modal-footer bd">
           <div style="text-align:right">
             <button class="btn btn-secondary" @click="hideModal('sanction_type')">Cancel</button>
-            <button class="btn btn-danger">Confirm</button>
+            <button
+              class="btn btn-danger"
+              @click="submitForm('sanction_type',form.sanction_type.action)"
+            >Confirm</button>
           </div>
         </div>
       </div>
@@ -550,6 +622,7 @@ export default {
   mounted() {
     this.fetchTableObject("sanction_level");
     this.fetchTableObject("sanction_type");
+    this.fetchTableObject("received_incident_report");
     console.log(this.user_id);
   },
   data() {
@@ -565,12 +638,13 @@ export default {
         },
         create: {
           sanction_level: "/api/v1/reports/add_sanction_level",
-          sanction_type: "/api/v1/reports/add_sanction_type"
+          sanction_type: "/api/v1/reports/add_sanction_type",
+          incident_report: "/api/v1/reports/create"
         },
         table: {
           sanction_level: "/api/v1/reports/sanction_levels",
           sanction_type: "/api/v1/reports/sanction_types",
-          received_incident_report: "/api/v1/reports/user/" + this.user_id,
+          received_incident_report: "/api/v1/reports/user/" + this.userId,
           filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id
         },
         select: {
@@ -587,9 +661,9 @@ export default {
             child_list: []
           },
           selected: {
-            sanction_level: [],
-            sanction_type: [],
-            child_list: []
+            sanction_level: { value: "", text: "" },
+            sanction_type: { value: "", text: "" },
+            child_list: { value: "", text: "" }
           },
           textarea: "",
           action: "create"
@@ -603,12 +677,26 @@ export default {
           type: "",
           description: "",
           action: "create"
+        },
+        incident_report_response: {
+          sanction: {
+            type: "",
+            level: ""
+          },
+          ir_description: "",
+          ir_date: "",
+          received_by: "",
+          received_by_position:"",
+          filed_by: "",
+          filed_by_position:"",
+          response: ""
         }
       },
       table: {
-        received_incident_report: [],
         sanction_level: [],
-        sanction_type: []
+        sanction_type: [],
+        received_incident_report: [],
+        incident_report: []
       }
     };
   },
@@ -633,7 +721,7 @@ export default {
         .then(res => {
           // console.log(res);
           if (res.code == 200) {
-            this.table[tableName] = res.meta.options;
+            this.table[tableName] = res.meta;
           }
         })
         .catch(err => console.log(err));
@@ -642,28 +730,51 @@ export default {
     clearForm: function(formName) {
       switch (formName) {
         case "incident_report":
-          this.form.incident_report.selected.sanction_level = [];
-          this.form.incident_report.selected.sanction_type = [];
-          this.form.incident_report.selected.child_list = [];
+          this.form.incident_report.selected.sanction_level = {};
+          this.form.incident_report.selected.sanction_type = {};
+          this.form.incident_report.selected.child_list = {};
+          this.form.incident_report.action = "create";
           break;
         case "sanction_level":
           this.form.sanction_level.level = "";
           this.form.sanction_level.description = "";
+          this.form.sanction_level.action = "create";
           break;
         case "sanction_type":
           this.form.sanction_type.type = "";
           this.form.sanction_type.description = "";
+          this.form.sanction_type.action = "create";
           break;
       }
     },
 
     submitForm: function(formName, action) {
       let obj = [];
-      let pageurl = "";
+      let pageurl = this.endpoints[action][formName];
       let validated = false;
       switch (formName) {
         case "incident_report":
-          console.log(this.form.incident_report.textarea);
+          if (
+            this.isEmpty(this.form.incident_report.selected.child_list) ||
+            this.isEmpty(this.form.incident_report.selected.sanction_level) ||
+            this.isEmpty(this.form.incident_report.selected.sanction_type) ||
+            this.form.incident_report.textarea == ""
+          ) {
+            console.log("EMPTY");
+          } else {
+            validated = true;
+            obj = {
+              user_reports_id: this.form.incident_report.selected.child_list
+                .value,
+              filed_by: this.userId,
+              description: this.form.incident_report.textarea,
+              sanction_type_id: this.form.incident_report.selected.sanction_type
+                .value,
+              sanction_level_id: this.form.incident_report.selected
+                .sanction_level.value
+            };
+            console.log(obj);
+          }
           break;
 
         case "sanction_level":
@@ -672,21 +783,18 @@ export default {
             this.form.sanction_level.description != ""
           ) {
             validated = true;
-            pageurl = this.endpoints[action].sanction_level;
             obj = {
               level_number: this.form.sanction_level.level,
               level_description: this.form.sanction_level.description
             };
           }
           break;
-
         case "sanction_type":
           if (
             this.form.sanction_type.type != "" &&
             this.form.sanction_type.description != ""
           ) {
             validated = true;
-            pageurl = this.endpoints[action].sanction_type;
             obj = {
               type_number: this.form.sanction_type.type,
               type_description: this.form.sanction_type.description
@@ -695,15 +803,11 @@ export default {
           break;
       }
       if (validated == true) {
-        this.store(obj, pageurl);
-        this.fetchTableObject(formName);
-        this.clearForm(formName);
-        this.hideModal(formName);
-        this.notify();
+        this.store(obj, pageurl, action, formName);
       }
     },
 
-    store: function(obj, pageurl) {
+    store: function(obj, pageurl, action, formName) {
       fetch(pageurl, {
         method: "post",
         body: JSON.stringify(obj),
@@ -714,17 +818,66 @@ export default {
         .then(res => res.json())
         .then(data => {
           console.log(data);
+          if (data.code == 500) {
+            console.log("error");
+            this.notify("error", action);
+          } else {
+            this.fetchTableObject(formName);
+            this.clearForm(formName);
+            this.hideModal(formName);
+            this.notify("success", action);
+          }
         })
         .catch(err => console.log(err));
     },
-    notify: function(status) {
+    notify: function(status, action) {
+      let dtitle = "";
+      let dtext = "";
+      let dtype = "";
+      switch (status) {
+        case "success":
+          dtitle = "Success Notification";
+          dtext = "You have successfully " + action + "d a record.";
+          dtype = "success";
+          break;
+        case "error":
+          dtitle = "Error Notification";
+          dtitle = "Error " + action + "ing a record.";
+          dtype = "warning";
+          break;
+      }
       this.$notify({
         group: "foo",
-        title: "Success Notification",
-        text:
-          "Your database has been updated!<br/><small>CNM Solutions WebApp</small>",
-        type: "success"
+        title: dtitle,
+        text: dtext + "<br/><small>CNM Solutions WebApp</small>",
+        type: dtype
       });
+    },
+
+    isEmpty: function(obj) {
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) return false;
+      }
+      return true;
+    },
+    loadIRResponseForm: function(report_id) {
+      let obj = [];
+      this.table.received_incident_report.reports_data[0].reports.forEach(
+        function(v, i) {
+          if (v.id == report_id) {
+            obj = v;
+          }
+        }
+      );
+      this.form.incident_report_response.sanction.level =
+        obj.sanction_level.text;
+      this.form.incident_report_response.sanction.type = obj.sanction_type.text;
+      this.form.incident_report_response.ir_description = obj.description;
+      this.form.incident_report_response.ir_date = obj.created_at;
+      this.form.incident_report_response.received_by = this.table.received_incident_report.reports_data[0].full_name;
+      // this.form.incident_report_response.received_by_position = this.table.received_incident_report.reports_data[0].full_name;
+      this.form.incident_report_response.filed_by = obj.filedby.full_name;
+      // this.form.incident_report_response.filed_by_position = obj.filedby.full_name;
     }
   }
 };

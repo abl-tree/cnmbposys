@@ -82472,3 +82472,11 @@ table tr {
   background-color: white;
 }
 
+pre.ir_description {
+  font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.9;
+  font-size: 14px;
+  color: #72777a;
+  text-align: justify;
+}
+
