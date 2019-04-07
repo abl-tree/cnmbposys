@@ -387,46 +387,8 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         $data['columns'] = ['agent_schedules.*'];
-        $data['join'] = array();
         $data['where'] = array();
-
-        // $data['join'] = [
-        //     [
-        //         'table1' => 'users',
-        //         'table1.column' => 'users.id',
-        //         'operator' => '=',
-        //         'table2.column' => 'agent_schedules.user_id',
-        //         'join_clause' => 'inner'
-        //     ],
-        //     [
-        //         'table1' => 'access_levels',
-        //         'table1.column' => 'access_levels.id',
-        //         'operator' => '=',
-        //         'table2.column' => 'users.access_id',
-        //         'join_clause' => 'inner'
-        //     ],
-        //     [
-        //         'table1' => 'user_infos',
-        //         'table1.column' => 'user_infos.id',
-        //         'operator' => '=',
-        //         'table2.column' => 'users.uid',
-        //         'join_clause' => 'inner'
-        //     ]
-        // ];
-
-        // $data['where'] = [
-        //     [
-        //         'target' => 'access_levels.code',
-        //         'operator' => '=',
-        //         'value' => 'agent'
-        //     ],
-        //     [
-        //         'target' => 'user_infos.status',
-        //         'operator' => '!=',
-        //         'value' => 'inactive'
-        //     ]
-        // ];
-
+        $data['no_all_method'] = true;
         $data['relations'] = ['user_info'];
 
         if(isset($data['filter']) && $data['filter'] === 'working') {
@@ -443,43 +405,6 @@ class AgentScheduleRepository extends BaseRepository
                 'operator' => '>=',
                 'value' => Carbon::now()
             ]));
-            
-            //START
-
-            // $data['no_get_method'] = true;
-
-            // $data['columns'] = array_merge($data['columns'], ['attendances.id as attendance_id', 'attendances.time_in', 'attendances.time_out']);
-
-            // $data['join'] = array_merge($data['join'], 
-            //     array([
-            //         'table1' => 'attendances',
-            //         'table1.column' => 'attendances.schedule_id',
-            //         'operator' => '=',
-            //         'table2.column' => 'agent_schedules.id',
-            //         'join_clause' => 'left'
-            //     ])
-            // );
-            
-            // $data['whereNotNull'] = ['attendances.time_in'];
-
-            // $data['whereNull'] = ['attendances.time_out'];
-
-            // $data['advanceWhere'] = array(
-            //     [
-            //         'target' => 'attendances.time_in',
-            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-            //         'to' => DB::raw('agent_schedules.end_event')
-            //     ],
-            //     [
-            //         'target' => 'attendances.time_out',
-            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-            //         'to' => DB::raw('agent_schedules.end_event'),
-            //         'null' => true,
-            //         'gt' => true
-            //     ]
-            // );
-
-            //END
 
             $result = $this->fetchGeneric($data, $result);
 
@@ -491,8 +416,6 @@ class AgentScheduleRepository extends BaseRepository
 
             $title = "Agent Absent.";
 
-            // $data['columns'] = array_merge($data['columns'], ['attendances.time_in']);
-
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'agent_schedules.start_event',
                 'operator' => '<=',
@@ -503,25 +426,6 @@ class AgentScheduleRepository extends BaseRepository
                 'operator' => '>=',
                 'value' => Carbon::now()
             ]));
-
-            // $data['join'] = array_merge($data['join'], 
-            // array([
-            //     'table1' => 'attendances',
-            //     'table1.column' => 'attendances.schedule_id',
-            //     'operator' => '=',
-            //     'table2.column' => 'agent_schedules.id',
-            //     'join_clause' => 'left'
-            // ]));
-            
-            // $data['whereNull'] = ['attendances.time_in'];
-
-            // $data['advanceWhere'] = array(
-            //     [
-            //         'target' => 'attendances.time_in',
-            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-            //         'to' => DB::raw('agent_schedules.end_event')
-            //     ]
-            // );
 
             $result = $this->fetchGeneric($data, $result);
 
@@ -536,23 +440,6 @@ class AgentScheduleRepository extends BaseRepository
             $data['columns'] = ['id', 'uid', 'access_id'];
 
             $title = "Agent Off-Duty.";
-
-            // $data['columns'] = ['agent_schedules.title_id', 'agent_schedules.user_id'];
-
-            // $data['whereDate'] = array(
-            //     [
-            //         'target' => 'agent_schedules.start_event',
-            //         'value' => Carbon::now()->toDateString()
-            //     ]
-            // );
-
-            // $data['whereNotBetween'] = array(
-            //     [
-            //         'target' => DB::raw('NOW()'),
-            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-            //         'to' => DB::raw('agent_schedules.end_event')
-            //     ]
-            // );
             
             $result = $this->fetchGeneric($data, $result);
 
@@ -578,10 +465,6 @@ class AgentScheduleRepository extends BaseRepository
             $result = $this->fetchGeneric($data, $result);
 
         }
-
-        // $data['groupby'] = ['user_id'];
-
-        // $result = $this->fetchGeneric($data, $result);
 
         if ($result == null) {
             return $this->setResponse([
