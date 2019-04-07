@@ -4,12 +4,201 @@
     <div class="email-app">
       <div class="email-side-nav remain-height ov-h">
         <div class="h-100 layers">
-          <div class="p-20 bgc-grey-200 layer w-100">
+          <div class="p-20 bgc-grey-200 layer w-100 text-center">
             <input ref="file" type="file" id="file" name="file" hidden>
-            <button @click="$refs.file.click()" class="btn btn-danger btn-block">Import excel</button>
+            <div class="btn-group">
+              <button
+                @click="$refs.file.click()"
+                class="btn btn-danger btn-block pX-40"
+              >Import excel</button>
+              <button class="btn btn-danger">
+                <i class="ti-download"></i>
+              </button>
+            </div>
+          </div>
+          <div class="layer w-100 p-15">
+            <div class="row">
+              <div class="col">
+                <h6>Events</h6>
+              </div>
+              <div class="col text-right">
+                <button class="btn bdrs-50p p-5 lh-0" type="button">
+                  <i class="ti-plus"></i>
+                </button>
+              </div>
+            </div>
           </div>
           <div class="pos-r bdT layer w-100 fxg-1" style="overflow-y:auto">
             <ul class="p-20 nav flex-column">
+              <li class="nav-item nav-title-header" style>
+                <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-email"></i>
+                      <span>Inbox</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-email"></i>
+                      <span>Inbox</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-share"></i>
+                      <span>Sent</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-green-50 c-green-700">12</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-star"></i>
+                      <span>Important</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-blue-50 c-blue-700">3</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-file"></i>
+                      <span>Drafts</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-amber-50 c-amber-700">5</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-alert"></i>
+                      <span>Spam</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-red-50 c-red-700">1</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-trash"></i>
+                      <span>Trash</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-red-50 c-red-700">+99</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-email"></i>
+                      <span>Inbox</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-share"></i>
+                      <span>Sent</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-green-50 c-green-700">12</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-star"></i>
+                      <span>Important</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-blue-50 c-blue-700">3</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-file"></i>
+                      <span>Drafts</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-amber-50 c-amber-700">5</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-alert"></i>
+                      <span>Spam</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-red-50 c-red-700">1</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href class="nav-link c-grey-800 cH-blue-500">
+                  <div class="peers ai-c jc-sb">
+                    <div class="peer peer-greed">
+                      <i class="mR-10 ti-trash"></i>
+                      <span>Trash</span>
+                    </div>
+                    <div class="peer">
+                      <span class="badge badge-pill bgc-red-50 c-red-700">+99</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
                   <div class="peers ai-c jc-sb">

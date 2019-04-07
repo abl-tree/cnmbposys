@@ -36,6 +36,25 @@ Route::group([
         Route::get("fetch/{schedule_id}", "AgentScheduleController@fetch");
         Route::post('update/{schedule_id}', 'AgentScheduleController@update');
         Route::get('search', 'AgentScheduleController@search');
+        Route::get('stats', 'AgentScheduleController@stats');
+
+    });
+
+    
+    Route::group([
+        "prefix"    => "request_schedules",
+    ], function () {
+
+        Route::get("/", "RequestScheduleController@all");
+        Route::post("create", "RequestScheduleController@create");
+        Route::post('delete/{request_schedule_id}', 'RequestScheduleController@delete');
+        Route::get("fetch/{request_schedule_id}", "RequestScheduleController@fetch");
+        Route::post('update/{request_schedule_id}', 'RequestScheduleController@update');
+        Route::get('search', 'RequestScheduleController@search');
+
+        Route::get("applicant/{applicant_id}", "RequestScheduleController@fetchByApplicant");
+        Route::get("requested_by/{requested_by_id}", "RequestScheduleController@fetchByRequestedBy");
+        Route::get("managed_by/{managed_by_id}", "RequestScheduleController@fetchByManagedBy");
 
     });
 
@@ -57,10 +76,11 @@ Route::group([
     ], function () {
 
         Route::get("/", "EventTitleController@all");
+        Route::get("/select", "EventTitleController@select");
         Route::post("create", "EventTitleController@create");
-        Route::post('delete/{schedule_id}', 'EventTitleController@delete');
-        Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
-        Route::post('update/{schedule_id}', 'EventTitleController@update');
+        Route::post('delete/{event_id}', 'EventTitleController@delete');
+        Route::get("fetch/{event_id}", "EventTitleController@fetch");
+        Route::post('update/{event_id}', 'EventTitleController@update');
         Route::get('search', 'EventTitleController@search');
 
     });

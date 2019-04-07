@@ -7,6 +7,7 @@
  */
 
 namespace App\Data\Repositories;
+ini_set('max_execution_time', 180);
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
@@ -16,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
 use App\Services\ExcelDateService;
+use Carbon\Carbon;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -50,42 +52,45 @@ class AgentScheduleRepository extends BaseRepository
             if(isset($firstPage[$x+3])){
                 if($firstPage[$x+3][1] != null)
                 {
-                    $arr[] = array(
-                        "email" => $firstPage[$x+3][1],
-                        "title" => 'work schedule',
-                        "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x+3][4]),
-                        "end_event" =>   $this->excel_date->excelDateToPHPDate($firstPage[$x+3][5]),
-                    );
+                    if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
+                        $arr[] = array(
+                            "email" => $firstPage[$x + 3][1],
+                            "title_id" => 1,
+                            "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][4]),
+                            "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
+                        );
+                    }
                 }
             }
         }
 
-        return $this->setResponse([
-            "code"        => 200,
-            "title"       => "Conversion success.",
-            "description" => "Successfully converted excel data into formatted data.",
-            "meta"        => [
-                "schedules" => $arr ,
-            ],
-        ]);
-
         $result = $this->bulkScheduleInsertion($arr);
-        $result->parameters = $arr;
         return $result;
 
     }
 
-
     public function bulkScheduleInsertion($data = []){
-        foreach($data as $save){ 
+        $failed = [];
+
+        foreach($data as $key => $save){ 
            $result = $this->defineAgentSchedule($save);
 
            if($result->code != 200){
-               return $result;
+               $failed[] = $save;
+               unset($data[$key]);
            }
         }
 
-        $result->parameters = $data;
+        $result->meta = [
+            'total_success' => count($data),
+            'total_failed' => count($failed)
+        ];
+
+        $result->parameters = [
+            'success' => $data,
+            'failed' => $failed
+        ];
+        
         return $result;
     }
 
@@ -100,11 +105,16 @@ class AgentScheduleRepository extends BaseRepository
                 
                 if(isset($data['email'])){
                     $user = $this->user->where('email', $data['email'])->first();
-                    $data['user_id'] = $user->id;
-                }else{
+                    if(isset($user->id)){
+                        $data['user_id'] = $user->id;
+                    }
+                }
+                
+                if(!isset($data['user_id'])){
                     return $this->setResponse([ 
                         'code'  => 500,
-                        'title' => "User ID is not set.",
+                        'title' => "User ID is not set. | Email is not registered",
+                        'parameters' => $data
                     ]);
                 }    
             }
@@ -383,6 +393,146 @@ class AgentScheduleRepository extends BaseRepository
             "meta" => [
                 $meta_index => $result,
                 "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+    public function agentScheduleStats($data)
+    {
+        $result = $this->agent_schedule;
+        
+        $meta_index = "agent_schedules";
+
+        $title = null;
+
+        if(isset($data['filter'])) {
+            $parameters = [
+                'filter' => $data['filter']
+            ];
+        } else {
+            $parameters = [];
+        }
+
+        $data['columns'] = ['agent_schedules.*'];
+        $data['where'] = array();
+        $data['no_all_method'] = true;
+        $data['relations'] = ['user_info'];
+
+        if(isset($data['filter']) && $data['filter'] === 'working') {
+
+            $title = "Agent Working.";
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ]));
+
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_working', 1);
+            }
+
+        } else if(isset($data['filter']) && $data['filter'] === 'absent') {
+
+            $title = "Agent Absent.";
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'agent_schedules.start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'agent_schedules.end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ]));
+
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_present', 0);
+            }
+
+        } else if(isset($data['filter']) && $data['filter'] === 'off-duty') {
+
+            $result = $this->user;
+
+            $data['columns'] = ['id', 'uid', 'access_id'];
+
+            $title = "Agent Off-Duty.";
+            
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_agent', 1)->where('has_schedule', 0);
+            }
+
+        } else if(isset($data['filter']) && $data['filter'] === 'on-break') {
+
+            $title = "Agent on break.";
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ]));
+
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_present', 1)->where('is_working', 0);
+            }
+
+        } else {
+
+            $title = "Agent Scheduled.";
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ]));
+
+            $result = $this->fetchGeneric($data, $result);
+
+        }
+
+        if ($result == null) {
+            return $this->setResponse([
+                "code" => 404,
+                "title" => "No agent schedules are found",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $result->count()
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => $title,
+            "meta" => [
+                $meta_index => $result,
+                "count"     => $result->count()
             ],
             "parameters" => $parameters,
         ]);

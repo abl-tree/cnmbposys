@@ -32,6 +32,7 @@ class BaseRepository
             }
         }
 
+        // Start WHERE clauses
         if (isset($data['where'])) {
             foreach ((array) $data['where'] as $key => $conditions) {
                 if(is_array($conditions['value']) && $conditions['operator'] == '='){
@@ -50,6 +51,8 @@ class BaseRepository
             }
         }
 
+        //End WHERE Clauses
+
         if (isset($data['limit']) && $data['limit'] && is_numeric($data['limit'])) {
             $model = $model->take($data['limit']);
         }
@@ -66,11 +69,6 @@ class BaseRepository
             $model = $model->with( $data['relations'] );
         }
 
-        if( isset($data['user_issues']) && $data['user_issues'] == true){
-            $model = $model->has( 'issue' );
-        }
-
-
         // dd( dump_query ( $model) );
 
         if (isset($data['count']) && $data['count'] === true) {
@@ -79,6 +77,8 @@ class BaseRepository
 
         if (isset($data['single']) && $data['single'] === true) {
             $result = $model->get()->first();
+        } else if (isset($data['no_all_method']) && $data['no_all_method'] === true) {
+            $result = $model->get();
         } else if (isset($data['sort']) && in_array( $data['sort'], $this->no_sort )){
             $result = $model->get();
 

@@ -34,7 +34,8 @@
         "popper.js": "^1.14.7",
         "skycons": "^1.0.0",
         "sweetalert2": "^7.29.2",
-        "vue": "^2.6.6"
+        "vue": "^2.6.6",
+        "vue-sparklines": "^0.1.9"
     },
     "dependencies": {
         "babel-preset-stage-2": "^6.24.1",

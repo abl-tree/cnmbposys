@@ -240,11 +240,11 @@
           <div class="layer w-100 mB-10">
             <div class="peers">
               <div class="peer peer-greed">
-                <h6 class="lh-1">Incident Reports</h6>
+                <h6 class="lh-100">Incident Reports</h6>
               </div>
               <div class="peer">
                 <button
-                  class="btn btn-secondary btn-custom-size"
+                  class="btn bdrs-50p p-5 lh-0"
                   @click="clearForm('incident_report'),
                   fetchSelectOptions(endpoints.select.child_list,'incident_report','child_list'),
                   fetchSelectOptions(endpoints.select.sanction_level,'incident_report','sanction_level'),
@@ -257,7 +257,10 @@
             </div>
           </div>
 
-          <div class="table-responsive" v-if="(table.received_incident_report).length>0">
+          <div
+            class="table-responsive"
+            v-if="(table.received_incident_report.reports_data).length>0"
+          >
             <table class="table">
               <thead>
                 <tr>
@@ -323,10 +326,7 @@
                       <h6 class="lh-1">Sanction Levels</h6>
                     </div>
                     <div class="peer">
-                      <button
-                        class="btn btn-secondary btn-custom-size"
-                        @click="showModal('sanction_level')"
-                      >
+                      <button class="btn bdrs-50p p-5 lh-0" @click="showModal('sanction_level')">
                         <i class="ti-plus"></i>
                       </button>
                     </div>
@@ -373,10 +373,7 @@
                       <h6 class="lh-1">Sanction Types</h6>
                     </div>
                     <div class="peer">
-                      <button
-                        class="btn btn-secondary btn-custom-size"
-                        @click="showModal('sanction_type')"
-                      >
+                      <button class="btn bdrs-50p p-5 lh-0" @click="showModal('sanction_type')">
                         <i class="ti-plus"></i>
                       </button>
                     </div>

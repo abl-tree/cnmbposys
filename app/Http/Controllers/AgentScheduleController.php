@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use App\Data\Repositories\AgentScheduleRepository;
+
 class AgentScheduleController extends BaseController
 {
     protected $agent_schedule_repo;
@@ -105,5 +106,11 @@ class AgentScheduleController extends BaseController
         return $this->absorb($this->agent_schedule_repo->searchAgentSchedule($data))->json();
     }
 
+    public function stats(Request $request) 
+    {
+        $data = $request->all();
+
+        return $this->absorb($this->agent_schedule_repo->agentScheduleStats($data))->json();
+    }
 
 }

@@ -7,6 +7,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use App\Data\Models\UserInfo;
 use App\Data\Models\AccessLevelHierarchy;
 use App\BaseAuthModel;
+use Carbon\Carbon;
 
 class User extends BaseAuthModel
 {
@@ -16,7 +17,9 @@ class User extends BaseAuthModel
     protected $appends = [
         'team_leader',
         'operations_manager',
-        'full_name'
+        'full_name',
+        'is_agent',
+        'has_schedule'
     ];
 
     /**
@@ -47,7 +50,7 @@ class User extends BaseAuthModel
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'hierarchy'
+        'password', 'remember_token', 'hierarchy', 'created_at', 'updated_at', 'deleted_at'
     ];
 
     /*
@@ -138,12 +141,15 @@ class User extends BaseAuthModel
     public function user_info() {
         return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'uid');
     }
-     public function user_logs() {
+
+    public function user_logs() {
         return $this->hasMany('\App\Data\Models\ActionLogs', 'user_id', 'id');
     }
+
     public function accesslevel(){
        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
+
     public function getFullNameAttribute(){
         $name = null;
         if(isset($this->info)){
@@ -153,7 +159,13 @@ class User extends BaseAuthModel
         return $name;
     }
 
+    public function getIsAgentAttribute() {
+        return ($this->access) ? ($this->access->code === 'agent') ? 1 : 0 : 0;
+    }
 
+    public function getHasScheduleAttribute() {
+        return ($this->schedule->count()) ? $this->schedule->where('start_event', '<=', Carbon::now())->where('end_event', '>=', Carbon::now())->count() : 0;
+    }
 
     public function getTeamLeaderAttribute(){
         if(isset($this->hierarchy)){
