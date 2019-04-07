@@ -57,6 +57,7 @@ Route::group([
     ], function () {
 
         Route::get("/", "EventTitleController@all");
+        Route::get("/select", "EventTitleController@select");
         Route::post("create", "EventTitleController@create");
         Route::post('delete/{schedule_id}', 'EventTitleController@delete');
         Route::get("fetch/{schedule_id}", "EventTitleController@fetch");

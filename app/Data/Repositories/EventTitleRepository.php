@@ -182,6 +182,48 @@ class EventTitleRepository extends BaseRepository
         ]);
     }
 
+    public function fetchEventTitleSelect($data = [])
+    {
+        $meta_index = "options";
+        $parameters = [];
+        $count      = 0;
+        $response = [];
+
+        $count_data = $data;
+
+        $result     = $this->fetchGeneric($data, $this->event_title);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No event titles are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count = $this->countData($count_data, refresh_model($this->event_title->getModel()));
+
+        foreach($result as $key => $event){
+            $response[] = [
+                'value' => $event->id,
+                'text' => $event->title,
+            ];
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved event titles",
+            "meta"       => [
+                $meta_index => $response,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
     public function searchEventTitle($data)
     {
         if(!isset($data['query'])){
