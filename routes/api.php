@@ -39,6 +39,24 @@ Route::group([
 
     });
 
+    
+    Route::group([
+        "prefix"    => "request_schedules",
+    ], function () {
+
+        Route::get("/", "RequestScheduleController@all");
+        Route::post("create", "RequestScheduleController@create");
+        Route::post('delete/{request_schedule_id}', 'RequestScheduleController@delete');
+        Route::get("fetch/{request_schedule_id}", "RequestScheduleController@fetch");
+        Route::post('update/{request_schedule_id}', 'RequestScheduleController@update');
+        Route::get('search', 'RequestScheduleController@search');
+
+        Route::get("applicant/{applicant_id}", "RequestScheduleController@fetchByApplicant");
+        Route::get("requested_by/{requested_by_id}", "RequestScheduleController@fetchByRequestedBy");
+        Route::get("managed_by/{managed_by_id}", "RequestScheduleController@fetchByManagedBy");
+
+    });
+
     Route::group([
         "prefix"    => "agents",
     ], function () {
