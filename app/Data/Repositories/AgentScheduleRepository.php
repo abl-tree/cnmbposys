@@ -7,6 +7,7 @@
  */
 
 namespace App\Data\Repositories;
+ini_set('max_execution_time', 180);
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
@@ -50,35 +51,26 @@ class AgentScheduleRepository extends BaseRepository
             if(isset($firstPage[$x+3])){
                 if($firstPage[$x+3][1] != null)
                 {
-                    $arr[] = array(
-                        "email" => $firstPage[$x+3][1],
-                        "title" => 'work schedule',
-                        "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x+3][4]),
-                        "end_event" =>   $this->excel_date->excelDateToPHPDate($firstPage[$x+3][5]),
-                    );
+                    if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
+                        $arr[] = array(
+                            "email" => $firstPage[$x + 3][1],
+                            "title_id" => 1,
+                            "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][4]),
+                            "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
+                        );
+                    }
                 }
             }
         }
 
-        return $this->setResponse([
-            "code"        => 200,
-            "title"       => "Conversion success.",
-            "description" => "Successfully converted excel data into formatted data.",
-            "meta"        => [
-                "schedules" => $arr ,
-            ],
-        ]);
-
         $result = $this->bulkScheduleInsertion($arr);
-        $result->parameters = $arr;
         return $result;
 
     }
 
-
     public function bulkScheduleInsertion($data = []){
         $failed = [];
-        
+
         foreach($data as $key => $save){ 
            $result = $this->defineAgentSchedule($save);
 
@@ -88,10 +80,15 @@ class AgentScheduleRepository extends BaseRepository
            }
         }
 
+        $result->meta = [
+            'total_success' => count($data),
+            'total_failed' => count($failed)
+        ];
+
         $result->parameters = [
             'success' => $data,
             'failed' => $failed
-            ];
+        ];
         
         return $result;
     }
