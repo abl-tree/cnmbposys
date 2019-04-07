@@ -33,6 +33,12 @@ class UserInfo extends BaseModel
     protected $appends = [
         'full_name',
     ];
+    
+    protected $hidden = [
+        'created_at', 
+        'updated_at', 
+        'deleted_at'
+    ];
 
      //Mutator
     public function setFirstnameAttribute($value)
