@@ -387,43 +387,45 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         $data['columns'] = ['agent_schedules.*'];
+        $data['join'] = array();
+        $data['where'] = array();
 
-        $data['join'] = [
-            [
-                'table1' => 'users',
-                'table1.column' => 'users.id',
-                'operator' => '=',
-                'table2.column' => 'agent_schedules.user_id',
-                'join_clause' => 'inner'
-            ],
-            [
-                'table1' => 'access_levels',
-                'table1.column' => 'access_levels.id',
-                'operator' => '=',
-                'table2.column' => 'users.access_id',
-                'join_clause' => 'inner'
-            ],
-            [
-                'table1' => 'user_infos',
-                'table1.column' => 'user_infos.id',
-                'operator' => '=',
-                'table2.column' => 'users.uid',
-                'join_clause' => 'inner'
-            ]
-        ];
+        // $data['join'] = [
+        //     [
+        //         'table1' => 'users',
+        //         'table1.column' => 'users.id',
+        //         'operator' => '=',
+        //         'table2.column' => 'agent_schedules.user_id',
+        //         'join_clause' => 'inner'
+        //     ],
+        //     [
+        //         'table1' => 'access_levels',
+        //         'table1.column' => 'access_levels.id',
+        //         'operator' => '=',
+        //         'table2.column' => 'users.access_id',
+        //         'join_clause' => 'inner'
+        //     ],
+        //     [
+        //         'table1' => 'user_infos',
+        //         'table1.column' => 'user_infos.id',
+        //         'operator' => '=',
+        //         'table2.column' => 'users.uid',
+        //         'join_clause' => 'inner'
+        //     ]
+        // ];
 
-        $data['where'] = [
-            [
-                'target' => 'access_levels.code',
-                'operator' => '=',
-                'value' => 'agent'
-            ],
-            [
-                'target' => 'user_infos.status',
-                'operator' => '!=',
-                'value' => 'inactive'
-            ]
-        ];
+        // $data['where'] = [
+        //     [
+        //         'target' => 'access_levels.code',
+        //         'operator' => '=',
+        //         'value' => 'agent'
+        //     ],
+        //     [
+        //         'target' => 'user_infos.status',
+        //         'operator' => '!=',
+        //         'value' => 'inactive'
+        //     ]
+        // ];
 
         $data['relations'] = ['user_info'];
 
@@ -431,39 +433,65 @@ class AgentScheduleRepository extends BaseRepository
 
             $title = "Agent Working.";
 
-            $data['columns'] = array_merge($data['columns'], ['attendances.time_in', 'attendances.time_out']);
-
-            $data['join'] = array_merge($data['join'], 
-            array([
-                'table1' => 'attendances',
-                'table1.column' => 'attendances.user_id',
-                'operator' => '=',
-                'table2.column' => 'users.id',
-                'join_clause' => 'left'
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
             ]));
             
-            $data['whereNotNull'] = ['attendances.time_in'];
+            //START
 
-            $data['whereNull'] = ['attendances.time_out'];
+            // $data['no_get_method'] = true;
 
-            $data['advanceWhere'] = array(
-                [
-                    'target' => 'attendances.time_in',
-                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-                    'to' => DB::raw('agent_schedules.end_event')
-                ],
-                [
-                    'target' => 'attendances.time_out',
-                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-                    'to' => DB::raw('agent_schedules.end_event')
-                ]
-            );
+            // $data['columns'] = array_merge($data['columns'], ['attendances.id as attendance_id', 'attendances.time_in', 'attendances.time_out']);
+
+            // $data['join'] = array_merge($data['join'], 
+            //     array([
+            //         'table1' => 'attendances',
+            //         'table1.column' => 'attendances.schedule_id',
+            //         'operator' => '=',
+            //         'table2.column' => 'agent_schedules.id',
+            //         'join_clause' => 'left'
+            //     ])
+            // );
+            
+            // $data['whereNotNull'] = ['attendances.time_in'];
+
+            // $data['whereNull'] = ['attendances.time_out'];
+
+            // $data['advanceWhere'] = array(
+            //     [
+            //         'target' => 'attendances.time_in',
+            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+            //         'to' => DB::raw('agent_schedules.end_event')
+            //     ],
+            //     [
+            //         'target' => 'attendances.time_out',
+            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+            //         'to' => DB::raw('agent_schedules.end_event'),
+            //         'null' => true,
+            //         'gt' => true
+            //     ]
+            // );
+
+            //END
+
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_working', 1);
+            }
 
         } else if(isset($data['filter']) && $data['filter'] === 'absent') {
 
             $title = "Agent Absent.";
 
-            $data['columns'] = array_merge($data['columns'], ['attendances.time_in']);
+            // $data['columns'] = array_merge($data['columns'], ['attendances.time_in']);
 
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'agent_schedules.start_event',
@@ -476,30 +504,40 @@ class AgentScheduleRepository extends BaseRepository
                 'value' => Carbon::now()
             ]));
 
-            $data['join'] = array_merge($data['join'], 
-            array([
-                'table1' => 'attendances',
-                'table1.column' => 'attendances.user_id',
-                'operator' => '=',
-                'table2.column' => 'users.id',
-                'join_clause' => 'left'
-            ]));
+            // $data['join'] = array_merge($data['join'], 
+            // array([
+            //     'table1' => 'attendances',
+            //     'table1.column' => 'attendances.schedule_id',
+            //     'operator' => '=',
+            //     'table2.column' => 'agent_schedules.id',
+            //     'join_clause' => 'left'
+            // ]));
             
-            $data['whereNull'] = ['attendances.time_in'];
+            // $data['whereNull'] = ['attendances.time_in'];
 
-            $data['advanceWhere'] = array(
-                [
-                    'target' => 'attendances.time_in',
-                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-                    'to' => DB::raw('agent_schedules.end_event')
-                ]
-            );
+            // $data['advanceWhere'] = array(
+            //     [
+            //         'target' => 'attendances.time_in',
+            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+            //         'to' => DB::raw('agent_schedules.end_event')
+            //     ]
+            // );
+
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_present', 0);
+            }
 
         } else if(isset($data['filter']) && $data['filter'] === 'off-duty') {
 
+            $result = $this->user;
+
+            $data['columns'] = ['id', 'uid', 'access_id'];
+
             $title = "Agent Off-Duty.";
 
-            $data['columns'] = ['agent_schedules.title_id', 'agent_schedules.user_id'];
+            // $data['columns'] = ['agent_schedules.title_id', 'agent_schedules.user_id'];
 
             // $data['whereDate'] = array(
             //     [
@@ -508,34 +546,42 @@ class AgentScheduleRepository extends BaseRepository
             //     ]
             // );
 
-            $data['whereNotBetween'] = array(
-                [
-                    'target' => DB::raw('NOW()'),
-                    'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
-                    'to' => DB::raw('agent_schedules.end_event')
-                ]
-            );
+            // $data['whereNotBetween'] = array(
+            //     [
+            //         'target' => DB::raw('NOW()'),
+            //         'from' => DB::raw('DATE_SUB(agent_schedules.start_event, INTERVAL 15 MINUTE)'),
+            //         'to' => DB::raw('agent_schedules.end_event')
+            //     ]
+            // );
+            
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_agent', 1)->where('has_schedule', 0);
+            }
 
         } else {
 
-            $title = "Agent Working.";
+            $title = "Agent Scheduled.";
 
             $data['where'] = array_merge($data['where'], array([
-                'target' => 'agent_schedules.start_event',
+                'target' => 'start_event',
                 'operator' => '<=',
                 'value' => Carbon::now()
             ],
             [
-                'target' => 'agent_schedules.end_event',
+                'target' => 'end_event',
                 'operator' => '>=',
                 'value' => Carbon::now()
             ]));
 
+            $result = $this->fetchGeneric($data, $result);
+
         }
 
-        $data['groupby'] = ['user_id'];
+        // $data['groupby'] = ['user_id'];
 
-        $result = $this->fetchGeneric($data, $result);
+        // $result = $this->fetchGeneric($data, $result);
 
         if ($result == null) {
             return $this->setResponse([

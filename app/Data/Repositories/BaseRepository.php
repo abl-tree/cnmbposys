@@ -68,13 +68,12 @@ class BaseRepository
         if (isset($data['advanceWhere'])) {
             foreach ((array) $data['advanceWhere'] as $key => $conditions) {
                 $model = $model->where(function ($query) use ($conditions){
-                    if(isset($conditions['orderby'])) {
+                    if(isset($conditions['null']) && $conditions['null'] === true && isset($conditions['gt']) && $conditions['gt'] === true) {
                         $query->whereBetween($conditions['target'], [$conditions['from'], $conditions['to']])
                                     ->orWhereNull($conditions['target'])
-                                    ->orderBy($conditions['target'], $conditions['orderby']);
+                                    ->orWhere($conditions['target'], '<', $conditions['to']);
                     } else {
-                        $query->whereBetween($conditions['target'], [$conditions['from'], $conditions['to']])
-                                    ->orWhereNull($conditions['target']);
+                        $query->whereBetween($conditions['target'], [$conditions['from'], $conditions['to']]);
                     }
                 });
             }
@@ -120,6 +119,10 @@ class BaseRepository
 
         if (isset($data['count']) && $data['count'] === true) {
             return $model->get()->count();
+        }
+
+        if (isset($data['no_get_method']) && $data['no_get_method'] === true) {
+            return $model;
         }
 
         if (isset($data['single']) && $data['single'] === true) {
