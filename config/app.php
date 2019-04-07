@@ -161,6 +161,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Yajra\Datatables\DataTablesServiceProvider::class,
+        App\Providers\ExcelDateConverter::class,
 
 
     ],
