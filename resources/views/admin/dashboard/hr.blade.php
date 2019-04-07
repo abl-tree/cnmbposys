@@ -1,7 +1,7 @@
 @extends('admin.default')
 
 @section('content')
-<div class="full-container bgc-white">
+<div id="hr-dashboard" class="full-container bgc-white">
     <div class="email-app">
         <div class="email-side-nav remain-height">
             <div class="h-100 layers">

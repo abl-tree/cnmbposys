@@ -257,7 +257,7 @@
             </div>
           </div>
 
-          <div class="table-responsive">
+          <div class="table-responsive" v-if="(table.received_incident_report).length>0">
             <table class="table">
               <thead>
                 <tr>
@@ -305,6 +305,9 @@
               </tbody>
             </table>
           </div>
+          <div class="row" v-else>
+            <i style="font-size:.7em;">Nothing to display...</i>
+          </div>
         </div>
       </div>
 
@@ -330,7 +333,10 @@
                   </div>
                 </div>
 
-                <div class="table-responsive table-scroll-200">
+                <div
+                  class="table-responsive table-scroll-200"
+                  v-if="(table.sanction_level.options).length>0"
+                >
                   <table class="table table-scroll-200">
                     <thead>
                       <tr>
@@ -351,6 +357,10 @@
                       </tr>
                     </tbody>
                   </table>
+                </div>
+
+                <div class="row" v-else>
+                  <i style="font-size:.7em;">Nothing to display...</i>
                 </div>
               </div>
             </div>
@@ -373,7 +383,10 @@
                   </div>
                 </div>
 
-                <div class="table-scroll-200 table-responsive">
+                <div
+                  class="table-scroll-200 table-responsive"
+                  v-if="(table.sanction_type.options).length>0"
+                >
                   <table class="table">
                     <thead>
                       <tr>
@@ -430,17 +443,18 @@
                   >{{this.form.incident_report_response.sanction.type}}</span>
                 </div>
                 <div class="layer bd mT-5 pY-20 pX-15">
-                  To: <h6>{{this.form.incident_report_response.received_by}},</h6>
+                  To:
+                  <h6>{{this.form.incident_report_response.received_by}},</h6>
                   <br>
                   <br>
                   <!-- message content -->
                   <div class="cntent">
-                    <pre class='ir_description'>{{this.form.incident_report_response.ir_description}}</pre>
-                    </div>
+                    <pre class="ir_description">{{this.form.incident_report_response.ir_description}}</pre>
+                  </div>
                   <br>
                   <h6>{{this.form.incident_report_response.filed_by}}</h6>
                 </div>
-                
+
                 <div
                   class="alert-danger p-20 m-10"
                 >You have 24hours to submit a response for this report. Refusal of response will be penalize.</div>
@@ -605,6 +619,8 @@
         </div>
       </div>
     </modal>
+    <!-- profile preview modal -->
+    <profile-preview-modal v-bind:user-profile="this.userId"></profile-preview-modal>
     <notifications group="foo" animation-type="velocity" position="bottom right"/>
   </div>
 </template>
@@ -686,9 +702,9 @@ export default {
           ir_description: "",
           ir_date: "",
           received_by: "",
-          received_by_position:"",
+          received_by_position: "",
           filed_by: "",
-          filed_by_position:"",
+          filed_by_position: "",
           response: ""
         }
       },

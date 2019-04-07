@@ -15,7 +15,6 @@ Vue.use(VPopover, {
     tooltip: true
 });
 
-
 Vue.mixin({
     data() {
         return {
@@ -25,7 +24,7 @@ Vue.mixin({
                 name: {
                     first: "",
                     middle: "",
-                    last: "",
+                    last: ""
                 },
                 gender: "",
                 birth: "",
@@ -33,39 +32,20 @@ Vue.mixin({
                 mobile: "",
                 email: "",
                 position: "",
-                benifit: {
+                benefit: {
                     sss: "",
                     tin: "",
                     ph: "",
-                    pibg: "",
-                }
+                    pibg: ""
+                },
+                image: "",
             }
-        }
+        };
     },
     methods: {
         //fetch
         fetchProfile: function () {
-            let pageurl = "";
-            fetch(pageurl)
-                .then(res => res.json())
-                .then(res => {
-                    var temp = res;
-                    // this.profile.name.first =
-                    // this.profile.name.middle =
-                    // this.profile.name.last =
-                    // this.profile.id =
-                    // this.profile.gender =
-                    // this.profile.birth =
-                    // this.profile.address =
-                    // this.profile.mobile =
-                    // this.profile.email =
-                    // this.profile.position =
-                    // this.profile.benifit.sss =
-                    // this.profile.benifit.tin =
-                    // this.profile.benifit.ph =
-                    // this.profile.benifit.pibg =
-                })
-                .catch(err => console.log(err));
+            this.showModal("profile_preview");
         },
         //modal toggler
         showModal: function (modalName) {
@@ -73,9 +53,7 @@ Vue.mixin({
         },
         hideModal: function (modalName) {
             this.$modal.hide(modalName);
-        },
-
-
+        }
     }
 });
 
@@ -101,14 +79,12 @@ Vue.component("profile-preview-modal", profilePreview);
 import VModal from "vue-js-modal";
 Vue.use(VModal);
 
-
-import Notifications from 'vue-notification';
-import velocity from 'velocity-animate';
+import Notifications from "vue-notification";
+import velocity from "velocity-animate";
 
 Vue.use(Notifications, {
     velocity
-})
-
+});
 
 // import {
 //     VSelect
@@ -124,6 +100,11 @@ Vue.use(Notifications, {
 
 const app = new Vue({
     el: "#app"
+});
+
+//native trigger to vue component
+$(document).on("click", "#loadProfilePreview", function (e) {
+    app.fetchProfile();
 });
 
 ///////// DASHBOARD
@@ -166,7 +147,7 @@ $(document).on("click", ".passChange", function (e) {
 });
 
 // >> FOR ADMIN, HR MANAGER, HR ASSISTANT value = 1,2,3
-if ($("#logged-position").val() > 0 && $("#logged-position").val() < 4) {
+if ($("#hr-dashboard") != null) {
     //global variables
     var ir_id;
     var description;

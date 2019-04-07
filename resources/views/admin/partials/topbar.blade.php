@@ -177,10 +177,10 @@
                 <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
                     <div class="peer mR-10">
                          @if(!empty($pageOnload->image))
-                            $p1 = substr($pageOnload->image,0,strpos($pageOnload->image,','));
-                            $p2 = substr($pageOnload->image,strpos($pageOnload->image,','));
-                            <div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url('.$pageOnload->image.')"></div> 
-                        @else
+                            @php
+                                echo '<div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url('.$pageOnload->image.')"></div>' 
+                            @endphp
+                            @else
                             <div id="top-image-display" class="top-image-cover bdrs-50p" style="background-image:url(/images/nobody.jpg)"></div>
                         @endif
                         <input type="hidden" id="logged-position" value="{{$pageOnload->user->access_id}}">
@@ -198,7 +198,7 @@
                         </a>
                     </li> -->
                     <li>
-                        <a data-toggle="modal" data-target="#profile-preview-modal" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                        <a id="loadProfilePreview" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
                             <i class="ti-user mR-10"></i>
                             <span>Profile</span>
                         </a>

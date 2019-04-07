@@ -18,7 +18,8 @@ class pageAccess
         $position="";
         $pageAccess['hr'] = ['/','dashboard']; 
         $pageAccess['rta'] = ['/','dashboard','schedule']; 
-        $pageAccess['admin'] = ['/','dashboard','rtadashboard','rtaschedule'];
+        $pageAccess['admin'] = ['/','dashboard','rtadashboard','rtaschedule',"rtareport","tldashboard","tlreport"];
+        $pageAccess['tl'] = ['/',"tldashboard","tlreport"];
         // if($request->user()->access->id < 15 && $request->user()->access->id > 11){
         //     // if(in_array($route,$pageAccess['rta'])){
         //     //     return redirect($route);
@@ -36,6 +37,10 @@ class pageAccess
             break;
             case 12:case 13:case 14:
                 $position = 'rta';
+            break;
+            
+            case 16:
+                $position = 'tl';
             break;
         }
 

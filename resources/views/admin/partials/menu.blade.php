@@ -25,25 +25,75 @@
         <span class="">Schedule</span>
         </a>
     </li>
-
+    <li class="nav-item">
+        <a class='sidebar-link' href="/rtareport">
+        <span class="icon-holder">
+            <i class="c-brown-500 ti-calendar"></i>
+        </span>
+        <span class="">Work Reports</span>
+        </a>
+    </li>
 @endif
 
 @if($pageOnload->user->access_id == 1)
     <li class="nav-item">
         <a class='sidebar-link' href="/rtadashboard">
         <span class="icon-holder">
-            <i class="c-brown-500 ti-calendar"></i>
+            <i class="c-brown-500">RTA</i>
         </span>
-        <span class="">RTA Dashboard</span>
+        <span class="">Dashboard</span>
         </a>
     </li>
     <li class="nav-item">
         <a class='sidebar-link' href="/rtaschedule">
         <span class="icon-holder">
-            <i class="c-brown-500 ti-calendar"></i>
+            <i class="c-brown-500">RTA</i>
         </span>
-        <span class="">RTA Schedule</span>
+        <span class="">Schedule</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class='sidebar-link' href="/rtareport">
+        <span class="icon-holder">
+            <i class="c-brown-500">RTA</i>
+        </span>
+        <span class="">Work Reports</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class='sidebar-link' href="/tldashboard">
+        <span class="icon-holder">
+            <i class="c-brown-500">TL</i>
+        </span>
+        <span class="">Dashboard</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class='sidebar-link' href="/tlschedule">
+        <span class="icon-holder">
+            <i class="c-brown-500">TL</i>
+        </span>
+        <span class="">Work Reports</span>
         </a>
     </li>
 
+@endif
+
+@if($pageOnload->user->access_id == 6)
+    <li class="nav-item">
+        <a class='sidebar-link' href="/tldashboard">
+        <span class="icon-holder">
+            <i class="c-brown-500">TL</i>
+        </span>
+        <span class="">Dashboard</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class='sidebar-link' href="/tlschedule">
+        <span class="icon-holder">
+            <i class="c-brown-500">TL</i>
+        </span>
+        <span class="">Work Reports</span>
+        </a>
+    </li>
 @endif

@@ -27,8 +27,13 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
     Route::get('/', 'pageController@dashboard')->name('dashboard');
     Route::get('/dashboard', 'pageController@dashboard')->name('dashboard');
     Route::get('/schedule', 'pageController@schedule')->name('schedule');
+    
     Route::get('/rtaschedule', 'pageController@rtaschedule')->name('rtaschedule');
     Route::get('/rtadashboard', 'pageController@rtadashboard')->name('rtadashboard');
+    Route::get('/rtareport', 'pageController@rtareport')->name('rtareport');
+    
+    Route::get('/tldashboard', 'pageController@tldashboard')->name('tldashboard');
+    Route::get('/tlreport', 'pageController@tlreport')->name('tlreport');
 
 
 

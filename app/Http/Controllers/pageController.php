@@ -60,4 +60,16 @@ class pageController extends Controller
     public function rtadashboard(){
         return view('admin.dashboard.rta');
     }
+
+    public function rtareport(){
+        return view('admin.report.rta');
+    }
+
+    public function tldashboard(){
+        return view('admin.dashboard.tl');
+    }
+
+    public function tlreport(){
+        return view('admin.report.tl');
+    }
 }
