@@ -95,7 +95,7 @@ class AgentSchedule extends BaseModel
                 if($this->attendances->count() === $key + 1) {    
                     $out = Carbon::parse($value->time_out);
                     
-                    $break_duration += $in->diffInSeconds(Carbon::now());
+                    $break_duration += $out->diffInSeconds(Carbon::now());
                 } else {
                     $out = Carbon::parse($value->time_out);
                     $in = Carbon::parse($this->attendances[$key + 1]->time_in);
