@@ -77,15 +77,22 @@ class AgentScheduleRepository extends BaseRepository
 
 
     public function bulkScheduleInsertion($data = []){
-        foreach($data as $save){ 
+        $failed = [];
+        
+        foreach($data as $key => $save){ 
            $result = $this->defineAgentSchedule($save);
 
            if($result->code != 200){
-               return $result;
+               $failed[] = $save;
+               unset($data[$key]);
            }
         }
 
-        $result->parameters = $data;
+        $result->parameters = [
+            'success' => $data,
+            'failed' => $failed
+            ];
+        
         return $result;
     }
 
