@@ -100,11 +100,16 @@ class AgentScheduleRepository extends BaseRepository
                 
                 if(isset($data['email'])){
                     $user = $this->user->where('email', $data['email'])->first();
-                    $data['user_id'] = $user->id;
-                }else{
+                    if(isset($user->id)){
+                        $data['user_id'] = $user->id;
+                    }
+                }
+                
+                if(!isset($data['user_id'])){
                     return $this->setResponse([ 
                         'code'  => 500,
-                        'title' => "User ID is not set.",
+                        'title' => "User ID is not set. | Email is not registered",
+                        'parameters' => $data
                     ]);
                 }    
             }
