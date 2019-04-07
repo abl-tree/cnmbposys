@@ -7,6 +7,7 @@
  */
 
 namespace App\Data\Repositories;
+ini_set('max_execution_time', 180);
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
@@ -15,65 +16,81 @@ use App\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
+use App\Services\ExcelDateService;
 use Carbon\Carbon;
-use DB;
 
 class AgentScheduleRepository extends BaseRepository
 {
 
     protected 
         $agent_schedule,
-        $user;
-
+        $user,
+        $user_info,
+        $event_title,
+        $excel_date;
     public function __construct(
         AgentSchedule $agentSchedule,
-        User $user
+        User $user,
+        UserInfo $userInfo,
+        EventTitle $eventTitle,
+        ExcelDateService $excelDate
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
+        $this->user_info = $userInfo;
+        $this->event_title = $eventTitle;
+        $this->excel_date = $excelDate;
     }
 
     public function excelData($data)
     {
+
         $data = Excel::toArray(new ExcelRepository, $data);
-        $filteredData1 = [];
-        $filteredData2 = [];
-        $filteredData3 = [];
+        $arr = [];
         $firstPage  = $data[0];
         for ($x = 0; $x < count($firstPage); $x++) {
             if(isset($firstPage[$x+3])){
                 if($firstPage[$x+3][1] != null)
                 {
-                    $filteredData1[] = array(
-                        "email" => $firstPage[$x+3][1],
-                        "title" => 'work schedule',
-                        "start_event" => $firstPage[$x+3][4],
-                        "end_event" => $firstPage[$x+3][5],
-                    );
+                    if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
+                        $arr[] = array(
+                            "email" => $firstPage[$x + 3][1],
+                            "title_id" => 1,
+                            "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][4]),
+                            "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
+                        );
+                    }
                 }
             }
         }
-        
-        return $this->setResponse([
-            "code"        => 200,
-            "title"       => "Conversion success.",
-            "description" => "Successfully converted excel data into formatted data.",
-            "meta"        => [
-                "schedules" => $filteredData1 ,
-            ],
-        ]);
+
+        $result = $this->bulkScheduleInsertion($arr);
+        return $result;
+
     }
 
     public function bulkScheduleInsertion($data = []){
-        foreach($data as $save){ 
+        $failed = [];
+
+        foreach($data as $key => $save){ 
            $result = $this->defineAgentSchedule($save);
 
            if($result->code != 200){
-               return $result;
+               $failed[] = $save;
+               unset($data[$key]);
            }
         }
 
-        $result->parameters = $data;
+        $result->meta = [
+            'total_success' => count($data),
+            'total_failed' => count($failed)
+        ];
+
+        $result->parameters = [
+            'success' => $data,
+            'failed' => $failed
+        ];
+        
         return $result;
     }
 
@@ -85,10 +102,21 @@ class AgentScheduleRepository extends BaseRepository
             if (!isset($data['user_id']) ||
                 !is_numeric($data['user_id']) ||
                 $data['user_id'] <= 0) {
-                return $this->setResponse([ 
-                    'code'  => 500,
-                    'title' => "User ID is not set.",
-                ]);
+                
+                if(isset($data['email'])){
+                    $user = $this->user->where('email', $data['email'])->first();
+                    if(isset($user->id)){
+                        $data['user_id'] = $user->id;
+                    }
+                }
+                
+                if(!isset($data['user_id'])){
+                    return $this->setResponse([ 
+                        'code'  => 500,
+                        'title' => "User ID is not set. | Email is not registered",
+                        'parameters' => $data
+                    ]);
+                }    
             }
 
             if (!isset($data['title_id'])) {
@@ -118,7 +146,7 @@ class AgentScheduleRepository extends BaseRepository
         // existence check
 
         if (isset($data['user_id'])) {
-            if (!UserInfo::find($data['user_id'])) {
+            if (!$this->user_info->find($data['user_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "User ID is not available.",
@@ -127,7 +155,7 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         if (isset($data['title_id'])) {
-            if (!EventTitle::find($data['title_id'])) {
+            if (!$this->event_title->find($data['title_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "Title ID is not available.",
@@ -445,6 +473,27 @@ class AgentScheduleRepository extends BaseRepository
 
             if ($result) {
                 $result = $result->where('is_agent', 1)->where('has_schedule', 0);
+            }
+
+        } else if(isset($data['filter']) && $data['filter'] === 'on-break') {
+
+            $title = "Agent on break.";
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ]));
+
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->where('is_present', 1)->where('is_working', 0);
             }
 
         } else {

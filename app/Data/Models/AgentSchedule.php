@@ -4,6 +4,7 @@ namespace App\Data\Models;
 
 use App\Data\Models\BaseModel;
 use DB;
+use Carbon\Carbon;
 
 class AgentSchedule extends BaseModel
 {
@@ -19,7 +20,8 @@ class AgentSchedule extends BaseModel
     protected $appends = [
         'rendered_hours', 
         'is_working',
-        'is_present'
+        'is_present',
+        'break'
     ];
 
     protected $searchable = [
@@ -70,6 +72,47 @@ class AgentSchedule extends BaseModel
         }
 
         return 0;
+    }
+
+    public function getBreakAttribute() {
+        $data = array(
+            'remaining' => 3, 
+            'spent' => array(
+                    'description' => 'Time spent for 3 breaks.', 
+                    'time' => 0
+                ),
+            'total' => 0
+        );
+
+        if($this->attendances->count()) {
+            $break_duration = 0;
+
+            foreach ($this->attendances as $key => $value) {
+                if($value->time_out == null) {
+                    break;
+                }
+
+                if($this->attendances->count() === $key + 1) {    
+                    $out = Carbon::parse($value->time_out);
+                    
+                    $break_duration += $in->diffInSeconds(Carbon::now());
+                } else {
+                    $out = Carbon::parse($value->time_out);
+                    $in = Carbon::parse($this->attendances[$key + 1]->time_in);
+                    
+                    $break_duration += $in->diffInSeconds($out);
+                }
+
+                if($key + 1 === 3) {
+                    $data['spent']['time'] = gmdate('H:i:s', $break_duration);
+                }
+            }
+            
+            $data['remaining'] -= ($this->attendances->count() - 1);
+            $data['total'] = gmdate('H:i:s', $break_duration);
+        }
+
+        return $data;
     }
 
     public function attendances(){

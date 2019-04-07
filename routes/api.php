@@ -40,6 +40,24 @@ Route::group([
 
     });
 
+    
+    Route::group([
+        "prefix"    => "request_schedules",
+    ], function () {
+
+        Route::get("/", "RequestScheduleController@all");
+        Route::post("create", "RequestScheduleController@create");
+        Route::post('delete/{request_schedule_id}', 'RequestScheduleController@delete');
+        Route::get("fetch/{request_schedule_id}", "RequestScheduleController@fetch");
+        Route::post('update/{request_schedule_id}', 'RequestScheduleController@update');
+        Route::get('search', 'RequestScheduleController@search');
+
+        Route::get("applicant/{applicant_id}", "RequestScheduleController@fetchByApplicant");
+        Route::get("requested_by/{requested_by_id}", "RequestScheduleController@fetchByRequestedBy");
+        Route::get("managed_by/{managed_by_id}", "RequestScheduleController@fetchByManagedBy");
+
+    });
+
     Route::group([
         "prefix"    => "agents",
     ], function () {
@@ -49,6 +67,7 @@ Route::group([
         // Route::post('delete/{id}', 'AgentController@delete');
         Route::get("fetch/{agent_id}", "AgentController@fetch");
         // Route::post('update/{id}', 'AgentController@update');
+        Route::get("search", "AgentController@search");
 
     });
 
@@ -57,10 +76,12 @@ Route::group([
     ], function () {
 
         Route::get("/", "EventTitleController@all");
+        Route::get("/select", "EventTitleController@select");
         Route::post("create", "EventTitleController@create");
-        Route::post('delete/{schedule_id}', 'EventTitleController@delete');
-        Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
-        Route::post('update/{schedule_id}', 'EventTitleController@update');
+        Route::post('delete/{event_id}', 'EventTitleController@delete');
+        Route::get("fetch/{event_id}", "EventTitleController@fetch");
+        Route::post('update/{event_id}', 'EventTitleController@update');
+        Route::get('search', 'EventTitleController@search');
 
     });
 
@@ -72,6 +93,36 @@ Route::group([
         Route::get("user/{id}", "LogsController@log");
         Route::post("create", "LogsController@create");
     });
+
+    Route::group([
+        "prefix"    => "reports",
+    ], function () {
+
+        Route::get("/", "ReportsController@index");
+        Route::get("user/{id}", "ReportsController@report");
+        Route::get("user_filed_ir/{id}", "ReportsController@userFiledIR");
+        Route::get("select_sanction_types", "ReportsController@getSanctionType");
+        Route::get("select_sanction_levels", "ReportsController@getSanctionLevel");
+        Route::get("select_all_users/{id}", "ReportsController@getSelectAllUserUnder");
+        Route::get("sanction_types", "ReportsController@getSanctionTypes");
+        Route::get("sanction_levels", "ReportsController@getSanctionLevels");
+        Route::get("all_users", "ReportsController@getAllUser");
+        Route::get("all_users/{id}", "ReportsController@getAllUserUnder");
+        Route::post("create", "ReportsController@create");
+        Route::post("add_sanction_type", "ReportsController@addSanctionType");
+        Route::post("add_sanction_level", "ReportsController@addSanctionLevel");
+        Route::post("user_reponse", "ReportsController@userResponse");
+    });
+
+     Route::group([
+        "prefix"    => "users",
+    ], function () {
+
+        Route::get("/", "UserController@usersInfo");
+        Route::get("/{id}", "UserController@userInfo");
+    });
+
+
 
 
 });

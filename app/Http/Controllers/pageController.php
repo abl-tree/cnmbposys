@@ -52,4 +52,24 @@ class pageController extends Controller
     public function schedule(){
         return view('admin.schedule.rta');
     }
+
+    public function rtaschedule(){
+        return view('admin.schedule.rta');
+    }
+
+    public function rtadashboard(){
+        return view('admin.dashboard.rta');
+    }
+
+    public function rtareport(){
+        return view('admin.report.rta');
+    }
+
+    public function tldashboard(){
+        return view('admin.dashboard.tl');
+    }
+
+    public function tlreport(){
+        return view('admin.report.tl');
+    }
 }

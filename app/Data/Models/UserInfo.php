@@ -22,6 +22,24 @@ class UserInfo extends BaseModel
         'p_email','created_at','updated_at'
     ];
 
+    protected $searchable = [
+        'firstname','middlename', 'lastname',
+        'birthdate', 'gender', 'contact_number',
+        'address', 'image', 'salary_rate','image_ext',
+        'status', 'hired_date', 'separation_date', 'excel_hash',
+        'p_email','created_at','updated_at'
+    ];
+
+    protected $appends = [
+        'full_name',
+    ];
+    
+    protected $hidden = [
+        'created_at', 
+        'updated_at', 
+        'deleted_at'
+    ];
+
      //Mutator
     public function setFirstnameAttribute($value)
     {
@@ -68,6 +86,14 @@ class UserInfo extends BaseModel
     {
         return ucwords($value);
     }    
+  
+
+    public function getFullNameAttribute(){
+        $name = null;
+        $name = $this->firstname . ' ' . $this->middlename . ' ' . $this->lastname;
+        
+        return $name;
+    }
 
 
 
@@ -79,6 +105,21 @@ class UserInfo extends BaseModel
     public function benefits() {
         return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'id');
     }
+     public function reports() {
+        return $this->hasMany('\App\Data\Models\UserReport' ,'user_reports_id', 'id')->with("SanctionType","SanctionLevel","filedby","agentResponse");
+    }
+      public function sanctiontype() {
+        return $this->belongsTo('\App\Data\Models\SanctionType', 'saction_type_id', 'type_number');
+    }
+    public function accesslevel(){
+       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+    }
+    public function accesslevelhierarchy(){
+        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'id', 'access_id');
+     }
+    public function access(){
+        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+     }
 
     public function getAllEmployee(){
         $query = DB::table('user_infos')

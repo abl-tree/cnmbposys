@@ -13,9 +13,19 @@ use App\Data\Models\UserInfo;
 use Mail;
 use Auth;
 use App\Http\Controllers\BaseController;
+use App\Data\Repositories\UsersInfoRepository;
 
 class UserController extends BaseController
 {
+
+    protected $user_info;
+
+    public function __construct(
+        UsersInfoRepository $user_info
+    ){
+        $this->user_info = $user_info;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -37,6 +47,28 @@ class UserController extends BaseController
     {
         return view('admin.users.create');
     }
+
+    public function usersInfo(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_info->usersInfo($data))->json();     
+    }
+    public function userInfo(Request $request, $id)
+    {
+        $data['id'] = $id;
+        
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "User ID is invalid.",
+            ]);
+        }
+
+        return $this->absorb($this->user_info->usersInfo($data))->json();
+    }
+
 
     /**
      * Store a newly created resource in storage.

@@ -71,5 +71,18 @@ class EventTitleController extends BaseController
         return $this->absorb($this->event_title_repo->defineEventTitle($data))->json();
     }
 
+    public function search(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->event_title_repo->searchEventTitle($data))->json();
+    }
+
+    public function select(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->event_title_repo->fetchEventTitleSelect($data))->json();
+        dd($response);
+    }
+
 
 }

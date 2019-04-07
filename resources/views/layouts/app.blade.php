@@ -24,14 +24,12 @@
             <img class="pos-a centerXY" src="/images/logo-bordered.png" style="width:150px; height:150px" alt="">
           </div>
         </div>
-        <div>
-          <img src="/images/cnmlogotag.png"  alt="" width="60%" style='bottom:0px;position:absolute;'>
-        </div>
       </div>
       <div class="col-12 col-md-4 peer pX-40 pY-80 h-100 bgc-white scrollable pos-r" style='min-width: 320px;'>
         @yield('content')
       </div>
     </div>
-  
+
+    
 </body>
 </html>
