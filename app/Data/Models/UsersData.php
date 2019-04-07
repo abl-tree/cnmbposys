@@ -14,7 +14,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'lname','fname','mname','position','address','contact','gender','image','imagext','status'
+       'lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate'
     ];
 
 
@@ -142,6 +142,15 @@ class UsersData extends BaseModel
         $name = null;
         if(isset($this->user_info)){
             $name = $this->user_info->status;
+        }
+        
+        return $name;
+    }
+
+    public function getBirthdateAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->birthdate;
         }
         
         return $name;

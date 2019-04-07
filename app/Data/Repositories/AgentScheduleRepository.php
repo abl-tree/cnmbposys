@@ -15,6 +15,7 @@ use App\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
+use App\Services\ExcelDateService;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -23,50 +24,57 @@ class AgentScheduleRepository extends BaseRepository
         $agent_schedule,
         $user,
         $user_info,
-        $event_title;
-
+        $event_title,
+        $excel_date;
     public function __construct(
         AgentSchedule $agentSchedule,
         User $user,
         UserInfo $userInfo,
-        EventTitle $eventTitle
+        EventTitle $eventTitle,
+        ExcelDateService $excelDate
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
         $this->user_info = $userInfo;
         $this->event_title = $eventTitle;
+        $this->excel_date = $excelDate;
     }
 
     public function excelData($data)
     {
+
         $data = Excel::toArray(new ExcelRepository, $data);
-        $filteredData1 = [];
-        $filteredData2 = [];
-        $filteredData3 = [];
+        $arr = [];
         $firstPage  = $data[0];
         for ($x = 0; $x < count($firstPage); $x++) {
             if(isset($firstPage[$x+3])){
                 if($firstPage[$x+3][1] != null)
                 {
-                    $filteredData1[] = array(
+                    $arr[] = array(
                         "email" => $firstPage[$x+3][1],
                         "title" => 'work schedule',
-                        "start_event" => $firstPage[$x+3][4],
-                        "end_event" => $firstPage[$x+3][5],
+                        "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x+3][4]),
+                        "end_event" =>   $this->excel_date->excelDateToPHPDate($firstPage[$x+3][5]),
                     );
                 }
             }
         }
-        
+
         return $this->setResponse([
             "code"        => 200,
             "title"       => "Conversion success.",
             "description" => "Successfully converted excel data into formatted data.",
             "meta"        => [
-                "schedules" => $filteredData1 ,
+                "schedules" => $arr ,
             ],
         ]);
+
+        $result = $this->bulkScheduleInsertion($arr);
+        $result->parameters = $arr;
+        return $result;
+
     }
+
 
     public function bulkScheduleInsertion($data = []){
         foreach($data as $save){ 
