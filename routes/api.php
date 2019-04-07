@@ -59,9 +59,9 @@ Route::group([
         Route::get("/", "EventTitleController@all");
         Route::get("/select", "EventTitleController@select");
         Route::post("create", "EventTitleController@create");
-        Route::post('delete/{schedule_id}', 'EventTitleController@delete');
-        Route::get("fetch/{schedule_id}", "EventTitleController@fetch");
-        Route::post('update/{schedule_id}', 'EventTitleController@update');
+        Route::post('delete/{event_id}', 'EventTitleController@delete');
+        Route::get("fetch/{event_id}", "EventTitleController@fetch");
+        Route::post('update/{event_id}', 'EventTitleController@update');
         Route::get('search', 'EventTitleController@search');
 
     });
