@@ -6,84 +6,22 @@
       <div class="row gap-20">
         <!-- #Toatl Visits ==================== -->
         <div class="col-md-3">
-          <div class="layers bd bgc-white p-20">
-            <div class="layer w-100 mB-10">
-              <h6 class="lh-1">Scheduled</h6>
-            </div>
-            <div class="layer w-100">
-              <div class="peers ai-sb fxw-nw">
-                <div class="peer peer-greed">
-                  <span id="sparklinedash"></span>
-                </div>
-                <div class="peer">
-                  <span
-                    class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500"
-                  >+10%</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <stats-component-1 stat-name="scheduled"></stats-component-1>
         </div>
 
         <!-- #Total Page Views ==================== -->
         <div class="col-md-3">
-          <div class="layers bd bgc-white p-20">
-            <div class="layer w-100 mB-10">
-              <h6 class="lh-1">Working</h6>
-            </div>
-            <div class="layer w-100">
-              <div class="peers ai-sb fxw-nw">
-                <div class="peer peer-greed">
-                  <span id="sparklinedash2"></span>
-                </div>
-                <div class="peer">
-                  <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500">-7%</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <stats-component-1 stat-name="working"></stats-component-1>
         </div>
 
         <!-- #Unique Visitors ==================== -->
         <div class="col-md-3">
-          <div class="layers bd bgc-white p-20">
-            <div class="layer w-100 mB-10">
-              <h6 class="lh-1">Absent</h6>
-            </div>
-            <div class="layer w-100">
-              <div class="peers ai-sb fxw-nw">
-                <div class="peer peer-greed">
-                  <span id="sparklinedash3"></span>
-                </div>
-                <div class="peer">
-                  <span
-                    class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500"
-                  >~12%</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <stats-component-1 stat-name="absent"></stats-component-1>
         </div>
 
         <!-- #Bounce Rate ==================== -->
         <div class="col-md-3">
-          <div class="layers bd bgc-white p-20">
-            <div class="layer w-100 mB-10">
-              <h6 class="lh-1">Off-duty</h6>
-            </div>
-            <div class="layer w-100">
-              <div class="peers ai-sb fxw-nw">
-                <div class="peer peer-greed">
-                  <span id="sparklinedash4"></span>
-                </div>
-                <div class="peer">
-                  <span
-                    class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500"
-                  >33%</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <stats-component-1 stat-name="off_duty"></stats-component-1>
         </div>
       </div>
     </div>
@@ -240,11 +178,11 @@
           <div class="layer w-100 mB-10">
             <div class="peers">
               <div class="peer peer-greed">
-                <h6 class="lh-1">Incident Reports</h6>
+                <h6 class="lh-100">Incident Reports</h6>
               </div>
               <div class="peer">
                 <button
-                  class="btn btn-secondary btn-custom-size"
+                  class="btn bdrs-50p p-5 lh-0"
                   @click="clearForm('incident_report'),
                   fetchSelectOptions(endpoints.select.child_list,'incident_report','child_list'),
                   fetchSelectOptions(endpoints.select.sanction_level,'incident_report','sanction_level'),
@@ -256,8 +194,10 @@
               </div>
             </div>
           </div>
-
-          <div class="table-responsive" v-if="(table.received_incident_report).length>0">
+          <div class="row" v-if="isEmpty(table.received_incident_report.reports_data)">
+            <i style="font-size:.7em;">Nothing to display...</i>
+          </div>
+          <div class="table-responsive" v-else>
             <table class="table">
               <thead>
                 <tr>
@@ -305,9 +245,6 @@
               </tbody>
             </table>
           </div>
-          <div class="row" v-else>
-            <i style="font-size:.7em;">Nothing to display...</i>
-          </div>
         </div>
       </div>
 
@@ -323,20 +260,18 @@
                       <h6 class="lh-1">Sanction Levels</h6>
                     </div>
                     <div class="peer">
-                      <button
-                        class="btn btn-secondary btn-custom-size"
-                        @click="showModal('sanction_level')"
-                      >
+                      <button class="btn bdrs-50p p-5 lh-0" @click="showModal('sanction_level')">
                         <i class="ti-plus"></i>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div
-                  class="table-responsive table-scroll-200"
-                  v-if="(table.sanction_level.options).length>0"
-                >
+                <div class="row" v-if="isEmpty(table.sanction_level.options)">
+                  <i style="font-size:.7em;">Nothing to display...</i>
+                </div>
+
+                <div class="table-responsive table-scroll-200" v-else>
                   <table class="table table-scroll-200">
                     <thead>
                       <tr>
@@ -358,10 +293,6 @@
                     </tbody>
                   </table>
                 </div>
-
-                <div class="row" v-else>
-                  <i style="font-size:.7em;">Nothing to display...</i>
-                </div>
               </div>
             </div>
             <!-- Sanction Types -->
@@ -373,24 +304,22 @@
                       <h6 class="lh-1">Sanction Types</h6>
                     </div>
                     <div class="peer">
-                      <button
-                        class="btn btn-secondary btn-custom-size"
-                        @click="showModal('sanction_type')"
-                      >
+                      <button class="btn bdrs-50p p-5 lh-0" @click="showModal('sanction_type')">
                         <i class="ti-plus"></i>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div
-                  class="table-scroll-200 table-responsive"
-                  v-if="(table.sanction_type.options).length>0"
-                >
-                  <table class="table">
+                <div class="row" v-if="isEmpty(table.sanction_type.options)">
+                  <i style="font-size:.7em;">Nothing to display...</i>
+                </div>
+
+                <div class="table-responsive table-scroll-200" v-else>
+                  <table class="table table-scroll-200">
                     <thead>
                       <tr>
-                        <th>Type ID</th>
+                        <th>Type</th>
                         <th>Description</th>
                         <th>Action</th>
                       </tr>
@@ -639,262 +568,12 @@ export default {
     this.fetchTableObject("sanction_level");
     this.fetchTableObject("sanction_type");
     this.fetchTableObject("received_incident_report");
+    this.user_id = this.userId;
     console.log(this.user_id);
   },
   data() {
-    return {
-      user_id: this.userId,
-      endpoints: {
-        get: {
-          sanction_level: "/api/v1/reports/sanction_levels",
-          sanction_type: "/api/v1/reports/sanction_types",
-          child_list: "/api/v1/reports/all_users",
-          received_incident_report: "/api/v1/reports/user/" + this.user_id,
-          filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id
-        },
-        create: {
-          sanction_level: "/api/v1/reports/add_sanction_level",
-          sanction_type: "/api/v1/reports/add_sanction_type",
-          incident_report: "/api/v1/reports/create"
-        },
-        table: {
-          sanction_level: "/api/v1/reports/sanction_levels",
-          sanction_type: "/api/v1/reports/sanction_types",
-          received_incident_report: "/api/v1/reports/user/" + this.userId,
-          filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id
-        },
-        select: {
-          sanction_level: "/api/v1/reports/select_sanction_levels",
-          sanction_type: "/api/v1/reports/select_sanction_types",
-          child_list: "/api/v1/reports/select_all_users/1"
-        }
-      },
-      form: {
-        incident_report: {
-          select_option: {
-            sanction_level: [],
-            sanction_type: [],
-            child_list: []
-          },
-          selected: {
-            sanction_level: { value: "", text: "" },
-            sanction_type: { value: "", text: "" },
-            child_list: { value: "", text: "" }
-          },
-          textarea: "",
-          action: "create"
-        },
-        sanction_level: {
-          level: "",
-          description: "",
-          action: "create"
-        },
-        sanction_type: {
-          type: "",
-          description: "",
-          action: "create"
-        },
-        incident_report_response: {
-          sanction: {
-            type: "",
-            level: ""
-          },
-          ir_description: "",
-          ir_date: "",
-          received_by: "",
-          received_by_position: "",
-          filed_by: "",
-          filed_by_position: "",
-          response: ""
-        }
-      },
-      table: {
-        sanction_level: [],
-        sanction_type: [],
-        received_incident_report: [],
-        incident_report: []
-      }
-    };
+    return {};
   },
-  methods: {
-    fetchSelectOptions: function(url, formName, element) {
-      let pageurl = url;
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          if (res.code == 200) {
-            this.form[formName].select_option[element] = res.meta.options;
-          }
-          // console.log(res.meta.options);
-        })
-        .catch(err => console.log(err));
-    },
-
-    fetchTableObject: function(tableName) {
-      let pageurl = this.endpoints.table[tableName];
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          // console.log(res);
-          if (res.code == 200) {
-            this.table[tableName] = res.meta;
-          }
-        })
-        .catch(err => console.log(err));
-    },
-
-    clearForm: function(formName) {
-      switch (formName) {
-        case "incident_report":
-          this.form.incident_report.selected.sanction_level = {};
-          this.form.incident_report.selected.sanction_type = {};
-          this.form.incident_report.selected.child_list = {};
-          this.form.incident_report.action = "create";
-          break;
-        case "sanction_level":
-          this.form.sanction_level.level = "";
-          this.form.sanction_level.description = "";
-          this.form.sanction_level.action = "create";
-          break;
-        case "sanction_type":
-          this.form.sanction_type.type = "";
-          this.form.sanction_type.description = "";
-          this.form.sanction_type.action = "create";
-          break;
-      }
-    },
-
-    submitForm: function(formName, action) {
-      let obj = [];
-      let pageurl = this.endpoints[action][formName];
-      let validated = false;
-      switch (formName) {
-        case "incident_report":
-          if (
-            this.isEmpty(this.form.incident_report.selected.child_list) ||
-            this.isEmpty(this.form.incident_report.selected.sanction_level) ||
-            this.isEmpty(this.form.incident_report.selected.sanction_type) ||
-            this.form.incident_report.textarea == ""
-          ) {
-            console.log("EMPTY");
-          } else {
-            validated = true;
-            obj = {
-              user_reports_id: this.form.incident_report.selected.child_list
-                .value,
-              filed_by: this.userId,
-              description: this.form.incident_report.textarea,
-              sanction_type_id: this.form.incident_report.selected.sanction_type
-                .value,
-              sanction_level_id: this.form.incident_report.selected
-                .sanction_level.value
-            };
-            console.log(obj);
-          }
-          break;
-
-        case "sanction_level":
-          if (
-            this.form.sanction_level.level != "" &&
-            this.form.sanction_level.description != ""
-          ) {
-            validated = true;
-            obj = {
-              level_number: this.form.sanction_level.level,
-              level_description: this.form.sanction_level.description
-            };
-          }
-          break;
-        case "sanction_type":
-          if (
-            this.form.sanction_type.type != "" &&
-            this.form.sanction_type.description != ""
-          ) {
-            validated = true;
-            obj = {
-              type_number: this.form.sanction_type.type,
-              type_description: this.form.sanction_type.description
-            };
-          }
-          break;
-      }
-      if (validated == true) {
-        this.store(obj, pageurl, action, formName);
-      }
-    },
-
-    store: function(obj, pageurl, action, formName) {
-      fetch(pageurl, {
-        method: "post",
-        body: JSON.stringify(obj),
-        headers: {
-          "content-type": "application/json"
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
-          if (data.code == 500) {
-            console.log("error");
-            this.notify("error", action);
-          } else {
-            this.fetchTableObject(formName);
-            this.clearForm(formName);
-            this.hideModal(formName);
-            this.notify("success", action);
-          }
-        })
-        .catch(err => console.log(err));
-    },
-    notify: function(status, action) {
-      let dtitle = "";
-      let dtext = "";
-      let dtype = "";
-      switch (status) {
-        case "success":
-          dtitle = "Success Notification";
-          dtext = "You have successfully " + action + "d a record.";
-          dtype = "success";
-          break;
-        case "error":
-          dtitle = "Error Notification";
-          dtitle = "Error " + action + "ing a record.";
-          dtype = "warning";
-          break;
-      }
-      this.$notify({
-        group: "foo",
-        title: dtitle,
-        text: dtext + "<br/><small>CNM Solutions WebApp</small>",
-        type: dtype
-      });
-    },
-
-    isEmpty: function(obj) {
-      for (var key in obj) {
-        if (obj.hasOwnProperty(key)) return false;
-      }
-      return true;
-    },
-    loadIRResponseForm: function(report_id) {
-      let obj = [];
-      this.table.received_incident_report.reports_data[0].reports.forEach(
-        function(v, i) {
-          if (v.id == report_id) {
-            obj = v;
-          }
-        }
-      );
-      this.form.incident_report_response.sanction.level =
-        obj.sanction_level.text;
-      this.form.incident_report_response.sanction.type = obj.sanction_type.text;
-      this.form.incident_report_response.ir_description = obj.description;
-      this.form.incident_report_response.ir_date = obj.created_at;
-      this.form.incident_report_response.received_by = this.table.received_incident_report.reports_data[0].full_name;
-      // this.form.incident_report_response.received_by_position = this.table.received_incident_report.reports_data[0].full_name;
-      this.form.incident_report_response.filed_by = obj.filedby.full_name;
-      // this.form.incident_report_response.filed_by_position = obj.filedby.full_name;
-    }
-  }
+  methods: {}
 };
 </script>
