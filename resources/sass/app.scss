@@ -105,12 +105,16 @@ img {
     border-color: #ced4da !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__rendered {
     height: 35px !important;
     line-height: 2.4 !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__arrow {
     height: 35px !important;
 }
 
@@ -363,13 +367,13 @@ body {
     cursor: pointer;
 }
 
-.info-radio:checked+.info-button-label {
+.info-radio:checked + .info-button-label {
     background-color: rgb(233, 233, 233);
 }
 
-#tab1:checked~.tab-con-wrapper>#tab-con1,
-#tab2:checked~.tab-con-wrapper>#tab-con2,
-#tab3:checked~.tab-con-wrapper>#tab-con3 {
+#tab1:checked ~ .tab-con-wrapper > #tab-con1,
+#tab2:checked ~ .tab-con-wrapper > #tab-con2,
+#tab3:checked ~ .tab-con-wrapper > #tab-con3 {
     display: block;
     position: relative;
 }
@@ -592,11 +596,19 @@ table tr {
 }
 
 pre.ir_description {
-    font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont,
+        "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     line-height: 1.9;
     font-size: 14px;
     color: #72777a;
     text-align: justify;
 }
 
-.table-create-btn {}
+.circle {
+    width: 15px;
+    height: 15px;
+    border: 2px solid #545454;
+    -webkit-border-radius: 7.5px;
+    -moz-border-radius: 7.5px;
+    border-radius: 7.5px;
+}

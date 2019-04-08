@@ -22,257 +22,42 @@
                 <h6>Events</h6>
               </div>
               <div class="col text-right">
-                <button class="btn bdrs-50p p-5 lh-0" type="button">
+                <button class="btn bdrs-50p p-5 lh-0" type="button" @click="showModal('event')">
                   <i class="ti-plus"></i>
                 </button>
               </div>
             </div>
           </div>
           <div class="pos-r bdT layer w-100 fxg-1" style="overflow-y:auto">
-            <ul class="p-20 nav flex-column">
-              <li class="nav-item nav-title-header" style>
+            <ul class="p-20 nav flex-column" v-if="isEmpty(table.event.event_titles)">
+              <li class="nav-item nav-title-header">
                 <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
                   <div class="peers ai-c jc-sb">
                     <div class="peer peer-greed">
-                      <i class="mR-10 ti-email"></i>
-                      <span>Inbox</span>
+                      <span>Nothing to display...</span>
                     </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
-                    </div>
+                    <div class="peer"></div>
                   </div>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
+            </ul>
+            <ul class="p-20 nav flex-column" v-else>
+              <li
+                class="nav-item nav-title-header"
+                v-for="events in table.event.event_titles"
+                v-bind:key="events.id"
+              >
+                <a
+                  href="javascript:void(0)"
+                  class="nav-link c-grey-800 cH-blue-500 active"
+                  @click="(form.event.action = 'update'),(form.event.id = events.id),showModal('event')"
+                >
                   <div class="peers ai-c jc-sb">
                     <div class="peer peer-greed">
-                      <i class="mR-10 ti-email"></i>
-                      <span>Inbox</span>
+                      <span>{{events.title}}</span>
                     </div>
                     <div class="peer">
-                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-share"></i>
-                      <span>Sent</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-green-50 c-green-700">12</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-star"></i>
-                      <span>Important</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-blue-50 c-blue-700">3</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-file"></i>
-                      <span>Drafts</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-amber-50 c-amber-700">5</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-alert"></i>
-                      <span>Spam</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">1</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-trash"></i>
-                      <span>Trash</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">+99</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-email"></i>
-                      <span>Inbox</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-share"></i>
-                      <span>Sent</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-green-50 c-green-700">12</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-star"></i>
-                      <span>Important</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-blue-50 c-blue-700">3</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-file"></i>
-                      <span>Drafts</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-amber-50 c-amber-700">5</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-alert"></i>
-                      <span>Spam</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">1</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-trash"></i>
-                      <span>Trash</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">+99</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-email"></i>
-                      <span>Inbox</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-share"></i>
-                      <span>Sent</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-green-50 c-green-700">12</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-star"></i>
-                      <span>Important</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-blue-50 c-blue-700">3</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-file"></i>
-                      <span>Drafts</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-amber-50 c-amber-700">5</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-alert"></i>
-                      <span>Spam</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">1</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-trash"></i>
-                      <span>Trash</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">+99</span>
+                      <div class="circle" :style="{ backgroundColor: events.color,}"></div>
                     </div>
                   </div>
                 </a>
@@ -507,7 +292,7 @@
       <!-- popover -->
       <!-- Modal -->
       <!-- Schedule Form Modal -->
-      <modal name="schedule-form-modal" pivotY="0.2" scrollable="true" height="auto">
+      <modal name="schedule-form-modal" :pivotY="0.2" :scrollable="true" height="auto">
         <div class="layer">
           <div class="e-modal-header bd">
             <h5 style="margin-bottom:0px">Schedule</h5>
@@ -597,7 +382,7 @@
         </div>
       </modal>
       <!-- IR Form Modal -->
-      <modal name="ir-form-modal" pivotY="0.2" scrollable="true" height="auto">
+      <modal name="ir-form-modal" :pivotY="0.2" :scrollable="true" height="auto">
         <div class="layer">
           <div class="e-modal-header bd">
             <h5 style="margin-bottom:0px">Incident Report</h5>
@@ -642,8 +427,42 @@
       </modal>
       <!-- IR Response Form Modal -->
       <ir-response-modal></ir-response-modal>
+
+      <modal name="event" :pivotY="0.2" :scrollable="true" width="300px" height="auto">
+        <div class="layer">
+          <div class="e-modal-header bd">
+            <h5 style="margin-bottom:0px">Events</h5>
+          </div>
+          <div class="w-100 p-15 pT-80" style>
+            <div class="container">
+              <form action>
+                <div class="row pT-5">
+                  <div class="col">
+                    <label>Color:</label>
+                    <compact-picker v-model="form.event.color"/>
+                  </div>
+                </div>
+                <div class="row pT-5">
+                  <div class="col">
+                    <label>Title:</label>
+                    <input type="text" class="form-control" v-model="form.event.title">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="e-modal-footer bd">
+            <div style="text-align:right">
+              <button class="btn btn-secondary" @click="hideModal('event')">Cancel</button>
+              <button class="btn btn-danger" @click="submitForm('event',form.event.action)">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </modal>
       <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
       <!-- Modal -->
+      <!-- notification -->
+      <notifications group="foo" animation-type="velocity" position="bottom right"/>
     </div>
   </div>
 </template>
@@ -670,10 +489,11 @@
 <script>
 import moment from "moment";
 import { BasicSelect } from "vue-search-select";
+import { Compact } from "vue-color";
 
 export default {
   props: ["userId"],
-  components: { BasicSelect },
+  components: { BasicSelect, "compact-picker": Compact },
   mounted() {
     // console.log("rtapage mounted");
     // console.log(this.userProfile);
@@ -681,6 +501,7 @@ export default {
   created() {
     //on create function
     this.fetchAgentList(0);
+    this.fetchTableObject("event");
     //TEST function create
     // this.getDates("2018-12-25", "2019-01-05");
     // this.submitScheduleForm();
@@ -715,6 +536,12 @@ export default {
       },
       titleOptions: [],
 
+      form: {
+        event: {
+          color: "",
+          title: ""
+        }
+      },
       config: {
         eventClick: event => {
           console.log(event);

@@ -7,7 +7,7 @@
     </a>
 </li>
 -->
-    <li class="nav-item">
+    <li class="nav-item page-identifier" data-page="hrdashboard">
         <a class='sidebar-link' href="/dashboard">
         <span class="icon-holder">
             <i class="c-brown-500 ti-dashboard"></i>
@@ -17,7 +17,7 @@
     </li>
 
 @if($pageOnload->user->access_id > 11 && $pageOnload->user->access_id < 15)
-    <li class="nav-item">
+    <li class="nav-item page-identifier" data-page="rtaschedule">
         <a class='sidebar-link' href="/schedule">
         <span class="icon-holder">
             <i class="c-brown-500 ti-calendar"></i>
@@ -25,7 +25,7 @@
         <span class="">Schedule</span>
         </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item page-identifier" data-page="rta_work_reports">
         <a class='sidebar-link' href="/rtareport">
         <span class="icon-holder">
             <i class="c-brown-500 ti-calendar"></i>
@@ -36,7 +36,7 @@
 @endif
 
 @if($pageOnload->user->access_id == 1)
-    <li class="nav-item">
+    <li class="nav-item page-identifier" data-page="rtadashboard">
         <a class='sidebar-link' href="/rtadashboard">
         <span class="icon-holder">
             <i class="c-brown-500">RTA</i>
@@ -44,7 +44,7 @@
         <span class="">Dashboard</span>
         </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item page-identifier" data-page="rta_schedule">
         <a class='sidebar-link' href="/rtaschedule">
         <span class="icon-holder">
             <i class="c-brown-500">RTA</i>
@@ -52,7 +52,7 @@
         <span class="">Schedule</span>
         </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item page-identifier" data-page="rta_work_reports">
         <a class='sidebar-link' href="/rtareport">
         <span class="icon-holder">
             <i class="c-brown-500">RTA</i>
@@ -60,16 +60,8 @@
         <span class="">Work Reports</span>
         </a>
     </li>
-    <li class="nav-item">
-        <a class='sidebar-link' href="/tldashboard">
-        <span class="icon-holder">
-            <i class="c-brown-500">TL</i>
-        </span>
-        <span class="">Dashboard</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class='sidebar-link' href="/tlschedule">
+    <li class="nav-item page-identifier" data-page="tldashboard">
+        <a class='sidebar-link' href="/tlworkreports">
         <span class="icon-holder">
             <i class="c-brown-500">TL</i>
         </span>
@@ -80,7 +72,7 @@
 @endif
 
 @if($pageOnload->user->access_id == 6)
-    <li class="nav-item">
+    <li class="nav-item page-identifier" data-page="tldashboard">
         <a class='sidebar-link' href="/tldashboard">
         <span class="icon-holder">
             <i class="c-brown-500">TL</i>
@@ -88,8 +80,8 @@
         <span class="">Dashboard</span>
         </a>
     </li>
-    <li class="nav-item">
-        <a class='sidebar-link' href="/tlschedule">
+    <li class="nav-item page-identifier" data-page="tlwork_reports">
+        <a class='sidebar-link' href="/tlworkreports">
         <span class="icon-holder">
             <i class="c-brown-500">TL</i>
         </span>
