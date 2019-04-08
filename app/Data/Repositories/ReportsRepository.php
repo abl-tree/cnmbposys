@@ -114,13 +114,13 @@ class ReportsRepository extends BaseRepository
     {
         // data validation
         
-
+        if (!isset($data['id'])) {
             if (!isset($data['user_reports_id']) ||
                 !is_numeric($data['user_reports_id']) ||
                 $data['user_reports_id'] <= 0) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "User ID is not set.",
+                    'title' => "User report ID is not set.",
                 ]);
             }
 
@@ -143,10 +143,37 @@ class ReportsRepository extends BaseRepository
                     'title' => "saction level is not set.",
                 ]);
             }
+        }   else{
+            if (isset($data['id'])) {
+                $does_exist = $this->user_reports->find($data['id']);
 
-       
-            $reports = $this->user_reports->init($this->user_reports->pullFillable($data));
-            $reports->save($data);
+                if (!$does_exist) {
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => 'Request Schedule does not exist.',
+                    ]);
+                }
+            }
+            if (isset($data['user_reports_id'])) {
+                $user_reports_id = $this->user_reports->find($data['user_reports_id']);
+    
+                if (!$user_reports_id) {
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => 'user_reports_id does not exist.',
+                    ]);
+                }
+            }
+        }
+           
+
+            if (isset($data['id'])) {
+                $reports = $this->user_reports->find($data['id']);
+            } else{
+                $reports = $this->user_reports->init($this->user_reports->pullFillable($data));
+            }
+            
+           
 
         if (!$reports->save($data)) {
             return $this->setResponse([
@@ -166,6 +193,42 @@ class ReportsRepository extends BaseRepository
         ]);
         
     }
+
+    public function deleteReport($data = [])
+    {
+        $record = $this->user_reports->find($data['id']);
+
+        if (!$record) {
+            return $this->setResponse([
+                "code"        => 404,
+                "title"       => "Incident Report not found"
+            ]);
+        }
+
+        if (!$record->delete()) {
+            return $this->setResponse([
+                "code"    => 500,
+                "message" => "Deleting Incident Report was not successful.",
+                "meta"    => [
+                    "errors" => $record->errors(),
+                ],
+                "parameters" => [
+                    'schedule_id' => $data['id']
+                ]
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"        => 200,
+            "title"       => "Incident Report deleted",
+            "description" => "Incident Report deleted successfully.",
+            "parameters"        => [
+                "schedule_id" => $data['id']
+            ]
+        ]);
+
+    }
+
 
       public function fetchUserReport($data = [])
     {

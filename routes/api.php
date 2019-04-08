@@ -90,7 +90,7 @@ Route::group([
     ], function () {
 
         Route::get("/", "LogsController@index");
-        Route::get("user/{id}", "LogsController@log");
+        Route::get("/{id}", "LogsController@log");
         Route::post("create", "LogsController@create");
     });
 
@@ -109,6 +109,8 @@ Route::group([
         Route::get("all_users", "ReportsController@getAllUser");
         Route::get("all_users/{id}", "ReportsController@getAllUserUnder");
         Route::post("create", "ReportsController@create");
+        Route::post('update/{ir_id}', 'ReportsController@update');
+        Route::post('delete/{ir_id}', 'ReportsController@delete');
         Route::post("add_sanction_type", "ReportsController@addSanctionType");
         Route::post("add_sanction_level", "ReportsController@addSanctionLevel");
         Route::post("user_reponse", "ReportsController@userResponse");

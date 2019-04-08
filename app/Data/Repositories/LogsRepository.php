@@ -3,6 +3,7 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\UserInfo;
 use App\User;
+use App\Data\Models\UsersData;
 use App\Data\Models\ActionLogs;
 use App\Data\Repositories\BaseRepository;
 
@@ -16,7 +17,7 @@ class LogsRepository extends BaseRepository
 
     public function __construct(
         UserInfo $user_info,
-        User $user,
+        UsersData $user,
         ActionLogs $action_logs
     ) {
         $this->user_info = $user_info;
@@ -26,14 +27,14 @@ class LogsRepository extends BaseRepository
 
     public function logs($data = [])
     {
-        $meta_index = "Users";
+        $meta_index = "metadata";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "Users";
+            $meta_index     = "metadata";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -47,7 +48,7 @@ class LogsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = ["user_info","user_logs","accesslevel"];        
+        $data['relations'] = ["user_logs","accesslevelhierarchy"];        
         $count_data = $data;    
         $result = $this->fetchGeneric($data, $this->user);
 
@@ -73,7 +74,7 @@ class LogsRepository extends BaseRepository
                 "count"     => $count,
             ],
             "count"     => $count,
-            "parameters" => $data['user_id'],
+            //"parameters" => $data['user_id'],
             
         ]);
     }

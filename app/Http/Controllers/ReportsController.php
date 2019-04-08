@@ -180,8 +180,29 @@ class ReportsController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        $data['id'] = $id;
+
+        return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();
     }
+    public function delete(Request $request, $id)
+    {
+        $data       = $request->all();
+        $data['id'] = $id;
+
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "IR ID is not set.",
+            ]);
+        }
+
+        return $this->absorb($this->user_reports->deleteReport($data))->json();
+    }
+
+
 
     /**
      * Remove the specified resource from storage.
