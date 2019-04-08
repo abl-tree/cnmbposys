@@ -18,6 +18,7 @@ use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
 use App\Services\ExcelDateService;
 use Carbon\Carbon;
+use App\Data\Repositories\LogsRepository;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -27,19 +28,22 @@ class AgentScheduleRepository extends BaseRepository
         $user,
         $user_info,
         $event_title,
-        $excel_date;
+        $excel_date,
+        $logs;
     public function __construct(
         AgentSchedule $agentSchedule,
         User $user,
         UserInfo $userInfo,
         EventTitle $eventTitle,
-        ExcelDateService $excelDate
+        ExcelDateService $excelDate,
+        LogsRepository $logs_repo
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
         $this->user_info = $userInfo;
         $this->event_title = $eventTitle;
         $this->excel_date = $excelDate;
+        $this->logs = $logs_repo;
     }
 
     public function excelData($data)
@@ -182,6 +186,13 @@ class AgentScheduleRepository extends BaseRepository
             $agent_schedule = $this->agent_schedule->find($data['id']);
         } else {
             $agent_schedule = $this->agent_schedule->init($this->agent_schedule->pullFillable($data));
+            // logs POST data
+            $logged_data = [
+                "user_id" => auth()->user()->id,
+                "action" => "POST",
+                "affected_data" => "Successfully created a schedule for 'email' on 'start_event' to 'end event' via excel upload for USER NO. ".$data['user_id']
+            ];
+            $this->logs->logsInputCheck($logged_data);
         }
 
         if (!$agent_schedule->save($data)) {
