@@ -16,7 +16,10 @@ class UserReport extends BaseModel
     ];
 
     protected $hidden = [
-        'user_info'
+        'user_info','user'
+    ];
+    protected $appends = [
+        'full_name',
     ];
 
 
@@ -47,5 +50,12 @@ class UserReport extends BaseModel
         ->select()->all();
         return $query;
     }
+    public function getFullNameAttribute(){
+        $name = null;
+        $name = $this->user->fullname;
+        
+        return $name;
+    }
+
 }
 
