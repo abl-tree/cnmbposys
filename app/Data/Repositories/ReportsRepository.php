@@ -303,14 +303,14 @@ class ReportsRepository extends BaseRepository
 
       public function fetchUserReport($data = [])
     {
-       $meta_index = "reports_data";
+       $meta_index = "reports";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "reports_data";
+            $meta_index     = "reports";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -324,8 +324,8 @@ class ReportsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = ["reports"];   
-        $result = $this->fetchGeneric($data, $this->user_info);
+        $data['relations'] = ['user','filedby','SanctionType','SanctionLevel'];   
+        $result = $this->fetchGeneric($data, $this->user_reports);
         $results=[];
         $keys=0;
         foreach ($result as $key => $value) {
@@ -696,14 +696,14 @@ class ReportsRepository extends BaseRepository
 
     public function userFiledIR($data = [])
     {
-       $meta_index = "meta_data";
+       $meta_index = "reports";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "meta_data";
+            $meta_index     = "reports";
             $data['single'] = false;
             $data['where']  = [
                 [
