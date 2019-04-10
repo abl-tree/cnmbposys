@@ -34,52 +34,34 @@
                 <i class="ti-plus"></i>
               </button>
             </div>
-          </div>
+          </div>n
         </div>
-        <div v-for="(tabs,index) in tableTab" :key="tabs.id" class="text-center">
-          <h1 v-if="tabs.selected">{{index+" "+tabs.label}}</h1>
-          <!-- <div class="row" v-if="isEmpty(tabs.data.options)">
-            <i
-              v-show="table[tableName].fetch_status=='fetching'"
-              style="font-size:.7em;"
-            >Fetching data...</i>
-            <i
-              v-show="table[tableName].fetch_status=='fetched'"
-              style="font-size:.7em;"
-            >Nothing to display...</i>
-          </div>-->
-          <!--<div style="overflow-y:auto;height:200px;width:100%;overflow-x:hidden" v-else>
-          <ul class="lis-n p-0 m-0 fsz-sm w-100">
-            <li v-for="item in table[tableName].data.options" v-bind:key="item.id">
-              <div class="row pY-10 bdT bdB mT-0 mB-0">
-                <div class="col-sm-3">
-                  <div class="text-left pB-5" style="font-size:0.6em">Level</div>
-                  <div class="text-center">{{item.level_number}}</div>
-                </div>
-                <div class="col-sm-5">
-                  <div class="text-left pB-5" style="font-size:0.6em">Description</div>
-                  <div class="text-left">{{item.level_description}}</div>
-                </div>
-                <div class="col-2">
-                  <div class="text-right pB-5" style="font-size:0.6em">Action</div>
-                  <div class="text-right">
-                    <i
-                      class="btn btn-link ti-pencil"
-                      @click="
-                    (endpoints.update[tableName]=endpoints.tmp.update[tableName]+item.id),
-                    (endpoints.delete[tableName]=endpoints.tmp.delete[tableName]+item.id),
-                    (form[tableName].level =item.level_number),
-                    (form[tableName].description =item.level_description),
-                    (form[tableName].action = 'update'),
-                    showModal(tableName)
-                    "
-                    ></i>
-                  </div>
+        <div class="text-center">
+          <!-- <h1 v-if="tabs.selected">{{index+" "+tabs.label}}</h1> -->
+          <!-- ul -->
+          <div v-for="tabs in tableTab" :key="tabs.id" class="layer w-100">
+            <div class="row" v-if="isEmpty(tabs.data)">
+              <i
+                v-show="table[tabs.tableName].fetch_status=='fetching'"
+                style="font-size:.7em;"
+              >Fetching data...</i>
+              <i
+                v-show="table[tabs.tableName].fetch_status=='fetched'"
+                style="font-size:.7em;"
+              >Nothing to display...</i>
+            </div>
+            <div class="layer w-100 fxg-1 pos-r" style="overflow-y:auto;height:100vh">
+              <div>
+                <div
+                  v-for="items in tabs.data"
+                  :key="items.id"
+                  class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p"
+                >
+                  <h6>{{(tabs.label=='ISSUED'?items.filedby.full_name:items.full_name)}}</h6>
                 </div>
               </div>
-            </li>
-          </ul>
-          </div>-->
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -267,7 +249,9 @@ export default {
         this.endpoints.table[this.tableTab[l].tableName] =
           this.tableTab[l].endpoint.retreive + this.user_id;
         this.fetchTableObject(this.tableTab[l].tableName);
+        this.tableTab[l] = this.table[this.tableTab[l].tableName].reports;
       }
+      console.log(this.tableTab);
     }
   }
 };
