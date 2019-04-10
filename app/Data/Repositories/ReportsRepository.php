@@ -5,6 +5,7 @@ use App\Data\Models\UserInfo;
 use App\Data\Models\Users;
 use App\Data\Models\SelectUsers;
 use App\User;
+use App\Data\Models\IncidentReport;
 use App\Data\Models\UserReport;
 use App\Data\Models\SanctionType;
 use App\Data\Models\SanctionLevel;
@@ -21,6 +22,7 @@ class ReportsRepository extends BaseRepository
         $users,
         $select_users,
         $user,
+        $incident_report,
         $user_reports,
         $sanction_type,
         $sanction_types,
@@ -38,7 +40,8 @@ class ReportsRepository extends BaseRepository
         SanctionTypes $sanction_types,
         SanctionLevels $sanction_levels,
         ReportResponse $report_response,
-        UserReport $user_reports
+        UserReport $user_reports,
+        IncidentReport $incident_report
     ) {
         $this->user_info = $user_info;
         $this->users = $users;
@@ -50,6 +53,7 @@ class ReportsRepository extends BaseRepository
         $this->sanction_levels = $sanction_levels;
         $this->sanction_types = $sanction_types;
         $this->report_response = $report_response;
+        $this->incident_report = $incident_report;
     } 
 
     public function getAllReports($data = [])
@@ -324,8 +328,8 @@ class ReportsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = ['user','filedby','SanctionType','SanctionLevel'];   
-        $result = $this->fetchGeneric($data, $this->user_reports);
+        $data['relations'] = ["SanctionLevel",'SanctionType','filedby','agentResponse'];   
+        $result = $this->fetchGeneric($data, $this->incident_report);
         $results=[];
         $keys=0;
         foreach ($result as $key => $value) {
@@ -346,7 +350,7 @@ class ReportsRepository extends BaseRepository
             ]);
         }
        
-        $count = $this->countData($count_data, refresh_model($this->user_reports->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->incident_report->getModel()));
 
         return $this->setResponse([
             "code"       => 200,
@@ -696,14 +700,14 @@ class ReportsRepository extends BaseRepository
 
     public function userFiledIR($data = [])
     {
-       $meta_index = "reports";
+       $meta_index = "meta_data";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "reports";
+            $meta_index     = "meta_data";
             $data['single'] = false;
             $data['where']  = [
                 [
