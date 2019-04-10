@@ -700,14 +700,14 @@ class ReportsRepository extends BaseRepository
 
     public function userFiledIR($data = [])
     {
-       $meta_index = "meta_data";
+       $meta_index = "reports";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "meta_data";
+            $meta_index     = "reports";
             $data['single'] = false;
             $data['where']  = [
                 [
