@@ -8,38 +8,53 @@
             <h6 class="lh-1">Sanction Levels</h6>
           </div>
           <div class="peer">
-            <button class="btn bdrs-50p p-5 lh-0" @click="showModal('sanction_level')">
+            <button
+              class="btn bdrs-50p p-5 lh-0"
+              @click="
+              (form[tableName].action = 'create'),
+              showModal(tableName)"
+            >
               <i class="ti-plus"></i>
             </button>
           </div>
         </div>
       </div>
-      <div class="row" v-if="isEmpty(table.sanction_level.data.options)">
+      <div class="row" v-if="isEmpty(table[tableName].data.options)">
         <i
-          v-show="table.sanction_level.fetch_status=='fetching'"
+          v-show="table[tableName].fetch_status=='fetching'"
           style="font-size:.7em;"
         >Fetching data...</i>
         <i
-          v-show="table.sanction_level.fetch_status=='fetched'"
+          v-show="table[tableName].fetch_status=='fetched'"
           style="font-size:.7em;"
         >Nothing to display...</i>
       </div>
       <div style="overflow-y:auto;height:200px;width:100%;overflow-x:hidden" v-else>
         <ul class="lis-n p-0 m-0 fsz-sm w-100">
-          <li v-for="levels in table.sanction_level.data.options" v-bind:key="levels.id">
+          <li v-for="item in table[tableName].data.options" v-bind:key="item.id">
             <div class="row pY-10 bdT bdB mT-0 mB-0">
               <div class="col-sm-3">
                 <div class="text-left pB-5" style="font-size:0.6em">Level</div>
-                <div class="text-center">{{levels.level_number}}</div>
+                <div class="text-center">{{item.level_number}}</div>
               </div>
               <div class="col-sm-5">
                 <div class="text-left pB-5" style="font-size:0.6em">Description</div>
-                <div class="text-left">{{levels.level_description}}</div>
+                <div class="text-left">{{item.level_description}}</div>
               </div>
               <div class="col-2">
                 <div class="text-right pB-5" style="font-size:0.6em">Action</div>
                 <div class="text-right">
-                  <i class="btn btn-link ti-pencil"></i>
+                  <i
+                    class="btn btn-link ti-pencil"
+                    @click="
+                    (endpoints.update[tableName]=endpoints.tmp.update[tableName]+item.id),
+                    (endpoints.delete[tableName]=endpoints.tmp.delete[tableName]+item.id),
+                    (form[tableName].level =item.level_number),
+                    (form[tableName].description =item.level_description),
+                    (form[tableName].action = 'update'),
+                    showModal(tableName)
+                    "
+                  ></i>
                 </div>
               </div>
             </div>
@@ -48,7 +63,7 @@
       </div>
     </div>
     <!-- modal -->
-    <!-- Sanction Level Form Modal -->
+    <!-- Sanction Type Form Modal -->
     <modal name="sanction_level" :pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
@@ -65,33 +80,43 @@
                     class="form-control"
                     min="1"
                     step="1"
-                    v-model="form.sanction_level.level"
+                    v-model="form[tableName].level"
                   >
                 </div>
                 <div class="col">
                   <label>Description:</label>
-                  <input type="text" class="form-control" v-model="form.sanction_level.description">
+                  <input type="text" class="form-control" v-model="form[tableName].description">
                 </div>
               </div>
             </form>
           </div>
         </div>
         <div class="e-modal-footer bd">
-          <div style="text-align:right">
-            <button class="btn btn-secondary" @click="hideModal('sanction_level')">Cancel</button>
-            <button
-              class="btn btn-danger"
-              @click="(form.sanction_level.level!=''&&form.sanction_level.description!='' ? 
+          <div class="row">
+            <div class="peer peer-greed text-left pL-20">
+              <button
+                v-show="form[tableName].action=='update'"
+                class="btn"
+                @click="store({},'delete',tableName)"
+              >Delete</button>
+            </div>
+
+            <div class="peer text-right pR-20">
+              <button class="btn btn-secondary" @click="hideModal(tableName)">Cancel</button>
+              <button
+                class="btn btn-danger"
+                @click="(form[tableName].level!=''&&form[tableName].description!='' ? 
                       store(
                         {
-                          level_number: form.sanction_level.level,
-                          level_description: form.sanction_level.description
+                          level_number: form[tableName].level,
+                          level_description: form[tableName].description
                         },
-                        form.sanction_level.action,
-                        'sanction_level'
+                        form[tableName].action,
+                        tableName
                             ) :
                       formValidationError())"
-            >Confirm</button>
+              >Confirm</button>
+            </div>
           </div>
         </div>
       </div>
@@ -106,12 +131,12 @@
 <script>
 export default {
   mounted() {
-    this.fetchTableObject("sanction_level");
+    this.fetchTableObject(this.tableName);
   },
   created() {},
   data() {
     return {
-      fetch_status: "fetching"
+      tableName: "sanction_level"
     };
   },
   methods: {}

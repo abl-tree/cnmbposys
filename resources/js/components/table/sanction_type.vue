@@ -8,7 +8,12 @@
             <h6 class="lh-1">Sanction Types</h6>
           </div>
           <div class="peer">
-            <button class="btn bdrs-50p p-5 lh-0" @click="showModal(tableName)">
+            <button
+              class="btn bdrs-50p p-5 lh-0"
+              @click="
+              (form[tableName].action = 'create'),
+              showModal(tableName)"
+            >
               <i class="ti-plus"></i>
             </button>
           </div>
@@ -39,7 +44,17 @@
               <div class="col-2">
                 <div class="text-right pB-5" style="font-size:0.6em">Action</div>
                 <div class="text-right">
-                  <i class="btn btn-link ti-pencil"></i>
+                  <i
+                    class="btn btn-link ti-pencil"
+                    @click="
+                    (endpoints.update[tableName]=endpoints.tmp.update[tableName]+item.id),
+                    (endpoints.delete[tableName]=endpoints.tmp.delete[tableName]+item.id),
+                    (form[tableName].type = item.type_number),
+                    (form[tableName].description =item.type_description),
+                    (form[tableName].action = 'update'),
+                    showModal(tableName)
+                    "
+                  ></i>
                 </div>
               </div>
             </div>
@@ -78,7 +93,7 @@
         </div>
         <div class="e-modal-footer bd">
           <div class="row">
-            <div class="peer peer-greed text-left">
+            <div class="peer peer-greed text-left pL-20">
               <button
                 v-show="form[tableName].action=='update'"
                 class="btn"
@@ -86,7 +101,7 @@
               >Delete</button>
             </div>
 
-            <div class="peer text-right">
+            <div class="peer text-right pR-20">
               <button class="btn btn-secondary" @click="hideModal(tableName)">Cancel</button>
               <button
                 class="btn btn-danger"
@@ -116,7 +131,7 @@
 <script>
 export default {
   mounted() {
-    this.fetchTableObject("sanction_type");
+    this.fetchTableObject(this.tableName);
   },
   created() {},
   data() {

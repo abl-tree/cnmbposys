@@ -18,7 +18,6 @@ Vue.use(VPopover, {
 Vue.mixin({
     data() {
         return {
-            user_id: "",
             fetchObj: [],
             profile: {
                 id: "",
@@ -46,15 +45,15 @@ Vue.mixin({
                     update: {
                         event: "/api/v1/events/update/",
                         incident_report_response: '/api/v1/update_response/',
-                        sanction_level: "/api/v1/sanction_level/update",
-                        sanction_type: "/api/v1/sanction_type/update",
+                        sanction_level: "/api/v1/sanction_level/update/",
+                        sanction_type: "/api/v1/sanction_type/update/",
                     },
                     delete: {
-                        event: "/api/v1/events/delete/"
+                        event: "/api/v1/events/delete/",
+                        sanction_level: "/api/v1/sanction_level/delete/",
+                        sanction_type: "/api/v1/sanction_type/delete/",
                     },
-
                 },
-
                 update: {
                     event: "",
                     incident_report_response: '',
@@ -76,9 +75,9 @@ Vue.mixin({
                 },
                 table: {
                     sanction_level: "/api/v1/sanction_level/sanction_levels",
-                    sanction_type: "/api/v1/sanction_types/sanction_types",
-                    received_incident_report: "/api/v1/reports/user/" + this.userId,
-                    filed_incident_report: "/api/v1/reports/user_filed_ir/" + this.user_id,
+                    sanction_type: "/api/v1/sanction_type/sanction_types",
+                    received_incident_report: "/api/v1/reports/user/",
+                    issued_incident_report: "/api/v1/reports/user_filed_ir/",
                     event: "/api/v1/events",
                     agent: "/api/v1/agents",
                     agent_search: "/api/v1/agents/search"
@@ -170,7 +169,7 @@ Vue.mixin({
                     data: [],
                     fetch_status: 'fetching'
                 },
-                incident_report: {
+                issued_incident_report: {
                     data: [],
                     fetch_status: 'fetching'
                 },
@@ -427,6 +426,9 @@ Vue.component("sanction-level", sanction_level);
 
 import sanction_type from "./components/table/sanction_type.vue";
 Vue.component("sanction-type", sanction_type);
+
+import incident_report from "./components/table/incident_report.vue";
+Vue.component("incident-report", incident_report);
 
 
 
