@@ -194,7 +194,7 @@
               </div>
             </div>
           </div>
-          <div class="row" v-if="isEmpty(table.received_incident_report.reports_data)">
+          <div class="row" v-if="isEmpty(table.received_incident_report.data.reports_data)">
             <i style="font-size:.7em;">Nothing to display...</i>
           </div>
           <div class="table-responsive" v-else>
@@ -211,7 +211,7 @@
               </thead>
               <tbody>
                 <tr
-                  v-for="rir in table.received_incident_report.reports_data[0].reports"
+                  v-for="rir in table.received_incident_report.data.reports_data[0].reports"
                   v-bind:key="rir.id"
                 >
                   <td>
@@ -252,93 +252,9 @@
         <div class="container">
           <div class="row">
             <!-- Sanction Levels -->
-            <div class="bd bgc-white p-20 col mR-5">
-              <div class="layers">
-                <div class="layer w-100 mB-10">
-                  <div class="peers">
-                    <div class="peer peer-greed">
-                      <h6 class="lh-1">Sanction Levels</h6>
-                    </div>
-                    <div class="peer">
-                      <button class="btn bdrs-50p p-5 lh-0" @click="showModal('sanction_level')">
-                        <i class="ti-plus"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row" v-if="isEmpty(table.sanction_level.options)">
-                  <i style="font-size:.7em;">Nothing to display...</i>
-                </div>
-
-                <div class="table-responsive table-scroll-200" v-else>
-                  <table class="table table-scroll-200">
-                    <thead>
-                      <tr>
-                        <th>Level</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="levels in table.sanction_level.options" v-bind:key="levels.id">
-                        <td>{{levels.level_number}}</td>
-                        <td>{{levels.level_description}}</td>
-                        <td>
-                          <button class="btn btn-dark btn-custom-size">
-                            <i class="ti-pencil"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            <sanction-level></sanction-level>
             <!-- Sanction Types -->
-            <div class="bd bgc-white p-20 col mL-5">
-              <div class="layers">
-                <div class="layer w-100 mB-10">
-                  <div class="peers">
-                    <div class="peer peer-greed">
-                      <h6 class="lh-1">Sanction Types</h6>
-                    </div>
-                    <div class="peer">
-                      <button class="btn bdrs-50p p-5 lh-0" @click="showModal('sanction_type')">
-                        <i class="ti-plus"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row" v-if="isEmpty(table.sanction_type.options)">
-                  <i style="font-size:.7em;">Nothing to display...</i>
-                </div>
-
-                <div class="table-responsive table-scroll-200" v-else>
-                  <table class="table table-scroll-200">
-                    <thead>
-                      <tr>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="types in table.sanction_type.options" v-bind:key="types.id">
-                        <td>{{types.type_number}}</td>
-                        <td>{{types.type_description}}</td>
-                        <td>
-                          <button class="btn btn-dark btn-custom-size">
-                            <i class="ti-pencil"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            <sanction-type></sanction-type>
           </div>
         </div>
       </div>
@@ -405,7 +321,16 @@
             <button class="btn btn-secondary" @click="hideModal('incident_report_response')">Cancel</button>
             <button
               class="btn btn-danger"
-              @click="submitForm('incident_report_response',form.incident_report_response.action)"
+              @click="(form.sanction_level.level!=''&&form.sanction_level.description!='' ? 
+                      store(
+                        {
+                          user_response_id: userId,
+                          commitment: form.incident_report_response.response
+                        },
+                        'update',
+                        'incident_report_response'
+                            ) :
+                      formValidationError())"
             >Confirm</button>
           </div>
         </div>
@@ -470,84 +395,6 @@
         </div>
       </div>
     </modal>
-    <!-- Sanction Level Form Modal -->
-    <modal name="sanction_level" :pivotY="0.2" :scrollable="true" height="auto">
-      <div class="layer">
-        <div class="e-modal-header bd">
-          <h5 style="margin-bottom:0px">Sanction Level</h5>
-        </div>
-        <div class="w-100 p-15 pT-80" style>
-          <div class="container">
-            <form action>
-              <div class="row pT-5">
-                <div class="col">
-                  <label>Number:</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    min="1"
-                    step="1"
-                    v-model="form.sanction_level.level"
-                  >
-                </div>
-                <div class="col">
-                  <label>Description:</label>
-                  <input type="text" class="form-control" v-model="form.sanction_level.description">
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="e-modal-footer bd">
-          <div style="text-align:right">
-            <button class="btn btn-secondary" @click="hideModal('sanction_level')">Cancel</button>
-            <button
-              class="btn btn-danger"
-              @click="submitForm('sanction_level',form.sanction_level.action)"
-            >Confirm</button>
-          </div>
-        </div>
-      </div>
-    </modal>
-    <!-- Sanction Form Modal -->
-    <modal name="sanction_type" :pivotY="0.2" :scrollable="true" height="auto">
-      <div class="layer">
-        <div class="e-modal-header bd">
-          <h5 style="margin-bottom:0px">Sanction Level</h5>
-        </div>
-        <div class="w-100 p-15 pT-80" style>
-          <div class="container">
-            <form action>
-              <div class="row pT-5">
-                <div class="col">
-                  <label>Number:</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    min="1"
-                    step="1"
-                    v-model="form.sanction_type.type"
-                  >
-                </div>
-                <div class="col">
-                  <label>Description:</label>
-                  <input type="text" class="form-control" v-model="form.sanction_type.description">
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="e-modal-footer bd">
-          <div style="text-align:right">
-            <button class="btn btn-secondary" @click="hideModal('sanction_type')">Cancel</button>
-            <button
-              class="btn btn-danger"
-              @click="submitForm('sanction_type',form.sanction_type.action)"
-            >Confirm</button>
-          </div>
-        </div>
-      </div>
-    </modal>
     <!-- profile preview modal -->
     <profile-preview-modal v-bind:user-profile="this.userId"></profile-preview-modal>
     <notifications group="foo" animation-type="velocity" position="bottom right"/>
@@ -565,8 +412,6 @@ export default {
     ModelSelect
   },
   mounted() {
-    this.fetchTableObject("sanction_level");
-    this.fetchTableObject("sanction_type");
     this.fetchTableObject("received_incident_report");
     this.user_id = this.userId;
     console.log(this.user_id);
