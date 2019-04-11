@@ -160,7 +160,7 @@ class User extends BaseAuthModel
     }
 
     public function getIsAgentAttribute() {
-        return ($this->access) ? ($this->access->code === 'agent') ? 1 : 0 : 0;
+        return ($this->access) ? ($this->access->code === 'representative_op') ? 1 : 0 : 0;
     }
 
     public function getHasScheduleAttribute() {
