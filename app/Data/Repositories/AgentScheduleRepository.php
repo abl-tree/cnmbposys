@@ -18,11 +18,8 @@ use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
 use App\Services\ExcelDateService;
 use Carbon\Carbon;
-<<<<<<< HEAD
 use DB;
-=======
 use App\Data\Repositories\LogsRepository;
->>>>>>> a4598501fc08670ba034ce2f42a4d5e657c804b6
 
 class AgentScheduleRepository extends BaseRepository
 {
