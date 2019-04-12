@@ -185,6 +185,26 @@ class ReportsController extends BaseController
 
         return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();
     }
+    public function update_response(Request $request, $id)
+    {
+        $data = $request->all();
+        $data['user_response_id'] = $id;
+
+        return $this->absorb($this->user_reports->userResponse($data))->json();
+    }
+    public function update_stype(Request $request, $id)
+    {
+        $data = $request->all();
+        $data['id'] = $id;
+        return $this->absorb($this->user_reports->addSanctionType($data))->json();     
+    }
+    public function update_slevel(Request $request, $id)
+    {
+        $data = $request->all();
+        $data['id'] = $id;
+
+        return $this->absorb($this->user_reports->addSanctionLevel($data))->json();     
+    }
     public function delete(Request $request, $id)
     {
         $data       = $request->all();
@@ -200,7 +220,58 @@ class ReportsController extends BaseController
         }
 
         return $this->absorb($this->user_reports->deleteReport($data))->json();
+    } 
+    public function delete_response(Request $request, $id)
+    {
+        $data       = $request->all();
+        $data['id'] = $id;
+
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "IR ID is not set.",
+            ]);
+        }
+
+        return $this->absorb($this->user_reports->deleteResponse($data))->json();
+    } 
+
+    public function delete_stype(Request $request, $id)
+    {
+        $data       = $request->all();
+        $data['id'] = $id;
+
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Sanction Type ID is not set.",
+            ]);
+        }
+
+        return $this->absorb($this->user_reports->deleteStype($data))->json();
     }
+    public function delete_slevel(Request $request, $id)
+    {
+        $data       = $request->all();
+        $data['id'] = $id;
+
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Sanction Level ID is not set.",
+            ]);
+        }
+
+        return $this->absorb($this->user_reports->deleteSlevel($data))->json();
+    }
+
+
 
 
 
