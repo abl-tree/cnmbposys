@@ -3,7 +3,6 @@
 namespace App\Data\Models;
 
 use App\Data\Models\BaseModel;
-use DB;
 use Carbon\Carbon;
 
 class AgentSchedule extends BaseModel
@@ -18,6 +17,7 @@ class AgentSchedule extends BaseModel
     ];
 
     protected $appends = [
+        'date', 
         'rendered_hours', 
         'is_working',
         'is_present',
@@ -41,6 +41,13 @@ class AgentSchedule extends BaseModel
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
+    public function getDateAttribute() {
+        return array(
+            'ymd' => Carbon::parse($this->start_event)->format('Y-m-d'), 
+            'day' => Carbon::parse($this->start_event)->format('l'), 
+        );
+    }
 
     public function getRenderedHoursAttribute() {
         $rendred_time = 0;
@@ -68,7 +75,11 @@ class AgentSchedule extends BaseModel
 
     public function getIsPresentAttribute() {
         if($this->attendances->count()) {
-            return 1;
+            foreach ($this->attendances as $key => $value) {
+                if(Carbon::parse($value->time_in)->isToday() || Carbon::parse($value->time_out)->isToday()) {
+                    return 1;
+                }
+            }
         }
 
         return 0;
@@ -106,6 +117,8 @@ class AgentSchedule extends BaseModel
             
             $data['remaining'] -= ($this->attendances->count() - 1);
             $data['total'] = gmdate('H:i:s', $break_duration);
+        } else {
+            return null;
         }
 
         return $data;

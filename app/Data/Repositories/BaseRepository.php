@@ -51,6 +51,12 @@ class BaseRepository
             }
         }
 
+        if (isset($data['where_between'])) {
+            foreach ((array) $data['where_between'] as $key => $conditions) {
+                $model = $model->whereBetween($conditions['target'], $conditions['value']);
+            }
+        }
+
         //End WHERE Clauses
 
         if (isset($data['limit']) && $data['limit'] && is_numeric($data['limit'])) {
@@ -67,6 +73,10 @@ class BaseRepository
 
         if( isset( $data['relations'] ) ){
             $model = $model->with( $data['relations'] );
+        }
+
+        if (isset($data['groupby'])) {
+            $model = $model->groupBy($data['groupby']);
         }
 
         // dd( dump_query ( $model) );
