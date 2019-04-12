@@ -44,7 +44,7 @@
         <span class="">Dashboard</span>
         </a>
     </li>
-    <li class="nav-item page-identifier" data-page="rta_schedule">
+    <li class="nav-item page-identifier" data-page="rtaschedule">
         <a class='sidebar-link' href="/rtaschedule">
         <span class="icon-holder">
             <i class="c-brown-500">RTA</i>
@@ -52,7 +52,7 @@
         <span class="">Schedule</span>
         </a>
     </li>
-    <li class="nav-item page-identifier" data-page="rta_work_reports">
+    <li class="nav-item page-identifier" data-page="rtareports">
         <a class='sidebar-link' href="/rtareport">
         <span class="icon-holder">
             <i class="c-brown-500">RTA</i>
@@ -60,12 +60,21 @@
         <span class="">Work Reports</span>
         </a>
     </li>
-    <li class="nav-item page-identifier" data-page="tldashboard">
-        <a class='sidebar-link' href="/tlworkreports">
+    
+    <li class="nav-item page-identifier" data-page="tlreport">
+        <a class='sidebar-link' href="/tlreport">
         <span class="icon-holder">
             <i class="c-brown-500">TL</i>
         </span>
         <span class="">Work Reports</span>
+        </a>
+    </li>
+    <li class="nav-item page-identifier" data-page="tldashboard">
+        <a class='sidebar-link' href="/tldashboad">
+        <span class="icon-holder">
+            <i class="c-brown-500">TL</i>
+        </span>
+        <span class="">Dashboard</span>
         </a>
     </li>
 
@@ -78,14 +87,6 @@
             <i class="c-brown-500">TL</i>
         </span>
         <span class="">Dashboard</span>
-        </a>
-    </li>
-    <li class="nav-item page-identifier" data-page="tlwork_reports">
-        <a class='sidebar-link' href="/tlworkreports">
-        <span class="icon-holder">
-            <i class="c-brown-500">TL</i>
-        </span>
-        <span class="">Work Reports</span>
         </a>
     </li>
 @endif

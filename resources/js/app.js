@@ -223,84 +223,13 @@ Vue.mixin({
                         this.table[tableName].data = res.meta;
                     }
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    console.log(err);
+                    this.table[tableName].fetch_status = 'fetched';
+
+                });
         },
 
-        // submitForm: function (formName, action) {
-        //     let obj = [];
-        //     let pageurl = this.endpoints[action][formName];
-        //     let validated = false;
-        //     if (action == 'delete') {
-        //         validated = true;
-        //     }
-        //     switch (formName) {
-        //         case "incident_report":
-        //             if (
-        //                 this.isEmpty(this.form.incident_report.selected.child_list) ||
-        //                 this.isEmpty(this.form.incident_report.selected.sanction_level) ||
-        //                 this.isEmpty(this.form.incident_report.selected.sanction_type) ||
-        //                 this.form.incident_report.textarea == ""
-        //             ) {
-        //                 console.log("EMPTY");
-        //             } else {
-        //                 validated = true;
-        //                 obj = {
-        //                     user_reports_id: this.form.incident_report.selected.child_list
-        //                         .value,
-        //                     filed_by: this.userId,
-        //                     description: this.form.incident_report.textarea,
-        //                     sanction_type_id: this.form.incident_report.selected.sanction_type
-        //                         .value,
-        //                     sanction_level_id: this.form.incident_report.selected
-        //                         .sanction_level.value
-        //                 };
-        //                 console.log(obj);
-        //             }
-        //             break;
-
-        //         case "sanction_level":
-        //             if (
-        //                 this.form.sanction_level.level != "" &&
-        //                 this.form.sanction_level.description != ""
-        //             ) {
-        //                 validated = true;
-        //                 obj = {
-        //                     level_number: this.form.sanction_level.level,
-        //                     level_description: this.form.sanction_level.description
-        //                 };
-        //             }
-        //             break;
-        //         case "sanction_type":
-        //             if (
-        //                 this.form.sanction_type.type != "" &&
-        //                 this.form.sanction_type.description != ""
-        //             ) {
-        //                 validated = true;
-        //                 obj = {
-        //                     type_number: this.form.sanction_type.type,
-        //                     type_description: this.form.sanction_type.description
-        //                 };
-        //             }
-        //             break;
-        //         case 'event':
-        //             if (
-        //                 this.form.event.color != "" &&
-        //                 this.form.event.title != ""
-        //             ) {
-        //                 validated = true;
-        //                 obj = {
-        //                     color: this.form.event.color.hex,
-        //                     title: this.form.event.title
-        //                 };
-        //             }
-        //             break;
-        //     }
-        //     if (validated == true) {
-        //         //actual data
-        //         this.store(obj, pageurl, action, formName);
-        //         //logs
-        //     }
-        // },
 
         store: function (obj, action, formName) {
             let pageurl = this.endpoints[action][formName];
@@ -430,7 +359,18 @@ Vue.component("sanction-type", sanction_type);
 import incident_report from "./components/table/incident_report.vue";
 Vue.component("incident-report", incident_report);
 
+import received_ir from "./components/table/received_ir.vue";
+Vue.component("received-ir", received_ir);
 
+import issued_ir from "./components/table/issued_ir.vue";
+Vue.component("issued-ir", issued_ir);
+
+
+import mini_calendar from "./components/mini_calendar.vue";
+Vue.component("mini-calendar", mini_calendar);
+
+import trackerGraph from "./components/trackerGraph.vue";
+Vue.component("work-graph", trackerGraph);
 
 // import ZpUI from 'zp-crm-ui'
 import Sparkline from 'vue-sparklines'
@@ -463,6 +403,9 @@ const app = new Vue({
     el: "#app"
 });
 
+//vue init vairables
+
+// app.endpoints.table.issued_incident_report = app.endpoints.table.issued_incident_report + $('#uid').val()
 //native trigger to vue component
 $(document).on("click", "#loadProfilePreview", function (e) {
     app.fetchProfile();

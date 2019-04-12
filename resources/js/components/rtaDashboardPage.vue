@@ -173,7 +173,7 @@
         </div>
       </div>
 
-      <incident-report :user-id="user_id"></incident-report>
+      <incident-report :userId="user_id"></incident-report>
 
       <div>
         <div class="container">
@@ -204,6 +204,10 @@ export default {
   components: {
     BasicSelect,
     ModelSelect
+  },
+  created() {
+    this.endpoints.table.issued_incident_report =
+      this.endpoints.table.issued_incident_report + this.user_id;
   },
   mounted() {},
   data() {

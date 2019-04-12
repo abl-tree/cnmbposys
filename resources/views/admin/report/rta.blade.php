@@ -91,7 +91,7 @@
               </div>
               
             <div class="layer w-100">
-                <div class="layer w-100 fxg-1 pos-r" style="overflow-y:auto;height:100vh">
+                <div class="layer w-100 fxg-1 pos-r">
                     <div>
                     <div class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p">
                         <div class="peer mR-10">

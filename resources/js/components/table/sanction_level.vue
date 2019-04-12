@@ -64,7 +64,7 @@
     </div>
     <!-- modal -->
     <!-- Sanction Type Form Modal -->
-    <modal name="sanction_level" :pivotY="0.2" :scrollable="true" height="auto">
+    <modal name="sanction_level" :pivotY="0.2" :scrollable="true" width="350px" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Sanction Level</h5>
@@ -73,7 +73,7 @@
           <div class="container">
             <form action>
               <div class="row pT-5">
-                <div class="col">
+                <div class="col-md-3">
                   <label>Number:</label>
                   <input
                     type="number"

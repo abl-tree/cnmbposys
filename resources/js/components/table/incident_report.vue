@@ -34,34 +34,12 @@
                 <i class="ti-plus"></i>
               </button>
             </div>
-          </div>n
-        </div>
-        <div class="text-center">
-          <!-- <h1 v-if="tabs.selected">{{index+" "+tabs.label}}</h1> -->
-          <!-- ul -->
-          <div v-for="tabs in tableTab" :key="tabs.id" class="layer w-100">
-            <div class="row" v-if="isEmpty(tabs.data)">
-              <i
-                v-show="table[tabs.tableName].fetch_status=='fetching'"
-                style="font-size:.7em;"
-              >Fetching data...</i>
-              <i
-                v-show="table[tabs.tableName].fetch_status=='fetched'"
-                style="font-size:.7em;"
-              >Nothing to display...</i>
-            </div>
-            <div class="layer w-100 fxg-1 pos-r" style="overflow-y:auto;height:100vh">
-              <div>
-                <div
-                  v-for="items in tabs.data"
-                  :key="items.id"
-                  class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p"
-                >
-                  <h6>{{(tabs.label=='ISSUED'?items.filedby.full_name:items.full_name)}}</h6>
-                </div>
-              </div>
-            </div>
           </div>
+        </div>
+        <div class="layer w-100">
+          <!-- component tab contents -->
+          <issued-ir v-if="selectedTab==tableTab[0].label" :obj="tableTab[0]" :user-id="user_id"></issued-ir>
+          <!-- <received-ir v-if="selectedTab==tableTab[1].label" :obj="tableTab[1]"></received-ir> -->
         </div>
       </div>
     </div>
@@ -207,9 +185,7 @@
 <script>
 export default {
   props: ["userId"],
-  mounted() {
-    this.initTable();
-  },
+  mounted() {},
   created() {},
   data() {
     return {
@@ -233,7 +209,8 @@ export default {
             retreive: "/api/v1/reports/user/"
           }
         }
-      ]
+      ],
+      selectedTab: "ISSUED"
     };
   },
   methods: {
@@ -243,15 +220,7 @@ export default {
         v.selected = false;
       });
       this.tableTab[index].selected = true;
-    },
-    initTable: function() {
-      for (let l = 0; l < this.tableTab.length; l++) {
-        this.endpoints.table[this.tableTab[l].tableName] =
-          this.tableTab[l].endpoint.retreive + this.user_id;
-        this.fetchTableObject(this.tableTab[l].tableName);
-        this.tableTab[l] = this.table[this.tableTab[l].tableName].reports;
-      }
-      console.log(this.tableTab);
+      this.selectedTab = this.tableTab[index].label;
     }
   }
 };
