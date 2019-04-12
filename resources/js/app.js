@@ -385,6 +385,8 @@ Vue.component("profile-preview-modal", profilePreview);
 import stats_component1 from "./components/statsComponent1.vue";
 Vue.component("stats-component-1", stats_component1);
 
+import rtaReports from "./components/RTA/reports/rtaReports";
+Vue.component("rta-reports", rtaReports);
 
 // import ZpUI from 'zp-crm-ui'
 import Sparkline from 'vue-sparklines'

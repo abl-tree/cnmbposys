@@ -8,7 +8,7 @@
 
 namespace App\Data\Repositories;
 ini_set('max_execution_time', 180);
-
+ini_set('memory_limit', '-1');
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
 use App\Data\Models\EventTitle;
@@ -48,10 +48,9 @@ class AgentScheduleRepository extends BaseRepository
 
     public function excelData($data)
     {
-
-        $data = Excel::toArray(new ExcelRepository, $data);
+        $excel = Excel::toArray(new ExcelRepository, $data['file']);
         $arr = [];
-        $firstPage  = $data[0];
+        $firstPage  = $excel[0];
         for ($x = 0; $x < count($firstPage); $x++) {
             if(isset($firstPage[$x+3])){
                 if($firstPage[$x+3][1] != null)
@@ -68,20 +67,45 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
+        $arr['auth_id'] = $data['id'];
         $result = $this->bulkScheduleInsertion($arr);
         return $result;
 
     }
 
-    public function bulkScheduleInsertion($data = []){
+    public function bulkScheduleInsertion($data = [])
+    {
         $failed = [];
+        $auth_id = $data['auth_id'];
+        unset($data['auth_id']);
+        foreach($data as $key => $save){
 
-        foreach($data as $key => $save){ 
            $result = $this->defineAgentSchedule($save);
+            // logs POST data
 
            if($result->code != 200){
                $failed[] = $save;
                unset($data[$key]);
+           }
+
+           else {
+               if ( isset($auth_id) ||
+                   !is_numeric($auth_id) ||
+                   $auth_id <= 0 )
+               {
+                   if (!$this->user_info->find($auth_id)) {
+                       return $this->setResponse([
+                           'code'  => 500,
+                           'title' => "User ID is not available.",
+                       ]);
+                   }
+                   $logged_data = [
+                       "user_id" => $auth_id,
+                       "action" => "POST",
+                       "affected_data" => "Successfully created a schedule for 'email' on 'start_event' to 'end event' via excel upload for USER NO. " . $auth_id
+                   ];
+                   $this->logs->logsInputCheck($logged_data);
+               }
            }
         }
 
@@ -186,13 +210,6 @@ class AgentScheduleRepository extends BaseRepository
             $agent_schedule = $this->agent_schedule->find($data['id']);
         } else {
             $agent_schedule = $this->agent_schedule->init($this->agent_schedule->pullFillable($data));
-            // logs POST data
-            $logged_data = [
-                "user_id" => auth()->user()->id,
-                "action" => "POST",
-                "affected_data" => "Successfully created a schedule for 'email' on 'start_event' to 'end event' via excel upload for USER NO. ".$data['user_id']
-            ];
-            $this->logs->logsInputCheck($logged_data);
         }
 
         if (!$agent_schedule->save($data)) {
@@ -346,7 +363,6 @@ class AgentScheduleRepository extends BaseRepository
         $data['relations'] = ['info', 'schedule.title'];
 
         $result     = $this->fetchGeneric($data, $this->user);
-
         if (!$result) {
             return $this->setResponse([
                 'code'       => 404,
@@ -359,7 +375,6 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         $count = $this->countData($count_data, refresh_model($this->user->getModel()));
-
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved agent schedules",

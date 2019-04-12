@@ -20,7 +20,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group([
     "prefix"    => "v1",
 ], function () {
+    Route::group([
+        "prefix"    => "schedules",
+    ], function () {
 
+        Route::get("/", "AttendanceController@all");
+
+    });
 
     Route::group([
         "prefix"    => "schedules",

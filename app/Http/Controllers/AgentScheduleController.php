@@ -24,7 +24,7 @@ class AgentScheduleController extends BaseController
 
     public function excelData(Request $request)
     {
-        $data = $request->file;
+        $data = $request->all();
         return $this->absorb($this->agent_schedule_repo->excelData($data))->json();
         
     }
