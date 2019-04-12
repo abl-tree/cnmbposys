@@ -318,7 +318,7 @@ class ReportsRepository extends BaseRepository
             $data['single'] = false;
             $data['where']  = [
                 [
-                    "target"   => "id",
+                    "target"   => "user_reports_id",
                     "operator" => "=",
                     "value"    => $data['id'],
                 ],
@@ -328,23 +328,23 @@ class ReportsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = ["SanctionLevel",'SanctionType','filedby','agentResponse'];   
+        $data['relations'] = [];   
         $result = $this->fetchGeneric($data, $this->incident_report);
-        $results=[];
-        $keys=0;
-        foreach ($result as $key => $value) {
-             if($value->reports!="[]"){        
-                array_push($results,$value);
-                $keys++;
-             }
-         } 
+        // $results=[];
+        // $keys=0;
+        // foreach ($result as $key => $value) {
+        //      if($value->reports!="[]"){        
+        //         array_push($results,$value);
+        //         $keys++;
+        //      }
+        //  } 
 
-        if (!$results) {
+        if (!$result) {
             return $this->setResponse([
                 'code'       => 404,
                 'title'      => "No Reports are found",
                 "meta"       => [
-                    $meta_index => $results,
+                    $meta_index => $result,
                 ],
                 "parameters" => $parameters,
             ]);
@@ -357,7 +357,7 @@ class ReportsRepository extends BaseRepository
             "title"      => "Successfully retrieved Users with Reports",
             "description"=>"Users With Incident Reports",
             "meta"       => [
-                $meta_index => $results,
+                $meta_index => $result,
                 "count"     => $count
             ],
             
