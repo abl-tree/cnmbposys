@@ -18,7 +18,6 @@ Vue.use(VPopover, {
 Vue.mixin({
     data() {
         return {
-            fetchObj: [],
             profile: {
                 id: "",
                 name: {
@@ -47,11 +46,14 @@ Vue.mixin({
                         incident_report_response: '/api/v1/update_response/',
                         sanction_level: "/api/v1/sanction_level/update/",
                         sanction_type: "/api/v1/sanction_type/update/",
+                        issued_incident_report: '',
                     },
                     delete: {
                         event: "/api/v1/events/delete/",
                         sanction_level: "/api/v1/sanction_level/delete/",
                         sanction_type: "/api/v1/sanction_type/delete/",
+                        issued_incident_report: '',
+
                     },
                 },
                 update: {
@@ -59,17 +61,20 @@ Vue.mixin({
                     incident_report_response: '',
                     sanction_level: "",
                     sanction_type: "",
+                    issued_incident_report: '',
+
                 },
                 delete: {
                     event: "",
                     sanction_level: "",
                     sanction_type: "",
+                    issued_incident_report: '',
 
                 },
                 create: {
                     sanction_level: "/api/v1/sanction_level/create",
                     sanction_type: "/api/v1/sanction_type/create",
-                    incident_report: "/api/v1/reports/create",
+                    issued_incident_report: "/api/v1/reports/create",
                     event: "/api/v1/events/create",
                     incident_report_response: '/api/v1/user_response',
                 },
@@ -89,7 +94,7 @@ Vue.mixin({
                 }
             },
             form: {
-                incident_report: {
+                issued_incident_report: {
                     select_option: {
                         sanction_level: [],
                         sanction_type: [],
@@ -325,6 +330,9 @@ Vue.mixin({
             this.form.incident_report_response.filed_by = obj.filedby.full_name;
             // this.form.incident_report_response.filed_by_position = obj.filedby.full_name;
         },
+        split: function (str, sep, index) {
+            return str.split(sep)[index];
+        }
     }
 });
 

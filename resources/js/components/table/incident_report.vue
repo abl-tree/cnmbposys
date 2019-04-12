@@ -26,10 +26,11 @@
               <button
                 class="btn bdrs-50p p-5 lh-0"
                 @click="
-                  fetchSelectOptions(endpoints.select.child_list,'incident_report','child_list'),
-                  fetchSelectOptions(endpoints.select.sanction_level,'incident_report','sanction_level'),
-                  fetchSelectOptions(endpoints.select.sanction_type,'incident_report','sanction_type'),
-                  showModal('incident_report')"
+                  fetchSelectOptions(endpoints.select.child_list,'issued_incident_report','child_list'),
+                  fetchSelectOptions(endpoints.select.sanction_level,'issued_incident_report','sanction_level'),
+                  fetchSelectOptions(endpoints.select.sanction_type,'issued_incident_report','sanction_type'),
+                  (form.issued_incident_report.action='create'),
+                  showModal('issued_incident_report')"
               >
                 <i class="ti-plus"></i>
               </button>
@@ -39,13 +40,13 @@
         <div class="layer w-100">
           <!-- component tab contents -->
           <issued-ir v-if="selectedTab==tableTab[0].label" :obj="tableTab[0]" :user-id="user_id"></issued-ir>
-          <!-- <received-ir v-if="selectedTab==tableTab[1].label" :obj="tableTab[1]"></received-ir> -->
+          <received-ir v-if="selectedTab==tableTab[1].label" :obj="tableTab[1]" :user-id="user_id"></received-ir>
         </div>
       </div>
     </div>
     <!-- modal -->
     <!-- Incident Report Response Modal -->
-    <modal
+    <!-- <modal
       name="incident_report_response"
       :pivotY="0.2"
       :scrollable="true"
@@ -61,11 +62,9 @@
             <div class="row">
               <div class="col">
                 <div class="layer p-0">
-                  <!-- level -->
                   <span
                     class="badge badge-pill badge-primary"
                   >{{this.form.incident_report_response.sanction.level}}</span>
-                  <!-- type -->
                   <span
                     class="badge badge-pill badge-dark"
                   >{{this.form.incident_report_response.sanction.type}}</span>
@@ -75,7 +74,6 @@
                   <h6>{{this.form.incident_report_response.received_by}},</h6>
                   <br>
                   <br>
-                  <!-- message content -->
                   <div class="cntent">
                     <pre class="ir_description">{{this.form.incident_report_response.ir_description}}</pre>
                   </div>
@@ -117,10 +115,10 @@
             >Confirm</button>
           </div>
         </div>
-      </div>
-    </modal>
+    </div>-->
+    <!-- </modal> -->
     <!-- Incident Report Modal -->
-    <modal name="incident_report" :pivotY="0.2" :scrollable="true" height="auto">
+    <modal name="issued_incident_report" :pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h5 style="margin-bottom:0px">Incident Report</h5>
@@ -134,8 +132,8 @@
                     <label for="exampleFormControlSelect1">To:</label>
                     <model-select
                       placeholder="Names"
-                      :options="form.incident_report.select_option.child_list"
-                      v-model="form.incident_report.selected.child_list"
+                      :options="form.issued_incident_report.select_option.child_list"
+                      v-model="form.issued_incident_report.selected.child_list"
                     ></model-select>
                   </div>
                 </div>
@@ -145,23 +143,29 @@
                   <label>Sanction Level:</label>
                   <model-select
                     placeholder="Level"
-                    :options="form.incident_report.select_option.sanction_level"
-                    v-model="form.incident_report.selected.sanction_level"
+                    :options="form.issued_incident_report.select_option.sanction_level"
+                    v-model="form.issued_incident_report.selected.sanction_level"
                   ></model-select>
                 </div>
                 <div class="col">
                   <label>Sanction Type:</label>
                   <model-select
                     placeholder="Type"
-                    :options="form.incident_report.select_option.sanction_type"
-                    v-model="form.incident_report.selected.sanction_type"
+                    :options="form.issued_incident_report.select_option.sanction_type"
+                    v-model="form.issued_incident_report.selected.sanction_type"
                   ></model-select>
                 </div>
               </div>
               <div class="row pT-15">
                 <div class="col">
                   <label>Report Description</label>
-                  <textarea name id cols="74" rows="5" v-model="form.incident_report.textarea"></textarea>
+                  <textarea
+                    name
+                    id
+                    cols="74"
+                    rows="5"
+                    v-model="form.issued_incident_report.textarea"
+                  ></textarea>
                 </div>
               </div>
             </form>
@@ -169,8 +173,19 @@
         </div>
         <div class="e-modal-footer bd">
           <div style="text-align:right">
-            <button class="btn btn-secondary" @click="hideModal('incident_report')">Cancel</button>
-            <button class="btn btn-danger">Confirm</button>
+            <button class="btn btn-secondary" @click="hideModal('issued_incident_report')">Cancel</button>
+            <button
+              class="btn btn-danger"
+              @click="(form.issued_incident_report.selected.child_list.value!='' && form.issued_incident_report.selected.sanction_level.value!='' && form.issued_incident_report.selected.sanction_type.value!='' && form.issued_incident_report.textarea!=''  ?
+              store(
+                {
+                  user_reports_id:form.issued_incident_report.selected.child_list.value,
+                  filed_by:user_id,
+                  description:form.issued_incident_report.textarea,sanction_type_id:form.issued_incident_report.selected.sanction_type.value,sanction_level_id:form.issued_incident_report.selected.sanction_level.value
+              },
+              form.issued_incident_report.action,
+              'issued_incident_report'):formValidationError())"
+            >Confirm</button>
           </div>
         </div>
       </div>
@@ -183,9 +198,20 @@
 </style>
 
 <script>
+import { BasicSelect } from "vue-search-select";
+import { ModelSelect } from "vue-search-select";
 export default {
+  components: {
+    BasicSelect,
+    ModelSelect
+  },
   props: ["userId"],
-  mounted() {},
+  mounted() {
+    this.endpoints.select.child_list =
+      "/api/v1/reports/select_all_users/" + this.user_id;
+    this.endpoints.table.issued_incident_report =
+      this.endpoints.table.issued_incident_report + this.user_id;
+  },
   created() {},
   data() {
     return {
@@ -197,7 +223,7 @@ export default {
           selected: true,
           data: [],
           endpoint: {
-            retreive: "/api/v1/reports/user_filed_ir/"
+            retreive: "/api/v1/reports/issued_by/"
           }
         },
         {
@@ -206,7 +232,7 @@ export default {
           selected: false,
           data: [],
           endpoint: {
-            retreive: "/api/v1/reports/user/"
+            retreive: "/api/v1/reports/issued_to/"
           }
         }
       ],
