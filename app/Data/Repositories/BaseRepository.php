@@ -76,7 +76,9 @@ class BaseRepository
         }
 
         if (isset($data['groupby'])) {
-            $model = $model->groupBy($data['groupby']);
+            foreach ((array) $data['groupby'] as $key => $value) {
+                $model = $model->groupBy($value);
+            }
         }
 
         // dd( dump_query ( $model) );

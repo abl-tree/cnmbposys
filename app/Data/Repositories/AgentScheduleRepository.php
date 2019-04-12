@@ -534,7 +534,7 @@ class AgentScheduleRepository extends BaseRepository
 
             $data['columns'] = ['id', 'start_event', DB::raw('count(*) as count')];
 
-            $data['groupby'] = DB::raw('date(start_event)');
+            $data['groupby'] = [DB::raw('date(start_event)')];
 
             $data['where_between'] = array_merge($data['where_between'], array([
                 'target' => 'start_event',
@@ -544,8 +544,6 @@ class AgentScheduleRepository extends BaseRepository
             $data['sort'] = 'start_event';
 
             $data['order'] = 'desc';
-
-            $data['make_hidden'] = ['rendered_hours', 'is_working', 'is_present', 'break', 'user_info', 'attendances'];
 
             $result = $this->fetchGeneric($data, $result);
 
