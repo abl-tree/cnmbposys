@@ -20,7 +20,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group([
     "prefix"    => "v1",
 ], function () {
+    Route::group([
+        "prefix"    => "schedules",
+    ], function () {
 
+        Route::get("/", "AttendanceController@all");
+
+    });
 
     Route::group([
         "prefix"    => "schedules",
@@ -99,8 +105,8 @@ Route::group([
     ], function () {
 
         Route::get("/", "ReportsController@index");
-        Route::get("user/{id}", "ReportsController@report");
-        Route::get("user_filed_ir/{id}", "ReportsController@userFiledIR");
+        Route::get("issued_to/{id}", "ReportsController@report");
+        Route::get("issued_by/{id}", "ReportsController@userFiledIR");
         Route::get("select_all_users/{id}", "ReportsController@getSelectAllUserUnder");
         Route::get("all_users", "ReportsController@getAllUser");
         Route::get("all_users/{id}", "ReportsController@getAllUserUnder");

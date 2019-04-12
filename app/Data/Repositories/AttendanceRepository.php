@@ -1,0 +1,241 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: DELL
+ * Date: 10/04/2019
+ * Time: 9:36 PM
+ */
+
+namespace App\Data\Repositories;
+
+use App\Data\Models\AgentSchedule;
+use App\Data\Models\Attendance;
+use App\User;
+use App\Data\Models\UserInfo;
+use App\Data\Repositories\BaseRepository;
+
+class AttendanceRepository extends BaseRepository
+{
+    protected
+        $agent_schedule,
+        $attendance,
+        $user_info,
+        $user;
+    public function __construct(
+        AgentSchedule $agentSchedule,
+        Attendance $attendance,
+        User $user,
+        UserInfo $userInfo
+    ) {
+        $this->agent_schedule = $agentSchedule;
+        $this->user = $user;
+        $this->attendance = $attendance;
+        $this->user_info = $userInfo;
+    }
+
+    public function bulkScheduleInsertion($data = []){
+        $failed = [];
+
+        foreach($data as $key => $save){
+            $result = $this->defineAgentAttendance($save);
+
+            if($result->code != 200){
+                $failed[] = $save;
+                unset($data[$key]);
+            }
+        }
+
+        $result->meta = [
+            'total_success' => count($data),
+            'total_failed' => count($failed)
+        ];
+
+        $result->parameters = [
+            'success' => $data,
+            'failed' => $failed
+        ];
+
+        return $result;
+    }
+
+    public function defineAgentAttendance($data = [])
+    {
+        // data validation
+        if (!isset($data['id'])) {
+
+            if (!isset($data['user_id']) ||
+                !is_numeric($data['user_id']) ||
+                $data['user_id'] <= 0) {
+
+                if(isset($data['email'])){
+                    $user = $this->user->where('email', $data['email'])->first();
+                    if(isset($user->id)){
+                        $schedule = $this->agent_schedule->where('user_id', $user->id)->first();
+                            if (isset($schedule->id)) {
+                                $data['schedule_id'] = $schedule->id;
+                            }
+                    }
+                }
+
+                if(!isset($data['user_id'])){
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => "User ID is not set. | Email is not registered",
+                        'parameters' => $data
+                    ]);
+                }
+            }
+
+            // data validation
+            if (!isset($data['time_in'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Time in is not set.",
+                ]);
+            }
+
+            // data validation
+            if (!isset($data['time_out'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Time out is not set.",
+                ]);
+            }
+
+        }
+
+        // existence check
+
+        if (isset($data['schedule_id'])) {
+            if (!$this->agent_schedule->find($data['schedule_id'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Schedule ID is not available.",
+                ]);
+            }
+        }
+
+        // insertion
+        if (isset($data['id'])) {
+            $attendance = $this->attendance->find($data['id']);
+        } else {
+            $attendance = $this->attendance->init($this->attendance->pullFillable($data));
+            // logs POST data
+//            $logged_data = [
+//                "user_id" => auth()->user()->id,
+//                "action" => "POST",
+//                "affected_data" => "Successfully created a schedule for 'email' on 'start_event' to 'end event' via excel upload for USER NO. ".$data['user_id']
+//            ];
+//            $this->logs->logsInputCheck($logged_data);
+        }
+
+        if (!$attendance->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $attendance->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully defined an attendance.",
+            "parameters" => $attendance,
+        ]);
+
+        // insertion
+
+    }
+
+    public function deleteAgentAttendance($data = [])
+    {
+        $record = $this->attendance->find($data['id']);
+
+        if (!$record) {
+            return $this->setResponse([
+                "code"        => 404,
+                "title"       => "Agent attendance not found"
+            ]);
+        }
+
+        if (!$record->delete()) {
+            return $this->setResponse([
+                "code"    => 500,
+                "message" => "Deleting agent attendance was not successful.",
+                "meta"    => [
+                    "errors" => $record->errors(),
+                ],
+                "parameters" => [
+                    'attendance_id' => $data['id']
+                ]
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"        => 200,
+            "title"       => "Agent attendance deleted",
+            "description" => "An agent attendace was deleted.",
+            "parameters"        => [
+                "attendance_id" => $data['id']
+            ]
+        ]);
+
+    }
+
+    public function fetchAgentSchedule($data = [])
+    {
+        $meta_index = "attendance";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "agent_schedule";
+            $data['single'] = true;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['schedule_id'] = $data['id'];
+
+        }
+
+        $count_data = $data;
+
+        $data['relations'] = ["user_info", 'title'];
+
+        $result     = $this->fetchGeneric($data, $this->attendance);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No agent schedules are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count = $this->countData($count_data, refresh_model($this->attendance->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved agent schedules",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+}
