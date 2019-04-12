@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportResponse extends BaseModel
 {   
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'user_response_id';
     protected $table = 'user_reports_response';
     protected $fillable = [
         'user_response_id', 'commitment','status','created_at','updated_at'

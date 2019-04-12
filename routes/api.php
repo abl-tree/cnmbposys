@@ -20,7 +20,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group([
     "prefix"    => "v1",
 ], function () {
+    Route::group([
+        "prefix"    => "schedules",
+    ], function () {
 
+        Route::get("/", "AttendanceController@all");
+
+    });
 
     Route::group([
         "prefix"    => "schedules",
@@ -90,7 +96,7 @@ Route::group([
     ], function () {
 
         Route::get("/", "LogsController@index");
-        Route::get("user/{id}", "LogsController@log");
+        Route::get("/{id}", "LogsController@log");
         Route::post("create", "LogsController@create");
     });
 
@@ -99,20 +105,38 @@ Route::group([
     ], function () {
 
         Route::get("/", "ReportsController@index");
-        Route::get("user/{id}", "ReportsController@report");
-        Route::get("user_filed_ir/{id}", "ReportsController@userFiledIR");
-        Route::get("select_sanction_types", "ReportsController@getSanctionType");
-        Route::get("select_sanction_levels", "ReportsController@getSanctionLevel");
+        Route::get("issued_to/{id}", "ReportsController@report");
+        Route::get("issued_by/{id}", "ReportsController@userFiledIR");
         Route::get("select_all_users/{id}", "ReportsController@getSelectAllUserUnder");
-        Route::get("sanction_types", "ReportsController@getSanctionTypes");
-        Route::get("sanction_levels", "ReportsController@getSanctionLevels");
         Route::get("all_users", "ReportsController@getAllUser");
         Route::get("all_users/{id}", "ReportsController@getAllUserUnder");
         Route::post("create", "ReportsController@create");
-        Route::post("add_sanction_type", "ReportsController@addSanctionType");
-        Route::post("add_sanction_level", "ReportsController@addSanctionLevel");
+        Route::post('update/{ir_id}', 'ReportsController@update');
+        Route::post('delete/{ir_id}', 'ReportsController@delete');       
         Route::post("user_reponse", "ReportsController@userResponse");
+        Route::post('update_response/{id}', 'ReportsController@update_response');
     });
+
+    Route::group([
+        "prefix"    => "sanction_type",
+    ], function () {
+
+        Route::get("select_sanction_types", "ReportsController@getSanctionType");
+        Route::get("sanction_types", "ReportsController@getSanctionTypes");
+        Route::post('delete/{id}', 'ReportsController@delete_stype');
+        Route::post('update/{id}', 'ReportsController@update_stype');
+        Route::post("create", "ReportsController@addSanctionType");
+    });
+    Route::group([
+        "prefix"    => "sanction_level",
+    ], function () {
+        Route::get("select_sanction_levels", "ReportsController@getSanctionLevel");
+        Route::get("sanction_levels", "ReportsController@getSanctionLevels");
+        Route::post('delete/{id}', 'ReportsController@delete_slevel');
+        Route::post('update/{id}', 'ReportsController@update_slevel');
+        Route::post("create", "ReportsController@addSanctionLevel");
+    });
+
 
      Route::group([
         "prefix"    => "users",

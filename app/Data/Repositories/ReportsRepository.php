@@ -5,6 +5,7 @@ use App\Data\Models\UserInfo;
 use App\Data\Models\Users;
 use App\Data\Models\SelectUsers;
 use App\User;
+use App\Data\Models\IncidentReport;
 use App\Data\Models\UserReport;
 use App\Data\Models\SanctionType;
 use App\Data\Models\SanctionLevel;
@@ -21,6 +22,7 @@ class ReportsRepository extends BaseRepository
         $users,
         $select_users,
         $user,
+        $incident_report,
         $user_reports,
         $sanction_type,
         $sanction_types,
@@ -38,7 +40,8 @@ class ReportsRepository extends BaseRepository
         SanctionTypes $sanction_types,
         SanctionLevels $sanction_levels,
         ReportResponse $report_response,
-        UserReport $user_reports
+        UserReport $user_reports,
+        IncidentReport $incident_report
     ) {
         $this->user_info = $user_info;
         $this->users = $users;
@@ -50,6 +53,7 @@ class ReportsRepository extends BaseRepository
         $this->sanction_levels = $sanction_levels;
         $this->sanction_types = $sanction_types;
         $this->report_response = $report_response;
+        $this->incident_report = $incident_report;
     } 
 
     public function getAllReports($data = [])
@@ -114,13 +118,13 @@ class ReportsRepository extends BaseRepository
     {
         // data validation
         
-
+        if (!isset($data['id'])) {
             if (!isset($data['user_reports_id']) ||
                 !is_numeric($data['user_reports_id']) ||
                 $data['user_reports_id'] <= 0) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "User ID is not set.",
+                    'title' => "User report ID is not set.",
                 ]);
             }
 
@@ -143,10 +147,37 @@ class ReportsRepository extends BaseRepository
                     'title' => "saction level is not set.",
                 ]);
             }
+        }   else{
+            if (isset($data['id'])) {
+                $does_exist = $this->user_reports->find($data['id']);
 
-       
-            $reports = $this->user_reports->init($this->user_reports->pullFillable($data));
-            $reports->save($data);
+                if (!$does_exist) {
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => 'Request Schedule does not exist.',
+                    ]);
+                }
+            }
+            if (isset($data['user_reports_id'])) {
+                $user_reports_id = $this->user_reports->find($data['user_reports_id']);
+    
+                if (!$user_reports_id) {
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => 'user_reports_id does not exist.',
+                    ]);
+                }
+            }
+        }
+           
+
+            if (isset($data['id'])) {
+                $reports = $this->user_reports->find($data['id']);
+            } else{
+                $reports = $this->user_reports->init($this->user_reports->pullFillable($data));
+            }
+            
+           
 
         if (!$reports->save($data)) {
             return $this->setResponse([
@@ -167,20 +198,127 @@ class ReportsRepository extends BaseRepository
         
     }
 
+    public function deleteReport($data = [])
+    {
+        $record = $this->user_reports->find($data['id']);
+
+        if (!$record) {
+            return $this->setResponse([
+                "code"        => 404,
+                "title"       => "Incident Report not found"
+            ]);
+        }
+
+        if (!$record->delete()) {
+            return $this->setResponse([
+                "code"    => 500,
+                "message" => "Deleting Incident Report was not successful.",
+                "meta"    => [
+                    "errors" => $record->errors(),
+                ],
+                "parameters" => [
+                    'schedule_id' => $data['id']
+                ]
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"        => 200,
+            "title"       => "Incident Report deleted",
+            "description" => "Incident Report deleted successfully.",
+            "parameters"        => [
+                "schedule_id" => $data['id']
+            ]
+        ]);
+
+    }
+
+    public function deleteStype($data = [])
+    {
+        $record = $this->sanction_type->find($data['id']);
+
+        if (!$record) {
+            return $this->setResponse([
+                "code"        => 404,
+                "title"       => "Sanction Type not found"
+            ]);
+        }
+
+        if (!$record->delete()) {
+            return $this->setResponse([
+                "code"    => 500,
+                "message" => "Deleting Sanction Type was not successful.",
+                "meta"    => [
+                    "errors" => $record->errors(),
+                ],
+                "parameters" => [
+                    'sanction_id' => $data['id']
+                ]
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"        => 200,
+            "title"       => "Sanction Type deleted",
+            "description" => "Sanction Type deleted successfully.",
+            "parameters"        => [
+                "sanction_id" => $data['id']
+            ]
+        ]);
+
+    }
+
+    public function deleteSlevel($data = [])
+    {
+        $record = $this->sanction_level->find($data['id']);
+
+        if (!$record) {
+            return $this->setResponse([
+                "code"        => 404,
+                "title"       => "Sanction Level not found"
+            ]);
+        }
+
+        if (!$record->delete()) {
+            return $this->setResponse([
+                "code"    => 500,
+                "message" => "Deleting Sanction Level was not successful.",
+                "meta"    => [
+                    "errors" => $record->errors(),
+                ],
+                "parameters" => [
+                    'sanction_id' => $data['id']
+                ]
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"        => 200,
+            "title"       => "Sanction Level deleted",
+            "description" => "Sanction Level deleted successfully.",
+            "parameters"        => [
+                "sanction_id" => $data['id']
+            ]
+        ]);
+
+    }
+
+
+
       public function fetchUserReport($data = [])
     {
-       $meta_index = "reports_data";
+       $meta_index = "reports";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "reports_data";
+            $meta_index     = "reports";
             $data['single'] = false;
             $data['where']  = [
                 [
-                    "target"   => "id",
+                    "target"   => "user_reports_id",
                     "operator" => "=",
                     "value"    => $data['id'],
                 ],
@@ -190,36 +328,36 @@ class ReportsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = ["reports"];   
-        $result = $this->fetchGeneric($data, $this->user_info);
-        $results=[];
-        $keys=0;
-        foreach ($result as $key => $value) {
-             if($value->reports!="[]"){        
-                array_push($results,$value);
-                $keys++;
-             }
-         } 
+        $data['relations'] = [];   
+        $result = $this->fetchGeneric($data, $this->incident_report);
+        // $results=[];
+        // $keys=0;
+        // foreach ($result as $key => $value) {
+        //      if($value->reports!="[]"){        
+        //         array_push($results,$value);
+        //         $keys++;
+        //      }
+        //  } 
 
-        if (!$results) {
+        if (!$result) {
             return $this->setResponse([
                 'code'       => 404,
                 'title'      => "No Reports are found",
                 "meta"       => [
-                    $meta_index => $results,
+                    $meta_index => $result,
                 ],
                 "parameters" => $parameters,
             ]);
         }
        
-        $count = $this->countData($count_data, refresh_model($this->user_reports->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->incident_report->getModel()));
 
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved Users with Reports",
             "description"=>"Users With Incident Reports",
             "meta"       => [
-                $meta_index => $results,
+                $meta_index => $result,
                 "count"     => $count
             ],
             
@@ -230,7 +368,7 @@ class ReportsRepository extends BaseRepository
      public function addSanctionType($data = [])
     {
         // data validation
-
+        if (!isset($data['id'])) {
             if (!isset($data['type_number'])) {
                 return $this->setResponse([
                     'code'  => 500,
@@ -244,11 +382,25 @@ class ReportsRepository extends BaseRepository
                     'title' => "type description is not set.",
                 ]);
             }
+        }else{
+            if (isset($data['id'])) {
+                $does_exist = $this->sanction_type->find($data['id']);
+                if (!$does_exist) {
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => 'Sanction Type does not exist.',
+                    ]);
+                }
+            }
+        }
 
-       
+        if (isset($data['id'])) {
+            $sanctionType = $this->sanction_type->find($data['id']);
+            $sanctionType->save();
+        } else{
             $sanctionType = $this->sanction_type->init($this->sanction_type->pullFillable($data));
-            $sanctionType->save($data);
-
+        }
+        
         if (!$sanctionType->save($data)) {
             return $this->setResponse([
                 "code"        => 500,
@@ -262,7 +414,7 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully defined an Sanction Type.",
+            "title"      => "Successfully Edited a Sanction Type.",
             "parameters" => $sanctionType,
         ]);
         
@@ -272,7 +424,7 @@ class ReportsRepository extends BaseRepository
  public function addSanctionLevel($data = [])
     {
         // data validation
-
+        if (!isset($data['id'])) {
             if (!isset($data['level_number'])) {
                 return $this->setResponse([
                     'code'  => 500,
@@ -286,9 +438,26 @@ class ReportsRepository extends BaseRepository
                     'title' => "Level Description is not set.",
                 ]);
             }
-       
+        }else{
+            if (isset($data['id'])) {
+                $does_exist = $this->sanction_level->find($data['id']);
+                if (!$does_exist) {
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => 'Sanction Type does not exist.',
+                    ]);
+                }
+            }
+        }
+        if (isset($data['id'])) {
+            $sanctionLevel = $this->sanction_level->find($data['id']);
+            $sanctionLevel->save();
+        } else{
             $sanctionLevel = $this->sanction_level->init($this->sanction_level->pullFillable($data));
-            $sanctionLevel->save($data);
+        }
+        
+            
+            
 
         if (!$sanctionLevel->save($data)) {
             return $this->setResponse([
@@ -303,7 +472,7 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Added a Sanction Level.",
+            "title"      => "Successfully Edited a Sanction Level.",
             "parameters" => $sanctionLevel,
         ]);
         
@@ -312,7 +481,7 @@ class ReportsRepository extends BaseRepository
          public function userResponse($data = [])
     {
         // data validation
-
+        if (!isset($data['user_response_id'])) {
             if (!isset($data['user_response_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
@@ -326,10 +495,26 @@ class ReportsRepository extends BaseRepository
                     'title' => "Commitment is not set.",
                 ]);
             }
-             
-       
+        }else{
+            if (isset($data['user_response_id'])) {
+                $does_exist = $this->report_response->find($data['user_response_id']);
+                if (!$does_exist) {
+                    return $this->setResponse([
+                        'code'  => 500,
+                        'title' => 'Sanction Type does not exist.',
+                    ]);
+                }
+            }
+        }
+        if (isset($data['user_response_id'])) {
+            $response = $this->report_response->find($data['user_response_id']);
+            $response->save();
+        } else{
             $response = $this->report_response->init($this->report_response->pullFillable($data));
-            $response->save($data);
+        }
+        
+            
+            
 
         if (!$response->save($data)) {
             return $this->setResponse([
@@ -515,14 +700,14 @@ class ReportsRepository extends BaseRepository
 
     public function userFiledIR($data = [])
     {
-       $meta_index = "meta_data";
+       $meta_index = "reports";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "meta_data";
+            $meta_index     = "reports";
             $data['single'] = false;
             $data['where']  = [
                 [

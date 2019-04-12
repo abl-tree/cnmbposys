@@ -4,86 +4,67 @@
     <div class="email-app">
       <div class="email-side-nav remain-height ov-h">
         <div class="h-100 layers">
-          <div class="p-20 bgc-grey-200 layer w-100">
+          <div class="p-20 bgc-grey-200 layer w-100 text-center">
             <input ref="file" type="file" id="file" name="file" hidden>
-            <button @click="$refs.file.click()" class="btn btn-danger btn-block">Import excel</button>
+            <div class="btn-group">
+              <button
+                @click="$refs.file.click()"
+                class="btn btn-danger btn-block pX-40"
+              >Import excel</button>
+              <button class="btn btn-danger">
+                <i class="ti-download"></i>
+              </button>
+            </div>
+          </div>
+          <div class="layer w-100 p-15">
+            <div class="row">
+              <div class="col">
+                <h6>Events</h6>
+              </div>
+              <div class="col text-right">
+                <button
+                  class="btn bdrs-50p p-5 lh-0"
+                  type="button"
+                  @click="(form.event.action=='create'),showModal('event')"
+                >
+                  <i class="ti-plus"></i>
+                </button>
+              </div>
+            </div>
           </div>
           <div class="pos-r bdT layer w-100 fxg-1" style="overflow-y:auto">
-            <ul class="p-20 nav flex-column">
-              <li class="nav-item">
+            <ul class="p-20 nav flex-column" v-if="isEmpty(table.event.data.event_titles)">
+              <li class="nav-item nav-title-header">
                 <a href="javascript:void(0)" class="nav-link c-grey-800 cH-blue-500 active">
                   <div class="peers ai-c jc-sb">
                     <div class="peer peer-greed">
-                      <i class="mR-10 ti-email"></i>
-                      <span>Inbox</span>
+                      <span>
+                        <i v-show="table.event.fetch_status=='fetching'">Fetching data...</i>
+                        <i v-show="table.event.fetch_status=='fetched'">Nothing to display...</i>
+                      </span>
                     </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700">+99</span>
-                    </div>
+                    <div class="peer"></div>
                   </div>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
+            </ul>
+            <ul class="p-20 nav flex-column" v-else>
+              <li
+                class="nav-item nav-title-header"
+                v-for="events in table.event.data.event_titles"
+                v-bind:key="events.id"
+              >
+                <a
+                  href="javascript:void(0)"
+                  class="nav-link c-grey-800 cH-blue-500 active"
+                  @click="(form.event.action = 'update'),(endpoints.update.event=endpoints.tmp.update.event+events.id),(endpoints.delete.event=endpoints.tmp.delete.event+events.id),(form.event.title=events.title),(form.event.color.hex=events.color),showModal('event')"
+                >
                   <div class="peers ai-c jc-sb">
                     <div class="peer peer-greed">
-                      <i class="mR-10 ti-share"></i>
-                      <span>Sent</span>
+                      <span>{{events.title}}</span>
                     </div>
                     <div class="peer">
-                      <span class="badge badge-pill bgc-green-50 c-green-700">12</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-star"></i>
-                      <span>Important</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-blue-50 c-blue-700">3</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-file"></i>
-                      <span>Drafts</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-amber-50 c-amber-700">5</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-alert"></i>
-                      <span>Spam</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">1</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href class="nav-link c-grey-800 cH-blue-500">
-                  <div class="peers ai-c jc-sb">
-                    <div class="peer peer-greed">
-                      <i class="mR-10 ti-trash"></i>
-                      <span>Trash</span>
-                    </div>
-                    <div class="peer">
-                      <span class="badge badge-pill bgc-red-50 c-red-700">+99</span>
+                      <div class="circle" :style="{ backgroundColor: events.color,}"></div>
                     </div>
                   </div>
                 </a>
@@ -95,77 +76,43 @@
       <div class="email-wrapper row remain-height bgc-white ov-h">
         <div class="email-list h-100 layers">
           <div class="layer w-100">
-            <div class="bgc-grey-200 peers ai-c jc-sb p-20 fxw-nw">
-              <div class="peer">
-                <div class="btn-group" role="group">
-                  <button
-                    type="button"
-                    class="email-side-toggle d-n@md+ btn bgc-white bdrs-2 mR-3 cur-p"
-                  >
-                    <i class="ti-menu"></i>
-                  </button>
-                  <button
-                    type="button"
-                    @click="showModal('ir-form-modal')"
-                    class="btn bgc-white bdrs-2 mR-3 cur-p"
-                  >
-                    <i class="ti-folder"></i>
-                  </button>
-                  <button type="button" class="btn bgc-white bdrs-2 mR-3 cur-p">
-                    <i class="ti-tag"></i>
-                  </button>
+            <div class="bgc-grey-200 ai-c jc-sb p-20 fxw-nw">
+              <div class="row">
+                <div class="col">
+                  <!-- <div class="btn-group" role="group">
+                    <button
+                      type="button"
+                      class="email-side-toggle d-n@md+ btn bgc-white bdrs-2 mR-3 cur-p"
+                    >
+                      <i class="ti-menu"></i>
+                    </button>
+                  </div>-->
+                  <div
+                    style="font-size:.8em"
+                    v-if="!isEmpty(local.agents.paginated)"
+                  >{{'Showing '+((local.agents.paginated.cur*10)-9)+' to '+((local.agents.paginated.total_result) > (local.agents.paginated.cur*10)? local.agents.paginated.cur*10: local.agents.paginated.total_result)+' of '+local.agents.paginated.total_result}}</div>
+                  <div v-else class="loader-12" style="height:10px"></div>
+                </div>
+
+                <div class="col text-right">
                   <div class="btn-group" role="group">
                     <button
-                      id="btnGroupDrop1"
                       type="button"
-                      class="btn cur-p bgc-white no-after dropdown-toggle"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false"
+                      class="fsz-xs btn btn-xs bgc-white bdrs-2 mR-3 cur-p"
+                      @click="paginate((local.agents.search!=''?local.agents.search_array:local.agents.array),local.agents.paginated.prev,local.agents.per_page)"
+                      :disabled="local.agents.paginated.prev == null"
                     >
-                      <i class="ti-more-alt"></i>
+                      <i class="ti-angle-left"></i>
                     </button>
-                    <ul class="dropdown-menu fsz-sm" aria-labelledby="btnGroupDrop1">
-                      <li>
-                        <a href class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                          <i class="ti-trash mR-10"></i>
-                          <span>Delete</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                          <i class="ti-alert mR-10"></i>
-                          <span>Mark as Spam</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href class="d-b td-n pY-5 pX-10 bgcH-grey-100 c-grey-700">
-                          <i class="ti-star mR-10"></i>
-                          <span>Star</span>
-                        </a>
-                      </li>
-                    </ul>
+                    <button
+                      type="button"
+                      class="fsz-xs btn btn-xs bgc-white bdrs-2 mR-3 cur-p"
+                      @click="paginate((local.agents.search!=''?local.agents.search_array:local.agents.array),local.agents.paginated.next,local.agents.per_page)"
+                      :disabled="local.agents.paginated.next == null"
+                    >
+                      <i class="ti-angle-right"></i>
+                    </button>
                   </div>
-                </div>
-              </div>
-              <div class="peer">
-                <div class="btn-group" role="group">
-                  <button
-                    type="button"
-                    class="fsz-xs btn bgc-white bdrs-2 mR-3 cur-p"
-                    @click="agentPaginate('prev')"
-                    :disabled="agentListPage==agentListMin"
-                  >
-                    <i class="ti-angle-left"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="fsz-xs btn bgc-white bdrs-2 mR-3 cur-p"
-                    @click="agentPaginate('next')"
-                    :disabled="agentListPage==agentListMax"
-                  >
-                    <i class="ti-angle-right"></i>
-                  </button>
                 </div>
               </div>
             </div>
@@ -175,8 +122,8 @@
               <input
                 type="text"
                 class="form-control m-0 bdw-0 pY-15 pX-20"
-                v-model="agentListSearch"
-                @keyup="searchFromAgentList(0)"
+                v-model="local.agents.search"
+                @input="searchAgent(local.agents.search)"
                 placeholder="Search..."
               >
             </div>
@@ -184,16 +131,16 @@
           <div class="layer w-100 fxg-1 pos-r" style="overflow-y:auto">
             <div>
               <div
-                v-for="agent in agentList"
+                v-for="(agent,index) in local.agents.paginated.data"
                 v-bind:key="agent.id"
-                @click="displayAgentSchedule(agent.id)"
+                @click="local.agents.selected_index=index"
                 class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p"
               >
-                <div class="peer mR-10">
-                  <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                <div class="peer mR-5">
+                  <!-- <div class="checkbox checkbox-circle checkbox-info peers ai-c">
                     <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
                     <label for="inputCall1" class="peers peer-greed js-sb ai-c"></label>
-                  </div>
+                  </div>-->
                 </div>
                 <div class="peer peer-greed ov-h">
                   <div class="peers ai-c">
@@ -204,7 +151,6 @@
                       <small class="badge badge-pill badge-danger">{{agent.company_id}}</small>
                     </div>
                   </div>
-                  <!-- <h5 class="fsz-def tt-c c-grey-900">title goes here</h5> -->
                   <span class="whs-nw w-100 ov-h tov-e d-b">{{agent.email}}</span>
                 </div>
               </div>
@@ -213,7 +159,7 @@
         </div>
         <div class="email-content h-100">
           <div class="h-100 pos-r" style="overflow-y:auto">
-            <div class="bgc-grey-200 peers ai-c jc-sb p-20 fxw-nw d-n@md+">
+            <!-- <div class="bgc-grey-200 peers ai-c jc-sb p-20 fxw-nw d-n@md+">
               <div class="peer">
                 <div class="btn-group" role="group">
                   <button type="button" class="back-to-mailbox btn bgc-white bdrs-2 mR-3 cur-p">
@@ -269,56 +215,74 @@
                   </button>
                 </div>
               </div>
-            </div>
+            </div>-->
             <div class="email-content-wrapper">
-              <!-- Header -->
               <div class="peers ai-c jc-sb pX-40 pY-30">
                 <div class="peers peer-greed">
                   <div class="peer mR-20">
-                    <img class="bdrs-50p w-3r h-3r" alt :src="agent.image">
+                    <img
+                      v-if="!isEmpty(local.agents.paginated) && local.agents.paginated.data[local.agents.selected_index].info.image!=null"
+                      class="bdrs-50p w-3r h-3r"
+                      :src="local.agents.paginated.data[local.agents.selected_index].info.image"
+                    >
+                    <img v-else class="bdrs-50p w-3r h-3r" src="/images/nobody.jpg">
                   </div>
                   <div class="peer">
-                    <h5 class="c-grey-900 mB-5" v-html="agent.full_name"></h5>
-                    <span v-html="agent.email"></span>
+                    <h5
+                      v-if="!isEmpty(local.agents.paginated)"
+                      class="c-grey-900 mB-5"
+                      v-html="local.agents.paginated.data[local.agents.selected_index].full_name"
+                    ></h5>
+                    <div v-else style="width:200px;height:24px;">
+                      <div class="loader-18"></div>
+                    </div>
+                    <span
+                      v-if="!isEmpty(local.agents.paginated)"
+                      v-html="local.agents.paginated.data[local.agents.selected_index].email"
+                    ></span>
+                    <div v-else style="width:200px;height:20px;">
+                      <div class="loader-15"></div>
+                    </div>
+
                     <br>
                     <small
+                      v-if="!isEmpty(local.agents.paginated)"
                       class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700"
-                      v-html="agent.teamLeader"
-                    >{{agent.teamLeader}}</small>
+                      v-html="local.agents.paginated.data[local.agents.selected_index].team_leader?local.agents.paginated.data[local.agents.selected_index].team_leader:'TL not assigned'"
+                    ></small>
                     <small
+                      v-if="!isEmpty(local.agents.paginated)"
                       class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700"
-                      v-html="agent.operationsManager"
-                    >{{agent.operationsManager}}</small>
+                      v-html="local.agents.paginated.data[local.agents.selected_index].operations_manager?local.agents.paginated.data[local.agents.selected_index].operations_manager:'OM not assigned'"
+                    ></small>
                   </div>
                 </div>
                 <div class="peer">
                   <button
                     class="btn btn-danger bdrs-50p p-15 lh-0"
                     type="button"
-                    @click="showModal('schedule-form-modal')"
+                    @click="(form.schedule.action=='create'),showModal('schedule')"
                   >
                     <i class="ti-plus"></i>
                   </button>
                 </div>
               </div>
-              <!-- Content -->
               <div class="bdT">
                 <full-calendar
                   ref="calendar"
-                  :events="events"
-                  :config="config"
-                  @even-selected="eventClick"
-                  @event-render="eventRender()"
+                  :events="local.calendar.events"
+                  :config="local.calendar.config"
                 ></full-calendar>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- popover -->
+      <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
+      <!-- Modal -->
       <!-- Modal -->
       <!-- Schedule Form Modal -->
-      <modal name="schedule-form-modal" pivotY="0.2" scrollable="true" height="auto">
+      <!-- <modal name="schedule" :pivotY="0.2" :scrollable="true" height="auto">
         <div class="layer">
           <div class="e-modal-header bd">
             <h5 style="margin-bottom:0px">Schedule</h5>
@@ -398,63 +362,71 @@
                   <button
                     type="button"
                     class="btn btn-secondary"
-                    @click="hideModal('schedule-form-modal')"
+                    @click="hideModal('schedule')"
                   >Close</button>
-                  <button type="button" class="btn btn-danger" @click="submitScheduleForm">Confirm</button>
+                  <button type="button" class="btn btn-danger" @click="">Confirm</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </modal>
-      <!-- IR Form Modal -->
-      <modal name="ir-form-modal" pivotY="0.2" scrollable="true" height="auto">
+      </modal>-->
+
+      <!-- event -->
+      <modal name="event" :pivotY="0.2" :scrollable="true" width="300px" height="auto">
         <div class="layer">
           <div class="e-modal-header bd">
-            <h5 style="margin-bottom:0px">Incident Report</h5>
+            <h5 style="margin-bottom:0px">Events</h5>
           </div>
           <div class="w-100 p-15 pT-80" style>
             <div class="container">
               <form action>
-                <div class="row">
+                <div class="row pT-5">
                   <div class="col">
-                    <div class="form-group">
-                      <label for="exampleFormControlSelect1">To:</label>
-                      <basic-select placeholder="Names"></basic-select>
-                    </div>
+                    <label>Color:</label>
+                    <compact-picker v-model="form.event.color"/>
                   </div>
                 </div>
                 <div class="row pT-5">
                   <div class="col">
-                    <label>Sanction Level:</label>
-                    <basic-select placeholder="Level"></basic-select>
-                  </div>
-                  <div class="col">
-                    <label>Sanction Type:</label>
-                    <basic-select placeholder="Type"></basic-select>
-                  </div>
-                </div>
-                <div class="row pT-15">
-                  <div class="col">
-                    <label>Report Description</label>
-                    <textarea name id cols="74" rows="5"></textarea>
+                    <label>Title:</label>
+                    <input type="text" class="form-control" v-model="form.event.title">
                   </div>
                 </div>
               </form>
             </div>
           </div>
           <div class="e-modal-footer bd">
-            <div style="text-align:right">
-              <button class="btn btn-secondary" @click="hideModal('ir-form-modal')">Cancel</button>
-              <button class="btn btn-danger">Confirm</button>
+            <div class="row">
+              <div class="peer peer-greed text-left">
+                <button
+                  v-show="form.event.action=='update'"
+                  class="btn"
+                  @click="store({},'delete','event')"
+                >Delete</button>
+              </div>
+              <div class="peer" style="text-align:right">
+                <button class="btn btn-secondary" @click="hideModal('event')">Cancel</button>
+                <button
+                  class="btn btn-danger"
+                  @click="(form.event.color != '' && form.event.title != '' ? 
+                      store(
+                        {
+                            color: form.event.color.hex,
+                            title: form.event.title
+                        },
+                        form.event.action,
+                        'event'
+                            ) :
+                      formValidationError())"
+                >Confirm</button>
+              </div>
             </div>
           </div>
         </div>
       </modal>
-      <!-- IR Response Form Modal -->
-      <ir-response-modal></ir-response-modal>
-      <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
-      <!-- Modal -->
+      <!-- notification -->
+      <notifications group="foo" animation-type="velocity" position="bottom right"/>
     </div>
   </div>
 </template>
@@ -476,135 +448,242 @@
   overflow: visible;
   box-sizing: border-box;
 }
+.loader-12 {
+  height: 12px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #bdbdbd;
+}
+
+.loader-12:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 12px;
+  background-color: #ababab;
+  animation: loading 2s linear infinite;
+}
+
+.loader-15 {
+  height: 15px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #bdbdbd;
+}
+
+.loader-15:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 15px;
+  background-color: #ababab;
+  animation: loading 2s linear infinite;
+}
+
+.loader-18 {
+  height: 18px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #bdbdbd;
+}
+
+.loader-18:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 18px;
+  background-color: #ababab;
+  animation: loading 2s linear infinite;
+}
+
+@keyframes loading {
+  from {
+    left: -200px;
+    width: 30%;
+  }
+
+  50% {
+    width: 30%;
+  }
+
+  70% {
+    width: 70%;
+  }
+
+  80% {
+    left: 50%;
+  }
+
+  95% {
+    left: 120%;
+  }
+
+  to {
+    left: 100%;
+  }
+}
 </style>
 
 <script>
 import moment from "moment";
 import { BasicSelect } from "vue-search-select";
+import { Compact } from "vue-color";
 
 export default {
   props: ["userId"],
-  components: { BasicSelect },
+  components: { BasicSelect, "compact-picker": Compact },
   mounted() {
-    // console.log("rtapage mounted");
-    // console.log(this.userProfile);
-  },
-  created() {
-    //on create function
-    this.fetchAgentList(0);
-    //TEST function create
-    // this.getDates("2018-12-25", "2019-01-05");
-    // this.submitScheduleForm();
+    this.fetchTableObject("event");
+    this.fetchAgentList();
   },
   data() {
     return {
-      showCustomModal: false,
-      selectedOpt: "",
-      agentListPage: 0,
-      agentListMin: 0,
-      agentListMax: 0,
-      agentList: {},
-      agentListSearch: "",
-      agent: {
-        image: "",
-        full_name: "",
-        email: "",
-        teamLeader: "",
-        operationsManager: "",
-        id: ""
-      },
-      events: [],
-      form: {
-        id: "",
-        title: "",
-        event: { start: "", end: "" },
-        time_in: "",
-        hours: "",
-        edit: false,
-        label: "Add Schedule",
-        delete_btn: false
-      },
-      titleOptions: [],
-
-      config: {
-        eventClick: event => {
-          console.log(event);
-          this.form.edit = true;
-          this.form.label = "Edit Schedule";
-          this.form.delete_btn = true;
-          this.scheduleTitleOptions();
-          let pageurl = "/api/v1/schedules/fetch/" + event.id;
-          let fetched_event = "";
-          fetch(pageurl)
-            .then(res => res.json())
-            .then(res => {
-              // return res.meta.agent_schedule;
-              let temp = res.meta.agent_schedule;
-              this.form.title = temp.title.id;
-              this.form.id = temp.id;
-            })
-            .catch(err => console.log(err));
-          // this.form.title = fetched_event.title.id;
-          this.form.event.start = event.start;
-          this.form.time_in =
-            event.start._i.split(" ")[1].split(":")[0] +
-            ":" +
-            event.start._i.split(" ")[1].split(":")[1];
-          let duration = moment.duration(event.end.diff(event.start));
-          if (duration._data.minutes == 0) {
-            this.form.hours = duration._data.hours + ":00";
-          } else {
-            this.form.hours =
-              duration._data.hours + ":" + duration._data.minutes;
+      local: {
+        agents: {
+          array: [],
+          paginated: [],
+          search_array: [],
+          per_page: 10,
+          selected_index: 0,
+          search: ""
+        },
+        form: {
+          calendar: {
+            endpoints: {}
           }
         },
-        eventRender: function(event, element) {
-          element.attr({
-            "data-toggle": "modal",
-            "data-target": "#cu-schedule-modal"
-          });
-        },
-        defaultView: "listMonth",
-        header: {
-          left: "title",
-          center: "",
-          right: "today listMonth,month prev,next"
+        calendar: {
+          events: [
+            {
+              id: 1,
+              start: "2019-04-10 00:00:00",
+              end: "2019-04-10 11:00:00",
+              title: "WorkTWork",
+              color: "purple"
+            },
+            {
+              id: 3,
+              start: "2019-04-10 12:00:00",
+              end: "2019-04-10 20:00:00",
+              title: "HR Meeting",
+              color: "Maroon"
+            }
+          ],
+          config: {
+            eventClick: event => {
+              console.log(event);
+              this.form.edit = true;
+              this.form.label = "Edit Schedule";
+              this.form.delete_btn = true;
+              this.scheduleTitleOptions();
+              let pageurl = "/api/v1/schedules/fetch/" + event.id;
+              let fetched_event = "";
+              fetch(pageurl)
+                .then(res => res.json())
+                .then(res => {
+                  // return res.meta.agent_schedule;
+                  let temp = res.meta.agent_schedule;
+                  this.form.title = temp.title.id;
+                  this.form.id = temp.id;
+                })
+                .catch(err => console.log(err));
+              // this.form.title = fetched_event.title.id;
+              this.form.event.start = event.start;
+              this.form.time_in =
+                event.start._i.split(" ")[1].split(":")[0] +
+                ":" +
+                event.start._i.split(" ")[1].split(":")[1];
+              let duration = moment.duration(event.end.diff(event.start));
+              if (duration._data.minutes == 0) {
+                this.form.hours = duration._data.hours + ":00";
+              } else {
+                this.form.hours =
+                  duration._data.hours + ":" + duration._data.minutes;
+              }
+            },
+            eventRender: function(event, element) {
+              element.attr({
+                "data-toggle": "modal",
+                "data-target": "#cu-schedule-modal"
+              });
+            },
+            defaultView: "listMonth",
+            header: {
+              left: "title",
+              center: "",
+              right: "today listMonth,month prev,next"
+            },
+            nowIndicator: true
+          }
         }
       }
     };
   },
   methods: {
     // modal Toggle Functions
-    resetScheduleForm: function() {
-      this.form.label = "Add Schedule";
-      this.form.edit = false;
-      this.form.delete_btn = false;
-    },
-    refreshEvents: function() {
-      this.$refs.calendar.$emit("reload-events");
-    },
-    fetchAgentList: function(listpage) {
-      const limit = 10;
-      const sort = "email";
-      const order = "asc";
-      let offset = listpage * limit;
-      let pageurl =
-        "/api/v1/agents?limit=" +
-        limit +
-        "&order=" +
-        order +
-        "&sort=" +
-        sort +
-        "&offset=" +
-        offset;
+    fetchAgentList: function() {
+      let pageurl = "/api/v1/agents?sort=email&order=asc";
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.agentList = res.meta.agents;
-          this.agentListMax = Math.ceil(res.meta.count / limit) - 1;
-          this.displayAgentSchedule(this.agentList[0].id);
+          this.local.agents.array = res.meta.agents;
+          this.paginate(this.local.agents.array, 1, this.local.agents.per_page);
         })
         .catch(err => console.log(err));
+    },
+    paginate: function(obj, page, per_page) {
+      var page = page,
+        per_page = per_page,
+        offset = (page - 1) * per_page,
+        paginatedItems = obj.slice(offset).slice(0, per_page),
+        total_pages = Math.ceil(obj.length / per_page);
+      this.local.agents.selected_index = 0;
+      this.local.agents.paginated = {
+        data: paginatedItems,
+        cur: page,
+        prev: page - 1 ? page - 1 : null,
+        next: total_pages > page ? page + 1 : null,
+        total_result: obj.length,
+        total_pages: total_pages
+      };
+      console.log(this.local.agents.paginated);
+    },
+    fetchAgent: function(id) {
+      let pageurl = "/api/v1/schedules/agents/" + id;
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          // this.local.calendar.events = res;
+        })
+        .catch(err => console.log(err));
+    },
+    searchAgent: function(query) {
+      var obj = [];
+      for (var i = 0; i < this.local.agents.array.length; i++) {
+        if (
+          this.local.agents.array[i].full_name.indexOf(query) !== -1 ||
+          this.local.agents.array[i].email.indexOf(query) !== -1
+        ) {
+          obj.push(this.local.agents.array[i]);
+        }
+      }
+      if (obj.length > 0) {
+        this.local.agents.search_array = obj;
+        this.paginate(
+          this.local.agents.search_array,
+          1,
+          this.local.agents.per_page
+        );
+      }
     },
     getDates: function(startDate, stopDate) {
       console.log("start " + startDate);
@@ -618,215 +697,7 @@ export default {
       }
       return dateArray;
       // console.log(dateArray);
-    },
-    agentPaginate: function(action) {
-      let act = action;
-      if (act == "next") {
-        this.agentListPage++;
-      } else {
-        this.agentListPage--;
-      }
-      if (agentListSearch != "") {
-        this.searchFromAgentList(this.agentListPage);
-      } else {
-        this.fetchAgentList(this.agentListPage);
-      }
-    },
-    displayAgentSchedule: function(id) {
-      //fetch for agent info
-      let pageurl = "/api/v1/agents/fetch/" + id;
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          let img = "/images/nobody.jpg";
-          if (res.meta.agent.info.image != null) {
-            img = res.meta.agent.info.image;
-          }
-          this.agent.image = img;
-          this.agent.full_name = res.meta.agent.full_name;
-          this.agent.email = res.meta.agent.email;
-          this.agent.teamLeader = res.meta.agent.team_leader;
-          this.agent.operationsManager = res.meta.agent.operations_manager;
-          this.agent.id = res.meta.agent.uid;
-        })
-        .catch(err => console.log(err));
-      // fetch for schedules
-      pageurl = "/api/v1/schedules/agents/" + id;
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          ``;
-          let temp = [];
-          if (res.meta.agent.schedule != null) {
-            $.each(res.meta.agent.schedule, function(k, v) {
-              console.log(v);
-              let temp1 = {
-                title: v.title.title,
-                start: v.start_event,
-                end: v.end_event,
-                color: v.title.color,
-                id: v.id,
-                _tid: v.title.title_id
-              };
-              temp.push(temp1);
-            });
-          }
-          this.events = temp;
-          console.log(this.events);
-          this.refreshEvents();
-        })
-        .catch(err => console.log(err));
-    },
-    submitScheduleForm: function() {
-      //format object to be sent backend
-      if (!this.form.edit) {
-        let obj = [];
-        let id = this.form.id;
-        let title_id = this.form.title;
-        let time_in = this.form.time_in;
-        let hours = this.form.hours;
-        let agent_id = this.agent.id;
-        var dates = [];
-        if (this.form.event.end == null) {
-          dates.push(
-            moment(moment(this.form.event.start)).format("YYYY-MM-DD")
-          );
-        } else {
-          dates = this.getDates(this.form.event.start, this.form.event.end);
-        }
-        $.each(dates, function(k, v) {
-          let start = v + " " + time_in + ":00";
-          let hr = hours.split(":");
-          let obj_element = {
-            title_id: title_id,
-            user_id: agent_id,
-            start_event: start,
-            end_event: moment(
-              moment(start)
-                .add(hr[0], "h")
-                .add(hr[1], "m")
-                .toDate()
-            ).format("YYYY-MM-DD HH:mm:ss")
-          };
-          obj.push(obj_element);
-        });
-        this.insertSchedule(obj);
-      } else {
-        let start = this.form.event.start._i;
-        let hr = this.form.hours.split(":");
-        let obj = {
-          id: this.form.id,
-          title_id: this.form.title,
-          start_event: start,
-          end_event: moment(
-            moment(start)
-              .add(hr[0], "h")
-              .add(hr[1], "m")
-              .toDate()
-          ).format("YYYY-MM-DD HH:mm:ss")
-        };
-        console.log(obj);
-        this.editSchedule(obj);
-      }
-      // console.log(dates);
-      // console.log(obj);
-      //submiting the object
-    },
-    scheduleTitleOptions: function() {
-      let pageurl = "api/v1/events";
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          let result = res.meta;
-          // console.log(result.event_titles);
-          this.titleOptions = result.event_titles;
-          return result.event_titles;
-        })
-        .catch(err => console.log(err));
-    },
-    insertSchedule: function(data) {
-      let pageurl = "/api/v1/schedules/create/bulk";
-      fetch(pageurl, {
-        method: "post",
-        body: JSON.stringify(data),
-        headers: {
-          "content-type": "application/json"
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
-          this.form.id = "";
-          this.form.title = "";
-          this.form.time_in = "";
-          this.form.hours = "";
-          this.form.event.start = "";
-          this.form.event.end = "";
-        })
-        .catch(err => console.log(err));
-    },
-    editSchedule: function(data) {
-      let pageurl = "/api/v1/schedules/update/" + data.id;
-      fetch(pageurl, {
-        method: "post",
-        body: JSON.stringify(data),
-        headers: {
-          "content-type": "application/json"
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
-          this.form.id = "";
-          this.form.title = "";
-          this.form.time_in = "";
-          this.form.hours = "";
-          this.form.event.start = "";
-          this.form.event.end = "";
-        })
-        .catch(err => console.log(err));
-    },
-    searchFromAgentList: function(listpage) {
-      if (this.agentListSearch == "") {
-        this.fetchAgentList(0);
-      } else {
-        const limit = 10;
-        const sort = "email";
-        const order = "asc";
-        let offset = listpage * limit;
-        let pageurl =
-          "/api/v1/agents/search?query=" +
-          this.agentListSearch +
-          "&target[]=full_name&target[]=email&limit=" +
-          limit +
-          "&order=" +
-          order +
-          "&sort=" +
-          sort +
-          "&offset=" +
-          offset;
-        fetch(pageurl)
-          .then(res => res.json())
-          .then(res => {
-            this.agentList = res.meta.agents;
-            this.agentListMax = Math.ceil(res.meta.count / limit) - 1;
-            this.displayAgentSchedule(this.agentList[0].id);
-            console.log(res.meta.agents);
-          })
-          .catch(err => console.log(err));
-      }
-    },
-    //full calendar functions
-    eventRender: function(event, element) {
-      element.attr({
-        dataToggle: "modal"
-      });
-    },
-    eventClick: function(event) {
-      console.log(event.id);
     }
-
-    //MODALS
   }
 };
 </script>

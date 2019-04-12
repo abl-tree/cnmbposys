@@ -55,9 +55,19 @@ class Users extends BaseModel
     public function user_info() {
         return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'uid');
     }
+    public function user_logs() {
+        return $this->hasMany('\App\Data\Models\ActionLogs', 'user_id', 'id');
+    }
+
     
     public function accesslevel(){
        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+    }
+    public function position(){
+        return $this->belongsTo('\App\Data\Models\AccessLevel', 'access_id', 'id');
+     }
+     public function userdata() {
+        return $this->belongsTo('\App\Data\Models\UserInfo', 'uid', 'id');
     }
     public function accesslevelhierarchy(){
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');

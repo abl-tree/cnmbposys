@@ -39,6 +39,161 @@ Vue.mixin({
                     pibg: ""
                 },
                 image: "",
+            },
+            endpoints: {
+                tmp: {
+                    update: {
+                        event: "/api/v1/events/update/",
+                        incident_report_response: '/api/v1/update_response/',
+                        sanction_level: "/api/v1/sanction_level/update/",
+                        sanction_type: "/api/v1/sanction_type/update/",
+                    },
+                    delete: {
+                        event: "/api/v1/events/delete/",
+                        sanction_level: "/api/v1/sanction_level/delete/",
+                        sanction_type: "/api/v1/sanction_type/delete/",
+                    },
+                },
+                update: {
+                    event: "",
+                    incident_report_response: '',
+                    sanction_level: "",
+                    sanction_type: "",
+                },
+                delete: {
+                    event: "",
+                    sanction_level: "",
+                    sanction_type: "",
+
+                },
+                create: {
+                    sanction_level: "/api/v1/sanction_level/create",
+                    sanction_type: "/api/v1/sanction_type/create",
+                    incident_report: "/api/v1/reports/create",
+                    event: "/api/v1/events/create",
+                    incident_report_response: '/api/v1/user_response',
+                },
+                table: {
+                    sanction_level: "/api/v1/sanction_level/sanction_levels",
+                    sanction_type: "/api/v1/sanction_type/sanction_types",
+                    received_incident_report: "/api/v1/reports/user/",
+                    issued_incident_report: "/api/v1/reports/user_filed_ir/",
+                    event: "/api/v1/events",
+                    agent: "/api/v1/agents",
+                    agent_search: "/api/v1/agents/search"
+                },
+                select: {
+                    sanction_level: "/api/v1/sanction_level/select_sanction_levels",
+                    sanction_type: "/api/v1/sanction_type/select_sanction_types",
+                    child_list: "/api/v1/reports/select_all_users/1" //TEMPORARY ID PARAM
+                }
+            },
+            form: {
+                incident_report: {
+                    select_option: {
+                        sanction_level: [],
+                        sanction_type: [],
+                        child_list: []
+                    },
+                    selected: {
+                        sanction_level: {
+                            value: "",
+                            text: ""
+                        },
+                        sanction_type: {
+                            value: "",
+                            text: ""
+                        },
+                        child_list: {
+                            value: "",
+                            text: ""
+                        }
+                    },
+                    textarea: "",
+                    action: "create"
+                },
+                sanction_level: {
+                    level: "",
+                    description: "",
+                    action: "create"
+                },
+                sanction_type: {
+                    type: "",
+                    description: "",
+                    action: "create"
+                },
+                incident_report_response: {
+                    sanction: {
+                        type: "",
+                        level: ""
+                    },
+                    ir_description: "",
+                    ir_date: "",
+                    received_by: "",
+                    received_by_position: "",
+                    filed_by: "",
+                    filed_by_position: "",
+                    response: ""
+                },
+                event: {
+                    color: {
+                        hex: "#000000"
+                    },
+                    title: "",
+                    action: "create",
+                    id: "",
+                },
+                schedule: {
+                    action: 'create',
+                    id: '',
+                    user: '',
+                    title_id: '',
+                    event: {
+                        start: '',
+                        end: ''
+                    },
+                    time_in: '',
+                    hours: ''
+                }
+            },
+            table: {
+                sanction_level: {
+                    data: [],
+                    fetch_status: 'fetching'
+                },
+                sanction_type: {
+                    data: [],
+                    fetch_status: 'fetching'
+                },
+                received_incident_report: {
+                    data: [],
+                    fetch_status: 'fetching'
+                },
+                issued_incident_report: {
+                    data: [],
+                    fetch_status: 'fetching'
+                },
+                event: {
+                    data: [],
+                    fetch_status: 'fetching'
+                },
+                agent: {
+                    data: [],
+                    fetch_status: 'fetching'
+                },
+                agent_search: {
+                    data: [],
+                    fetch_status: 'fetching'
+                }
+            },
+            stats: {
+                today: {
+                    scheduled: "",
+                    day_off: "",
+                    on_break: "",
+                    working: "",
+                    absent: ""
+                }
             }
         };
     },
@@ -53,7 +208,123 @@ Vue.mixin({
         },
         hideModal: function (modalName) {
             this.$modal.hide(modalName);
-        }
+        },
+
+        fetchTableObject: function (tableName) {
+            let pageurl = this.endpoints.table[tableName];
+            this.table[tableName].fetch_status = 'fetching';
+            fetch(pageurl)
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res);
+                    this.table[tableName].fetch_status = 'fetched';
+
+                    if (res.code == 200) {
+                        this.table[tableName].data = res.meta;
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.table[tableName].fetch_status = 'fetched';
+
+                });
+        },
+
+
+        store: function (obj, action, formName) {
+            let pageurl = this.endpoints[action][formName];
+            fetch(pageurl, {
+                    method: "post",
+                    body: JSON.stringify(obj),
+                    headers: {
+                        "content-type": "application/json"
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.code == 500) {
+                        console.log("error");
+                        this.notify("error", action);
+                    } else {
+                        console.log(data);
+                        this.fetchTableObject(formName);
+                        this.hideModal(formName);
+                        this.notify("success", action);
+                        // this.saveLog('succuss', formName, action, data);
+                    }
+                })
+                .catch(err => console.log(err));
+        },
+        notify: function (status, action) {
+            let dtitle = "";
+            let dtext = "";
+            let dtype = "";
+            switch (status) {
+                case "success":
+                    dtitle = "Success Notification";
+                    dtext = "You have successfully " + action + "d a record.";
+                    dtype = "success";
+                    break;
+                case "error":
+                    dtitle = "Error Notification";
+                    dtitle = "Error " + action + "ing a record.";
+                    dtype = "warning";
+                    break;
+            }
+            this.$notify({
+                group: "foo",
+                title: dtitle,
+                text: dtext + "<br/><small>CNM Solutions WebApp</small>",
+                type: dtype
+            });
+        },
+        formValidationError: function () {
+            this.$notify({
+                group: "foo",
+                title: 'Form Validation',
+                text: "Please fill all fields.<br/><small>CNM Solutions WebApp</small>",
+                type: "info"
+            });
+        },
+
+        isEmpty: function (obj) {
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key)) return false;
+            }
+            return true;
+        },
+        fetchSelectOptions: function (url, formName, element) {
+            let pageurl = url;
+            fetch(pageurl)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.code == 200) {
+                        this.form[formName].select_option[element] = res.meta.options;
+                    }
+                    // console.log(res.meta.options);
+                })
+                .catch(err => console.log(err));
+        },
+        loadIRResponseForm: function (report_id) {
+            let obj = [];
+            this.table.received_incident_report.data.reports_data[0].reports.forEach(
+                function (v, i) {
+                    if (v.id == report_id) {
+                        obj = v;
+                    }
+                }
+            );
+            this.form.incident_report_response.sanction.level =
+                obj.sanction_level.text;
+            this.form.incident_report_response.sanction.type = obj.sanction_type.text;
+            this.form.incident_report_response.ir_description = obj.description;
+            this.form.incident_report_response.ir_date = obj.created_at;
+            this.form.incident_report_response.received_by = this.table.received_incident_report.data.reports_data[0].full_name;
+            // this.form.incident_report_response.received_by_position = this.table.received_incident_report.data.reports_data[0].full_name;
+            this.form.incident_report_response.filed_by = obj.filedby.full_name;
+            // this.form.incident_report_response.filed_by_position = obj.filedby.full_name;
+        },
     }
 });
 
@@ -75,6 +346,38 @@ Vue.component("rta-dashboard-section", rtaDashboard);
 
 import profilePreview from "./components/profilePreview.vue";
 Vue.component("profile-preview-modal", profilePreview);
+
+import stats_component1 from "./components/statsComponent1.vue";
+Vue.component("stats-component-1", stats_component1);
+
+import rtaReports from "./components/RTA/reports/rtaReports";
+Vue.component("rta-reports", rtaReports);
+import sanction_level from "./components/table/sanction_level.vue";
+Vue.component("sanction-level", sanction_level);
+
+import sanction_type from "./components/table/sanction_type.vue";
+Vue.component("sanction-type", sanction_type);
+
+import incident_report from "./components/table/incident_report.vue";
+Vue.component("incident-report", incident_report);
+
+import received_ir from "./components/table/received_ir.vue";
+Vue.component("received-ir", received_ir);
+
+import issued_ir from "./components/table/issued_ir.vue";
+Vue.component("issued-ir", issued_ir);
+
+
+import mini_calendar from "./components/mini_calendar.vue";
+Vue.component("mini-calendar", mini_calendar);
+
+import trackerGraph from "./components/trackerGraph.vue";
+Vue.component("work-graph", trackerGraph);
+
+// import ZpUI from 'zp-crm-ui'
+import Sparkline from 'vue-sparklines'
+// Vue.use(ZpUI)
+Vue.use(Sparkline)
 
 import VModal from "vue-js-modal";
 Vue.use(VModal);
@@ -102,6 +405,9 @@ const app = new Vue({
     el: "#app"
 });
 
+//vue init vairables
+
+// app.endpoints.table.issued_incident_report = app.endpoints.table.issued_incident_report + $('#uid').val()
 //native trigger to vue component
 $(document).on("click", "#loadProfilePreview", function (e) {
     app.fetchProfile();
@@ -145,9 +451,11 @@ $(document).on("click", ".passChange", function (e) {
         swal("Oh no!", "Please provide a valid password.", "error");
     }
 });
+var curpage = "dashboad";
+
 
 // >> FOR ADMIN, HR MANAGER, HR ASSISTANT value = 1,2,3
-if ($("#hr-dashboard") != null) {
+if ($('#hr-dashboard').length) {
     //global variables
     var ir_id;
     var description;

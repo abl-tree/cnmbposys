@@ -9,16 +9,16 @@
         
         </ul>
         <ul class="nav-right">
-            <!-- <li class="notifications dropdown">
+            <li class="notifications dropdown">
                 <span class="counter bgc-red">3</span>
                 <a href="" class="dropdown-toggle no-after" data-toggle="dropdown">
-                    <i class="ti-bell"></i>
+                    <i class="ti-list"></i>
                 </a>
 
                 <ul class="dropdown-menu">
                     <li class="pX-20 pY-15 bdB">
                         <i class="ti-bell pR-10"></i>
-                        <span class="fsz-sm fw-600 c-grey-900">Notifications</span>
+                        <span class="fsz-sm fw-600 c-grey-900">Action Logs</span>
                     </li>
                     <li>
                         <ul class="ovY-a pos-r scrollable lis-n p-0 m-0 fsz-sm">
@@ -77,13 +77,13 @@
                     </li>
                     <li class="pX-20 pY-15 ta-c bdT">
                         <span>
-                            <a href="" class="c-grey-600 cH-blue fsz-sm td-n">View All Notifications
+                            <a href="" class="c-grey-600 cH-blue fsz-sm td-n">View All Logs
                                 <i class="ti-angle-right fsz-xs mL-10"></i>
                             </a>
                         </span>
                     </li>
                 </ul>
-            </li> -->
+            </li>
             <!-- <li class="notifications dropdown">
                 <span class="counter bgc-blue">3</span>
                 <a href="" class="dropdown-toggle no-after" data-toggle="dropdown">

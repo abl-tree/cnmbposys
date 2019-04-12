@@ -195,19 +195,16 @@ export default {
   methods: {
     showProfile: function(id) {
       let pageurl = "/api/v1/users/" + id;
-      console.log(pageurl);
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
           var obj = res.meta.metadata[0];
-          console.log(obj.fname);
-
           this.profile.name.first = obj.fname;
           this.profile.name.middle = obj.mname;
           this.profile.name.last = obj.lname;
           this.profile.id = obj.id;
           this.profile.gender = obj.gender;
-          // this.profile.birth = obj.
+          this.profile.birth = obj.birthdate;
           this.profile.address = obj.address;
           this.profile.mobile = obj.contact;
           this.profile.email = obj.email;
@@ -217,7 +214,6 @@ export default {
           this.profile.benefit.tin = obj.benefits[2].id_number;
           this.profile.benefit.pibg = obj.benefits[3].id_number;
           this.profile.image = obj.image;
-          console.log(this.profile);
         })
         .catch(err => console.log(err));
     }

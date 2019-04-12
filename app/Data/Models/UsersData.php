@@ -50,7 +50,9 @@ class UsersData extends BaseModel
     ];
 
   
-   
+    public function user_logs() {
+        return $this->hasMany('\App\Data\Models\ActionLogs', 'user_id', 'id');
+    }
 
     public function user_info() {
         return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'uid');

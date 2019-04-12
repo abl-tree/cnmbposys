@@ -19,7 +19,8 @@ class User extends BaseAuthModel
         'operations_manager',
         'full_name',
         'is_agent',
-        'has_schedule'
+        'has_schedule',
+        'calendar'
     ];
 
     /**
@@ -150,6 +151,22 @@ class User extends BaseAuthModel
        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
 
+    public function getCalendarAttribute(){
+        $events = [];
+        foreach($this->schedule as $sched){
+            $events[] = [
+                'id' => $sched->id,
+                'start' => $sched->start_event,
+                'end' => $sched->end_event,
+                'title' => $sched->title->title,
+                'color' => $sched->title->color
+            ];
+        }
+        
+        return [
+            'events' => $events
+        ];
+    }
     public function getFullNameAttribute(){
         $name = null;
         if(isset($this->info)){
