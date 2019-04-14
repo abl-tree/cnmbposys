@@ -20,11 +20,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group([
     "prefix"    => "v1",
 ], function () {
+
     Route::group([
-        "prefix"    => "schedules",
+        "prefix"    => "attendance",
     ], function () {
 
         Route::get("/", "AttendanceController@all");
+        Route::post("create", "AttendanceController@create");
+        Route::post("create/bulk", "AttendanceController@bulkScheduleInsertion");
+        Route::post("create/bulk/excel", "AttendanceController@excelData");
+        Route::post('delete/{attendance_id}', 'AttendanceController@delete');
+        Route::get("fetch/{attendance_id}", "AttendanceController@fetch");
+        Route::get('search', 'AttendanceController@search');
+        Route::post('update/{attendance_id}', 'AttendanceController@update');
 
     });
 
