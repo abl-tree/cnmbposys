@@ -196,19 +196,9 @@
 </template>
 
 <script>
-import { BasicSelect } from "vue-search-select";
-import { ModelSelect } from "vue-search-select";
-
 export default {
   props: ["userId"],
-  components: {
-    BasicSelect,
-    ModelSelect
-  },
-  created() {
-    this.endpoints.table.issued_incident_report =
-      this.endpoints.table.issued_incident_report + this.user_id;
-  },
+  created() {},
   mounted() {},
   data() {
     return {
