@@ -173,7 +173,7 @@
         </div>
       </div>
 
-      <incident-report :user-id="user_id"></incident-report>
+      <incident-report :userId="user_id"></incident-report>
 
       <div>
         <div class="container">
@@ -196,15 +196,9 @@
 </template>
 
 <script>
-import { BasicSelect } from "vue-search-select";
-import { ModelSelect } from "vue-search-select";
-
 export default {
   props: ["userId"],
-  components: {
-    BasicSelect,
-    ModelSelect
-  },
+  created() {},
   mounted() {},
   data() {
     return {

@@ -18,6 +18,8 @@ use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
 use App\Services\ExcelDateService;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use DB;
 use App\Data\Repositories\LogsRepository;
 
 class AgentScheduleRepository extends BaseRepository
@@ -442,6 +444,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $data['columns'] = ['agent_schedules.*'];
         $data['where'] = array();
+        $data['where_between'] = array();
         $data['no_all_method'] = true;
         $data['relations'] = ['user_info'];
 
@@ -521,6 +524,70 @@ class AgentScheduleRepository extends BaseRepository
             if ($result) {
                 $result = $result->where('is_present', 1)->where('is_working', 0);
             }
+
+        } else if(isset($data['filter']) && $data['filter'] === 'sparkline') {
+
+            $sparkline = array();
+
+            $now = Carbon::now();
+
+            $previous = Carbon::now()->subDays(9)->format('Y-m-d');
+            
+            $period = CarbonPeriod::create($previous, $now->format('Y-m-d'))->toArray();
+
+            $title = "Sparkline (".$previous." - ".$now.")";
+
+            $now = $now->addDays(1)->format('Y-m-d');
+
+            $data['columns'] = ['id', 'start_event', DB::raw('count(*) as count')];
+
+            $data['groupby'] = [DB::raw('date(start_event)')];
+
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ]));
+
+            $data['sort'] = 'start_event';
+
+            $data['order'] = 'desc';
+
+            $result = $this->fetchGeneric($data, $result);
+
+            if ($result) {
+                $result = $result->map(function ($result) {
+                    return collect($result->toArray())
+                        ->only(['date', 'count'])
+                        ->all();
+                });
+
+                foreach ($period as $key => $date) {
+                    $count = 0;
+
+                    foreach ($result as $key => $value) {
+                        if(Carbon::parse($value['date']['ymd'])->equalTo($date)) {
+                            $count = $value['count'];
+
+                            break;
+                        }
+                    }
+
+                    array_push($sparkline, $count);
+                }
+
+                $result = $sparkline;
+            } else {
+                $result = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            }
+
+            return $this->setResponse([
+                "code" => 200,
+                "title" => $title,
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
 
         } else {
 
