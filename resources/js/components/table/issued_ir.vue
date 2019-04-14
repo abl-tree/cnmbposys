@@ -13,32 +13,38 @@
     </div>
 
     <div v-else class="layer w-100" style="max-height:250px;overflow:auto">
-      <div class="container bgc-blue-500">
+      <div class="container">
         <div
           v-for="datum in table[tabledata.tableName].data.reports"
           :key="datum.id"
-          class="row bdB bdT pY-15 bgc-green-500 pR-10"
+          class="row bdB bdT pY-15 pR-10"
         >
           <!-- v-for -->
-          <div class="col-md-12 bgc-red-500">
-            <div class="peers">
+          <div class="col-md-12 pR-0">
+            <div class="peers pR-0">
               <div class="peer mR-10">
                 <img
                   v-if="datum.issued_to.image!=null"
-                  class="bdrs-50p w-3r h-3r"
+                  class="bdrs-50p w-4r h-4r"
                   :src="datum.issued_to.image"
                 >
-                <img v-else class="bdrs-50p w-3r h-3r" src="/images/nobody.jpg">
+                <img v-else class="bdrs-50p w-4r h-4r" src="/images/nobody.jpg">
               </div>
               <div class="peer peer-greed">
-                <div class="container">
-                  <div class="row peers m0 p0">
+                <div class="container pR-0">
+                  <div class="row peers pR-0">
                     <div class="peer peer-greed" style="height:30px;display:table">
                       <span style="display:table-cell;vertical-align:middle">
                         <span class="fw-500" style="font-size:0.87em">{{datum.issued_to.full_name}}</span>
+                        <!-- <span class="mL-10" style="font-size:0.87em">
+                          <i class="ti-eye"></i>
+                        </span>
+                        <span class="mL-10" style="font-size:0.87em">
+                          <i class="ti-comment"></i>
+                        </span>-->
                       </span>
                     </div>
-                    <div class="peer">
+                    <div class="peer pR-0">
                       <button class="btn btn-xs bgc-white">
                         <i class="ti-eye"></i>
                       </button>

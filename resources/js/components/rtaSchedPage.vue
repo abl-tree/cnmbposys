@@ -133,7 +133,7 @@
               <div
                 v-for="(agent,index) in local.agents.paginated.data"
                 v-bind:key="agent.id"
-                @click="local.agents.selected_index=index"
+                @click="(local.agents.selected_index=index),fetchAgentSched((local.agents.search!=''?local.agents.search_array[index].id:local.agents.array[index].id))"
                 class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p"
               >
                 <div class="peer mR-5">
@@ -261,7 +261,7 @@
                   <button
                     class="btn btn-danger bdrs-50p p-15 lh-0"
                     type="button"
-                    @click="(form.schedule.action=='create'),showModal('schedule')"
+                    @click="(form.schedule.action=='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),showModal('schedule')"
                   >
                     <i class="ti-plus"></i>
                   </button>
@@ -282,7 +282,7 @@
       <!-- Modal -->
       <!-- Modal -->
       <!-- Schedule Form Modal -->
-      <!-- <modal name="schedule" :pivotY="0.2" :scrollable="true" height="auto">
+      <modal name="schedule" :pivotY="0.2" :scrollable="true" height="auto">
         <div class="layer">
           <div class="e-modal-header bd">
             <h5 style="margin-bottom:0px">Schedule</h5>
@@ -294,20 +294,18 @@
                   <div class="col">
                     <div class="form-group">
                       <label for="exampleFormControlSelect1">Event</label>
-                      <select class="form-control" v-model="form.title">
-                        <option
-                          v-for="option in titleOptions"
-                          :key="option.id"
-                          :value="option.id"
-                        >{{option.title}}</option>
-                      </select>
+                      <model-select
+                        placeholder="Event"
+                        :options="form.schedule.select_option.title"
+                        v-model="form.schedule.title"
+                      ></model-select>
                     </div>
                   </div>
                   <div class="col">
                     <label>Date</label>
                     <date-time-picker
                       class="s-modal"
-                      v-model="form.event"
+                      v-model="form.schedule.event"
                       range-mode
                       overlay-background
                       color="red"
@@ -322,7 +320,7 @@
                     <label>Time IN</label>
                     <date-time-picker
                       class="s-modal"
-                      v-model="form.time_in"
+                      v-model="form.schedule.time_in"
                       formatted="HH:mm"
                       format="HH:mm"
                       time-format="HH:mm"
@@ -336,7 +334,7 @@
                   <div class="col">
                     <label>Hours</label>
                     <date-time-picker
-                      v-model="form.hours"
+                      v-model="form.schedule.hours"
                       formatted="HH:mm"
                       format="HH:mm"
                       time-format="HH:mm"
@@ -364,13 +362,17 @@
                     class="btn btn-secondary"
                     @click="hideModal('schedule')"
                   >Close</button>
-                  <button type="button" class="btn btn-danger" @click="">Confirm</button>
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    @click="(form.schedule.title!='' && form.schedule.event.start!='' && form.schedule.time_in !='' && form.schedule.hours!='' ? storeSched():formValidationError())"
+                  >Confirm</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </modal>-->
+      </modal>
 
       <!-- event -->
       <modal name="event" :pivotY="0.2" :scrollable="true" width="300px" height="auto">
@@ -474,7 +476,19 @@
   overflow: hidden;
   background-color: #bdbdbd;
 }
+.fc-view-month .fc-event,
+.fc-view-agendaWeek .fc-event,
+.fc-content {
+  font-size: 0;
+  overflow: hidden;
+  height: 5px;
+}
 
+.fc-view-agendaWeek .fc-event-vert {
+  font-size: 0;
+  overflow: hidden;
+  width: 5px !important;
+}
 .loader-15:before {
   display: block;
   position: absolute;
@@ -537,10 +551,11 @@
 import moment from "moment";
 import { BasicSelect } from "vue-search-select";
 import { Compact } from "vue-color";
+import { ModelSelect } from "vue-search-select";
 
 export default {
   props: ["userId"],
-  components: { BasicSelect, "compact-picker": Compact },
+  components: { BasicSelect, "compact-picker": Compact, ModelSelect },
   mounted() {
     this.fetchTableObject("event");
     this.fetchAgentList();
@@ -558,63 +573,63 @@ export default {
         },
         form: {
           calendar: {
-            endpoints: {}
+            endpoints: {
+              retreive: "/api/v1/schedules/agents"
+            }
           }
         },
         calendar: {
-          events: [
-            {
-              id: 1,
-              start: "2019-04-10 00:00:00",
-              end: "2019-04-10 11:00:00",
-              title: "WorkTWork",
-              color: "purple"
-            },
-            {
-              id: 3,
-              start: "2019-04-10 12:00:00",
-              end: "2019-04-10 20:00:00",
-              title: "HR Meeting",
-              color: "Maroon"
-            }
-          ],
+          events: [],
           config: {
             eventClick: event => {
               console.log(event);
-              this.form.edit = true;
-              this.form.label = "Edit Schedule";
-              this.form.delete_btn = true;
-              this.scheduleTitleOptions();
-              let pageurl = "/api/v1/schedules/fetch/" + event.id;
-              let fetched_event = "";
-              fetch(pageurl)
-                .then(res => res.json())
-                .then(res => {
-                  // return res.meta.agent_schedule;
-                  let temp = res.meta.agent_schedule;
-                  this.form.title = temp.title.id;
-                  this.form.id = temp.id;
-                })
-                .catch(err => console.log(err));
-              // this.form.title = fetched_event.title.id;
-              this.form.event.start = event.start;
-              this.form.time_in =
-                event.start._i.split(" ")[1].split(":")[0] +
-                ":" +
-                event.start._i.split(" ")[1].split(":")[1];
-              let duration = moment.duration(event.end.diff(event.start));
-              if (duration._data.minutes == 0) {
-                this.form.hours = duration._data.hours + ":00";
-              } else {
-                this.form.hours =
-                  duration._data.hours + ":" + duration._data.minutes;
-              }
+              //   this.form.edit = true;
+              //   this.form.label = "Edit Schedule";
+              //   this.form.delete_btn = true;
+              //   this.scheduleTitleOptions();
+              //   let pageurl = "/api/v1/schedules/fetch/" + event.id;
+              //   let fetched_event = "";
+              //   fetch(pageurl)
+              //     .then(res => res.json())
+              //     .then(res => {
+              //       // return res.meta.agent_schedule;
+              //       let temp = res.meta.agent_schedule;
+              //       this.form.title = temp.title.id;
+              //       this.form.id = temp.id;
+              //     })
+              //     .catch(err => console.log(err));
+              //   // this.form.title = fetched_event.title.id;
+              //   this.form.event.start = event.start;
+              //   this.form.time_in =
+              //     event.start._i.split(" ")[1].split(":")[0] +
+              //     ":" +
+              //     event.start._i.split(" ")[1].split(":")[1];
+              //   let duration = moment.duration(event.end.diff(event.start));
+              //   if (duration._data.minutes == 0) {
+              //     this.form.hours = duration._data.hours + ":00";
+              //   } else {
+              //     this.form.hours =
+              //       duration._data.hours + ":" + duration._data.minutes;
+              //   }
             },
-            eventRender: function(event, element) {
-              element.attr({
-                "data-toggle": "modal",
-                "data-target": "#cu-schedule-modal"
-              });
+
+            eventRender(event, element) {
+              if (event != null) {
+                var etitle = event.title,
+                  start = moment(
+                    event.start._i.split(" ")[1],
+                    "HH:mm:ss"
+                  ).format("hh:mm a"),
+                  end = moment(event.end._i.split(" ")[1], "HH:mm:ss").format(
+                    "hh:mm a"
+                  );
+
+                element.attr({
+                  "data-toggle": "tooltip",
+                  "data-placement": "top",
+                  title: etitle + " " + start + " to " + end
+                });
+              }
             },
             defaultView: "listMonth",
             header: {
@@ -655,14 +670,20 @@ export default {
         total_result: obj.length,
         total_pages: total_pages
       };
+      this.fetchAgentSched(
+        this.local.agents.paginated.data[this.local.agents.selected_index].id
+      );
       console.log(this.local.agents.paginated);
     },
-    fetchAgent: function(id) {
+    fetchAgentSched: function(id) {
+      this.local.calendar.events = [];
       let pageurl = "/api/v1/schedules/agents/" + id;
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          // this.local.calendar.events = res;
+          if (!this.isEmpty(res.meta.agent.calendar.events)) {
+            this.local.calendar.events = res.meta.agent.calendar.events;
+          }
         })
         .catch(err => console.log(err));
     },
@@ -697,6 +718,71 @@ export default {
       }
       return dateArray;
       // console.log(dateArray);
+    },
+    storeSched: function() {
+      //add something
+      let id = this.local.agents.paginated.data[
+        this.local.agents.selected_index
+      ].id;
+      let pageurl = "";
+      let form = this.form.schedule;
+      var obj = [{ auth_id: this.user_id }];
+
+      if (form.action == "create") {
+        pageurl = "/api/v1/schedules/create/bulk/";
+        let dates = [];
+        if (form.event.end == null) {
+          dates.push(moment(moment(form.event.start)).format("YYYY-MM-DD"));
+        } else {
+          dates = this.getDates(form.event.start, form.event.end);
+        }
+        $.each(dates, function(k, v) {
+          let start = v + " " + form.time_in + ":00";
+          let hr = form.hours.split(":");
+          let obj_element = {
+            title_id: form.title,
+            user_id: id,
+            start_event: start,
+            end_event:
+              form.hours == "00:00"
+                ? moment(
+                    moment(start)
+                      .add("24", "h")
+                      .toDate()
+                  ).format("YYYY-MM-DD HH:mm:ss")
+                : moment(
+                    moment(start)
+                      .add(hr[0], "h")
+                      .add(hr[1], "m")
+                      .toDate()
+                  ).format("YYYY-MM-DD HH:mm:ss")
+          };
+          obj.push(obj_element);
+        });
+      } else if (form.action == "update") {
+        pageurl = "/api/v1/schedules/update/" + this.form.schedule.schedule_id;
+        let id = this.local.agents.paginated.data[
+          this.local.agents.selected_index
+        ].id;
+      }
+      console.log(pageurl);
+      console.log(obj);
+
+      fetch(pageurl, {
+        method: "post",
+        body: JSON.stringify(obj),
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          this.hideModal("schedule");
+          this.notify("success", form.action);
+          this.fetchAgentSched(id);
+        })
+        .catch(err => console.log(err));
     }
   }
 };

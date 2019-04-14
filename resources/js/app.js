@@ -14,7 +14,9 @@ import VPopover from "vue-js-popover";
 Vue.use(VPopover, {
     tooltip: true
 });
-
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
 Vue.mixin({
     data() {
         return {
@@ -77,6 +79,7 @@ Vue.mixin({
                     issued_incident_report: "/api/v1/reports/create",
                     event: "/api/v1/events/create",
                     incident_report_response: '/api/v1/user_response',
+                    schedule: ''
                 },
                 table: {
                     sanction_level: "/api/v1/sanction_level/sanction_levels",
@@ -85,12 +88,14 @@ Vue.mixin({
                     issued_incident_report: "/api/v1/reports/user_filed_ir/",
                     event: "/api/v1/events",
                     agent: "/api/v1/agents",
-                    agent_search: "/api/v1/agents/search"
+                    agent_search: "/api/v1/agents/search",
+                    rta_scheduler: '/api/schedules/agents/'
                 },
                 select: {
                     sanction_level: "/api/v1/sanction_level/select_sanction_levels",
                     sanction_type: "/api/v1/sanction_type/select_sanction_types",
-                    child_list: "/api/v1/reports/select_all_users/1" //TEMPORARY ID PARAM
+                    child_list: "/api/v1/reports/select_all_users/1", //TEMPORARY ID PARAM
+                    schedule_title: "/api/v1/events/select", //TEMPORARY ID PARAM
                 }
             },
             form: {
@@ -151,14 +156,18 @@ Vue.mixin({
                 schedule: {
                     action: 'create',
                     id: '',
+                    schedule_id: '', //FOR UPDATE
                     user: '',
-                    title_id: '',
+                    title: '',
                     event: {
                         start: '',
                         end: ''
                     },
                     time_in: '',
-                    hours: ''
+                    hours: '',
+                    select_option: {
+                        title: []
+                    }
                 }
             },
             table: {
@@ -187,6 +196,10 @@ Vue.mixin({
                     fetch_status: 'fetching'
                 },
                 agent_search: {
+                    data: [],
+                    fetch_status: 'fetching'
+                },
+                calendar: {
                     data: [],
                     fetch_status: 'fetching'
                 }
@@ -335,7 +348,7 @@ Vue.mixin({
         }
     }
 });
-
+import "fullcalendar/dist/fullcalendar.min.css";
 import FullCalendar from "vue-full-calendar";
 Vue.use(FullCalendar);
 
@@ -392,6 +405,8 @@ Vue.use(VModal);
 
 import Notifications from "vue-notification";
 import velocity from "velocity-animate";
+
+
 
 Vue.use(Notifications, {
     velocity

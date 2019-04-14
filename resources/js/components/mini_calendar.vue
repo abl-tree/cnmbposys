@@ -1,15 +1,6 @@
 <template>
   <div class="mini-calendar">
-    <full-calendar
-      :events="[
-        {title:'Work',color:'red',start:'2019/04/10 00:00:00',end:'2019/04/10 10:00:00',tip:'Work'},
-        {title:'Work',color:'red',start:'2019/04/12 00:00:00',end:'2019/04/12 10:00:00'},
-        {title:'Work',color:'red',start:'2019/04/13 00:00:00',end:'2019/04/13 10:00:00'},
-        {title:'Work',color:'red',start:'2019/04/14 00:00:00',end:'2019/04/14 10:00:00'},
-        {title:'Vacation Leave',color:'yellow',start:'2019/04/15 00:00:00',end:'2019/04/23 10:00:00'},
-    ]"
-      :config="config"
-    ></full-calendar>
+    <full-calendar :events="local.calendar.events" :config="config"></full-calendar>
   </div>
 </template>
 <style>
@@ -83,7 +74,29 @@ export default {
   props: ["userId"],
   data() {
     return {
+      local: {
+        calendar: {
+          events: []
+        }
+      },
       config: {
+        eventRender(event, element) {
+          if (event != null) {
+            var etitle = event.title,
+              start = moment(event.start._i.split(" ")[1], "HH:mm:ss").format(
+                "hh:mm a"
+              ),
+              end = moment(event.end._i.split(" ")[1], "HH:mm:ss").format(
+                "hh:mm a"
+              );
+
+            element.attr({
+              "data-toggle": "tooltip",
+              "data-placement": "top",
+              title: etitle + " " + start + " to " + end
+            });
+          }
+        },
         defaultView: "month",
         header: {
           left: "title",
@@ -97,14 +110,26 @@ export default {
         },
         buttonText: {
           today: "T"
-        },
-        eventMouseover: event => {
-          alert(event.title);
         }
       }
     };
   },
-  mounted() {},
-  methods: {}
+  mounted() {
+    // this.fetchAgentSched() uncomment this
+  },
+  methods: {
+    fetchAgentSched: function(id) {
+      this.local.calendar.events = [];
+      let pageurl = "/api/v1/schedules/agents/" + id;
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          if (!this.isEmpty(res.meta.agent.calendar.events)) {
+            this.local.calendar.events = res.meta.agent.calendar.events;
+          }
+        })
+        .catch(err => console.log(err));
+    }
+  }
 };
 </script>
