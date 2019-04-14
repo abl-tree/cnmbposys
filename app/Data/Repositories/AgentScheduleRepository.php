@@ -18,6 +18,7 @@ use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\BaseRepository;
 use App\Services\ExcelDateService;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use DB;
 use App\Data\Repositories\LogsRepository;
 
@@ -526,11 +527,17 @@ class AgentScheduleRepository extends BaseRepository
 
         } else if(isset($data['filter']) && $data['filter'] === 'sparkline') {
 
-            $now = Carbon::now()->addDays(1)->format('Y-m-d');
+            $sparkline = array();
 
-            $previous = Carbon::now()->subDays(6)->format('Y-m-d');
+            $now = Carbon::now();
 
-            $title = "Sparkline. ".$now." ".$previous;
+            $previous = Carbon::now()->subDays(9)->format('Y-m-d');
+            
+            $period = CarbonPeriod::create($previous, $now->format('Y-m-d'))->toArray();
+
+            $title = "Sparkline (".$previous." - ".$now.")";
+
+            $now = $now->addDays(1)->format('Y-m-d');
 
             $data['columns'] = ['id', 'start_event', DB::raw('count(*) as count')];
 
@@ -553,7 +560,34 @@ class AgentScheduleRepository extends BaseRepository
                         ->only(['date', 'count'])
                         ->all();
                 });
+
+                foreach ($period as $key => $date) {
+                    $count = 0;
+
+                    foreach ($result as $key => $value) {
+                        if(Carbon::parse($value['date']['ymd'])->equalTo($date)) {
+                            $count = $value['count'];
+
+                            break;
+                        }
+                    }
+
+                    array_push($sparkline, $count);
+                }
+
+                $result = $sparkline;
+            } else {
+                $result = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             }
+
+            return $this->setResponse([
+                "code" => 200,
+                "title" => $title,
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
 
         } else {
 
