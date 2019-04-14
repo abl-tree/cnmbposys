@@ -78,8 +78,21 @@ class AgentScheduleRepository extends BaseRepository
     public function bulkScheduleInsertion($data = [])
     {
         $failed = [];
-        $auth_id = $data['auth_id'];
-        unset($data['auth_id']);
+
+        if (isset ($data[0]['auth_id'])) {
+            $auth_id = $data[0]['auth_id'];
+            unset($data[0]);
+        }
+        if (isset ($data['auth_id'])){
+            $auth_id = $data['auth_id'];
+            unset($data['auth_id']);
+        }
+        if(!isset($auth_id)){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "No user was logged in.",
+            ]);
+        }
         foreach($data as $key => $save){
 
            $result = $this->defineAgentSchedule($save);
