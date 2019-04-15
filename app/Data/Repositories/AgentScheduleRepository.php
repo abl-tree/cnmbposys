@@ -108,7 +108,9 @@ class AgentScheduleRepository extends BaseRepository
                    !is_numeric($auth_id) ||
                    $auth_id <= 0 )
                {
-                   if (!$this->user_info->find($auth_id)) {
+                   $logged_in_user = $this->user_info->find($auth_id);
+
+                   if (!$logged_in_user) {
                        return $this->setResponse([
                            'code'  => 500,
                            'title' => "User ID is not available.",
@@ -117,7 +119,7 @@ class AgentScheduleRepository extends BaseRepository
                    $logged_data = [
                        "user_id" => $auth_id,
                        "action" => "POST",
-                       "affected_data" => "Successfully created a schedule for 'email' on 'start_event' to 'end event' via excel upload for USER NO. " . $auth_id
+                       "affected_data" => "Successfully created a schedule for ".$save['email']." on ".$save['start_event']." to ".$save['end_event']." via excel upload by ".$logged_in_user->lastname.", ".$logged_in_user->firstname." ".$logged_in_user->middlename
                    ];
                    $this->logs->logsInputCheck($logged_data);
                }
