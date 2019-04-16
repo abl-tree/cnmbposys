@@ -106,7 +106,7 @@ class AgentScheduleRepository extends BaseRepository
            else {
                if ( isset($auth_id) ||
                    !is_numeric($auth_id) ||
-                   $auth_id <= 0 )
+                   $auth_id <= 0 ) 
                {
                    $logged_in_user = $this->user_info->find($auth_id);
 
