@@ -685,9 +685,9 @@ class AgentScheduleRepository extends BaseRepository
             $result = $sparkline;
         } 
 
-        // if(!$result) {
-        //     $result = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        // }
+        if(!$result) {
+            $result = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        }
 
         return $result;
     }
