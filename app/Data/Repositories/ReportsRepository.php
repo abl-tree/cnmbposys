@@ -5,6 +5,7 @@ use App\Data\Models\UserInfo;
 use App\Data\Models\Users;
 use App\Data\Models\SelectUsers;
 use App\User;
+use App\Data\Repositories\LogsRepository;
 use App\Data\Models\IncidentReport;
 use App\Data\Models\UserReport;
 use App\Data\Models\SanctionType;
@@ -28,7 +29,8 @@ class ReportsRepository extends BaseRepository
         $sanction_types,
         $sanction_levels,
         $report_response,
-        $sanction_level;
+        $sanction_level,
+        $logs;
 
     public function __construct(
         UserInfo $user_info,
@@ -41,7 +43,8 @@ class ReportsRepository extends BaseRepository
         SanctionLevels $sanction_levels,
         ReportResponse $report_response,
         UserReport $user_reports,
-        IncidentReport $incident_report
+        IncidentReport $incident_report,
+        LogsRepository $logs_repo
     ) {
         $this->user_info = $user_info;
         $this->users = $users;
@@ -54,6 +57,7 @@ class ReportsRepository extends BaseRepository
         $this->sanction_types = $sanction_types;
         $this->report_response = $report_response;
         $this->incident_report = $incident_report;
+        $this->logs = $logs_repo;
     } 
 
     public function getAllReports($data = [])
@@ -154,7 +158,7 @@ class ReportsRepository extends BaseRepository
                 if (!$does_exist) {
                     return $this->setResponse([
                         'code'  => 500,
-                        'title' => 'Request Schedule does not exist.',
+                        'title' => 'Request IR does not exist.',
                     ]);
                 }
             }
@@ -168,13 +172,23 @@ class ReportsRepository extends BaseRepository
                     ]);
                 }
             }
-        }
-           
 
+        }
+        
             if (isset($data['id'])) {
                 $reports = $this->user_reports->find($data['id']);
             } else{
                 $reports = $this->user_reports->init($this->user_reports->pullFillable($data));
+                $filed_by = $this->user->find($data['filed_by']);
+                $filed_to = $this->user->find($data['user_reports_id']);
+                $sanctiont = $this->sanction_type->find($data['sanction_type_id']);
+                $sanctionl = $this->sanction_level->find($data['sanction_level_id']);
+                $logged_data = [
+                    "user_id" => $data['filed_by'],
+                    "action" => "POST",
+                    "affected_data" => $filed_by->full_name."[".$filed_by->access->name."] Filed an Incident Report to ".$filed_to->full_name."[".$filed_to->access->name."] with a Sanction type of ".$sanctiont->text." and a Sanction Level of ".$sanctionl->text."."
+                ];
+                $this->logs->logsInputCheck($logged_data);
             }
             
            
@@ -192,7 +206,7 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully defined an agent schedule.",
+            "title"      => "Successfully Added an IR.",
             "parameters" => $reports,
         ]);
         
@@ -643,7 +657,7 @@ class ReportsRepository extends BaseRepository
     {
         $meta_index = "all_users";
         $parameters = [];
-        $count      = 0;
+        $count      = 0; 
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {

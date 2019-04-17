@@ -69,7 +69,7 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
-        $arr['auth_id'] = $data['id'];
+        $arr['auth_id'] = $data['auth_id'];
         $result = $this->bulkScheduleInsertion($arr);
         return $result;
 
@@ -78,11 +78,24 @@ class AgentScheduleRepository extends BaseRepository
     public function bulkScheduleInsertion($data = [])
     {
         $failed = [];
-        $auth_id = $data['auth_id'];
-        unset($data['auth_id']);
-        foreach($data as $key => $save){
 
-           $result = $this->defineAgentSchedule($save);
+        if (isset ($data[0]['auth_id'])) {
+            $auth_id = $data[0]['auth_id'];
+            unset($data[0]);
+        }
+        if (isset ($data['auth_id'])){
+            $auth_id = $data['auth_id'];
+            unset($data['auth_id']);
+        }
+        if(!isset($auth_id)){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "No user was logged in.",
+            ]);
+        }
+        foreach($data as $key => $save){
+            $save['auth_id'] = $auth_id;
+            $result = $this->defineAgentSchedule($save);
             // logs POST data
 
            if($result->code != 200){
@@ -90,25 +103,6 @@ class AgentScheduleRepository extends BaseRepository
                unset($data[$key]);
            }
 
-           else {
-               if ( isset($auth_id) ||
-                   !is_numeric($auth_id) ||
-                   $auth_id <= 0 )
-               {
-                   if (!$this->user_info->find($auth_id)) {
-                       return $this->setResponse([
-                           'code'  => 500,
-                           'title' => "User ID is not available.",
-                       ]);
-                   }
-                   $logged_data = [
-                       "user_id" => $auth_id,
-                       "action" => "POST",
-                       "affected_data" => "Successfully created a schedule for 'email' on 'start_event' to 'end event' via excel upload for USER NO. " . $auth_id
-                   ];
-                   $this->logs->logsInputCheck($logged_data);
-               }
-           }
         }
 
         $result->meta = [
@@ -127,6 +121,8 @@ class AgentScheduleRepository extends BaseRepository
     public function defineAgentSchedule($data = [])
     {
         // data validation
+        $auth_id = $data['auth_id'];
+        unset($data['auth_id']);
         if (!isset($data['id'])) {
 
             if (!isset($data['user_id']) ||
@@ -225,6 +221,25 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
+        if ( isset($auth_id) ||
+            !is_numeric($auth_id) ||
+            $auth_id <= 0 )
+        {
+            $logged_in_user = $this->user->find($auth_id);
+            $current_employee = $this->user->find($data['user_id']);
+            if (!$logged_in_user) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "User ID is not available.",
+                ]);
+            }
+            $logged_data = [
+                "user_id" => $auth_id,
+                "action" => "POST",
+                "affected_data" => "Successfully created a schedule for ".$current_employee->full_name."[".$current_employee->access->name."] on ".$data['start_event']." to ".$data['end_event']." via excel upload by ".$logged_in_user->full_name." [".$logged_in_user->access->name."]."
+            ];
+            $this->logs->logsInputCheck($logged_data);
+        }
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully defined an agent schedule.",
