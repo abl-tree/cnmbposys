@@ -131,6 +131,7 @@ class ReportsRepository extends BaseRepository
                     'title' => "User report ID is not set.",
                 ]);
             }
+            
 
             if (!isset($data['filed_by'])) {
                 return $this->setResponse([
@@ -162,6 +163,12 @@ class ReportsRepository extends BaseRepository
                     ]);
                 }
             }
+            if(!isset($data['auth_id'])){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "No user was logged in.",
+                ]);
+            }
             if (isset($data['user_reports_id'])) {
                 $user_reports_id = $this->user_reports->find($data['user_reports_id']);
     
@@ -177,6 +184,13 @@ class ReportsRepository extends BaseRepository
         
             if (isset($data['id'])) {
                 $reports = $this->user_reports->find($data['id']);
+                $auth = $this->user->find($data['auth_id']);
+                $logged_data = [
+                    "user_id" => $data['auth_id'],
+                    "action" => "Update",
+                    "affected_data" => $auth->full_name."[".$auth->access->name."] Updated the Incident Report filed by  ".$reports->issued_by->full_name."[".$reports->issued_by->position."] to ".$reports->issued_to->full_name."[".$reports->issued_to->position."]"
+                ];
+                $this->logs->logsInputCheck($logged_data);
             } else{
                 $reports = $this->user_reports->init($this->user_reports->pullFillable($data));
                 $filed_by = $this->user->find($data['filed_by']);
@@ -185,7 +199,7 @@ class ReportsRepository extends BaseRepository
                 $sanctionl = $this->sanction_level->find($data['sanction_level_id']);
                 $logged_data = [
                     "user_id" => $data['filed_by'],
-                    "action" => "POST",
+                    "action" => "Post",
                     "affected_data" => $filed_by->full_name."[".$filed_by->access->name."] Filed an Incident Report to ".$filed_to->full_name."[".$filed_to->access->name."] with a Sanction type of ".$sanctiont->text." and a Sanction Level of ".$sanctionl->text."."
                 ];
                 $this->logs->logsInputCheck($logged_data);
@@ -206,23 +220,32 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Added an IR.",
-            "parameters" => $reports,
+            "title"      => "Successfully Added/Updated an IR.",
+            "meta"        => [
+                "data" => $reports,
+                "logs" => $logged_data
+            ]
         ]);
         
     }
 
     public function deleteReport($data = [])
     {
-        $record = $this->user_reports->find($data['id']);
-
+        $record = $this->user_reports->find($data['id']);   
+        $auth = $this->user->find($data['auth_id']);
+        if(!isset($auth)){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "No user was logged in.",
+            ]);
+        }
         if (!$record) {
             return $this->setResponse([
                 "code"        => 404,
                 "title"       => "Incident Report not found"
             ]);
         }
-
+        $filed_to = $this->user->find($record->issued_to->id);    
         if (!$record->delete()) {
             return $this->setResponse([
                 "code"    => 500,
@@ -234,14 +257,26 @@ class ReportsRepository extends BaseRepository
                     'schedule_id' => $data['id']
                 ]
             ]);
+        }else{
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Delete",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Deleted an Incident Report filed to ".$filed_to->full_name."[".$filed_to->access->name."]."
+            ];
+            $this->logs->logsInputCheck($logged_data);
+    
         }
-
+        
         return $this->setResponse([
             "code"        => 200,
             "title"       => "Incident Report deleted",
             "description" => "Incident Report deleted successfully.",
-            "parameters"        => [
-                "schedule_id" => $data['id']
+            "meta"        => [
+                "data" => $record,
+                'logs' => $logged_data
+            ],
+            "parameters" => [
+                'report_id' => $data['id']
             ]
         ]);
 
@@ -250,7 +285,13 @@ class ReportsRepository extends BaseRepository
     public function deleteStype($data = [])
     {
         $record = $this->sanction_type->find($data['id']);
-
+        $auth = $this->user->find($data['auth_id']);
+        if(!isset($auth)){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "No user was logged in.",
+            ]);
+        }
         if (!$record) {
             return $this->setResponse([
                 "code"        => 404,
@@ -269,14 +310,26 @@ class ReportsRepository extends BaseRepository
                     'sanction_id' => $data['id']
                 ]
             ]);
+        }else{
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Delete",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Deleted a Sanction Type [".$record->text."]"
+            ];
+            $this->logs->logsInputCheck($logged_data);
+    
         }
 
         return $this->setResponse([
             "code"        => 200,
             "title"       => "Sanction Type deleted",
             "description" => "Sanction Type deleted successfully.",
-            "parameters"        => [
-                "sanction_id" => $data['id']
+            "meta" => [
+                'data' => $record,
+                'logs' => $logged_data
+            ],
+            "parameters" => [
+                'sanction_id' => $data['id']
             ]
         ]);
 
@@ -285,7 +338,13 @@ class ReportsRepository extends BaseRepository
     public function deleteSlevel($data = [])
     {
         $record = $this->sanction_level->find($data['id']);
-
+        $auth = $this->user->find($data['auth_id']);
+        if(!isset($auth)){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "No user was logged in.",
+            ]);
+        }
         if (!$record) {
             return $this->setResponse([
                 "code"        => 404,
@@ -304,12 +363,25 @@ class ReportsRepository extends BaseRepository
                     'sanction_id' => $data['id']
                 ]
             ]);
+        }else{
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Delete",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Deleted a Sanction Level [".$record->text."]"
+            ];
+            $this->logs->logsInputCheck($logged_data);
+    
         }
+
 
         return $this->setResponse([
             "code"        => 200,
             "title"       => "Sanction Level deleted",
             "description" => "Sanction Level deleted successfully.",
+            "meta"        => [
+                "data" => $record,
+                "logs" => $logged_data
+            ],
             "parameters"        => [
                 "sanction_id" => $data['id']
             ]
@@ -381,6 +453,16 @@ class ReportsRepository extends BaseRepository
 
      public function addSanctionType($data = [])
     {
+        $auth = $this->user->find($data['auth_id']);
+        $sanction;
+        $param=null;
+        $title;
+        if (!isset($data['auth_id'])) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "No user was logged in.",
+            ]);
+        }
         // data validation
         if (!isset($data['id'])) {
             if (!isset($data['type_number'])) {
@@ -410,9 +492,25 @@ class ReportsRepository extends BaseRepository
 
         if (isset($data['id'])) {
             $sanctionType = $this->sanction_type->find($data['id']);
+            $sanction = $sanctionType->type_description;
             $sanctionType->save();
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Update",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Updated a Sanction Type from [".$sanction."] to [".$data['type_description']."]."
+            ];
+            $this->logs->logsInputCheck($logged_data);
+            $param=$data['id'];
+            $title="Sucessfully Edited a Sanction Type";
         } else{
             $sanctionType = $this->sanction_type->init($this->sanction_type->pullFillable($data));
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Post",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Added a Sanction Type [".$data['type_description']."]"
+            ];
+            $this->logs->logsInputCheck($logged_data);
+            $title="Successfully Added a Sanction Type";
         }
         
         if (!$sanctionType->save($data)) {
@@ -428,8 +526,12 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Edited a Sanction Type.",
-            "parameters" => $sanctionType,
+            "title"      => $title,
+            "meta"        => [
+                "data" => $sanctionType,
+                "logs" => $logged_data
+            ],
+            "parameters"=>$param
         ]);
         
     }
@@ -437,6 +539,10 @@ class ReportsRepository extends BaseRepository
 
  public function addSanctionLevel($data = [])
     {
+        $auth = $this->user->find($data['auth_id']);
+        $sanction;
+        $param=null;
+        $title;
         // data validation
         if (!isset($data['id'])) {
             if (!isset($data['level_number'])) {
@@ -465,9 +571,25 @@ class ReportsRepository extends BaseRepository
         }
         if (isset($data['id'])) {
             $sanctionLevel = $this->sanction_level->find($data['id']);
+            $sanction = $sanctionLevel->level_description;
             $sanctionLevel->save();
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Update",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Updated a Sanction Level from [".$sanction."] to [".$data['level_description']."]."
+            ];
+            $this->logs->logsInputCheck($logged_data);
+            $param=$data['id'];
+            $title= "Successfully Edited a Sanction Level.";
         } else{
             $sanctionLevel = $this->sanction_level->init($this->sanction_level->pullFillable($data));
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Post",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Added a Sanction Level [".$data['level_description']."]"
+            ];
+            $this->logs->logsInputCheck($logged_data);
+            $title= "Successfully Added a Sanction Level.";
         }
         
             
@@ -486,8 +608,12 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Edited a Sanction Level.",
-            "parameters" => $sanctionLevel,
+            "title"      => $title,
+            "meta"        => [
+                "data" => $sanctionLevel,
+                "logs" => $logged_data
+            ],
+            "parameters"=>$param
         ]);
         
     }
