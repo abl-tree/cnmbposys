@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:60,1',
             'bindings',
+            'post_logs'
         ],
         
     ];
@@ -65,6 +66,7 @@ class Kernel extends HttpKernel
         'loginVerif' => \App\Http\Middleware\loginVerifier::class,
         'pageAccess' => \App\Http\Middleware\pageAccess::class,
         'Role' => \App\Http\Middleware\Role::class,
+        'post_logs' => \App\Http\Middleware\PostLogs::class,
 
     ];
 
