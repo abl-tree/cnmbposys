@@ -197,9 +197,7 @@ class RequestScheduleRepository extends BaseRepository
             "code"        => 200,
             "title"       => "Request schedule deleted",
             "description" => "An request schedule was deleted.",
-            "parameters"        => [
-                "schedule_id" => $data['id']
-            ]
+            "parameters"  => $record
         ]);
 
     }

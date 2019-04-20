@@ -113,7 +113,7 @@ class EventTitleRepository extends BaseRepository
                     "errors" => $record->errors(),
                 ],
                 "parameters" => [
-                    'schedule_id' => $data['id']
+                    'title_id' => $data['id']
                 ]
             ]);
         }
@@ -122,9 +122,7 @@ class EventTitleRepository extends BaseRepository
             "code"        => 200,
             "title"       => "Event title deleted",
             "description" => "An event title was deleted.",
-            "parameters"        => [
-                "schedule_id" => $data['id']
-            ]
+            "parameters"  => $record,
         ]);
 
     }
