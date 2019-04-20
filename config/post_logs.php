@@ -19,7 +19,7 @@ return [
             'slug' => 'Successfully created an event [**event_title**], executed by **logged_name** [**logged_position**]',
         ],
         'update' => [
-            'slug' => 'Successfully created an event with the id [**id**], executed by **logged_name** [**logged_position**]',
+            'slug' => 'Successfully updated an event with the id [**id**], executed by **logged_name** [**logged_position**]',
         ],
         'delete' => [
             'slug' => 'Successfully deleted an event with the id [**id**], executed by **logged_name** [**logged_position**]',
