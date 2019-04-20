@@ -706,4 +706,61 @@ class AgentScheduleRepository extends BaseRepository
 
         return $result;
     }
+
+    public function todaysActivity($data) {
+
+        $result = $this->user;
+        
+        $meta_index = "agent_schedules";
+
+        $sparkline = array();
+
+        $title = "Today's Activity";
+
+        if(isset($data['filter'])) {
+            $parameters = [
+                'filter' => $data['filter']
+            ];
+        } else {
+            $parameters = [];
+        }
+
+        $data['columns'] = ['users.*'];
+        $data['no_all_method'] = true;
+
+        $data['wherehas'] = array([
+            'relation' => 'access',
+            'target' => 'code',
+            'value' => 'representative_op'
+        ]);
+
+        $data['relations'] = array('schedule' => function($query){
+            $query->where(DB::raw('date(start_event)'), Carbon::now()->format('Y-m-d'));
+            $query->orWhere('end_event', '>', Carbon::now());
+        });
+
+        $result = $this->fetchGeneric($data, $result);
+
+        if ($result == null) {
+            return $this->setResponse([
+                "code" => 404,
+                "title" => "No agent schedules are found",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $result->count()
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => $title,
+            "meta" => [
+                $meta_index => $result,
+                "count"     => $result->count()
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
 }
