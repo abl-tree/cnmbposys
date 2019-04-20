@@ -39,7 +39,8 @@ class PostLogs
         $path = $request->getPathInfo();
         $log_data = null;
         $affected_data = null;
-
+        $response_data = $response->getData()->parameters;
+        dd($response_data);
         if($request->method() == 'POST'){
 
             if(strpos($path, 'request_schedules') !== false){
@@ -54,11 +55,17 @@ class PostLogs
                 if(strpos($path, 'update') !== false){
                     $action = 'update';
                     $id = substr($path, strrpos($path, '/') + 1);
+                    $data['start_date'] = $response_data->start_date;
+                    $data['end_date'] = $response_data->end_date;
+                    $target_user = $this->user->find($response_data->applicant);
                     $affected_data = config('post_logs.request_schedules.update.slug');
                 }
                 if(strpos($path, 'delete') !== false){
                     $action = 'delete';
                     $id = substr($path, strrpos($path, '/') + 1);
+                    $data['start_date'] = $response_data->start_date;
+                    $data['end_date'] = $response_data->end_date;
+                    $target_user = $this->user->find($response_data->applicant);
                     $affected_data = config('post_logs.request_schedules.delete.slug');
                 }
             }
@@ -74,11 +81,15 @@ class PostLogs
                 if(strpos($path, 'update') !== false){
                     $action = 'update';
                     $id = substr($path, strrpos($path, '/') + 1);
+                    $data['title'] = $response_data->title;
+                    $data['color'] = $response_data->color;
                     $affected_data = config('post_logs.events.update.slug');
                 }
                 if(strpos($path, 'delete') !== false){
                     $action = 'delete';
                     $id = substr($path, strrpos($path, '/') + 1);
+                    $data['title'] = $response_data->title;
+                    $data['color'] = $response_data->color;
                     $affected_data = config('post_logs.events.delete.slug');
                 }
             }
@@ -109,6 +120,9 @@ class PostLogs
         }
         if(strpos($affected_data, '**event_title**') !== false){
             $affected_data = str_replace("**event_title**", $data['title'], $affected_data);
+        }
+        if(strpos($affected_data, '**color**') !== false){
+            $affected_data = str_replace("**color**", $data['color'], $affected_data);
         }
 
         if($affected_data){
