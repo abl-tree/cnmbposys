@@ -7,10 +7,22 @@ return [
             'slug' => 'Successfully created a request schedule for **target_name** [**target_position**] on **start_date** to **end_date**, executed by **logged_name** [**logged_position**]',
         ],
         'update' => [
-            'slug' => 'Successfully updated a request schedule for **target_name** [**target_position**], executed by **logged_name** [**logged_position**]',
+            'slug' => 'Successfully updated a request schedule with the id [**id**], executed by **logged_name** [**logged_position**]',
         ],
         'delete' => [
-            'slug' => 'Successfully deleted a request schedule for **target_name** [**target_position**], executed by **logged_name** [**logged_position**]',
+            'slug' => 'Successfully deleted a request schedule with the id [**id**], executed by **logged_name** [**logged_position**]',
+        ],
+    ],
+
+    'events' => [
+        'create' => [
+            'slug' => 'Successfully created an event [**event_title**], executed by **logged_name** [**logged_position**]',
+        ],
+        'update' => [
+            'slug' => 'Successfully created an event with the id [**id**], executed by **logged_name** [**logged_position**]',
+        ],
+        'delete' => [
+            'slug' => 'Successfully deleted an event with the id [**id**], executed by **logged_name** [**logged_position**]',
         ],
     ],
 

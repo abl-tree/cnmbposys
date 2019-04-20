@@ -54,18 +54,39 @@ class PostLogs
                 if(strpos($path, 'update') !== false){
                     $action = 'update';
                     $id = substr($path, strrpos($path, '/') + 1);
-                    $target_user = $this->user->find($id);
                     $affected_data = config('post_logs.request_schedules.update.slug');
                 }
                 if(strpos($path, 'delete') !== false){
                     $action = 'delete';
                     $id = substr($path, strrpos($path, '/') + 1);
-                    $target_user = $this->user->find($id);
                     $affected_data = config('post_logs.request_schedules.delete.slug');
                 }
             }
 
+            if(strpos($path, 'events') !== false){
+                $class_name = 'events';
+                $logged_user = $this->user->find($data['auth_id']);
+
+                if(strpos($path, 'create') !== false){
+                    $action = 'create';
+                    $affected_data = config('post_logs.events.create.slug');
+                }
+                if(strpos($path, 'update') !== false){
+                    $action = 'update';
+                    $id = substr($path, strrpos($path, '/') + 1);
+                    $affected_data = config('post_logs.events.update.slug');
+                }
+                if(strpos($path, 'delete') !== false){
+                    $action = 'delete';
+                    $id = substr($path, strrpos($path, '/') + 1);
+                    $affected_data = config('post_logs.events.delete.slug');
+                }
+            }
+
         // common
+        if(strpos($affected_data, '**id**') !== false){
+            $affected_data = str_replace("**id**", $id, $affected_data);
+        }
         if(strpos($affected_data, '**target_name**') !== false){
             $affected_data = str_replace("**target_name**", $target_user->full_name, $affected_data);
         }
@@ -85,6 +106,9 @@ class PostLogs
         }
         if(strpos($affected_data, '**end_date**') !== false){
             $affected_data = str_replace("**end_date**", $data['end_date'], $affected_data);
+        }
+        if(strpos($affected_data, '**event_title**') !== false){
+            $affected_data = str_replace("**event_title**", $data['title'], $affected_data);
         }
 
         if($affected_data){
