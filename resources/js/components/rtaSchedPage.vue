@@ -133,7 +133,7 @@
               <div
                 v-for="(agent,index) in local.agents.paginated.data"
                 v-bind:key="agent.id"
-                @click="(local.agents.selected_index=index),fetchAgentSched((local.agents.search!=''?local.agents.search_array[index].id:local.agents.array[index].id))"
+                @click="(local.agents.selected_index=index)"
                 class="email-list-item peers fxw-nw p-20 bdB bgcH-grey-100 cur-p"
               >
                 <div class="peer mR-5">
@@ -270,7 +270,7 @@
               <div class="bdT">
                 <full-calendar
                   ref="calendar"
-                  :events="local.calendar.events"
+                  :events="(!isEmpty(local.agents.paginated)?local.agents.paginated.data[local.agents.selected_index].calendar.events:[])"
                   :config="local.calendar.config"
                 ></full-calendar>
               </div>
@@ -312,6 +312,7 @@
                       format="YYYY-MM-DD"
                       formatted="ddd D MMM YYYY"
                       label="Select range"
+                      :disabled="form.schedule.action=='update'"
                     />
                   </div>
                 </div>
@@ -351,23 +352,21 @@
           </div>
 
           <div class="e-modal-footer bd">
-            <div style="text-align:right">
-              <div class="peers w-100">
-                <div class="peer peer-greed">
-                  <button v-if="form.delete_btn" type="button" class="btn btn-info">Delete</button>
-                </div>
-                <div class="peer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    @click="hideModal('schedule')"
-                  >Close</button>
-                  <button
-                    type="button"
-                    class="btn btn-danger"
-                    @click="(form.schedule.title!='' && form.schedule.event.start!='' && form.schedule.time_in !='' && form.schedule.hours!='' ? storeSched():formValidationError())"
-                  >Confirm</button>
-                </div>
+            <div class="row">
+              <div class="peer peer-greed text-left pL-20">
+                <button
+                  v-show="form.schedule.action=='update'"
+                  class="btn"
+                  @click="(local.form.delete=true),cudSched()"
+                >Delete</button>
+              </div>
+
+              <div class="peer text-right pR-20">
+                <button class="btn btn-secondary" @click="hideModal('schedule')">Cancel</button>
+                <button
+                  class="btn btn-danger"
+                  @click="(form.schedule.title!='' && form.schedule.event.start!='' && form.schedule.time_in !='' && form.schedule.hours!='' ? cudSched():formValidationError())"
+                >Confirm</button>
               </div>
             </div>
           </div>
@@ -427,6 +426,7 @@
           </div>
         </div>
       </modal>
+      <daily-work-report-modal></daily-work-report-modal>
       <!-- notification -->
       <notifications group="foo" animation-type="velocity" position="bottom right"/>
     </div>
@@ -569,20 +569,67 @@ export default {
           search_array: [],
           per_page: 10,
           selected_index: 0,
-          search: ""
+          search: "",
+          selected_id: ""
         },
         form: {
           calendar: {
             endpoints: {
               retreive: "/api/v1/schedules/agents"
             }
-          }
+          },
+          delete: false
         },
         calendar: {
+          agent_schedule: [],
           events: [],
+          fetch_status: "fetching",
           config: {
             eventClick: event => {
-              console.log(event);
+              console.log(event.start._i);
+              let date_today = new Date(moment().format("YYYY/MM/DD hh:mm:ss"));
+              let event_start_date = new Date(event.start._i);
+
+              if (date_today > event_start_date) {
+                // console.log("DISPLAY WORK REPORT MODAL");
+                this.showModal("daily-work-report-modal");
+              } else {
+                // console.log("DISPLAY EDIT SCHEDULE MODAL");
+                this.showModal("schedule");
+                this.form.schedule.action = "update";
+                this.endpoints.update.schedule =
+                  "/api/v1/schedules/update/" + event.id;
+                this.fetchSelectOptions(
+                  this.endpoints.select.schedule_title,
+                  "schedule",
+                  "title"
+                );
+                this.form.schedule.title = this.table.event.data.event_titles.filter(
+                  index => index.title == event.title
+                )[0].id;
+                // this.form.schedule.title = this.form.schedule.select_option.title.filter(
+                //   index =>
+                //     index.text.trim().toLoweCase() ===
+                //     event.title.trim().toLowerCase()
+                // )[0].id;
+                this.form.schedule.event.start = event.start;
+                this.form.schedule.time_in =
+                  event.start._i.split(" ")[1].split(":")[0] +
+                  ":" +
+                  event.start._i.split(" ")[1].split(":")[1];
+                let duration = moment.duration(event.end.diff(event.start));
+                if (duration._data.minutes == 0) {
+                  this.form.schedule.hours = duration._data.hours + ":00";
+                } else {
+                  this.form.schedule.hours =
+                    duration._data.hours + ":" + duration._data.minutes;
+                }
+                this.endpoints.delete.schedule =
+                  "/api/v1/schedules/delete/" + event.id;
+
+                this.form.schedule.schedule_id = event.id;
+              }
+
               //   this.form.edit = true;
               //   this.form.label = "Edit Schedule";
               //   this.form.delete_btn = true;
@@ -637,7 +684,9 @@ export default {
               center: "",
               right: "today listMonth,month prev,next"
             },
-            nowIndicator: true
+            nowIndicator: true,
+            disableDragging: true,
+            editable: false
           }
         }
       }
@@ -646,7 +695,7 @@ export default {
   methods: {
     // modal Toggle Functions
     fetchAgentList: function() {
-      let pageurl = "/api/v1/agents?sort=email&order=asc";
+      let pageurl = "/api/v1/schedules/agents?sort=email&order=asc";
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
@@ -670,33 +719,30 @@ export default {
         total_result: obj.length,
         total_pages: total_pages
       };
-      this.fetchAgentSched(
-        this.local.agents.paginated.data[this.local.agents.selected_index].id
-      );
       console.log(this.local.agents.paginated);
     },
     fetchAgentSched: function(id) {
-      this.local.calendar.events = [];
       let pageurl = "/api/v1/schedules/agents/" + id;
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
           if (!this.isEmpty(res.meta.agent.calendar.events)) {
-            this.local.calendar.events = res.meta.agent.calendar.events;
+            this.local.agents.paginated.data[
+              this.local.agents.selected_index
+            ].calendar.events = res.meta.agent.calendar.events;
           }
         })
         .catch(err => console.log(err));
     },
     searchAgent: function(query) {
       var obj = [];
-      for (var i = 0; i < this.local.agents.array.length; i++) {
-        if (
-          this.local.agents.array[i].full_name.indexOf(query) !== -1 ||
-          this.local.agents.array[i].email.indexOf(query) !== -1
-        ) {
-          obj.push(this.local.agents.array[i]);
-        }
-      }
+      obj = this.local.agents.array.filter(index =>
+        index.full_name
+          .trim()
+          .toLowerCase()
+          .includes(query.trim().toLowerCase())
+      );
+      console.log(obj);
       if (obj.length > 0) {
         this.local.agents.search_array = obj;
         this.paginate(
@@ -719,54 +765,87 @@ export default {
       return dateArray;
       // console.log(dateArray);
     },
-    storeSched: function() {
+    cudSched: function() {
       //add something
       let id = this.local.agents.paginated.data[
         this.local.agents.selected_index
       ].id;
       let pageurl = "";
       let form = this.form.schedule;
-      var obj = [{ auth_id: this.user_id }];
+      var obj = [{ auth_id: this.userId }];
 
-      if (form.action == "create") {
-        pageurl = "/api/v1/schedules/create/bulk/";
-        let dates = [];
-        if (form.event.end == null) {
-          dates.push(moment(moment(form.event.start)).format("YYYY-MM-DD"));
-        } else {
-          dates = this.getDates(form.event.start, form.event.end);
-        }
-        $.each(dates, function(k, v) {
-          let start = v + " " + form.time_in + ":00";
+      if (this.local.form.delete == true) {
+        this.local.form.delete = false;
+        pageurl = "/api/v1/schedules/delete/" + this.form.schedule.schedule_id;
+      } else {
+        if (form.action == "create") {
+          pageurl = "/api/v1/schedules/create/bulk/";
+          let dates = [];
+          if (form.event.end == null) {
+            dates.push(moment(moment(form.event.start)).format("YYYY-MM-DD"));
+          } else {
+            dates = this.getDates(form.event.start, form.event.end);
+          }
+          $.each(dates, function(k, v) {
+            let start =
+              form.time_in != "" ? v + " " + form.time_in + ":00" : "";
+            let hr = form.hours.split(":");
+            let obj_element = {
+              title_id: form.title,
+              user_id: id,
+              start_event: start,
+              end_event:
+                form.time_in != ""
+                  ? form.hours == "00:00"
+                    ? moment(
+                        moment(start)
+                          .add("24", "h")
+                          .toDate()
+                      ).format("YYYY-MM-DD HH:mm:ss")
+                    : moment(
+                        moment(start)
+                          .add(hr[0], "h")
+                          .add(hr[1], "m")
+                          .toDate()
+                      ).format("YYYY-MM-DD HH:mm:ss")
+                  : ""
+            };
+            obj.push(obj_element);
+          });
+        } else if (form.action == "update") {
+          pageurl =
+            "/api/v1/schedules/update/" + this.form.schedule.schedule_id;
           let hr = form.hours.split(":");
-          let obj_element = {
-            title_id: form.title,
-            user_id: id,
-            start_event: start,
-            end_event:
-              form.hours == "00:00"
-                ? moment(
-                    moment(start)
-                      .add("24", "h")
-                      .toDate()
-                  ).format("YYYY-MM-DD HH:mm:ss")
-                : moment(
-                    moment(start)
-                      .add(hr[0], "h")
-                      .add(hr[1], "m")
-                      .toDate()
-                  ).format("YYYY-MM-DD HH:mm:ss")
-          };
-          obj.push(obj_element);
-        });
-      } else if (form.action == "update") {
-        pageurl = "/api/v1/schedules/update/" + this.form.schedule.schedule_id;
-        let id = this.local.agents.paginated.data[
-          this.local.agents.selected_index
-        ].id;
+          let start =
+              form.time_in == ""
+                ? form.event.start
+                : form.event.start + " " + form.time_in + ":00",
+            end =
+              form.time_in != ""
+                ? form.hours == "00:00"
+                  ? moment(
+                      moment(start)
+                        .add("24", "h")
+                        .toDate()
+                    ).format("YYYY-MM-DD HH:mm:ss")
+                  : moment(
+                      moment(start)
+                        .add(hr[0], "h")
+                        .add(hr[1], "m")
+                        .toDate()
+                    ).format("YYYY-MM-DD HH:mm:ss")
+                : "";
+          obj =
+            // {user_id: this.user_id},
+            {
+              title_id: form.title,
+              user_id: id,
+              start_event: start,
+              end_event: end
+            };
+          console.log(obj);
+        }
       }
-      console.log(pageurl);
-      console.log(obj);
 
       fetch(pageurl, {
         method: "post",

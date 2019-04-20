@@ -64,14 +64,14 @@ Vue.mixin({
                     sanction_level: "",
                     sanction_type: "",
                     issued_incident_report: '',
-
+                    schedule: '',
                 },
                 delete: {
                     event: "",
                     sanction_level: "",
                     sanction_type: "",
                     issued_incident_report: '',
-
+                    schedule: ""
                 },
                 create: {
                     sanction_level: "/api/v1/sanction_level/create",
@@ -236,7 +236,6 @@ Vue.mixin({
                 .then(res => {
                     console.log(res);
                     this.table[tableName].fetch_status = 'fetched';
-
                     if (res.code == 200) {
                         this.table[tableName].data = res.meta;
                     }
@@ -348,6 +347,8 @@ Vue.mixin({
         }
     }
 });
+
+
 import "fullcalendar/dist/fullcalendar.min.css";
 import FullCalendar from "vue-full-calendar";
 Vue.use(FullCalendar);
@@ -395,6 +396,13 @@ Vue.component("mini-calendar", mini_calendar);
 import trackerGraph from "./components/trackerGraph.vue";
 Vue.component("work-graph", trackerGraph);
 
+
+import wr_modal from "./components/dailyWorkReportModal.vue";
+Vue.component("daily-work-report-modal", wr_modal);
+
+import today_activity from "./components/table/today_activity.vue";
+Vue.component("today-activity", today_activity);
+
 // import ZpUI from 'zp-crm-ui'
 import Sparkline from 'vue-sparklines'
 // Vue.use(ZpUI)
@@ -406,6 +414,7 @@ Vue.use(VModal);
 import Notifications from "vue-notification";
 import velocity from "velocity-animate";
 
+////// VUEINIT
 
 
 Vue.use(Notifications, {
@@ -637,6 +646,10 @@ if ($('#hr-dashboard').length) {
 
     $(document).popover(popOverSettings);
 
+    $(document).on('click', '#hierarchy-profile-close', function () {
+        $('#hierarchy-profile-preview').css('display', 'none');
+    });
+
     initialize_employee_table("/refreshEmployeeList");
 
     $(document).on("change", "#status_data", function () {
@@ -763,8 +776,10 @@ if ($('#hr-dashboard').length) {
     }
 
     $(document).on("click", ".view-employee", function () {
-        id = $(this).attr("id");
+        let id = $(this).attr("id");
         $("#profile-edit-button").attr("data-id", id);
+        $('#hierarchy-profile-preview').css('display', '');
+
         prevProfiles.push(id);
         showBenefits = prevProfiles.length;
         $.ajax({
@@ -779,12 +794,13 @@ if ($('#hr-dashboard').length) {
 
                 initialize_employee_table("/updateEmployeeList/" + id);
                 prevButton.prop("disabled", false);
+
             }
         });
     });
 
     $(document).on("click", "#prevProfile", function () {
-        id = prevProfiles[prevProfiles.length - 2];
+        let id = prevProfiles[prevProfiles.length - 2];
         $("#profile-edit-button").attr("data-id", id);
         if (prevProfiles.length > 1) {
             $.ajax({
@@ -1092,7 +1108,6 @@ if ($('#hr-dashboard').length) {
             $("#employee-form-submit")[0].disabled = true;
             $("#employee-form-submit").html("Loading...");
             $("#employee-id").val(id);
-
             fetch_edit_data(id);
             if (portion == "profile") {
                 if (id == 1) {

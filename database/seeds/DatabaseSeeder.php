@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(users::class);
         $this->call(UserBenefitsTableSeeder::class);
         $this->call(AccessLevelHierarchiesTableSeeder::class);
+        $this->call(EventTitleSeeder::class);
     }
 }
