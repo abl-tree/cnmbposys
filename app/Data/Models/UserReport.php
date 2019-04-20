@@ -81,6 +81,5 @@ class UserReport extends BaseModel
         'agent_response' => $this->agentResponse);
         return $obj;
     }
-
 }
 

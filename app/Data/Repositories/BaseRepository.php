@@ -71,6 +71,10 @@ class BaseRepository
             $model = $model->orderBy($data["sort"], $data['order']);
         }
 
+        if( isset( $data['with_count'] ) ){
+            $model = $model->withCount( $data['with_count'] );
+        }
+
         if( isset( $data['relations'] ) ){
             $model = $model->with( $data['relations'] );
         }

@@ -32,4 +32,7 @@ class SanctionType extends BaseModel
         
         return $value;
     }
+
+
+
 }
