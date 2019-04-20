@@ -40,7 +40,7 @@ class PostLogs
         $log_data = null;
         $affected_data = null;
         $response_data = $response->getData()->parameters;
-        dd($response_data);
+        
         if($request->method() == 'POST'){
 
             if(strpos($path, 'request_schedules') !== false){
