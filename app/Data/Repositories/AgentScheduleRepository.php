@@ -717,11 +717,18 @@ class AgentScheduleRepository extends BaseRepository
 
         $title = "Today's Activity";
 
-        if(isset($data['start']) && isset($data['end'])) {
+        if(isset($data['start']) && isset($data['end']) && isset($data['userid'])) {
             $parameters = [
+                'userid' => $data['userid'],
                 'start' => $data['start'],
                 'end' => $data['end']
             ];
+
+            $data['where'] = array([
+                'target' => 'id', 
+                'operator' => '=', 
+                'value' => $data['userid']
+            ]);
         } else {
             $parameters = [];
         }
