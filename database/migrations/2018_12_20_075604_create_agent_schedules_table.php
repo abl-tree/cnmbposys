@@ -16,7 +16,7 @@ class CreateAgentSchedulesTable extends Migration
         Schema::create('agent_schedules', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->string('title');
+            $table->integer('title_id');
             $table->dateTime('start_event');
             $table->dateTime('end_event');
             $table->timestamps();
