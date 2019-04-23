@@ -30,8 +30,7 @@
       <today-activity></today-activity>
     </div>
 
-    <div class="masonry-item col-md-6">
-      <!-- #Todo ==================== -->
+    <!-- <div class="masonry-item col-md-6">
       <div class="bd bgc-white p-20">
         <h6 class="c-grey-900">Request</h6>
         <div class="mT-30">
@@ -66,14 +65,12 @@
       <div>
         <div class="container">
           <div class="row">
-            <!-- Sanction Levels -->
             <sanction-level></sanction-level>
-            <!-- Sanction Types -->
             <sanction-type></sanction-type>
           </div>
         </div>
       </div>
-    </div>
+    </div>-->
 
     <!-- Modals -->
 

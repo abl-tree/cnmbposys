@@ -64,8 +64,8 @@
             <thead>
               <tr>
                 <th class="bdwT-0">Agent</th>
-                <th class="bdwT-0">Supervisor</th>
-                <th class="bdwT-0">Manager</th>
+                <!-- <th class="bdwT-0">Supervisor</th>
+                <th class="bdwT-0">Manager</th>-->
                 <th class="bdwT-0">Schedule</th>
                 <th class="bdwT-0">Attendance</th>
                 <th class="bdwT-0">Log</th>
@@ -75,48 +75,96 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr v-for="datum in table.data" :key="datum.id">
                 <td style="font-size:.95em">
                   <div class="fw-600">
-                    Emmanuel James Eng Lajom
+                    {{datum.full_name}}
                     <span
+                      v-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id==1 && datum.schedule[0].is_working==1 && datum.schedule[0].is_present==1"
                       class="mL-5 text-success fsz-xs"
                       style="cursor:pointer;"
                       data-toogle="tooltip"
                       title="Working"
                     >&#9679;</span>
+
+                    <span
+                      v-else-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id==1 &&  datum.schedule[0].is_present==0"
+                      class="mL-5 c-grey-500 fsz-xs"
+                      style="cursor:pointer;"
+                      data-toogle="tooltip"
+                      title="Absent"
+                    >&#9679;</span>
+
+                    <span
+                      v-else-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id==1 &&  datum.schedule[0].is_working==0 && datum.schedule[0].is_present==1"
+                      class="mL-5 c-blue-500 fsz-xs"
+                      style="cursor:pointer;"
+                      data-toogle="tooltip"
+                      title="Break"
+                    >&#9679;</span>
                   </div>
                   <div>
-                    <i class="ti-email c-grey-400 mR-5"></i>jamesenglajom@gmail.com
+                    <i class="ti-email c-grey-400 mR-5"></i>
+                    {{datum.email}}
                   </div>
                 </td>
-                <td style="font-size:.95em">
+                <!-- <td style="font-size:.95em">
                   <div class="fw-600">The Supervisor</div>
                   <div>
-                    <i class="ti-email c-grey-400 mR-5"></i>supervisor@gmail.com
+                    <i class="ti-email c-grey-400 mR-5"></i>
+                    {{datum.team_leader}}
                   </div>
                 </td>
                 <td style="font-size:.95em">
                   <div class="fw-600">The Operations Manager</div>
                   <div>
-                    <i class="ti-email c-grey-400 mR-5"></i>manger@gmail.com
+                    <i class="ti-email c-grey-400 mR-5"></i>
+                    {{datum.operations_manager}}
                   </div>
-                </td>
-                <td style="font-size:.95em">
+                </td>-->
+                <td
+                  style="font-size:.95em"
+                  v-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id==1"
+                >
                   <div>
-                    08:00am
+                    {{datum.schedule[0].start_event}}
                     <span class="mL-5" style="font-size:0.8em;">IN</span>
                   </div>
                   <div>
-                    04:00pm
+                    {{datum.schedule[0].end_event}}
                     <span class="mL-5" style="font-size:0.8em;">OUT</span>
                   </div>
+                </td>
+                <td
+                  style="font-size:.95em"
+                  v-else-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id==1"
+                >
+                  <div>{{"NO SCHEDULE"}}</div>
+                </td>
+                <td
+                  style="font-size:.95em"
+                  v-else-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id!=1"
+                >
+                  <div>{{"ON LEAVE"}}</div>
                 </td>
                 <td style="font-size:.99em">
                   <div>
                     <span
+                      v-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id ==1 && datum.schedule[0].is_present==1"
                       class="badge badge-pill p-5 bgc-green-100 c-green-800 fw-900 w-100"
                     >PRESENT</span>
+                    <span
+                      v-else-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id == 1 && datum.schedule[0].is_present==0"
+                      class="badge badge-pill p-5 bgc-grey-100 c-grey-800 fw-900 w-100"
+                    >ABSENT</span>
+                    <span
+                      v-else-if="!isEmpty(datum.schedule) && datum.schedule[0].title_id !=1"
+                      class="badge badge-pill p-5 bgc-yellow-100 c-yellow-800 fw-900 w-100"
+                    >datum.schedule[0].title.title</span>
+                    <span
+                      v-else-if="isEmpty(datum.schedule)"
+                      class="badge badge-pill p-5 bgc-grey-100 c-grey-800 fw-900 w-100"
+                    >NO SCHEDULE</span>
                   </div>
                 </td>
                 <td style="font-size:.95em">
@@ -153,7 +201,7 @@
                 </td>
                 <td style="font-size:.99em">buttons here</td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <td style="font-size:.95em">
                   <div class="fw-600">
                     Emmanuel James Eng Lajom 1
@@ -298,7 +346,7 @@
                   </div>
                 </td>
                 <td style="font-size:.99em">buttons here</td>
-              </tr>
+              </tr>-->
             </tbody>
           </table>
         </div>
@@ -341,7 +389,9 @@ export default {
   },
   props: ["userId"],
   mounted() {},
-  created() {},
+  created() {
+    this.fetchTodaysTable();
+  },
   data() {
     return {
       user_id: this.userId,
@@ -349,13 +399,22 @@ export default {
         table_name: "Today's Activity",
         code: "todays_activity",
         tabs: [
-          { tab_name: "All", data: [] },
-          { tab_name: "Present", data: [] },
-          { tab_name: "Tardy", data: [] },
-          { tab_name: "Vacation", data: [] },
-          { tab_name: "Off Duty", data: [] }
+          { tab_name: "All" },
+          { tab_name: "Scheduled" },
+          { tab_name: "Present" },
+          { tab_name: "Tardy" },
+          { tab_name: "Vacation" },
+          { tab_name: "Off Duty" }
         ],
-        selected_tab: 0 //index based
+        selected_tab: 0, //index based,
+        data: {
+          all: [],
+          scheduled: [],
+          present: [],
+          tardy: [],
+          vacation: [],
+          off_duty: []
+        }
       },
       table: {
         data: []
@@ -364,22 +423,19 @@ export default {
   },
   methods: {
     fetchTodaysTable: function() {
-      let pageurl = "/api/schedules/todays_activity";
+      let pageurl = "/api/v1/schedules/todays_activity";
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          table.data = res.meta.agent_schedules;
-          config.tabs.forEach(function(v, i) {
-            v.data = table.data.filter();
-          });
+          this.table.data = res.meta.agent_schedules;
+          let temp = res.meta.agent_schedules;
+          // this.config.data.present = temp.filter(function(present) {
+          //   return present.schedule.time_in != null;
+          // });
         })
         .catch(err => {
           console.log(err);
-          this.table[tableName].fetch_status = "fetched";
         });
-    },
-    checkIfPresent: function(present) {
-      return present.schedule.time_in != null;
     }
   }
 };
