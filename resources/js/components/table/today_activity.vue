@@ -7,20 +7,24 @@
         <h6 class="lh-1">Today's Activity</h6>
       </div>
 
-      <div class="layer p-20 w-100">
-        <span v-for="(tab,index) in config.tabs" :key="tab.id">
-          <input
-            :id="config.code+index"
-            type="radio"
-            class="input-table-tabs"
-            :checked="index==0"
-            :name="config.code"
+      <div class="layer pX-20 w-100">
+        <div class="row pX-20">
+          <div
+            v-for="(tab,index) in config.tabs"
+            :key="tab.id"
+            class="col text-center pX-0 cur-p"
+            @click="config.selected_tab = index"
           >
-          <label :for="config.code+index" class="label-table-tabs">{{tab.tab_name}}</label>
-        </span>
+            <span
+              class="text-center w-100 pY-10 badge-c"
+              :class="config.selected_tab == index? 'bgc-white c-grey-900 bdL bdR': 'bgc-grey-200 c-grey-600 bd'"
+              :style="config.selected_tab == index? 'border-top: 1px red solid':''"
+            >{{tab.tab_name}}</span>
+          </div>
+        </div>
       </div>
       <div class="layer w-100 pX-20">
-        <div class="input-group">
+        <!-- <div class="input-group">
           <select class="custom-select custom-select-sm" id="inputGroupSelect04">
             <option selected>Agent...</option>
             <option value="1">One</option>
@@ -54,7 +58,7 @@
           <div class="input-group-append">
             <button class="btn btn-outline-secondary btn-sm" type="button">Clear</button>
           </div>
-        </div>
+        </div>-->
         <div class="table-responsive p-20">
           <table class="table">
             <thead>
@@ -305,49 +309,25 @@
 
 
 ​<style>
-.input-table-tabs {
-  display: none;
-}
-
-.label-table-tabs {
+.badge-c {
   display: inline-block;
-  margin: 0 0 -1px;
-  padding: 5px 10px;
-  font-weight: 600;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
   text-align: center;
-  color: #abc;
-  border: 1px solid transparent;
-}
-
-.label-table-tabs:before {
-  font-family: fontawesome;
-  font-weight: normal;
-  margin-right: 10px;
-}
-
-/* label[for*="1"]:before {
-  content: "\f1cb";
-}
-label[for*="2"]:before {
-  content: "\f17d";
-}
-label[for*="3"]:before {
-  content: "\f16c";
-}
-label[for*="4"]:before {
-  content: "\f171";
-} */
-
-.label-table-tabs:hover {
-  color: #789;
-  cursor: pointer;
-}
-
-.input-table-tabs:checked + .label-table-tabs {
-  color: #0af;
-  border: 1px solid #abc;
-  border-top: 2px solid #0af;
-  border-bottom: 1px solid #fff;
+  white-space: nowrap;
+  vertical-align: baseline;
+  -webkit-transition: color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
 }
 </style>
 
@@ -369,15 +349,38 @@ export default {
         table_name: "Today's Activity",
         code: "todays_activity",
         tabs: [
-          { tab_name: "All", url: "" },
-          { tab_name: "Present", url: "" },
-          { tab_name: "Absent", url: "" },
-          { tab_name: "Vacation", url: "" },
-          { tab_name: "Off Duty", url: "" }
-        ]
+          { tab_name: "All", data: [] },
+          { tab_name: "Present", data: [] },
+          { tab_name: "Tardy", data: [] },
+          { tab_name: "Vacation", data: [] },
+          { tab_name: "Off Duty", data: [] }
+        ],
+        selected_tab: 0 //index based
+      },
+      table: {
+        data: []
       }
     };
   },
-  methods: {}
+  methods: {
+    fetchTodaysTable: function() {
+      let pageurl = "/api/schedules/todays_activity";
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          table.data = res.meta.agent_schedules;
+          config.tabs.forEach(function(v, i) {
+            v.data = table.data.filter();
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          this.table[tableName].fetch_status = "fetched";
+        });
+    },
+    checkIfPresent: function(present) {
+      return present.schedule.time_in != null;
+    }
+  }
 };
 </script>

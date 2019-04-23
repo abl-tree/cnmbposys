@@ -25,7 +25,7 @@
                 <button
                   class="btn bdrs-50p p-5 lh-0"
                   type="button"
-                  @click="(form.event.action=='create'),showModal('event')"
+                  @click="(form.event.action='create'),showModal('event')"
                 >
                   <i class="ti-plus"></i>
                 </button>
@@ -401,7 +401,7 @@
             <div class="row">
               <div class="peer peer-greed text-left">
                 <button
-                  v-show="form.event.action=='update'"
+                  v-if="form.event.action=='update'"
                   class="btn"
                   @click="store({},'delete','event')"
                 >Delete</button>
@@ -413,6 +413,7 @@
                   @click="(form.event.color != '' && form.event.title != '' ? 
                       store(
                         {
+                            auth_id:user_id,
                             color: form.event.color.hex,
                             title: form.event.title
                         },
@@ -562,6 +563,7 @@ export default {
   },
   data() {
     return {
+      user_id: this.userId,
       local: {
         agents: {
           array: [],
@@ -772,7 +774,7 @@ export default {
       ].id;
       let pageurl = "";
       let form = this.form.schedule;
-      var obj = [{ auth_id: this.userId }];
+      var obj = [{ auth_id: this.user_id }];
 
       if (this.local.form.delete == true) {
         this.local.form.delete = false;
@@ -835,14 +837,12 @@ export default {
                         .toDate()
                     ).format("YYYY-MM-DD HH:mm:ss")
                 : "";
-          obj =
-            // {user_id: this.user_id},
-            {
-              title_id: form.title,
-              user_id: id,
-              start_event: start,
-              end_event: end
-            };
+          obj.push({
+            title_id: form.title,
+            user_id: id,
+            start_event: start,
+            end_event: end
+          });
           console.log(obj);
         }
       }

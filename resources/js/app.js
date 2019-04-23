@@ -646,8 +646,24 @@ if ($('#hr-dashboard').length) {
 
     $(document).popover(popOverSettings);
 
-    $(document).on('click', '#hierarchy-profile-close', function () {
-        $('#hierarchy-profile-preview').css('display', 'none');
+    $(document).on('click', '#hierarchy-profile-toggle', function (e) {
+        var state = $('#hierarchy-profile-toggle');
+        if (state.attr('state').toString() == 'open') {
+            $('#hierarchy-profile-toggle').attr('state', 'close');
+            $('#hierarchy-profile-preview').css('display', 'none');
+            $('#hierarchy-profile-toggle span').removeClass('ti-angle-left').addClass('ti-angle-right');
+            $('#hierarchy-profile-toggle').css({
+                left: '15px',
+            })
+        } else if (state.attr('state').toString() == 'close') {
+            $('#hierarchy-profile-toggle').attr('state', 'open');
+            $('#hierarchy-profile-preview').css('display', '');
+            $('#hierarchy-profile-toggle span').removeClass('ti-angle-right').addClass('ti-angle-left');
+            $('#hierarchy-profile-toggle').css({
+                left: '0px',
+            })
+
+        }
     });
 
     initialize_employee_table("/refreshEmployeeList");
@@ -1890,11 +1906,11 @@ if ($('#hr-dashboard').length) {
         };
 
         // Get the <span> element that closes the modal
-        let span = document.getElementsByClassName("close_pic")[0];
+        // var spn = document.getElementsByClassName("close_pic")[0];
 
         // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
+        $(document).on('click', '.close_pic', function () {
             modal.style.display = "none";
-        };
+        })
     });
 }
