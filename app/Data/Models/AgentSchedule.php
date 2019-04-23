@@ -21,12 +21,12 @@ class AgentSchedule extends BaseModel
         'regular_hours', 
         'date', 
         'rendered_hours', 
-        'is_working',
-        'is_present',
-        'break',
         'time_in',
         'time_out',
-        'log_status'
+        'log_status',
+        'is_working',
+        'is_present',
+        'break'
     ];
 
     protected $searchable = [

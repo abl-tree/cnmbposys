@@ -735,8 +735,8 @@ class AgentScheduleRepository extends BaseRepository
         ]);
 
         $data['relations'] = array('schedule' => function($query){
-            $query->where(DB::raw('date(start_event)'), Carbon::now()->format('Y-m-d'));
-            $query->orWhere('end_event', '>', Carbon::now());
+            $query->where('start_event', '<=', Carbon::now());
+            $query->where('end_event', '>=', Carbon::now());
         });
 
         $result = $this->fetchGeneric($data, $result);
@@ -744,7 +744,7 @@ class AgentScheduleRepository extends BaseRepository
         if ($result == null) {
             return $this->setResponse([
                 "code" => 404,
-                "title" => "No agent schedules are found",
+                "title" => "No activities found at the moment",
                 "meta" => [
                     $meta_index => $result,
                     "count" => $result->count()
