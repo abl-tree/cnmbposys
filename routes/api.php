@@ -51,7 +51,7 @@ Route::group([
         Route::post('update/{schedule_id}', 'AgentScheduleController@update');
         Route::get('search', 'AgentScheduleController@search');
         Route::get('stats', 'AgentScheduleController@stats');
-        Route::get('todays_activity', 'AgentScheduleController@todaysActivity');
+        Route::get('work/{option}', 'AgentScheduleController@workInfo');
 
     });
 
