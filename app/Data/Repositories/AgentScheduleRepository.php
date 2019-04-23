@@ -707,7 +707,7 @@ class AgentScheduleRepository extends BaseRepository
         return $result;
     }
 
-    public function todaysActivity($data) {
+    public function workInfo($data, $option) {
 
         $result = $this->user;
         
@@ -715,14 +715,55 @@ class AgentScheduleRepository extends BaseRepository
 
         $sparkline = array();
 
-        $title = "Today's Activity";
+        $parameters = array();
 
-        if(isset($data['filter'])) {
-            $parameters = [
-                'filter' => $data['filter']
-            ];
-        } else {
-            $parameters = [];
+        if($option === 'today') {
+
+            $title = "Today's Activity";
+
+            $data['relations'] = array('schedule' => function($query) {
+                $query->where('start_event', '<=', Carbon::now());
+                $query->where('end_event', '>=', Carbon::now());
+            });
+
+        } else if($option === 'report') {
+
+            if(isset($data['start']) && isset($data['end']) && isset($data['userid'])) {
+
+                $title = "Work Reports (".$data['start']." to ".$data['end'].")";
+
+                $parameters = [
+                    'userid' => $data['userid'],
+                    'start' => $data['start'],
+                    'end' => $data['end']
+                ];
+
+                $data['where'] = array([
+                    'target' => 'id', 
+                    'operator' => '=', 
+                    'value' => $data['userid']
+                ]);
+
+                $data['relations'] = array('schedule' => function($query) use ($parameters){
+                    $end = Carbon::parse($parameters['end']);
+                    $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
+    
+                    $query->where('start_event', '>=', Carbon::parse($parameters['start']));
+                    $query->where('end_event', '<', $end);
+                });
+
+            } else {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Required parameters are not set.",
+                    "meta" => [
+                        $meta_index => null,
+                        "count" => null
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+
         }
 
         $data['columns'] = ['users.*'];
@@ -733,11 +774,6 @@ class AgentScheduleRepository extends BaseRepository
             'target' => 'code',
             'value' => 'representative_op'
         ]);
-
-        $data['relations'] = array('schedule' => function($query){
-            $query->where('start_event', '<=', Carbon::now());
-            $query->where('end_event', '>=', Carbon::now());
-        });
 
         $result = $this->fetchGeneric($data, $result);
 
