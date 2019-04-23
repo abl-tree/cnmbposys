@@ -717,9 +717,10 @@ class AgentScheduleRepository extends BaseRepository
 
         $title = "Today's Activity";
 
-        if(isset($data['filter'])) {
+        if(isset($data['start']) && isset($data['end'])) {
             $parameters = [
-                'filter' => $data['filter']
+                'start' => $data['start'],
+                'end' => $data['end']
             ];
         } else {
             $parameters = [];
@@ -734,9 +735,17 @@ class AgentScheduleRepository extends BaseRepository
             'value' => 'representative_op'
         ]);
 
-        $data['relations'] = array('schedule' => function($query){
-            $query->where('start_event', '<=', Carbon::now());
-            $query->where('end_event', '>=', Carbon::now());
+        $data['relations'] = array('schedule' => function($query) use ($parameters){
+            if(isset($parameters)) {
+                $end = Carbon::parse($parameters['end']);
+                $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
+
+                $query->where('start_event', '>=', Carbon::parse($parameters['start']));
+                $query->where('end_event', '<', $end);
+            } else {
+                $query->where('start_event', '<=', Carbon::now());
+                $query->where('end_event', '>=', Carbon::now());
+            }
         });
 
         $result = $this->fetchGeneric($data, $result);
