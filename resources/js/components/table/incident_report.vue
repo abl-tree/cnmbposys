@@ -1,26 +1,12 @@
 
 <template>
   <div class="w-100">
-    <div class="bd bgc-white p-20 mY-20">
+    <div class="bd bgc-white p-20">
       <div class="layers">
         <div class="layer w-100 mB-10">
           <div class="peers">
             <div class="peer peer-greed">
               <h6 class="lh-100">Incident Reports</h6>
-            </div>
-            <div class="peer">
-              <div class="btn-group" role="group">
-                <button
-                  v-for="(tabs,index) in tableTab"
-                  v-bind:key="tabs.id"
-                  type="button"
-                  class="fsz-xs btn bgc-white bdrs-2 mR-3 cur-p"
-                  :class="[tabs.selected?'bgc-grey-200':'bgc-white']"
-                  @click="selectTab(index)"
-                >
-                  <small>{{ tabs.label}}</small>
-                </button>
-              </div>
             </div>
             <div class="peer mL-10">
               <button
@@ -37,10 +23,26 @@
             </div>
           </div>
         </div>
+        <div class="layer w-100 pX-20">
+          <div class="row">
+            <div
+              v-for="(tabs,index) in tableTab"
+              :key="tabs.id"
+              class="col text-center pX-0 cur-p"
+              @click="selectedTab=index"
+            >
+              <span
+                class="text-center w-100 pY-10 badge-c"
+                :class="selectedTab == index? 'bgc-white c-grey-900 bdL bdR': 'bgc-grey-200 c-grey-600 bd'"
+                :style="selectedTab == index? 'border-top: 1px red solid':''"
+              >{{tabs.label}}</span>
+            </div>
+          </div>
+        </div>
         <div class="layer w-100">
           <!-- component tab contents -->
-          <issued-ir v-if="selectedTab==tableTab[0].label" :obj="tableTab[0]" :user-id="user_id"></issued-ir>
-          <received-ir v-if="selectedTab==tableTab[1].label" :obj="tableTab[1]" :user-id="user_id"></received-ir>
+          <issued-ir v-if="selectedTab==0" :obj="tableTab[0]" :userId="user_id"></issued-ir>
+          <received-ir v-if="selectedTab==1" :obj="tableTab[1]" :userId="user_id"></received-ir>
         </div>
       </div>
     </div>
@@ -195,6 +197,26 @@
 
 
 ​<style>
+.badge-c {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  -webkit-transition: color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
+}
 </style>
 
 <script>
@@ -207,6 +229,7 @@ export default {
   },
   props: ["userId"],
   mounted() {
+    console.log("IR " + this.user_id);
     this.endpoints.select.child_list =
       "/api/v1/reports/select_all_users/" + this.user_id;
     this.endpoints.table.issued_incident_report =
@@ -220,7 +243,6 @@ export default {
         {
           tableName: "issued_incident_report",
           label: "ISSUED",
-          selected: true,
           data: [],
           endpoint: {
             retreive: "/api/v1/reports/issued_by/"
@@ -229,25 +251,15 @@ export default {
         {
           tableName: "received_incident_report",
           label: "RECEIVED",
-          selected: false,
           data: [],
           endpoint: {
             retreive: "/api/v1/reports/issued_to/"
           }
         }
       ],
-      selectedTab: "ISSUED"
+      selectedTab: 0
     };
   },
-  methods: {
-    selectTab: function(index) {
-      console.log("selected index is " + index);
-      this.tableTab.forEach(function(v, i) {
-        v.selected = false;
-      });
-      this.tableTab[index].selected = true;
-      this.selectedTab = this.tableTab[index].label;
-    }
-  }
+  methods: {}
 };
 </script>
