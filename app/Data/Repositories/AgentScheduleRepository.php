@@ -226,7 +226,7 @@ class AgentScheduleRepository extends BaseRepository
             $auth_id <= 0 )
         {
             $logged_in_user = $this->user->find($auth_id);
-            $current_employee = $this->user->find($data['user_id']);
+            $current_employee = isset($data['user_id']) ? $this->user->find($data['user_id']) : $this->user->find($data['id']);
             if (!$logged_in_user) {
                 return $this->setResponse([
                     'code'  => 500,
