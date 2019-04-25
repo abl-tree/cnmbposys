@@ -447,6 +447,8 @@ class AgentScheduleRepository extends BaseRepository
         
         $meta_index = "agent_schedules";
 
+        $sparkline = array();
+
         $title = null;
 
         if(isset($data['filter'])) {
@@ -464,6 +466,8 @@ class AgentScheduleRepository extends BaseRepository
         $data['relations'] = ['user_info'];
 
         if(isset($data['filter']) && $data['filter'] === 'working') {
+
+            $sparkline = $this->sparkline($data, $result, $data['filter']);
 
             $title = "Agent Working.";
 
@@ -485,6 +489,8 @@ class AgentScheduleRepository extends BaseRepository
             }
 
         } else if(isset($data['filter']) && $data['filter'] === 'absent') {
+
+            $sparkline = $this->sparkline($data, $result, $data['filter']);
 
             $title = "Agent Absent.";
 
@@ -510,6 +516,8 @@ class AgentScheduleRepository extends BaseRepository
             $result = $this->user;
 
             $data['columns'] = ['id', 'uid', 'access_id'];
+
+            $sparkline = $this->sparkline($data, $result, $data['filter']);
 
             $title = "Agent Off-Duty.";
             
@@ -540,71 +548,9 @@ class AgentScheduleRepository extends BaseRepository
                 $result = $result->where('is_present', 1)->where('is_working', 0);
             }
 
-        } else if(isset($data['filter']) && $data['filter'] === 'sparkline') {
-
-            $sparkline = array();
-
-            $now = Carbon::now();
-
-            $previous = Carbon::now()->subDays(9)->format('Y-m-d');
-            
-            $period = CarbonPeriod::create($previous, $now->format('Y-m-d'))->toArray();
-
-            $title = "Sparkline (".$previous." - ".$now.")";
-
-            $now = $now->addDays(1)->format('Y-m-d');
-
-            $data['columns'] = ['id', 'start_event', DB::raw('count(*) as count')];
-
-            $data['groupby'] = [DB::raw('date(start_event)')];
-
-            $data['where_between'] = array_merge($data['where_between'], array([
-                'target' => 'start_event',
-                'value' => [$previous, $now]
-            ]));
-
-            $data['sort'] = 'start_event';
-
-            $data['order'] = 'desc';
-
-            $result = $this->fetchGeneric($data, $result);
-
-            if ($result) {
-                $result = $result->map(function ($result) {
-                    return collect($result->toArray())
-                        ->only(['date', 'count'])
-                        ->all();
-                });
-
-                foreach ($period as $key => $date) {
-                    $count = 0;
-
-                    foreach ($result as $key => $value) {
-                        if(Carbon::parse($value['date']['ymd'])->equalTo($date)) {
-                            $count = $value['count'];
-
-                            break;
-                        }
-                    }
-
-                    array_push($sparkline, $count);
-                }
-
-                $result = $sparkline;
-            } else {
-                $result = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            }
-
-            return $this->setResponse([
-                "code" => 200,
-                "title" => $title,
-                "meta" => [
-                    $meta_index => $result,
-                ],
-                "parameters" => $parameters,
-            ]);
-
         } else {
+
+            $sparkline = $this->sparkline($data, $result);
 
             $title = "Agent Scheduled.";
 
@@ -629,6 +575,214 @@ class AgentScheduleRepository extends BaseRepository
                 "title" => "No agent schedules are found",
                 "meta" => [
                     $meta_index => $result,
+                    "sparkline" => $sparkline,
+                    "count" => $result->count()
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => $title,
+            "meta" => [
+                $meta_index => $result,
+                "sparkline" => $sparkline,
+                "count"     => $result->count()
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+    private function sparkline($data, $result, $filter = null) {
+
+        $sparkline = array();
+
+        $now = Carbon::now();
+
+        $previous = Carbon::now()->subDays(9)->format('Y-m-d');
+        
+        $period = CarbonPeriod::create($previous, $now->format('Y-m-d'))->toArray();
+
+        $now = $now->addDays(1)->format('Y-m-d');
+
+        if(!$filter) {
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ])); 
+
+            $data['columns'] = array_merge($data['columns'], [DB::raw('count(*) as count')]);
+
+            $data['groupby'] = [DB::raw('date(start_event)')];
+
+            $count_attr = 'count';
+
+            $only_attr = ['date', 'count'];
+        } else if($filter === 'working') {
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ])); 
+
+            $data['relations'] = array('attendances' => function($query) {
+                $query->groupBy('schedule_id');
+            });
+
+            $count_attr = 'attendances';
+
+            $only_attr = ['date', 'attendances'];
+        } else if($filter === 'off-duty') {
+            $data['relations'] = array('schedule' => function($query) use ($previous, $now){
+                $query->whereBetween('start_event', [$previous, $now]);
+            });
+
+            $only_attr = ['schedule'];
+
+            $result = $this->fetchGeneric($data, $result)->where('is_agent', 1);
+        } else if($filter === 'absent') {
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ])); 
+
+            $count_attr = 'attendances';
+
+            $only_attr = ['date', 'attendances'];
+        }
+
+        if($filter !== 'off-duty') {
+            $result = $this->fetchGeneric($data, $result);
+        }
+
+        if ($result) {
+            $result = $result->map(function ($result) use ($only_attr){
+                return collect($result->toArray())
+                    ->only($only_attr)
+                    ->all();
+            });
+
+            foreach ($period as $key => $date) {
+                $count = 0;
+
+                foreach ($result as $resKey => $value) {
+
+                    if($filter === 'working') {
+
+                        $value[$count_attr] = count($value[$count_attr]);
+
+                    } else if($filter === 'absent'){
+
+                        $value[$count_attr] = (count($value[$count_attr]) > 0) ? 0 : 1;
+
+                    } else if($filter === 'off-duty') {
+
+                        $emp_sched = array();
+
+                        foreach ($value['schedule'] as $key => $value) {
+                            $emp_sched[] = $value['date']['ymd'];
+                        }
+
+                        if(!in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+                            $count += 1;
+                        }
+                        
+                    }
+
+                    if(Carbon::parse($value['date']['ymd'])->equalTo($date) && $filter !== 'off-duty') {
+                        $count += $value[$count_attr];
+                    }
+                }
+
+                array_push($sparkline, $count);
+            }
+
+            $result = $sparkline;
+        } 
+
+        if(!$result) {
+            $result = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        }
+
+        return $result;
+    }
+
+    public function workInfo($data, $option) {
+
+        $result = $this->user;
+        
+        $meta_index = "agent_schedules";
+
+        $sparkline = array();
+
+        $parameters = array();
+
+        if($option === 'today') {
+
+            $title = "Today's Activity";
+
+            $data['relations'] = array('schedule' => function($query) {
+                $query->where('start_event', '<=', Carbon::now());
+                $query->where('end_event', '>=', Carbon::now());
+            });
+
+        } else if($option === 'report') {
+
+            if(isset($data['start']) && isset($data['end']) && isset($data['userid'])) {
+
+                $title = "Work Reports (".$data['start']." to ".$data['end'].")";
+
+                $parameters = [
+                    'userid' => $data['userid'],
+                    'start' => $data['start'],
+                    'end' => $data['end']
+                ];
+
+                $data['where'] = array([
+                    'target' => 'id', 
+                    'operator' => '=', 
+                    'value' => $data['userid']
+                ]);
+
+                $data['relations'] = array('schedule' => function($query) use ($parameters){
+                    $end = Carbon::parse($parameters['end']);
+                    $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
+    
+                    $query->where('start_event', '>=', Carbon::parse($parameters['start']));
+                    $query->where('end_event', '<', $end);
+                });
+
+            } else {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Required parameters are not set.",
+                    "meta" => [
+                        $meta_index => null,
+                        "count" => null
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+
+        }
+
+        $data['columns'] = ['users.*'];
+        $data['no_all_method'] = true;
+
+        $data['wherehas'] = array([
+            'relation' => 'access',
+            'target' => 'code',
+            'value' => 'representative_op'
+        ]);
+
+        $result = $this->fetchGeneric($data, $result);
+
+        if ($result == null) {
+            return $this->setResponse([
+                "code" => 404,
+                "title" => "No activities found at the moment",
+                "meta" => [
+                    $meta_index => $result,
                     "count" => $result->count()
                 ],
                 "parameters" => $parameters,
@@ -645,6 +799,4 @@ class AgentScheduleRepository extends BaseRepository
             "parameters" => $parameters,
         ]);
     }
-
-
 }

@@ -112,4 +112,11 @@ class AgentScheduleController extends BaseController
         return $this->absorb($this->agent_schedule_repo->agentScheduleStats($data))->json();
     }
 
+    public function workInfo(Request $request, $option) 
+    {
+        $data = $request->all();
+
+        return $this->absorb($this->agent_schedule_repo->workInfo($data, $option))->json();
+    }
+
 }

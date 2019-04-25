@@ -15,8 +15,8 @@
 }
 
 .mini-calendar .fc-header-toolbar {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .mini-calendar .fc-toolbar h2 {
@@ -70,6 +70,7 @@
 </style>
 <script>
 import tooltip from "tooltip-js";
+import moment from "moment";
 export default {
   props: ["userId"],
   data() {
@@ -105,17 +106,19 @@ export default {
         },
         views: {
           month: {
-            titleFormat: "MMM YYYY"
+            titleFormat: "MMMM D"
           }
         },
         buttonText: {
           today: "T"
-        }
+        },
+        disableDragging: true,
+        editable: false
       }
     };
   },
   mounted() {
-    // this.fetchAgentSched() uncomment this
+    this.fetchAgentSched(256);
   },
   methods: {
     fetchAgentSched: function(id) {

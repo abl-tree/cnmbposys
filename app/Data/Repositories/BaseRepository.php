@@ -45,6 +45,28 @@ class BaseRepository
             }
         }
 
+        // Start ORWHERE clauses
+        if (isset($data['orwhere'])) {
+            foreach ((array) $data['orwhere'] as $key => $conditions) {
+                if(is_array($conditions['value']) && $conditions['operator'] == '='){
+                    $model = $model->orWhereIn($conditions['target'], $conditions['value']);
+                }else if(is_array($conditions['value']) && $conditions['operator'] == '!='){
+                    $model = $model->orWhereNotIn($conditions['target'], $conditions['value']);
+                }else{
+                    $model = $model->orWhere($conditions['target'], $conditions['operator'], $conditions['value']);
+                }
+            }
+        }
+
+        // Start WHEREHAS clauses
+        if (isset($data['wherehas'])) {
+            foreach ((array) $data['wherehas'] as $key => $conditions) {
+                $model = $model->whereHas($conditions['relation'], function($q) use ($conditions) {
+                    $q->where($conditions['target'], $conditions['value']);
+                });
+            }
+        }
+
         if (isset($data['where_year'])) {
             foreach ((array) $data['where_year'] as $key => $conditions) {
                 $model = $model->whereYear($conditions['target'], $conditions['operator'], $conditions['value']);
@@ -69,6 +91,10 @@ class BaseRepository
 
         if (isset($data['sort']) && !in_array( $data['sort'], $this->no_sort )) {
             $model = $model->orderBy($data["sort"], $data['order']);
+        }
+
+        if( isset( $data['with_count'] ) ){
+            $model = $model->withCount( $data['with_count'] );
         }
 
         if( isset( $data['relations'] ) ){

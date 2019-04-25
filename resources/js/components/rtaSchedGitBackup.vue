@@ -373,7 +373,7 @@
                     class="btn btn-secondary"
                     @click="hideModal('schedule-form-modal')"
                   >Close</button>
-                  <button type="button" class="btn btn-danger" @click="submitScheduleForm">Confirm</button>
+                  <button type="button" class="btn btn-danger" @click="(form.schedule.title_id.value!='' && form.schedule.event.start!='' && form.schedule.time_in !='',form.schedule.hours !=''?storeSched():formValidationError())">Confirm</button>
                 </div>
               </div>
             </div>
@@ -699,7 +699,8 @@ export default {
         let time_in = this.form.time_in;
         let hours = this.form.hours;
         let agent_id = this.agent.id;
-        var dates = [];
+        let obj = [];
+        let dates = [];
         if (this.form.event.end == null) {
           dates.push(
             moment(moment(this.form.event.start)).format("YYYY-MM-DD")

@@ -14,7 +14,11 @@ class RequestSchedule extends BaseModel
         'end_date',
         'title_id',
         'requested_by',
-        'managed_by'
+        'managed_by',
+        'rta_remarks',
+        'response_date',
+        'status',
+        'mark',
     ];
 
     protected $searchable = [
@@ -23,7 +27,11 @@ class RequestSchedule extends BaseModel
         'end_date',
         'title_id',
         'requested_by',
-        'managed_by'
+        'managed_by',
+        'rta_remarks',
+        'response_date',
+        'status',
+        'mark',
     ];
 
     public $timestamps = true;
@@ -35,6 +43,10 @@ class RequestSchedule extends BaseModel
         'title_id' => 'sometimes|required|integer',
         'requested_by' => 'sometimes|required|integer',
         'managed_by' => 'sometimes|required|integer',
+        'rta_remarks' => 'nullable|max:191',
+        'response_date' => 'nullable|date',
+        'status' => 'sometimes|required|max:191',
+        'mark' => 'nullable|max:191',
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'title_id'];

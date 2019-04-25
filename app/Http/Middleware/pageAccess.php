@@ -18,7 +18,7 @@ class pageAccess
         $position="";
         $pageAccess['hr'] = ['/','dashboard']; 
         $pageAccess['rta'] = ['/','dashboard','schedule']; 
-        $pageAccess['admin'] = ['/','dashboard','rtadashboard','rtaschedule',"rtareport","tldashboard","tlreport"];
+        $pageAccess['admin'] = ['/','dashboard','rtadashboard','rtaschedule',"rtareport","tldashboard","tlreport",'incident_report','rtaeventrequest'];
         $pageAccess['tl'] = ['/',"tldashboard","tlreport"];
         // if($request->user()->access->id < 15 && $request->user()->access->id > 11){
         //     // if(in_array($route,$pageAccess['rta'])){

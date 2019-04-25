@@ -19,14 +19,13 @@ class UserReport extends BaseModel
         'filedby','user','id','user_reports_id',
         'filed_by','description','deleted_at',
         'created_at','updated_at','sanction_type_id',
-        'sanction_level_id','status','SanctionLevel','SanctionType','agentResponse','actions'
+        'sanction_level_id','status','SanctionLevel','SanctionType','agentResponse'
     ];
     protected $appends = [
-        'issued_to','issued_by','report_details','logs'
+        'issued_to','issued_by','report_details'
     ];
 
  
-
     public function user() {
         return $this->hasOne('\App\Data\Models\Users', 'uid', 'user_reports_id')->with('position','userdata');
     }
@@ -42,11 +41,7 @@ class UserReport extends BaseModel
      public function agentResponse(){
         return $this->belongsTo('\App\Data\Models\ReportResponse','id','user_response_id');
     }
-    public function actions(){
-        return $this->belongsTo('\App\Data\Models\ActionLogs','filed_by','user_id')->latest();
-    }
-
-
+     
 
     public function reportDetails() {
         $query = DB::table('user_reports')
@@ -85,17 +80,5 @@ class UserReport extends BaseModel
         'agent_response' => $this->agentResponse);
         return $obj;
     }
-    public function getLogsAttribute(){
-        // $obj = (object) array('id' => $this->logs->id,
-        // 'user_id' => $this->description, 
-        // 'created_at' => $this->created_at,
-        // 'updated_at' => $this->updated_at, 
-        // 'status' => $this->status, 
-        // 'sanction_type' => $this->SanctionType, 
-        // 'sanction_level' => $this->SanctionLevel,
-        // 'agent_response' => $this->agentResponse);
-        return $this->actions;
-    }
-
 }
 
