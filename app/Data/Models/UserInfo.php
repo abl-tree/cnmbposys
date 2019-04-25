@@ -31,7 +31,7 @@ class UserInfo extends BaseModel
     ];
 
     protected $appends = [
-        'full_name',
+        'full_name','count'
     ];
     
     protected $hidden = [
@@ -132,6 +132,9 @@ class UserInfo extends BaseModel
         ->where('user_infos.id','!=', 3)
         ->orderBy('user_infos.id','asc')->get();
         return $query;
+    }
+    public function getCountAttribute(){
+        return $this->hasMany('\App\Data\Models\UserReport' ,'user_reports_id', 'id')->count();
     }
 
     

@@ -26,7 +26,6 @@ class UserReport extends BaseModel
     ];
 
  
-
     public function user() {
         return $this->hasOne('\App\Data\Models\Users', 'uid', 'user_reports_id')->with('position','userdata');
     }
@@ -42,7 +41,7 @@ class UserReport extends BaseModel
      public function agentResponse(){
         return $this->belongsTo('\App\Data\Models\ReportResponse','id','user_response_id');
     }
-
+     
 
     public function reportDetails() {
         $query = DB::table('user_reports')

@@ -91,7 +91,6 @@ class ReportsRepository extends BaseRepository
                 array_push($results,$value);
              }
          } 
-
         if (!$results) {
             return $this->setResponse([
                 'code'       => 404,
@@ -416,14 +415,6 @@ class ReportsRepository extends BaseRepository
         $count_data = $data;
         $data['relations'] = [];   
         $result = $this->fetchGeneric($data, $this->incident_report);
-        // $results=[];
-        // $keys=0;
-        // foreach ($result as $key => $value) {
-        //      if($value->reports!="[]"){        
-        //         array_push($results,$value);
-        //         $keys++;
-        //      }
-        //  } 
 
         if (!$result) {
             return $this->setResponse([
