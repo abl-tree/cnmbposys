@@ -39,7 +39,8 @@ export default {
           off_duty: "/api/v1/schedules/stats?filter=off-duty",
           on_break: "/api/v1/schedules/stats?filter=on-break",
           working: "/api/v1/schedules/stats?filter=working",
-          tardy: "/api/v1/schedules/stats?filter=absent"
+          tardy: "/api/v1/schedules/stats?filter=absent",
+          leave: "/api/v1/schedules/stats?filter=leave",
         }
       },
       stats: {

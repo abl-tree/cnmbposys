@@ -403,6 +403,10 @@ Vue.component("daily-work-report-modal", wr_modal);
 import today_activity from "./components/table/today_activity.vue";
 Vue.component("today-activity", today_activity);
 
+import today_table_tr from "./components/table/today_table_tr.vue";
+Vue.component("today-table-tr", today_table_tr);
+
+
 // import ZpUI from 'zp-crm-ui'
 import Sparkline from 'vue-sparklines'
 // Vue.use(ZpUI)

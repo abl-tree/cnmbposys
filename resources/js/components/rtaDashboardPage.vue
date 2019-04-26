@@ -21,7 +21,7 @@
 
         <!-- #Bounce Rate ==================== -->
         <div class="col-md-3">
-          <stats-component-1 stat-name="on_break"></stats-component-1>
+          <stats-component-1 stat-name="off_duty"></stats-component-1>
         </div>
       </div>
     </div>
