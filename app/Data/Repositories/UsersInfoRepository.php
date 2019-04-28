@@ -31,7 +31,7 @@ class UsersInfoRepository extends BaseRepository
             is_numeric($data['id'])) {
 
             $meta_index     = "metadata";
-            $data['single'] = false;
+            $data['single'] = true;
             $data['where']  = [
                 [
                     "target"   => "id",
@@ -40,11 +40,12 @@ class UsersInfoRepository extends BaseRepository
                 ],
             ];
 
-            // $parameters['id'] = $data['id'];
+            $parameters['id'] = $data['id'];
 
         }
+
         $count_data = $data;
-        $data['relations'] = ["user_info","accesslevel","benefits"];        
+        $data['relations'] = ["user_info", "accesslevel", "benefits"];        
         $count_data = $data;    
         $result = $this->fetchGeneric($data, $this->user_info);
 
@@ -70,7 +71,7 @@ class UsersInfoRepository extends BaseRepository
                 "count"     => $count,
             ],
             "count"     => $count,
-            // "parameters" => $data['id'],
+            "parameters" => $parameters,
             
         ]);
     }
