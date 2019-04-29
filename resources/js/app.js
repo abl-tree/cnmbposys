@@ -247,6 +247,12 @@ Vue.mixin({
                 });
         },
 
+        calendarFormat: function (date) {
+            return moment(date).calendar();
+        },
+        fromNow: function (date) {
+            return moment(date).fromNow();
+        },
 
         store: function (obj, action, formName) {
             let pageurl = this.endpoints[action][formName];
@@ -380,7 +386,7 @@ Vue.component("sanction-level", sanction_level);
 import sanction_type from "./components/table/sanction_type.vue";
 Vue.component("sanction-type", sanction_type);
 
-import incident_report from "./components/table/incident_report.vue";
+import incident_report from "./components/table/incident_report1.vue";
 Vue.component("incident-report", incident_report);
 
 import received_ir from "./components/table/received_ir.vue";
@@ -418,6 +424,8 @@ Vue.use(VModal);
 import Notifications from "vue-notification";
 import velocity from "velocity-animate";
 
+
+import moment from "moment";
 ////// VUEINIT
 
 
