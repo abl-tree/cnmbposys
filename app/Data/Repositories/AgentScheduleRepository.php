@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use DB;
 use App\Data\Repositories\LogsRepository;
+use App\Data\Repositories\NotificationRepository;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -31,14 +32,17 @@ class AgentScheduleRepository extends BaseRepository
         $user_info,
         $event_title,
         $excel_date,
-        $logs;
+        $logs,
+        $notification_repo;
+
     public function __construct(
         AgentSchedule $agentSchedule,
         User $user,
         UserInfo $userInfo,
         EventTitle $eventTitle,
         ExcelDateService $excelDate,
-        LogsRepository $logs_repo
+        LogsRepository $logs_repo,
+        NotificationRepository $notificationRepository
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
@@ -46,6 +50,7 @@ class AgentScheduleRepository extends BaseRepository
         $this->event_title = $eventTitle;
         $this->excel_date = $excelDate;
         $this->logs = $logs_repo;
+        $this->notification_repo = $notificationRepository;
     }
 
     public function excelData($data)
@@ -240,13 +245,21 @@ class AgentScheduleRepository extends BaseRepository
             ];
             $this->logs->logsInputCheck($logged_data);
         }
+
+        // insertion
+        
+        $notification = $this->notification_repo->triggerNotification([
+            'sender_id' => $auth_id,
+            'recipient_id' => $data['user_id'],
+            'type' => 'schedules.assign',
+            'type_id' => $agent_schedule->id
+        ]);
+
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully defined an agent schedule.",
             "parameters" => $agent_schedule,
         ]);
-
-        // insertion
 
     }
 
