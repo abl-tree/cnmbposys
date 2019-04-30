@@ -146,7 +146,6 @@ Route::group([
         Route::post("create", "ReportsController@addSanctionLevel");
     });
 
-
      Route::group([
         "prefix"    => "users",
     ], function () {
@@ -155,8 +154,18 @@ Route::group([
         Route::get("/{id}", "UserController@userInfo");
     });
 
+    Route::group([
+        "prefix" => "notifications",
+    ], function () {
 
-
+        Route::get("/", "NotificationController@fetchAll");
+        Route::post("read/{notification_id}", "NotificationController@readNotification");
+        Route::get("fetch/{notification_id}", "NotificationController@fetchNotification");
+        Route::get("unread", "NotificationController@fetchUnread");
+        Route::post("update/{notification_id}", "NotificationController@update");
+        // for future cron jobs
+        Route::get("scheduled", "NotificationController@scheduledNotifications");
+    });
 
 });
 

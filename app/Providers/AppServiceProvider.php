@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
             $id = auth()->user()->id;
             $access_level = auth()->user()->access_id;
             $user = \App\Data\Models\UserInfo::find($id);
-            $view->with('pageOnload',$user);
+            $view->with('pageOnload',$user)->with('access_id',$access_level);
             // ->with('menu_items', $menu);
         });
 

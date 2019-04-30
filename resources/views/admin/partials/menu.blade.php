@@ -12,7 +12,7 @@
     data-page="rtaschedule">
     <a class='sidebar-link' href="/schedule">
         <span class="icon-holder">
-            <i class="c-brown-500 ti-calendar"></i>
+            <i class="c-red-400 ti-calendar"></i>
         </span>
         <span class="">Schedule</span>
     </a>
@@ -20,7 +20,7 @@
     <li class="nav-item page-identifier" data-page="rta_work_reports">
         <a class='sidebar-link' href="/rtareport">
             <span class="icon-holder">
-                <i class="c-brown-500 ti-calendar"></i>
+                <i class="c-red-400 ti-calendar"></i>
             </span>
             <span class="">Work Reports</span>
         </a>
@@ -29,43 +29,43 @@
 
     @if($pageOnload->user->access_id == 1)
 
-    <li class="nav-item page-identifier" data-page="hrdashboard">
-        <a class='sidebar-link' href="/dashboard">
-            <span class="icon-holder">
-                <i class="c-brown-500 ti-dashboard"></i>
-            </span>
-            <span class="">Dashboard</span>
-        </a>
-    </li>
-    <li class="nav-item page-identifier" data-page="hrdashboard">
-        <a class='sidebar-link' href="/incident_report">
-            <span class="icon-holder">
-                <i class="c-brown-500 ti-dashboard"></i>
-            </span>
-            <span class="">Incident Report</span>
-        </a>
-    </li>
     <li class="nav-item page-identifier" data-page="rtadashboard">
         <a class='sidebar-link' href="/rtadashboard">
             <span class="icon-holder">
-                <i class="c-brown-500">RTA</i>
+                <i class="c-red-400 ti-stats-up"></i>
             </span>
-            <span class="">Dashboard</span>
+            <span class="">Today</span>
+        </a>
+    </li>
+    <li class="nav-item page-identifier" data-page="hrdashboard">
+        <a class='sidebar-link' href="/dashboard">
+            <span class="icon-holder">
+                <i class="c-red-400 ti-id-badge"></i>
+            </span>
+            <span class="">Employee</span>
         </a>
     </li>
     <li class="nav-item page-identifier" data-page="rtaschedule">
         <a class='sidebar-link' href="/rtaschedule">
             <!--  -->
             <span class="icon-holder">
-                <i class="c-brown-500">RTA</i>
+                <i class="c-red-400 ti-calendar"></i>
             </span>
-            <span class="">Schedule</span>
+            <span class="">Agent Schedule</span>
+        </a>
+    </li>
+    <li class="nav-item page-identifier" data-page="hrdashboard">
+        <a class='sidebar-link' href="/incident_report">
+            <span class="icon-holder">
+                <i class="c-red-400 ti-write"></i>
+            </span>
+            <span class="">Incident Report</span>
         </a>
     </li>
     <li class="nav-item page-identifier" data-page="rtareports">
         <a class='sidebar-link' href="/rtareport">
             <span class="icon-holder">
-                <i class="c-brown-500">RTA</i>
+                <i class="c-red-400 ti-clipboard"></i>
             </span>
             <span class="">Work Reports</span>
         </a>
@@ -73,7 +73,7 @@
     <li class="nav-item page-identifier" data-page="rtaeventrequest">
         <a class='sidebar-link' href="/rtaeventrequest">
             <span class="icon-holder">
-                <i class="c-brown-500">RTA</i>
+                <i class="c-red-400 ti-agenda"></i>
             </span>
             <span class="">Event Request</span>
         </a>
@@ -82,7 +82,7 @@
     <li class="nav-item page-identifier" data-page="tlreport">
         <a class='sidebar-link' href="/tlreport">
             <span class="icon-holder">
-                <i class="c-brown-500">TL</i>
+                <i class="c-red-400">TL</i>
             </span>
             <span class="">Work Reports</span>
         </a>
@@ -90,7 +90,7 @@
     <li class="nav-item page-identifier" data-page="tldashboard">
         <a class='sidebar-link' href="/tldashboad">
             <span class="icon-holder">
-                <i class="c-brown-500">TL</i>
+                <i class="c-red-400">TL</i>
             </span>
             <span class="">Dashboard</span>
         </a>
@@ -102,7 +102,7 @@
     <li class="nav-item page-identifier" data-page="tldashboard">
         <a class='sidebar-link' href="/tldashboard">
             <span class="icon-holder">
-                <i class="c-brown-500">TL</i>
+                <i class="c-red-400">TL</i>
             </span>
             <span class="">Dashboard</span>
         </a>

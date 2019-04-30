@@ -6,7 +6,8 @@
     <div class="masonry-sizer col-md-6"></div>
 
     <div class="masonry-item col-md-12">
-        <incident-report v-bind:user-Id="{{json_encode($pageOnload->id)}}"></incident-report>
+        <incident-report v-bind:user-Id="{{json_encode($pageOnload->id)}}"
+            v-bind:access-Id="{{json_encode($access_id)}}"></incident-report>
     </div>
 
     <!-- Modals -->

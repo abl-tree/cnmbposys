@@ -612,6 +612,9 @@ class ReportsRepository extends BaseRepository
          public function userResponse($data = [])
     {
         // data validation
+        $auth = $this->user->find($data['auth_id']);
+        $param=null;
+        $title;
         if (!isset($data['user_response_id'])) {
             if (!isset($data['user_response_id'])) {
                 return $this->setResponse([
@@ -627,21 +630,36 @@ class ReportsRepository extends BaseRepository
                 ]);
             }
         }else{
-            if (isset($data['user_response_id'])) {
-                $does_exist = $this->report_response->find($data['user_response_id']);
+            if (isset($data['id'])) {
+                $does_exist = $this->report_response->find($data['id']);
                 if (!$does_exist) {
                     return $this->setResponse([
                         'code'  => 500,
-                        'title' => 'Sanction Type does not exist.',
+                        'title' => 'IR not found.',
                     ]);
                 }
             }
         }
-        if (isset($data['user_response_id'])) {
-            $response = $this->report_response->find($data['user_response_id']);
+        if (isset($data['id'])) {
+            $response = $this->report_response->find($data['id']);
             $response->save();
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "update",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Updated an IR Response."
+            ];
+            $this->logs->logsInputCheck($logged_data);
+            $param=$data['user_response_id'];
+            $title= "Successfully Edited an IR response.";
         } else{
             $response = $this->report_response->init($this->report_response->pullFillable($data));
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "create",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Responded to an Incident Report ."
+            ];
+            $this->logs->logsInputCheck($logged_data);
+            $title= "Successfully Added an IR response.";
         }
         
             
@@ -660,8 +678,12 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully defined an Response.",
-            "parameters" => $response,
+            "title"      => $title,
+            "meta"        => [
+                "data" => $response,
+                "logs" => $logged_data
+            ],
+            "parameters"=>$param
         ]);
         
     }
