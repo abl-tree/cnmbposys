@@ -876,21 +876,28 @@ class AgentScheduleRepository extends BaseRepository
 
         } else if($option === 'report') {
 
-            if(isset($data['start']) && isset($data['end']) && isset($data['userid'])) {
+            if(isset($data['start']) && isset($data['end'])) {
 
                 $title = "Work Reports (".$data['start']." to ".$data['end'].")";
 
                 $parameters = [
-                    'userid' => $data['userid'],
                     'start' => $data['start'],
                     'end' => $data['end']
                 ];
 
-                $data['where'] = array([
-                    'target' => 'id', 
-                    'operator' => '=', 
-                    'value' => $data['userid']
-                ]);
+                if(isset($data['userid'])) {
+                    $parameters = [
+                        'userid' => $data['userid'],
+                        'start' => $data['start'],
+                        'end' => $data['end']
+                    ];
+
+                    $data['where'] = array([
+                        'target' => 'id', 
+                        'operator' => '=', 
+                        'value' => $data['userid']
+                    ]);
+                }
 
                 $data['relations'] = array('schedule' => function($query) use ($parameters){
                     $end = Carbon::parse($parameters['end']);
