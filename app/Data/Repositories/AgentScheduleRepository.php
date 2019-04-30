@@ -702,6 +702,12 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'start_event',
                 'value' => [$previous, $now]
             ])); 
+            
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
+            ])); 
 
             $count_attr = 'attendances';
 
