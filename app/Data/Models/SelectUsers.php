@@ -14,7 +14,7 @@ class SelectUsers extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'value','text'
+       'value','text','report_count'
     ];
 
 
@@ -79,6 +79,9 @@ class SelectUsers extends BaseModel
         }
         
         return $name; 
+    }
+    public function getReportcountAttribute(){
+        return $this->hasMany('\App\Data\Models\UserReport' ,'user_reports_id', 'id')->count();
     }
 
 

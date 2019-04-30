@@ -135,11 +135,12 @@ class AgentSchedule extends BaseModel
 
     public function getIsPresentAttribute() {
         if($this->attendances->count()) {
-            foreach ($this->attendances as $key => $value) {
-                if(Carbon::parse($value->time_in)->isToday() || Carbon::parse($value->time_out)->isToday()) {
-                    return 1;
-                }
-            }
+            return 1;
+            // foreach ($this->attendances as $key => $value) {
+            //     if(Carbon::parse($value->time_in)->isToday() || Carbon::parse($value->time_out)->isToday()) {
+            //         return 1;
+            //     }
+            // }
         }
 
         return 0;
