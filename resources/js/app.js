@@ -409,8 +409,16 @@ Vue.component("daily-work-report-modal", wr_modal);
 import today_activity from "./components/table/today_activity.vue";
 Vue.component("today-activity", today_activity);
 
+import work_log from "./components/table/work_log.vue";
+Vue.component("work-log", work_log);
+
 import today_table_tr from "./components/table/today_table_tr.vue";
 Vue.component("today-table-tr", today_table_tr);
+
+import request_schedule from "./components/table/request_schedule.vue";
+Vue.component("request-schedule", request_schedule);
+
+
 
 
 // import ZpUI from 'zp-crm-ui'

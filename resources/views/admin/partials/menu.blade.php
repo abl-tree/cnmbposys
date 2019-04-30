@@ -78,24 +78,6 @@
             <span class="">Event Request</span>
         </a>
     </li>
-
-    <li class="nav-item page-identifier" data-page="tlreport">
-        <a class='sidebar-link' href="/tlreport">
-            <span class="icon-holder">
-                <i class="c-red-400">TL</i>
-            </span>
-            <span class="">Work Reports</span>
-        </a>
-    </li>
-    <li class="nav-item page-identifier" data-page="tldashboard">
-        <a class='sidebar-link' href="/tldashboad">
-            <span class="icon-holder">
-                <i class="c-red-400">TL</i>
-            </span>
-            <span class="">Dashboard</span>
-        </a>
-    </li>
-
     @endif
 
     @if($pageOnload->user->access_id == 6)

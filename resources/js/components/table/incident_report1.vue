@@ -263,7 +263,7 @@
     <modal name="issued_incident_report" :pivotY="0.2" :scrollable="true" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
-          <h5 style="margin-bottom:0px">Incident Report</h5>
+          <h6 style="margin-bottom:0px">Incident Report</h6>
         </div>
         <div class="w-100 p-15 pT-80" style>
           <div class="container">
@@ -327,6 +327,7 @@
               },
               form.issued_incident_report.action,
               'issued_incident_report'):formValidationError())"
+              :disabled="form.submit_buttons.incident_report"
             >Confirm</button>
           </div>
         </div>
@@ -427,6 +428,7 @@
           <button
             class="btn btn-xs btn-secondary"
             @click="hideModal('preview-only-incident-report')"
+            :disabled="form.submit_buttons.incident_report_response"
           >Close</button>
         </div>
       </div>
@@ -548,10 +550,12 @@ export default {
           tir: "",
           description: "",
           response: {
+            id:"",
             date: "",
             message: ""
           },
-          save_endpoint:""
+          save_endpoint:"",
+          action:""
         },
         selected_tab: 0, //index based,
         selected_page: 1,
@@ -569,6 +573,12 @@ export default {
             perpage: 15
           },
           no_records: 15
+        }
+      },
+      form:{
+        submit_buttons:{
+          incident_report:false,
+          incident_report_response:false,
         }
       },
       table: {
@@ -717,6 +727,8 @@ export default {
     ///==========================================================
     ///store IR START
     storeIR: function(obj, action, formName) {
+      this.form.submit_buttons.incident_report = true;
+
       let pageurl = this.endpoints[action][formName];
       fetch(pageurl, {
         method: "post",
@@ -728,6 +740,8 @@ export default {
         .then(res => res.json())
         .then(data => {
           console.log(data);
+      this.form.submit_buttons.incident_report = false;
+
           if (data.code == 500) {
             this.notify("error", action);
           } else {
@@ -767,15 +781,17 @@ export default {
         ;
 
         
-      this.isEmpty(
+      if(this.isEmpty(
         report.report_details.agent_response
-      )
-        ? 
-      this.config.ir_details.save_endpoint = "/api/v1/reports/user_response"
-        : 
-      this.config.ir_details.save_endpoint = "/api/v1/reports/update_response/"+this.config.ir_details.id
+      )){
+        this.config.ir_details.action = "create"
+      // this.config.ir_details.save_endpoint = "/api/v1/reports/user_response"
+      }else{
+      this.config.ir_details.action = "update"
+      // this.config.ir_details.save_endpoint = "/api/v1/reports/update_response"
+      this.config.ir_details.response.id = report.report_details.agent_response.id
         
-        ;
+      }        
 
 
       this.config.ir_details.response.message = this.isEmpty(
@@ -802,14 +818,26 @@ export default {
       return result;
     },
     storeIRresponse:function(){
-      
-      let pageurl = this.config.ir_details.save_endpoint;
+      this.form.submit_buttons.incident_report_response = true;
+      let pageurl = "/api/v1/reports/user_response";
       fetch(pageurl, {
         method: "post",
-        body: JSON.stringify({
-          user_response_id:this.config.ir_details.id,
-          commitment:this.config.ir_details.response.message,
-        }),
+        body: JSON.stringify(
+          this.config.ir_details.action=='create'?
+            {
+              user_response_id: this.config.ir_details.id,
+              commitment: this.config.ir_details.response.message,
+              auth_id:this.user_id
+            }
+          :
+            
+            {
+              id:this.config.ir_details.response.id,
+              user_response_id: this.config.ir_details.id,
+              commitment: this.config.ir_details.response.message,
+              auth_id:this.user_id
+            }
+        ),
         headers: {
           "content-type": "application/json"
         }
@@ -817,6 +845,8 @@ export default {
         .then(res => res.json())
         .then(data => {
           console.log(data);
+      this.form.submit_buttons.incident_report_response = false;
+
           if (data.code == 500) {
             this.notify("error", 'update');
           } else {

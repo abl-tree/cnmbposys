@@ -122,7 +122,7 @@ Route::group([
         Route::post("create", "ReportsController@create");
         Route::post('update/{ir_id}', 'ReportsController@update');
         Route::post('delete/{ir_id}', 'ReportsController@delete');       
-        Route::post("user_reponse", "ReportsController@userResponse");
+        Route::post("user_response", "ReportsController@userResponse");
         Route::post('update_response/{id}', 'ReportsController@update_response');
     });
 
