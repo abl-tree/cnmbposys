@@ -480,6 +480,11 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'end_event',
                 'operator' => '>=',
                 'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
             ]));
 
             $result = $this->fetchGeneric($data, $result);
@@ -503,6 +508,11 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'agent_schedules.end_event',
                 'operator' => '>=',
                 'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
             ]));
 
             $result = $this->fetchGeneric($data, $result);
@@ -563,6 +573,11 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'end_event',
                 'operator' => '>=',
                 'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
             ]));
 
             $result = $this->fetchGeneric($data, $result);
@@ -606,28 +621,13 @@ class AgentScheduleRepository extends BaseRepository
 
         $now = $now->addDays(1)->format('Y-m-d');
 
-        if(!$filter) {
+        if($filter === 'working') {
             $data['where_between'] = array_merge($data['where_between'], array([
                 'target' => 'start_event',
                 'value' => [$previous, $now]
             ])); 
 
-            $data['columns'] = array_merge($data['columns'], [DB::raw('count(*) as count')]);
-
-            $data['groupby'] = [DB::raw('date(start_event)')];
-
-            $count_attr = 'count';
-
-            $only_attr = ['date', 'count'];
-        } else if($filter === 'working') {
-            $data['where_between'] = array_merge($data['where_between'], array([
-                'target' => 'start_event',
-                'value' => [$previous, $now]
-            ])); 
-
-            $data['relations'] = array('attendances' => function($query) {
-                $query->groupBy('schedule_id');
-            });
+            $data['relations'] = array('attendances');
 
             $count_attr = 'attendances';
 
@@ -648,7 +648,20 @@ class AgentScheduleRepository extends BaseRepository
 
             $count_attr = 'attendances';
 
-            $only_attr = ['date', 'attendances'];
+            $only_attr = ['date', 'attendances', 'start_event', 'end_event'];
+        } else {
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ])); 
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
+            ])); 
+
+            $only_attr = ['start_event', 'end_event'];
         }
 
         if($filter !== 'off-duty') {
@@ -667,30 +680,84 @@ class AgentScheduleRepository extends BaseRepository
 
                 foreach ($result as $resKey => $value) {
 
+                    $dates = array();
+
                     if($filter === 'working') {
 
-                        $value[$count_attr] = count($value[$count_attr]);
+                        if(!empty($value[$count_attr])) {
+
+                            $temp = array();
+
+                            $time_in = Carbon::parse($value[$count_attr][0]['time_in'])->format('Y-m-d');
+    
+                            $time_out = ($value[$count_attr][count($value[$count_attr]) - 1]['time_out']) ? Carbon::parse($value[$count_attr][count($value[$count_attr]) - 1]['time_out'])->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+
+                            $dates = CarbonPeriod::create($time_in, $time_out);
+
+                        }
+
+                        foreach ($dates as $filtered_date) {
+                            if(Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
+                                $count += 1;
+                            }
+                        }
 
                     } else if($filter === 'absent'){
 
+                        $temp = array();
+
+                        $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+
+                        $end = ($value['end_event']) ? Carbon::parse($value['end_event'])->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+
+                        $dates = CarbonPeriod::create($start, $end);
+
                         $value[$count_attr] = (count($value[$count_attr]) > 0) ? 0 : 1;
+
+                        foreach ($dates as $filtered_date) {
+                            if(Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
+                                $count += $value[$count_attr];
+                            }
+                        }
 
                     } else if($filter === 'off-duty') {
 
                         $emp_sched = array();
 
                         foreach ($value['schedule'] as $key => $value) {
-                            $emp_sched[] = $value['date']['ymd'];
+                            $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+
+                            $end = Carbon::parse($value['end_event'])->format('Y-m-d');
+
+                            $periods = CarbonPeriod::create($start, $end);
+
+                            foreach ($periods as $period) {
+                                $emp_sched[] = $period->format('Y-m-d');
+                            }
                         }
 
                         if(!in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
                             $count += 1;
                         }
                         
-                    }
+                    } else {
 
-                    if(Carbon::parse($value['date']['ymd'])->equalTo($date) && $filter !== 'off-duty') {
-                        $count += $value[$count_attr];
+                        $emp_sched = array();
+    
+                        $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+    
+                        $end = Carbon::parse($value['end_event'])->format('Y-m-d');
+    
+                        $periods = CarbonPeriod::create($start, $end);
+                        
+                        foreach ($periods as $period) {
+                            $emp_sched[] = $period->format('Y-m-d');
+                        }
+    
+                        if(in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+                            $count += 1;
+                        }
+    
                     }
                 }
 
