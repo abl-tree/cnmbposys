@@ -558,6 +558,31 @@ class AgentScheduleRepository extends BaseRepository
                 $result = $result->where('is_present', 1)->where('is_working', 0);
             }
 
+        } else if(isset($data['filter']) && $data['filter'] === 'on-leave') {
+
+            $title = "Agent on leave.";
+
+            $sparkline = $this->sparkline($data, $result, $data['filter']);
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '!=',
+                'value' => 1
+            ]
+        ));
+
+            $result = $this->fetchGeneric($data, $result);
+
         } else {
 
             $sparkline = $this->sparkline($data, $result);
@@ -626,12 +651,31 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'start_event',
                 'value' => [$previous, $now]
             ])); 
+            
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
+            ])); 
 
             $data['relations'] = array('attendances');
 
             $count_attr = 'attendances';
 
             $only_attr = ['date', 'attendances'];
+        } else if($filter === 'on-leave') {
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ])); 
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '!=',
+                'value' => 1
+            ])); 
+
+            $only_attr = ['start_event', 'end_event'];
         } else if($filter === 'off-duty') {
             $data['relations'] = array('schedule' => function($query) use ($previous, $now){
                 $query->whereBetween('start_event', [$previous, $now]);
@@ -700,6 +744,24 @@ class AgentScheduleRepository extends BaseRepository
                             if(Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
                                 $count += 1;
                             }
+                        }
+
+                    } else if($filter === 'on-leave') {
+
+                        $emp_sched = array();
+
+                        $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+
+                        $end = Carbon::parse($value['end_event'])->format('Y-m-d');
+
+                        $periods = CarbonPeriod::create($start, $end);
+
+                        foreach ($periods as $period) {
+                            $emp_sched[] = $period->format('Y-m-d');
+                        }
+
+                        if(in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+                            $count += 1;
                         }
 
                     } else if($filter === 'absent'){
