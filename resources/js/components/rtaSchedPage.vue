@@ -261,7 +261,7 @@
                   <button
                     class="btn btn-danger bdrs-50p p-15 lh-0"
                     type="button"
-                    @click="(form.schedule.action=='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),showModal('schedule')"
+                    @click="(form.schedule.action='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),showModal('schedule')"
                   >
                     <i class="ti-plus"></i>
                   </button>
@@ -609,11 +609,6 @@ export default {
                 this.form.schedule.title = this.table.event.data.event_titles.filter(
                   index => index.title == event.title
                 )[0].id;
-                // this.form.schedule.title = this.form.schedule.select_option.title.filter(
-                //   index =>
-                //     index.text.trim().toLoweCase() ===
-                //     event.title.trim().toLowerCase()
-                // )[0].id;
                 this.form.schedule.event.start = event.start;
                 this.form.schedule.time_in =
                   event.start._i.split(" ")[1].split(":")[0] +
@@ -632,34 +627,6 @@ export default {
                 this.form.schedule.schedule_id = event.id;
               }
 
-              //   this.form.edit = true;
-              //   this.form.label = "Edit Schedule";
-              //   this.form.delete_btn = true;
-              //   this.scheduleTitleOptions();
-              //   let pageurl = "/api/v1/schedules/fetch/" + event.id;
-              //   let fetched_event = "";
-              //   fetch(pageurl)
-              //     .then(res => res.json())
-              //     .then(res => {
-              //       // return res.meta.agent_schedule;
-              //       let temp = res.meta.agent_schedule;
-              //       this.form.title = temp.title.id;
-              //       this.form.id = temp.id;
-              //     })
-              //     .catch(err => console.log(err));
-              //   // this.form.title = fetched_event.title.id;
-              //   this.form.event.start = event.start;
-              //   this.form.time_in =
-              //     event.start._i.split(" ")[1].split(":")[0] +
-              //     ":" +
-              //     event.start._i.split(" ")[1].split(":")[1];
-              //   let duration = moment.duration(event.end.diff(event.start));
-              //   if (duration._data.minutes == 0) {
-              //     this.form.hours = duration._data.hours + ":00";
-              //   } else {
-              //     this.form.hours =
-              //       duration._data.hours + ":" + duration._data.minutes;
-              //   }
             },
 
             eventRender(event, element) {

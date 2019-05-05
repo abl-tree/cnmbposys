@@ -1,19 +1,86 @@
 
 <template>
   <!-- #Sales Report ==================== -->
+
   <div id="parent" class="bd bgc-white">
     <div class="layers">
-      <div class="layer w-100 p-20">
-        <h6 class="lh-1">Today's Activity</h6>
+      <div class="layer w-100 pX-20 pT-20 pB-10">
+        <h6 class="lh-1">{{config.table_name}}</h6>
       </div>
-
+      <div class="p-5 pX-30 layer w-100">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="input-group">
+              <div class="input-group-prepend mR-5">
+                <date-time-picker
+                  v-if="config.filter.date.option==1"
+                  class="s-modal"
+                  :style="'width:300px'"
+                  v-model="config.filter.date.value"
+                  range-mode
+                  :no-label="true"
+                  overlay-background
+                  color="red"
+                  format="YYYY-MM-DD"
+                  formatted="ddd D MMM YYYY"
+                  @input="fetchReportsTable"
+                />
+                <select
+                  v-else-if="config.filter.date.option==2"
+                  class="p-10"
+                  style="width:300px;border-radius:5px;border:1px solid #ccc"
+                >
+                  <option>Cutoff List..</option>
+                  <option value="1">2019-10-05 to 2019-11-05</option>
+                </select>
+              </div>
+              <div class="input-group-append">
+                <select
+                  class="p-10"
+                  style="border-radius:5px;border:1px solid #ccc"
+                  v-model="config.filter.date.option"
+                >
+                  <option value="1">Range</option>
+                  <option value="2" disabled>Cutoff</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 text-right">
+            <div class="pull-right">
+              <div class="input-group">
+                <div class="input-group-prepend mR-5">
+                  <input
+                    type="text"
+                    class="p-10"
+                    v-model="config.filter.search.value"
+                    @input="(searchBy()),(config.no_display=false),processFilters(config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ,1)"
+                    style="width:300px;border-radius:5px;border:1px solid #ccc"
+                    placeholder="Search..."
+                  >
+                </div>
+                <div class="input-group-append">
+                  <select
+                    class="p-10"
+                    v-model="config.filter.search.option"
+                    style="border-radius:5px;border:1px solid #ccc"
+                  >
+                    <option value="1">Agent</option>
+                    <option value="2" disabled>Cluster</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="layer pX-20 w-100">
         <div class="row pX-20">
           <div
             v-for="(tab,index) in config.tabs"
             :key="tab.id"
             class="col text-center pX-0 cur-p"
-            @click="(config.searchAgent=''),(config.selected_tab = index),(config.selected_page=1),changeTableTab(tab.code,1)"
+            @click="(config.selected_tab = index),(config.selected_page=1),processFilters(tab.code,1)"
           >
             <span
               class="text-center w-100 pY-10 badge-c"
@@ -33,7 +100,7 @@
                   style="width:50px:border-style:none"
                   class="p-2 pY-5 bdrs-5"
                   v-model="config.filter.no_records"
-                  @change="(config.selected_page=1),changeTableTab((config.searchAgent=='' ? config.tabs[config.selected_tab].code : 'search' ),1)"
+                  @change="(config.selected_page=1),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),1)"
                 >
                   <option value="15">15</option>
                   <option value="25">25</option>
@@ -41,30 +108,34 @@
                 </select>
               </div>
             </div>
-            <div class="col-md-6 text-center">
-              <div v-if="config.selected_tab==0">
-                <div class="c-grey-600" style="font-size:0.8em">Agent Name</div>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Search..."
-                  style="border-color:#ccc;border-radius:2px;"
-                  v-model="config.searchAgent"
-                  @input="searchAgent(),changeTableTab('search',1)"
-                >
-              </div>
-            </div>
+            <div class="col-md-6 text-center"></div>
             <div class="col text-right">
-              <div
-                class="c-grey-600"
-                style="font-size:0.8em;border-style:none"
-              >Showing {{ config.filter.data.cur }} of {{ config.filter.data.total_pages }} page/s from {{ config.filter.data.total_result }} records</div>
+              <span
+                v-if="config.loader==true"
+                style="width:200px;height:20px;margin-bottom:2px;"
+                class="text-right"
+              >
+                <div class="loader-12 pull-right"></div>
+              </span>
+              <template v-else>
+                <div
+                  v-if="config.no_display==false"
+                  class="c-grey-600"
+                  style="font-size:0.8em;border-style:none"
+                >Showing {{ config.filter.data.cur }} of {{ config.filter.data.total_pages }} page/s from {{ config.filter.data.total_result }} records</div>
+
+                <div
+                  v-else
+                  class="c-grey-600"
+                  style="font-size:0.8em;border-style:none"
+                >Nothing to display...</div>
+              </template>
 
               <div class="btn-group pull-right" style="max-width: 358px;">
                 <button
                   class="fsz-xs btn btn-xs bd bgc-white bdrs-2 mR-3 cur-p"
                   type="button"
-                  @click="(config.filter.data.prev!=null?config.selected_page--:''),changeTableTab((config.searchAgent=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                  @click="(config.filter.data.prev!=null?config.selected_page--:''),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
                   :disabled="config.filter.data.prev == null"
                 >
                   <i class="ti-angle-left"></i>
@@ -72,7 +143,7 @@
                 <button
                   class="fsz-xs btn btn-xs bgc-white bd bdrs-2 mR-3 cur-p"
                   type="button"
-                  @click="(config.filter.data.next!=null?config.selected_page++:''),changeTableTab((config.searchAgent=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                  @click="(config.filter.data.next!=null?config.selected_page++:''),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
                   :disabled="config.filter.data.next == null"
                 >
                   <i class="ti-angle-right"></i>
@@ -81,7 +152,7 @@
                   style="width:50px"
                   class="p-2 pY-5"
                   v-model="config.selected_page"
-                  @change="changeTableTab((config.searchAgent=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                  @change="processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
                 >
                   <option v-for="n in config.filter.data.total_pages" :key="n.id" :value="n">{{n}}</option>
                 </select>
@@ -96,254 +167,83 @@
                 <th class="bdwT-0">
                   Agent
                   <span class="pull-right">
-                  <span class="ti-exchange-vertical cur-p" @click="config.agentSort = !config.agentSort,changeTableTab((config.searchAgent=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)" ></span>
+                    <span
+                      class="ti-exchange-vertical cur-p"
+                      @click="(config.filter.sort.by='agent'),(config.filter.sort.order['agent'] = !config.filter.sort.order['agent']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                    ></span>
                   </span>
                 </th>
-                <th class="bdwT-0">Supervisor</th>
-                <th class="bdwT-0">Manager</th>
-                <th class="bdwT-0">Schedule</th>
-                <th class="bdwT-0">Attendance</th>
-                <th class="bdwT-0">Log</th>
-                <th class="bdwT-0">Log Status</th>
+                <th class="bdwT-0">
+                  Cluster
+                  <span class="pull-right">
+                    <span
+                      class="ti-exchange-vertical cur-p"
+                      @click="(config.filter.sort.by='cluster'),(config.filter.sort.order['cluster'] = !config.filter.sort.order['cluster']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                    ></span>
+                  </span>
+                </th>
+                <th class="bdwT-0 text-center">Schedule</th>
+                <th class="bdwT-0 text-center" data-toggle="tooltip" title="Scheduled Duration">SD</th>
+                <th class="bdwT-0 text-center">Attendance</th>
+                <th class="bdwT-0 text-center">Logs</th>
+                <th class="bdwT-0 text-center">
+                  <span data-toggle="tooltip" title="Work Duration">WD</span>
+                </th>
+                <th class="bdwT-0 text-center">
+                  <span data-toggle="tooltip" title="Non Billable Over Time Duration">NBOTD</span>
+                </th>
+                <th class="bdwT-0 text-center">
+                  <span data-toggle="tooltip" title="Break Duration">BD</span>
+                </th>
+                <th class="bdwT-0 text-right">
+                  <span data-toggle="tooltip" title="Billable Hours">BH</span>
+                </th>
               </tr>
             </thead>
-            <tbody v-if="tablemount==true">
-              <template v-for="datum in config.filter.data.data">
+            <tbody>
+              <template
+                v-for="(datum,index) in config.filter.data.data"
+                v-if="config.loader==false"
+              >
                 <tr :key="datum.id">
-                  <td style="font-size:.95em">
-                    <div>
-                      <div class="fw-600">
-                        <i class="ti-user c-grey-400 mR-5"></i>
-                        {{datum.full_name}}
-                        <template
-                          v-if="isEmpty(datum.schedule)"
-                        >
-                          <span
-                            class="mL-5 text-secondary fsz-xs"
-                            style="cursor:pointer;"
-                            data-toogle="tooltip"
-                            title="Off-Duty"
-                          >&#9900;</span>
-                        </template>
-                        <template v-else>
-                          <template v-if="datum.schedule[0].is_present==1">
-                            <span
-                              class="mL-5 fsz-xs"
-                              :class="datum.schedule[0].is_working==1?'c-green-400':'c-blue-400'"
-                              style="cursor:pointer;"
-                              data-toogle="tooltip"
-                              :title="datum.schedule[0].is_working==1?'WORKING':'BREAK'"
-                            >&#9679;</span>
-                          </template>
-                          <template v-else>
-                            <span
-                              class="mL-5 text-secondary fsz-xs"
-                              style="cursor:pointer;"
-                              data-toogle="tooltip"
-                              title="NO SHOW"
-                            >&#9679;</span>
-                          </template>
-                        </template>
-                      </div>
-                      <div>
-                        <i class="ti-email c-grey-400 mR-5"></i>
-                        {{split(datum.email,'@',0)}}
-                      </div>
-                      <div class="c-light-blue-400">@cnmsolutions.net</div>
+                  <td-personnel
+                    :personnel="{full_name:datum.info.full_name,email:datum.info.email,}"
+                  ></td-personnel>
+                  <td-personnel
+                    :personnel="{full_name:datum.info.om.full_name,email:datum.info.om.email,}"
+                  ></td-personnel>
+                  <td-schedule
+                    :schedule="!isEmpty(datum.schedule)?{start:datum.schedule.start_event,end:datum.schedule.end_event}:null"
+                  ></td-schedule>
+                  <td-regular-hour-duration :schedule="datum.schedule"></td-regular-hour-duration>
+                  <td-attendance :attendance="datum.attendance"></td-attendance>
+                  <td-attendance-log :attendance="datum.attendance" :schedule="datum.schedule"></td-attendance-log>
+                  <td-rendered-hours :schedule="datum.schedule"></td-rendered-hours>
+                  <td-nonbillable-ot :schedule="datum.schedule" :index="index"></td-nonbillable-ot>
+                  <b-popover
+                    triggers="focus"
+                    placement="auto"
+                    :target="'ot-popover-'+index"
+                    title="Overtime"
+                  >
+                    <div class="w-100 text-center">
+                      <span class="c-grey-600" style="font-size:0.8em;">NonBillable(OT)</span>
                     </div>
-                  </td>
-                  <td style="font-size:.95em">
-                    <div>
-                      <div class="fw-600">
-                        <i class="ti-user c-grey-400 mR-5"></i>
-                        {{datum.team_leader?datum.team_leader:'not assigned'}}
-                      </div>
-                      <div>
-                        <i class="ti-email c-grey-400 mR-5"></i>
-                        {{datum.team_leader?datum.team_leader:'null'}}
-                      </div>
-                      <div class="c-light-blue-400">@cnmsolutions.net</div>
+                    <div class="w-100 text-center">
+                      <span
+                        class="c-grey-600"
+                        style="font-size:1em;"
+                      >{{datum.schedule.overtime.nonbillable.time}}</span>
                     </div>
-                  </td>
-                  <td style="font-size:.95em">
-                    <div>
-                      <div class="fw-600">
-                        <i class="ti-user c-grey-400 mR-5"></i>
-                        {{datum.operations_manager?datum.operations_manager:'not assigned'}}
-                      </div>
-                      <div>
-                        <i class="ti-email c-grey-400 mR-5"></i>
-                        {{datum.operations_manager?datum.operations_manager:'null'}}
-                      </div>
-                      <div class="c-light-blue-400">@cnmsolutions.net</div>
-                    </div>
-                  </td>
-                  <td style="font-size:.95em">
-                    <div>
-                      <div v-if="isEmpty(datum.schedule)">
-                        <span
-                          class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                        >NO SCHEDULE</span>
-                      </div>
-                      <div v-else>
-                        <span
-                          v-if="datum.schedule[0].title_id>1 && datum.schedule[0].title_id<8"
-                          class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                        >NO SCHEDULE</span>
-                        <div v-else>
-                          <div>
-                            {{calendarFormat(datum.schedule[0].start_event)}}
-                            <span
-                              class="mL-5"
-                              style="font-size:0.8em;"
-                            >IN</span>
-                          </div>
-                          <div>
-                            {{calendarFormat(datum.schedule[0].end_event)}}
-                            <span
-                              class="mL-5"
-                              style="font-size:0.8em;"
-                            >OUT</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style="font-size:.99em">
-                    <div>
-                      <template v-if="isEmpty(datum.schedule)">
-                        <div>
-                          <span
-                            class="badge badge-pill p-5 bgc-grey-400 c-grey-800 fw-900 w-100"
-                          >OFF-DUTY</span>
-                        </div>
-                      </template>
-                      <template v-else>
-                        <template v-if="datum.schedule[0].title_id==1">
-                          <template v-if="datum.schedule[0].is_present==1">
-                            <div>
-                              <span
-                                class="badge badge-pill p-5 bgc-green-200 c-green-800 fw-900 w-100"
-                              >PRESENT</span>
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div>
-                              <span
-                                class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                              >NO SHOW</span>
-                            </div>
-                          </template>
-                        </template>
-                        <template
-                          v-else-if="datum.schedule[0].title_id>1 && datum.schedule[0].title_id<8"
-                        >
-                          <div>
-                            <span
-                              class="badge badge-pill p-5 bgc-yellow-200 c-yellow-800 fw-900 w-100"
-                            >{{datum.schedule[0].title.title.toUpperCase()}}</span>
-                          </div>
-                        </template>
-                      </template>
-                    </div>
-                  </td>
-                  <td style="font-size:.95em">
-                    <div>
-                      <template v-if="isEmpty(datum.schedule)">
-                        <div>
-                          <span
-                            class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                          >NO LOGS</span>
-                        </div>
-                      </template>
-                      <template v-else>
-                        <template v-if="datum.schedule[0].title_id==1">
-                          <template v-if="datum.schedule[0].is_present==1">
-                            <div>
-                              {{calendarFormat(datum.schedule[0].time_in)}}
-                              <span
-                                class="mL-5"
-                                style="font-size:0.8em;"
-                              >IN</span>
-                            </div>
-                            <div v-if="datum.schedule[0].time_out!=null">
-                              {{calendarFormat(datum.schedule[0].time_out)}}
-                              <span
-                                class="mL-5"
-                                style="font-size:0.8em;"
-                              >OUT</span>
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div>
-                              <span
-                                class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                              >NO LOGS</span>
-                            </div>
-                          </template>
-                        </template>
-                        <template
-                          v-else-if="datum.schedule[0].title_id>1 && datum.schedule[0].title_id<8"
-                        >
-                          <div>
-                            <span
-                              class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                            >NO LOGS</span>
-                          </div>
-                        </template>
-                      </template>
-                    </div>
-                  </td>
-                  <td style="font-size:.99em">
-                    <div>
-                      <template v-if="isEmpty(datum.schedule)">
-                        <div>
-                          <span
-                            class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                          >NO LOGS</span>
-                        </div>
-                      </template>
-                      <template v-else>
-                        <template v-if="datum.schedule[0].title_id==1">
-                          <template v-if="datum.schedule[0].is_present==1">
-                            <template
-                              v-if="!ifReady(datum.schedule[0].time_in,datum.schedule[0].start_event)"
-                            >
-                              <div>
-                                <span
-                                  class="badge badge-pill p-5 bgc-orange-200 c-orange-800 fw-900 w-100"
-                                >TARDY</span>
-                              </div>
-                            </template>
-                            <template v-else>
-                              <div>
-                                <span
-                                  class="badge badge-pill p-5 bgc-green-200 c-green-800 fw-900 w-100"
-                                >READY</span>
-                              </div>
-                            </template>
-                          </template>
-                          <template v-else>
-                            <div>
-                              <span
-                                class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                              >NO LOGS</span>
-                            </div>
-                          </template>
-                        </template>
-                        <template
-                          v-else-if="datum.schedule[0].title_id>1 && datum.schedule[0].title_id<8"
-                        >
-                          <div>
-                            <span
-                              class="badge badge-pill p-5 bgc-grey-200 c-grey-800 fw-900 w-100"
-                            >NO LOGS</span>
-                          </div>
-                        </template>
-                      </template>
-                    </div>
-                  </td>
+                    <vue-timepicker v-model="config.overtime.approve.time" format="HH:mm:ss"></vue-timepicker>
+                  </b-popover>
+                  <td-break-duration :schedule="datum.schedule"></td-break-duration>
+                  <td-billable-hours :schedule="datum.schedule"></td-billable-hours>
                 </tr>
+              </template>
+              <!-- LOADER -->
+              <template v-if="config.loader">
+                <tr-loader v-for="d in 5" :key="d.id" :tablename="config.code"></tr-loader>
               </template>
             </tbody>
           </table>
@@ -375,29 +275,49 @@
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
     -webkit-box-shadow 0.15s ease-in-out;
 }
-.table-responsive,
-#parent {
-   {
-    page-break-after: auto;
-  }
+
+.loader-12 {
+  height: 12px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #bdbdbd;
 }
-@media print {
-  table {
-    page-break-after: auto;
+
+.loader-12:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 12px;
+  background-color: #ababab;
+  animation: loading 2s linear infinite;
+}
+@keyframes loading {
+  from {
+    left: -200px;
+    width: 30%;
   }
-  tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
+
+  50% {
+    width: 30%;
   }
-  td {
-    page-break-inside: avoid;
-    page-break-after: auto;
+
+  70% {
+    width: 70%;
   }
-  thead {
-    display: table-header-group;
+
+  80% {
+    left: 50%;
   }
-  tfoot {
-    display: table-footer-group;
+
+  95% {
+    left: 120%;
+  }
+
+  to {
+    left: 100%;
   }
 }
 </style>
@@ -405,18 +325,17 @@
 <script>
 import { BasicSelect } from "vue-search-select";
 import { ModelSelect } from "vue-search-select";
+import VueTimepicker from "vuejs-timepicker";
 import moment from "moment";
 export default {
   components: {
     BasicSelect,
-    ModelSelect
+    ModelSelect,
+    VueTimepicker
   },
   props: ["userId"],
   mounted() {
-    this.fetchTodaysTable();
-    this.$nextTick(() => {
-      this.tablemount = true;
-    });
+    // this.fetchReportsTable();
   },
   created() {},
   data() {
@@ -424,30 +343,53 @@ export default {
       user_id: this.userId,
       tablemount: false,
       config: {
-        agentSort: true,
-        table_name: "Today's Activity",
-        code: "todays_activity",
+        overtime: {
+          approve: {
+            time: {
+              HH: "00",
+              mm: "00",
+              ss: "00"
+            }
+          }
+        },
+        loader: true,
+        no_display: false,
+        table_name: "Work Reports",
+        code: "work_reports",
         tabs: [
           { tab_name: "All", code: "all" },
-          { tab_name: "Scheduled", code: "scheduled" },
           { tab_name: "Present", code: "present" },
-          { tab_name: "No Show", code: "no_show" },
-          { tab_name: "Leave", code: "leave" },
-          { tab_name: "Off Duty", code: "off_duty" }
+          { tab_name: "Absent", code: "absent" }
         ],
         selected_tab: 0, //index based,
         selected_page: 1,
-        searchAgent: "",
         data: {
           all: [],
-          scheduled: [],
           present: [],
-          no_show: [],
-          leave: [],
-          off_duty: [],
+          absent: [],
           search: []
         },
         filter: {
+          sort: {
+            by: "agent",
+            order: {
+              agent: true,
+              cluster: true
+            }
+          },
+          search: {
+            option: 1, //1=agent,2=clusterORoperationsManger
+            value: ""
+          },
+          date: {
+            option: 1,
+            value: {
+              start: moment()
+                .subtract(1, "month")
+                .startOf("month"),
+              end: moment().endOf("month")
+            }
+          },
           data: [],
           paginate: {
             page: 1,
@@ -462,36 +404,54 @@ export default {
     };
   },
   methods: {
-    fetchTodaysTable: function() {
-      let pageurl = "/api/v1/schedules/work/today";
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          this.table.data = res.meta.agent_schedules;
-          this.config.data.all = res.meta.agent_schedules;
-
-          this.config.data.present = res.meta.agent_schedules.filter(
-            this.getPresent
-          );
-          this.config.data.no_show = res.meta.agent_schedules.filter(
-            this.getNoShow
-          );
-          this.config.data.scheduled = res.meta.agent_schedules.filter(
-            this.getScheduled
-          );
-          this.config.data.leave = res.meta.agent_schedules.filter(
-            this.getLeave
-          );
-          this.config.data.off_duty = res.meta.agent_schedules.filter(
-            this.getNoSchedule
-          );
-          this.config.data.all = res.meta.agent_schedules;
-          let temp = res.meta.agent_schedules;
-          this.changeTableTab("all", 1);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    fetchReportsTable: function() {
+      if (
+        this.config.filter.date.value.start != null &&
+        this.config.filter.date.value.end != null
+      ) {
+        this.config.loader = true;
+        this.config.no_display = false;
+        let pageurl =
+          "/api/v1/schedules/work/report?start=" +
+          moment(this.config.filter.date.value.start).format("YYYY-MM-DD") +
+          "&end=" +
+          moment(this.config.filter.date.value.end).format("YYYY-MM-DD");
+        fetch(pageurl)
+          .then(res => res.json())
+          .then(res => {
+            this.table.data = res.meta.agent_schedules;
+            var obj = [];
+            for (var l = 0; l < res.meta.agent_schedules.length; l++) {
+              var v = res.meta.agent_schedules[l];
+              var tmp = [];
+              // console.log(v.schedule);
+              if (v.schedule.length !== 0) {
+                for (var l1 = 0; l1 < v.schedule.length; l1++) {
+                  var v1 = v.schedule[l1];
+                  tmp.push(this.extractSchedule(v, v1));
+                }
+              }
+              obj.push(tmp);
+            }
+            console.log(obj);
+            obj = [...new Set([].concat(...obj.map(a => a)))];
+            this.config.data.all = obj;
+            this.config.data.present = obj.filter(function(present) {
+              return present.attendance == "present";
+            });
+            this.config.data.absent = obj.filter(function(absent) {
+              return absent.attendance == "absent";
+            });
+            this.processFilters(
+              this.config.tabs[this.config.selected_tab].code,
+              1
+            );
+            // this.config.loader=false;
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
     },
     calendarFormat: function(date) {
       return moment(date).calendar();
@@ -521,87 +481,136 @@ export default {
         total_pages: total_pages
       };
       // console.log(this.config.filter.data);
+      this.config.loader = false;
+      if (this.config.filter.data.total_result == 0) {
+        this.config.no_display = true;
+      }
     },
-    hasSchedule: function(work) {
-      return !this.isEmpty(work.schedule);
-    },
-    workSchedule: function(work) {
-      return work.schedule[0].title_id == 1;
-    },
-    leaveSchedule: function(work) {
-      return work.schedule[0].title_id > 1 && work.schedule[0].title_id < 8;
-    },
-    isPresent: function(work) {
-      return work.schedule[0].is_present == 1;
-    },
-    getLeave: function(work) {
-      return this.hasSchedule(work) && this.leaveSchedule(work);
-    },
-    getPresent: function(work) {
-      return (
-        this.hasSchedule(work) && this.workSchedule(work) && isPresent(work)
-      );
-    },
-    getScheduled: function(work) {
-      return this.hasSchedule(work) && this.workSchedule(work);
-    },
-    getNoShow: function(work) {
-      return (
-        this.hasSchedule(work) &&
-        this.workSchedule(work) &&
-        !this.isPresent(work)
-      );
-    },
-    getPresent: function(work) {
-      return (
-        this.hasSchedule(work) &&
-        this.workSchedule(work) &&
-        this.isPresent(work)
-      );
-    },
-    getNoSchedule: function(work) {
-      return !this.hasSchedule(work);
-    },
-    changeTableTab: function(tabCode, page) {
+    processFilters: function(tabCode, page) {
       this.paginate(
-        this.agentSort(this.config.data[tabCode]),
+        this.columnSort(this.config.data[tabCode]),
         page,
         this.config.filter.no_records
       );
     },
-    searchAgent: function() {
-      var obj = [];
-      this.config.data.search = this.table.data.filter(index =>
-        index.full_name
-          .trim()
-          .toLowerCase()
-          .includes(this.config.searchAgent.trim().toLowerCase())
-      );
+    searchBy: function() {
+      if (this.config.filter.search.option === 1) {
+        // agent
+        this.config.data.search = this.config.data[
+          this.config.tabs[this.config.selected_tab].code
+        ].filter(this.getAgentSearch);
+      } else if (this.config.filter.search.option === 2) {
+        // cluster
+        this.config.data.search = this.config.data[
+          this.config.tabs[this.config.selected_tab].code
+        ].filter(this.getClusterSearch);
+      }
     },
-    agentSort: function(obj) {
+    getAgentSearch: function(index) {
+      return index.info.full_name
+        .trim()
+        .toLowerCase()
+        .includes(this.config.filter.search.value.trim().toLowerCase());
+    },
+    getClusterSearch: function(index) {
+      return index.info.operations_manager.full_name
+        .trim()
+        .toLowerCase()
+        .includes(this.config.filter.search.value.trim().toLowerCase());
+    },
+    columnSort: function(obj) {
       var result = [];
-      if (this.config.agentSort) {
-        result = obj.sort(function(a, b) {
-          var nameA = a.full_name.toLowerCase(),
-            nameB = b.full_name.toLowerCase();
-          if (nameA < nameB)
-            //sort string ascending
-            return -1;
-          if (nameA > nameB) return 1;
-          return 0; //default return value (no sorting)
-        });
+      if (this.config.filter.sort.order[this.config.filter.sort.by]) {
+        result = obj.sort(this.asc);
       } else {
-        result = obj.sort(function(a, b) {
-          var nameA = b.full_name.toLowerCase(),
-            nameB = a.full_name.toLowerCase();
-          if (nameA < nameB)
-            //sort string ascending
-            return -1;
-          if (nameA > nameB) return 1;
-          return 0; //default return value (no sorting)
-        });
+        result = obj.sort(this.desc);
       }
       return result;
+    },
+    desc: function(a, b) {
+      let name = this.sortCondition(a, b);
+      if (name.a > name.b)
+        //sort string ascending
+        return -1;
+      if (name.a < name.b) return 1;
+      return 0;
+    },
+    asc: function(a, b) {
+      let name = this.sortCondition(a, b);
+      if (name.a < name.b)
+        //sort string ascending
+        return -1;
+      if (name.a > name.b) return 1;
+      return 0;
+    },
+    sortCondition: function(a, b) {
+      let nameA = "",
+        nameB = "";
+      switch (this.config.filter.sort.by) {
+        case "agent":
+          nameA = a.info.full_name.toLowerCase();
+          nameB = b.info.full_name.toLowerCase();
+          break;
+        case "cluster":
+          nameA = b.info.operations_manager.full_name.toLowerCase();
+          nameB = a.info.operations_manager.full_name.toLowerCase();
+          break;
+      }
+      return { a: nameA, b: nameB };
+    },
+    ifSchedOngoing(start, end) {
+      return (
+        moment(start).format("YYYY-MM-DD") == moment().format("YYYY-MM-DD") ||
+        moment(end).format("YYYY-MM-DD") == moment().format("YYYY-MM-DD")
+      );
+    },
+    extractSchedule: function(info, schedule) {
+      var tmp = {
+        info: {
+          full_name: "",
+          email: "",
+          id: "",
+          tl: {
+            full_name: "",
+            email: "",
+            id: ""
+          },
+          om: {
+            full_name: "",
+            email: "",
+            id: ""
+          }
+        },
+        schedule: [],
+        attendance: ""
+      };
+      tmp.info.full_name = info.full_name;
+      tmp.info.email = info.email;
+      tmp.info.id = info.id;
+      tmp.schedule = schedule;
+      tmp.attendance = this.getAttendance(schedule);
+      return tmp;
+    },
+    isUpcomingSchedule: function(start) {
+      return moment(start).isAfter(moment());
+    },
+    getAttendance: function(schedule) {
+      let result;
+      if (moment(schedule.start_event).isAfter(moment().format("YYYY-MM-DD"))) {
+        result = "none";
+      } else {
+        if (schedule.is_present == 1) {
+          result = "present";
+        } else {
+          result = "absent";
+        }
+      }
+      return result;
+    },
+    isBefore: function(date) {
+      return moment(date)
+        .format("YYYY-MM-DD")
+        .isBefore(moment().format("YYYY-MM-DD"));
     }
   }
 };

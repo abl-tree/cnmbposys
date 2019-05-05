@@ -16,7 +16,7 @@
 
         <!-- #Unique Visitors ==================== -->
         <div class="col-md-3">
-          <stats-component-1 stat-name="tardy"></stats-component-1>
+          <stats-component-1 stat-name="leave"></stats-component-1>
         </div>
 
         <!-- #Bounce Rate ==================== -->
