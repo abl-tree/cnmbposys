@@ -36,6 +36,40 @@
           </div>
         </div>
       </td>
+      <td style="font-size:.95em">
+        <div>
+          <div class="fw-600">
+            <div class style="width:100px;height:20px;margin-bottom:2px;">
+              <div class="loader-12 pull-right"></div>
+            </div>
+          </div>
+          <div>
+            <div class style="width:100px;height:20px;margin-bottom:2px;">
+              <div class="loader-12 pull-right"></div>
+            </div>
+          </div>
+          <div class style="width:100px;height:20px;margin-bottom:2px;">
+            <div class="loader-12"></div>
+          </div>
+        </div>
+      </td>
+      <td style="font-size:.95em">
+        <div>
+          <div class="fw-600">
+            <div class style="width:100px;height:20px;margin-bottom:2px;">
+              <div class="loader-12 pull-right"></div>
+            </div>
+          </div>
+          <div>
+            <div class style="width:100px;height:20px;margin-bottom:2px;">
+              <div class="loader-12 pull-right"></div>
+            </div>
+          </div>
+          <div class style="width:100px;height:20px;margin-bottom:2px;">
+            <div class="loader-12"></div>
+          </div>
+        </div>
+      </td>
 
       <td style="font-size:.95em" class="text-center">
         <div>

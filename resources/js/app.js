@@ -59,6 +59,28 @@ Vue.mixin({
                                     class: "bgc-grey-200 c-grey-800",
                                     label: "NO LOGS"
                                 }
+                            },
+                            request_schedule: {
+                                pending: {
+                                    class1: "ti-time c-orange-500",
+                                    class2: "bgc-orange-100 c-orange-800",
+                                    label: "PENDING"
+                                },
+                                approved: {
+                                    class1: "ti-check c-green-500",
+                                    class2: "bgc-green-100 c-green-800",
+                                    label: "APPROVED"
+                                },
+                                denied: {
+                                    class1: "ti-alert c-red-500",
+                                    class2: "bgc-red-100 c-red-800",
+                                    label: "DENIED",
+                                },
+                                expired: {
+                                    class1: "ti-close c-grey-500",
+                                    class2: "bgc-grey-100 c-grey-800",
+                                    label: "EXPIRED",
+                                },
                             }
                         }
                     }
@@ -404,6 +426,9 @@ Vue.mixin({
         },
         strToLower: function (string) {
             return string.toLowerCase();
+        },
+        isAfter: function (date) {
+            return moment(date).isAfter(moment())
         }
     }
 });

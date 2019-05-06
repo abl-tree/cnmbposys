@@ -626,7 +626,6 @@ export default {
 
                 this.form.schedule.schedule_id = event.id;
               }
-
             },
 
             eventRender(event, element) {

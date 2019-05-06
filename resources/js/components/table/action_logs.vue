@@ -1,5 +1,7 @@
 
 <template>
+  <!-- #Sales Report ==================== -->
+
   <div id="parent" class="bd bgc-white">
     <div class="layers">
       <div class="layer w-100 pX-20 pT-20 pB-10">
@@ -52,7 +54,7 @@
                     type="text"
                     class="p-10"
                     v-model="config.filter.search.value"
-                    @input="(config.no_display=false),processFilters(config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ,1)"
+                    @input="(searchBy()),(config.no_display=false),processFilters(config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ,1)"
                     style="width:300px;border-radius:5px;border:1px solid #ccc"
                     placeholder="Search..."
                   >
@@ -64,8 +66,7 @@
                     style="border-radius:5px;border:1px solid #ccc"
                   >
                     <option value="1">Agent</option>
-                    <option value="2">Team Leader</option>
-                    <option value="3">Operations Manager</option>
+                    <option value="2" disabled>Cluster</option>
                   </select>
                 </div>
               </div>
@@ -79,7 +80,7 @@
             v-for="(tab,index) in config.tabs"
             :key="tab.id"
             class="col text-center pX-0 cur-p"
-            @click="(config.selected_tab = index),(config.selected_page=1),processFilters(config.filter.search.value=='' ? tab.code : 'search' ,1)"
+            @click="(config.selected_tab = index),(config.selected_page=1),processFilters(tab.code,1)"
           >
             <span
               class="text-center w-100 pY-10 badge-c"
@@ -173,42 +174,17 @@
                   </span>
                 </th>
                 <th class="bdwT-0">
-                  Team Leader
+                  Cluster
                   <span class="pull-right">
                     <span
                       class="ti-exchange-vertical cur-p"
-                      @click="(config.filter.sort.by='team_leader'),(config.filter.sort.order['team_leader'] = !config.filter.sort.order['team_leader']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                      @click="(config.filter.sort.by='cluster'),(config.filter.sort.order['cluster'] = !config.filter.sort.order['cluster']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
                     ></span>
                   </span>
                 </th>
-                <th class="bdwT-0">
-                  Operations Manager
-                  <span class="pull-right">
-                    <span
-                      class="ti-exchange-vertical cur-p"
-                      @click="(config.filter.sort.by='operations_manager'),(config.filter.sort.order['operations_manager'] = !config.filter.sort.order['operations_manager']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
-                    ></span>
-                  </span>
-                </th>
-                <th class="bdwT-0 text-center">
-                  Schedule
-                  <span class="pull-right">
-                    <span
-                      class="ti-exchange-vertical cur-p"
-                      @click="(config.filter.sort.by='schedule'),(config.filter.sort.order['schedule'] = !config.filter.sort.order['schedule']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
-                    ></span>
-                  </span>
-                </th>
+                <th class="bdwT-0 text-center">Schedule</th>
                 <th class="bdwT-0 text-center" data-toggle="tooltip" title="Scheduled Duration">SD</th>
-                <th class="bdwT-0 text-center">
-                  Attendance
-                  <span class="pull-right">
-                    <span
-                      class="ti-exchange-vertical cur-p"
-                      @click="(config.filter.sort.by='attendance'),(config.filter.sort.order['attendance'] = !config.filter.sort.order['attendance']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
-                    ></span>
-                  </span>
-                </th>
+                <th class="bdwT-0 text-center">Attendance</th>
                 <th class="bdwT-0 text-center">Logs</th>
                 <th class="bdwT-0 text-center">
                   <span data-toggle="tooltip" title="Work Duration">WD</span>
@@ -233,7 +209,6 @@
                   <td-personnel
                     :personnel="{full_name:datum.info.full_name,email:datum.info.email,}"
                   ></td-personnel>
-                  <td-personnel :personnel="datum.info.tl"></td-personnel>
                   <td-personnel :personnel="datum.info.om"></td-personnel>
                   <td-schedule
                     :schedule="!isEmpty(datum.schedule)?{start:datum.schedule.start_event,end:datum.schedule.end_event}:null"
@@ -244,6 +219,7 @@
                   <td-rendered-hours :schedule="datum.schedule"></td-rendered-hours>
                   <td-nonbillable-ot :schedule="datum.schedule" :index="index"></td-nonbillable-ot>
                   <b-popover
+                    v-if="datum.schedule.overtime.second>0"
                     triggers="focus"
                     placement="auto"
                     :target="'ot-popover-'+index"
@@ -259,6 +235,7 @@
                       >{{datum.schedule.overtime.nonbillable.time}}</span>
                     </div>
                     <vue-timepicker v-model="config.overtime.approve.time" format="HH:mm:ss"></vue-timepicker>
+                    <b-button variant="danger" size="sm">Bill</b-button>
                   </b-popover>
                   <td-break-duration :schedule="datum.schedule"></td-break-duration>
                   <td-billable-hours :schedule="datum.schedule"></td-billable-hours>
@@ -397,10 +374,7 @@ export default {
             by: "agent",
             order: {
               agent: true,
-              team_leader: true,
-              schedule: true,
-              attendance: true,
-              operations_manager: true
+              cluster: true
             }
           },
           search: {
@@ -459,6 +433,7 @@ export default {
               }
               obj.push(tmp);
             }
+            console.log(obj);
             obj = [...new Set([].concat(...obj.map(a => a)))];
             this.config.data.all = obj;
             this.config.data.present = obj.filter(function(present) {
@@ -481,12 +456,22 @@ export default {
     calendarFormat: function(date) {
       return moment(date).calendar();
     },
+    ifReady: function(time_in, sched_in) {
+      if (new Date(time_in) > new Date(sched_in)) {
+        return false;
+      } else if (new Date(time_in) < new Date(sched_in)) {
+        return true;
+      } else {
+        return true;
+      }
+    },
     paginate: function(obj, page, per_page) {
       var page = page,
         per_page = per_page,
         offset = (page - 1) * per_page,
         paginatedItems = obj.slice(offset).slice(0, per_page),
         total_pages = Math.ceil(obj.length / per_page);
+      // this.local.agents.selected_index = 0;
       this.config.filter.data = {
         data: paginatedItems,
         cur: page,
@@ -495,15 +480,13 @@ export default {
         total_result: obj.length,
         total_pages: total_pages
       };
+      // console.log(this.config.filter.data);
       this.config.loader = false;
       if (this.config.filter.data.total_result == 0) {
         this.config.no_display = true;
       }
     },
     processFilters: function(tabCode, page) {
-      if (this.config.filter.search.value != "") {
-        this.searchBy();
-      }
       this.paginate(
         this.columnSort(this.config.data[tabCode]),
         page,
@@ -511,21 +494,16 @@ export default {
       );
     },
     searchBy: function() {
-      if (this.config.filter.search.option == 1) {
+      if (this.config.filter.search.option === 1) {
         // agent
         this.config.data.search = this.config.data[
           this.config.tabs[this.config.selected_tab].code
         ].filter(this.getAgentSearch);
-      } else if (this.config.filter.search.option == 2) {
-        // tl
+      } else if (this.config.filter.search.option === 2) {
+        // cluster
         this.config.data.search = this.config.data[
           this.config.tabs[this.config.selected_tab].code
-        ].filter(this.getTeamLeaderSearch);
-      } else if (this.config.filter.search.option == 3) {
-        // om
-        this.config.data.search = this.config.data[
-          this.config.tabs[this.config.selected_tab].code
-        ].filter(this.getOperationsManagerSearch);
+        ].filter(this.getClusterSearch);
       }
     },
     getAgentSearch: function(index) {
@@ -534,14 +512,8 @@ export default {
         .toLowerCase()
         .includes(this.config.filter.search.value.trim().toLowerCase());
     },
-    getTeamLeaderSearch: function(index) {
-      return index.info.tl.full_name
-        .trim()
-        .toLowerCase()
-        .includes(this.config.filter.search.value.trim().toLowerCase());
-    },
-    getOperationsManagerSearch: function(index) {
-      return index.info.om.full_name
+    getClusterSearch: function(index) {
+      return index.info.operations_manager.full_name
         .trim()
         .toLowerCase()
         .includes(this.config.filter.search.value.trim().toLowerCase());
@@ -579,21 +551,9 @@ export default {
           nameA = a.info.full_name.toLowerCase();
           nameB = b.info.full_name.toLowerCase();
           break;
-        case "operations_manager":
-          nameA = b.info.om.full_name.toLowerCase();
-          nameB = a.info.om.full_name.toLowerCase();
-          break;
-        case "team_leader":
-          nameA = b.info.tl.full_name.toLowerCase();
-          nameB = a.info.tl.full_name.toLowerCase();
-          break;
-        case "schedule":
-          nameA = b.schedule.start_event;
-          nameB = a.schedule.start_event;
-          break;
-        case "attendance":
-          nameA = b.attendance;
-          nameB = a.attendance;
+        case "cluster":
+          nameA = b.info.operations_manager.full_name.toLowerCase();
+          nameB = a.info.operations_manager.full_name.toLowerCase();
           break;
       }
       return { a: nameA, b: nameB };
