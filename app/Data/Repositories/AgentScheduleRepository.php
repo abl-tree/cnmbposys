@@ -234,13 +234,14 @@ class AgentScheduleRepository extends BaseRepository
             $auth_id <= 0 )
         {
             $logged_in_user = $this->user->find($auth_id);
-            $current_employee = isset($data['user_id']) ? $this->user->find($data['user_id']) : $this->user->find($data['id']);
+            $current_employee = isset($data['user_id']) ? $this->user->find($data['user_id']) : $this->user->find($agent_schedule->user_id);
             if (!$logged_in_user) {
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "User ID is not available.",
                 ]);
             }
+            
             $logged_data = [
                 "user_id" => $auth_id,
                 "action" => "POST",
@@ -253,7 +254,7 @@ class AgentScheduleRepository extends BaseRepository
         
         $notification = $this->notification_repo->triggerNotification([
             'sender_id' => $auth_id,
-            'recipient_id' => $data['user_id'],
+            'recipient_id' => isset($data['user_id']) ? $data['user_id'] : $agent_schedule->user_id,
             'type' => 'schedules.assign',
             'type_id' => $agent_schedule->id
         ]);
