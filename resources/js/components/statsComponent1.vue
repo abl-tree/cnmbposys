@@ -40,7 +40,7 @@ export default {
           on_break: "/api/v1/schedules/stats?filter=on-break",
           working: "/api/v1/schedules/stats?filter=working",
           tardy: "/api/v1/schedules/stats?filter=absent",
-          leave: "/api/v1/schedules/stats?filter=leave",
+          leave: "/api/v1/schedules/stats?filter=on-leave",
         }
       },
       stats: {
@@ -53,7 +53,7 @@ export default {
         on_break: "On-Break",
         working: "Working",
         tardy: "Tardy",
-        leave: "/api/v1/schedules/stats?filter=leave",
+        leave: "On-Leave",
 
       },
       spData4: [],

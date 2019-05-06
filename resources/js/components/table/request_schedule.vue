@@ -5,7 +5,7 @@
   <div id="parent" class="bd bgc-white">
     <div class="layers">
       <div class="layer w-100 p-20">
-        <h6 class="lh-1">Today's Activity</h6>
+        <h6 class="lh-1">{{config.table_name}}</h6>
       </div>
 
       <div class="layer pX-20 w-100">
@@ -108,8 +108,7 @@
               </tr>
             </thead>
             <tbody>
-                <template v-for="datum in table.data">
-                    <tr>
+                    <tr v-for="datum in config.filter.data.data" :key="datum.id">
                         <td style="font-size:.95em">
                             <div>
                             <div class="fw-600">
@@ -136,7 +135,6 @@
                         </td>
                         <td style='font-size:.95em'><div class='c-grey-500'>No remarks</div></td>
                     </tr>
-                </template>
                 <!-- <tr>
                 <td style='font-size:.95em'><div class="fw-600">Agent Name</div><div><i class="ti-email c-grey-400 mR-5"></i>agent@gmail.com</div></td>
                 <td style='font-size:.95em'><div>Vacation Leave</div></td>
@@ -286,6 +284,11 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.table.data = res.meta.request_schedules;
+          this.config.data.all = res.meta.request_schedules;
+          this.config.data.pending = res.meta.request_schedules.filter(this.getPending); 
+          this.config.data.denied = res.meta.request_schedules.filter(this.getDenied); 
+          this.config.data.approved = res.meta.request_schedules.filter(this.getApproved); 
+          this.config.data.expired = res.meta.request_schedules.filter(this.getExpired); 
           this.changeTableTab("all", 1);
         })
         .catch(err => {
@@ -321,49 +324,23 @@ export default {
       };
       // console.log(this.config.filter.data);
     },
-    hasSchedule: function(work) {
-      return !this.isEmpty(work.schedule);
+    
+    getExpired: function(status) {
+      return !this.isAfter(status.start_date)
     },
-    workSchedule: function(work) {
-      return work.schedule[0].title_id == 1;
+    getPending: function(status) {
+      return this.isAfter(status.start_date) && status.status=="pending"
     },
-    leaveSchedule: function(work) {
-      return work.schedule[0].title_id > 1 && work.schedule[0].title_id < 8;
+    getDenied: function(status) {
+      return this.isAfter(status.start_date) && status.status=="denied"
     },
-    isPresent: function(work) {
-      return work.schedule[0].is_present == 1;
-    },
-    getLeave: function(work) {
-      return this.hasSchedule(work) && this.leaveSchedule(work);
-    },
-    getPresent: function(work) {
-      return (
-        this.hasSchedule(work) && this.workSchedule(work) && isPresent(work)
-      );
-    },
-    getScheduled: function(work) {
-      return this.hasSchedule(work) && this.workSchedule(work);
-    },
-    getNoShow: function(work) {
-      return (
-        this.hasSchedule(work) &&
-        this.workSchedule(work) &&
-        !this.isPresent(work)
-      );
-    },
-    getPresent: function(work) {
-      return (
-        this.hasSchedule(work) &&
-        this.workSchedule(work) &&
-        this.isPresent(work)
-      );
-    },
-    getNoSchedule: function(work) {
-      return !this.hasSchedule(work);
+    getApproved: function(status) {
+      return this.isAfter(status.start_date) && status.status=="approved"
     },
     changeTableTab: function(tabCode, page) {
       this.paginate(
-        this.agentSort(this.config.data[tabCode]),
+        // this.agentSort(this.config.data[tabCode]),
+        this.config.data[tabCode],
         page,
         this.config.filter.no_records
       );
@@ -413,6 +390,10 @@ export default {
             result="APPROVED";
             class1="ti-check c-green-500";
             class2="bgc-green-100 c-green-800";
+        }else if(status=='denied'){
+            result="DENIED";
+            class1="ti-alert c-red-500";
+            class2="bgc-red-100 c-red-800";
         }
         return {c1:class1,c2:class2,label:result}
     },

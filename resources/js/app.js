@@ -20,6 +20,50 @@ $(function () {
 Vue.mixin({
     data() {
         return {
+            component: {
+                table: {
+                    td: {
+                        badges: {
+                            no_schedule: {
+                                class: 'bgc-grey-200 c-grey-800',
+                                label: "NO SCHEDULE"
+                            },
+                            attendance: {
+                                present: {
+                                    class: 'bgc-green-200 c-green-800',
+                                    label: "PRESENT"
+                                },
+                                no_show: {
+                                    class: 'bgc-grey-200 c-grey-800',
+                                    label: "NO SHOW"
+                                },
+                                absent: {
+                                    class: 'bgc-grey-200 c-grey-800',
+                                    label: "ABSENT"
+                                },
+                                leave: {
+                                    class: 'bgc-yellow-200 c-yellow-800',
+                                    label: "LEAVE"
+                                },
+                                off_duty: {
+                                    class: 'bgc-grey-300 c-grey-800',
+                                    label: "OFF-DUTY"
+                                },
+                                none: {
+                                    class: 'bgc-light-blue-100 c-light-blue-800',
+                                    label: "NO ATTENDANCE"
+                                },
+                            },
+                            attendance_log: {
+                                no_logs: {
+                                    class: "bgc-grey-200 c-grey-800",
+                                    label: "NO LOGS"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             profile: {
                 id: "",
                 name: {
@@ -350,6 +394,16 @@ Vue.mixin({
         },
         split: function (str, sep, index) {
             return str.split(sep)[index];
+        },
+        dtFormat: function (date, format) {
+            return moment(date).format(format);
+        },
+        getDurationBySeconds: function (seconds) {
+            let hrs = seconds / 60 / 60;
+            return Math.round(hrs * 100) / 100;
+        },
+        strToLower: function (string) {
+            return string.toLowerCase();
         }
     }
 });
@@ -358,6 +412,10 @@ Vue.mixin({
 import "fullcalendar/dist/fullcalendar.min.css";
 import FullCalendar from "vue-full-calendar";
 Vue.use(FullCalendar);
+import BootstrapVue from "bootstrap-vue";
+Vue.use(BootstrapVue);
+
+
 
 import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
 import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
@@ -402,7 +460,6 @@ Vue.component("mini-calendar", mini_calendar);
 import trackerGraph from "./components/trackerGraph.vue";
 Vue.component("work-graph", trackerGraph);
 
-
 import wr_modal from "./components/dailyWorkReportModal.vue";
 Vue.component("daily-work-report-modal", wr_modal);
 
@@ -418,6 +475,27 @@ Vue.component("today-table-tr", today_table_tr);
 import request_schedule from "./components/table/request_schedule.vue";
 Vue.component("request-schedule", request_schedule);
 
+
+import tr_loader from "./components/table/tr_loader.vue";
+Vue.component("tr-loader", tr_loader);
+import td_personnel from "./components/table/td_personnel.vue";
+Vue.component("td-personnel", td_personnel);
+import td_schedule from "./components/table/td_schedule.vue";
+Vue.component("td-schedule", td_schedule);
+import td_regular_hour_duration from "./components/table/td_regular_hour_duration.vue";
+Vue.component("td-regular-hour-duration", td_regular_hour_duration);
+import td_attendance from "./components/table/td_attendance.vue";
+Vue.component("td-attendance", td_attendance);
+import td_attendance_log from "./components/table/td_attendance_log.vue";
+Vue.component("td-attendance-log", td_attendance_log);
+import td_rendered_hours from "./components/table/td_rendered_hours.vue";
+Vue.component("td-rendered-hours", td_rendered_hours);
+import td_nonbillable_ot from "./components/table/td_nonbillable_ot.vue";
+Vue.component("td-nonbillable-ot", td_nonbillable_ot);
+import td_break_duration from "./components/table/td_break_duration.vue";
+Vue.component("td-break-duration", td_break_duration);
+import td_billable_hours from "./components/table/td_billable_hours.vue";
+Vue.component("td-billable-hours", td_billable_hours);
 
 
 
