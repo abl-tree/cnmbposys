@@ -202,7 +202,7 @@ class User extends BaseAuthModel
             $user = null;
         }
         $team_leader = [];
-        if(isset($info) && isset($user)){
+        if(isset($info) && isset($user) && $user->access_id == 16){
             $team_leader = [
                 'id' => $info->id,
                 'full_name' => $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname,
@@ -231,7 +231,7 @@ class User extends BaseAuthModel
             $user = null;
         }
         $operations_manager = [];
-        if(isset($info) && isset($user)){
+        if(isset($info) && isset($user) && $user->access_id == 15){
             $operations_manager = [
                 'id' => $info->id,
                 'full_name' => $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname,
