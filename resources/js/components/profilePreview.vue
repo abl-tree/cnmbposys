@@ -198,7 +198,7 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          var obj = res.meta.metadata[0];
+          var obj = res.meta.metadata;
           this.profile.name.first = obj.fname;
           this.profile.name.middle = obj.mname;
           this.profile.name.last = obj.lname;

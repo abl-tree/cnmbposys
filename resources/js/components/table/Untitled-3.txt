@@ -1,0 +1,120 @@
+
+              <template v-for="datum in 5" v-if="config.loader==true">
+                <tr :key="datum.id">
+                  <td style="font-size:.95em">
+                    <div>
+                      <div class="fw-600">
+                        <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                          <div class="loader-12 pull-right"></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                          <div class="loader-12 pull-right"></div>
+                        </div>
+                      </div>
+                        <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                          <div class="loader-12"></div>
+                        </div>
+                    </div>
+                  </td>
+                  <td style="font-size:.95em">
+                    <div>
+                      <div class="fw-600">
+                        <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                          <div class="loader-12 pull-right"></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                          <div class="loader-12 pull-right"></div>
+                        </div>
+                      </div>
+                        <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                          <div class="loader-12"></div>
+                        </div>
+                    </div>
+                  </td>
+                   
+                  <td style="font-size:.95em" class="text-center">
+                    <div>
+                      <div>
+                        <div>
+                          <div>
+                            <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                              <div class="loader-12"></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                              <div class="loader-12"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-size:.95em" class="text-center">
+                    <div class="mY-2" v-if="config.loader==true" style="width:20px;height:20px">
+                      <div class="loader-12"></div>
+                    </div>
+                  </td>
+                  <td style="font-size:.95em" class="text-center">
+                    <div class="mY-2" v-if="config.loader==true" style="width:20px;height:20px">
+                      <div class="loader-12"></div>
+                    </div>
+                  </td>
+                  <td style="font-size:.95em" class="text-center">
+                    <div class="mY-2" v-if="config.loader==true" style="width:20px;height:20px">
+                      <div class="loader-12"></div>
+                    </div>
+                  </td>
+                  <td style="font-size:.99em" class="text-center">
+                    <div class="mY-2" v-if="config.loader==true" style="width:80px;height:20px">
+                      <div class="loader-12"></div>
+                    </div>
+                  </td>
+                  <td style="font-size:.95em" class="text-center">
+                    <div>
+                      <div>
+                        <div>
+                          <div>
+                            <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                              <div class="loader-12"></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div class="mY-2" v-if="config.loader==true" style="width:100px;height:20px">
+                              <div class="loader-12"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-size:.95em" class="text-center">
+                    <div class="mY-2" v-if="config.loader==true" style="width:20px;height:20px">
+                      <div class="loader-12"></div>
+                    </div>
+                  </td>
+                  
+                  <td style="font-size:.95em" class="text-center">
+                    <div>
+                      <div>
+                        <div>
+                          <div>
+                            <div class="mY-2" v-if="config.loader==true" style="width:20px;height:20px">
+                              <div class="loader-12"></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div class="mY-2" v-if="config.loader==true" style="width:20px;height:20px">
+                              <div class="loader-12"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>

@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use DB;
 use App\Data\Repositories\LogsRepository;
+use App\Data\Repositories\NotificationRepository;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -31,14 +32,17 @@ class AgentScheduleRepository extends BaseRepository
         $user_info,
         $event_title,
         $excel_date,
-        $logs;
+        $logs,
+        $notification_repo;
+
     public function __construct(
         AgentSchedule $agentSchedule,
         User $user,
         UserInfo $userInfo,
         EventTitle $eventTitle,
         ExcelDateService $excelDate,
-        LogsRepository $logs_repo
+        LogsRepository $logs_repo,
+        NotificationRepository $notificationRepository
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
@@ -46,6 +50,7 @@ class AgentScheduleRepository extends BaseRepository
         $this->event_title = $eventTitle;
         $this->excel_date = $excelDate;
         $this->logs = $logs_repo;
+        $this->notification_repo = $notificationRepository;
     }
 
     public function excelData($data)
@@ -243,13 +248,21 @@ class AgentScheduleRepository extends BaseRepository
             ];
             $this->logs->logsInputCheck($logged_data);
         }
+
+        // insertion
+        
+        $notification = $this->notification_repo->triggerNotification([
+            'sender_id' => $auth_id,
+            'recipient_id' => $data['user_id'],
+            'type' => 'schedules.assign',
+            'type_id' => $agent_schedule->id
+        ]);
+
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully defined an agent schedule.",
             "parameters" => $agent_schedule,
         ]);
-
-        // insertion
 
     }
 
@@ -483,6 +496,11 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'end_event',
                 'operator' => '>=',
                 'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
             ]));
 
             $result = $this->fetchGeneric($data, $result);
@@ -506,6 +524,11 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'agent_schedules.end_event',
                 'operator' => '>=',
                 'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
             ]));
 
             $result = $this->fetchGeneric($data, $result);
@@ -551,6 +574,31 @@ class AgentScheduleRepository extends BaseRepository
                 $result = $result->where('is_present', 1)->where('is_working', 0);
             }
 
+        } else if(isset($data['filter']) && $data['filter'] === 'on-leave') {
+
+            $title = "Agent on leave.";
+
+            $sparkline = $this->sparkline($data, $result, $data['filter']);
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'start_event',
+                'operator' => '<=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'end_event',
+                'operator' => '>=',
+                'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '!=',
+                'value' => 1
+            ]
+        ));
+
+            $result = $this->fetchGeneric($data, $result);
+
         } else {
 
             $sparkline = $this->sparkline($data, $result);
@@ -566,6 +614,11 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'end_event',
                 'operator' => '>=',
                 'value' => Carbon::now()
+            ],
+            [
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
             ]));
 
             $result = $this->fetchGeneric($data, $result);
@@ -609,32 +662,36 @@ class AgentScheduleRepository extends BaseRepository
 
         $now = $now->addDays(1)->format('Y-m-d');
 
-        if(!$filter) {
+        if($filter === 'working') {
             $data['where_between'] = array_merge($data['where_between'], array([
                 'target' => 'start_event',
                 'value' => [$previous, $now]
             ])); 
-
-            $data['columns'] = array_merge($data['columns'], [DB::raw('count(*) as count')]);
-
-            $data['groupby'] = [DB::raw('date(start_event)')];
-
-            $count_attr = 'count';
-
-            $only_attr = ['date', 'count'];
-        } else if($filter === 'working') {
-            $data['where_between'] = array_merge($data['where_between'], array([
-                'target' => 'start_event',
-                'value' => [$previous, $now]
+            
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
             ])); 
 
-            $data['relations'] = array('attendances' => function($query) {
-                $query->groupBy('schedule_id');
-            });
+            $data['relations'] = array('attendances');
 
             $count_attr = 'attendances';
 
             $only_attr = ['date', 'attendances'];
+        } else if($filter === 'on-leave') {
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ])); 
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '!=',
+                'value' => 1
+            ])); 
+
+            $only_attr = ['start_event', 'end_event'];
         } else if($filter === 'off-duty') {
             $data['relations'] = array('schedule' => function($query) use ($previous, $now){
                 $query->whereBetween('start_event', [$previous, $now]);
@@ -648,10 +705,29 @@ class AgentScheduleRepository extends BaseRepository
                 'target' => 'start_event',
                 'value' => [$previous, $now]
             ])); 
+            
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
+            ])); 
 
             $count_attr = 'attendances';
 
-            $only_attr = ['date', 'attendances'];
+            $only_attr = ['date', 'attendances', 'start_event', 'end_event'];
+        } else {
+            $data['where_between'] = array_merge($data['where_between'], array([
+                'target' => 'start_event',
+                'value' => [$previous, $now]
+            ])); 
+
+            $data['where'] = array_merge($data['where'], array([
+                'target' => 'title_id',
+                'operator' => '=',
+                'value' => 1
+            ])); 
+
+            $only_attr = ['start_event', 'end_event'];
         }
 
         if($filter !== 'off-duty') {
@@ -670,30 +746,102 @@ class AgentScheduleRepository extends BaseRepository
 
                 foreach ($result as $resKey => $value) {
 
+                    $dates = array();
+
                     if($filter === 'working') {
 
-                        $value[$count_attr] = count($value[$count_attr]);
+                        if(!empty($value[$count_attr])) {
+
+                            $temp = array();
+
+                            $time_in = Carbon::parse($value[$count_attr][0]['time_in'])->format('Y-m-d');
+    
+                            $time_out = ($value[$count_attr][count($value[$count_attr]) - 1]['time_out']) ? Carbon::parse($value[$count_attr][count($value[$count_attr]) - 1]['time_out'])->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+
+                            $dates = CarbonPeriod::create($time_in, $time_out);
+
+                        }
+
+                        foreach ($dates as $filtered_date) {
+                            if(Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
+                                $count += 1;
+                            }
+                        }
+
+                    } else if($filter === 'on-leave') {
+
+                        $emp_sched = array();
+
+                        $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+
+                        $end = Carbon::parse($value['end_event'])->format('Y-m-d');
+
+                        $periods = CarbonPeriod::create($start, $end);
+
+                        foreach ($periods as $period) {
+                            $emp_sched[] = $period->format('Y-m-d');
+                        }
+
+                        if(in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+                            $count += 1;
+                        }
 
                     } else if($filter === 'absent'){
 
+                        $temp = array();
+
+                        $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+
+                        $end = ($value['end_event']) ? Carbon::parse($value['end_event'])->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+
+                        $dates = CarbonPeriod::create($start, $end);
+
                         $value[$count_attr] = (count($value[$count_attr]) > 0) ? 0 : 1;
+
+                        foreach ($dates as $filtered_date) {
+                            if(Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
+                                $count += $value[$count_attr];
+                            }
+                        }
 
                     } else if($filter === 'off-duty') {
 
                         $emp_sched = array();
 
                         foreach ($value['schedule'] as $key => $value) {
-                            $emp_sched[] = $value['date']['ymd'];
+                            $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+
+                            $end = Carbon::parse($value['end_event'])->format('Y-m-d');
+
+                            $periods = CarbonPeriod::create($start, $end);
+
+                            foreach ($periods as $period) {
+                                $emp_sched[] = $period->format('Y-m-d');
+                            }
                         }
 
                         if(!in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
                             $count += 1;
                         }
                         
-                    }
+                    } else {
 
-                    if(Carbon::parse($value['date']['ymd'])->equalTo($date) && $filter !== 'off-duty') {
-                        $count += $value[$count_attr];
+                        $emp_sched = array();
+    
+                        $start = Carbon::parse($value['start_event'])->format('Y-m-d');
+    
+                        $end = Carbon::parse($value['end_event'])->format('Y-m-d');
+    
+                        $periods = CarbonPeriod::create($start, $end);
+                        
+                        foreach ($periods as $period) {
+                            $emp_sched[] = $period->format('Y-m-d');
+                        }
+    
+                        if(in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+                            $count += 1;
+                        }
+    
                     }
                 }
 
@@ -731,21 +879,28 @@ class AgentScheduleRepository extends BaseRepository
 
         } else if($option === 'report') {
 
-            if(isset($data['start']) && isset($data['end']) && isset($data['userid'])) {
+            if(isset($data['start']) && isset($data['end'])) {
 
                 $title = "Work Reports (".$data['start']." to ".$data['end'].")";
 
                 $parameters = [
-                    'userid' => $data['userid'],
                     'start' => $data['start'],
                     'end' => $data['end']
                 ];
 
-                $data['where'] = array([
-                    'target' => 'id', 
-                    'operator' => '=', 
-                    'value' => $data['userid']
-                ]);
+                if(isset($data['userid'])) {
+                    $parameters = [
+                        'userid' => $data['userid'],
+                        'start' => $data['start'],
+                        'end' => $data['end']
+                    ];
+
+                    $data['where'] = array([
+                        'target' => 'id', 
+                        'operator' => '=', 
+                        'value' => $data['userid']
+                    ]);
+                }
 
                 $data['relations'] = array('schedule' => function($query) use ($parameters){
                     $end = Carbon::parse($parameters['end']);

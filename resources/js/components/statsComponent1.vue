@@ -19,7 +19,7 @@
         <div class="peer">
           <span
             class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500"
-          >{{spData4[9]}}</span>
+          >{{nowCount}}</span>
         </div>
       </div>
     </div>
@@ -39,7 +39,8 @@ export default {
           off_duty: "/api/v1/schedules/stats?filter=off-duty",
           on_break: "/api/v1/schedules/stats?filter=on-break",
           working: "/api/v1/schedules/stats?filter=working",
-          tardy: "/api/v1/schedules/stats?filter=absent"
+          tardy: "/api/v1/schedules/stats?filter=absent",
+          leave: "/api/v1/schedules/stats?filter=on-leave",
         }
       },
       stats: {
@@ -51,7 +52,9 @@ export default {
         off_duty: "Off-Duty",
         on_break: "On-Break",
         working: "Working",
-        tardy: "Tardy"
+        tardy: "Tardy",
+        leave: "On-Leave",
+
       },
       spData4: [],
       // margin
@@ -66,7 +69,8 @@ export default {
         stroke: "#d14",
         strokeOpacity: 1,
         strokeDasharray: "3, 3"
-      }
+      },
+      nowCount:0,
     };
   },
   methods: {
@@ -81,6 +85,7 @@ export default {
           // console.log(res);
           if (res.code == 200) {
             this.spData4 = res.meta.sparkline;
+            this.nowCount = res.meta.count;
           }
         })
         .catch(err => console.log(err));

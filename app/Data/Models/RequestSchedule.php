@@ -49,7 +49,7 @@ class RequestSchedule extends BaseModel
         'mark' => 'nullable|max:191',
     ];
 
-    protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'title_id'];
+    protected $hidden = ['deleted_at', 'title_id'];
 
     public function applicant(){
         return $this->hasOne('App\User', "id", "applicant" );

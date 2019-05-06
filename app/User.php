@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use App\User;
 use App\Data\Models\UserInfo;
 use App\Data\Models\AccessLevelHierarchy;
 use App\BaseAuthModel;
@@ -195,15 +196,24 @@ class User extends BaseAuthModel
         }else{
             $info = null;
         }
-        $name = null;
         if(isset($info)){
-            $name = $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname;
+            $user = User::where('uid', $id)->first();
+        }else{
+            $user = null;
         }
-        return $name;
+        $team_leader = [];
+        if(isset($info) && isset($user) && $user->access_id == 16){
+            $team_leader = [
+                'id' => $info->id,
+                'full_name' => $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname,
+                'email' => $user->email,
+                'image' => $info->image
+            ];
+        }
+        return $team_leader;
     }
 
     public function getOperationsManagerAttribute(){
-        $name = null;
         if(isset($this->hierarchy)){
             $tl_id =  $this->hierarchy->parent_id;
         }else{
@@ -216,9 +226,20 @@ class User extends BaseAuthModel
             $info = UserInfo::find($om_id);
         }
         if(isset($info)){
-            $name = $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname;
+            $user = User::where('uid', $om_id)->first();
+        }else{
+            $user = null;
         }
-        return $name;
+        $operations_manager = [];
+        if(isset($info) && isset($user) && $user->access_id == 15){
+            $operations_manager = [
+                'id' => $info->id,
+                'full_name' => $info->firstname . ' ' . $info->middlename . ' ' . $info->lastname,
+                'email' => $user->email,
+                'image' => $info->image
+            ];
+        }
+        return $operations_manager;
     }
 
 }

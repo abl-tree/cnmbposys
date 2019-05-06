@@ -20,6 +20,72 @@ $(function () {
 Vue.mixin({
     data() {
         return {
+            component: {
+                table: {
+                    td: {
+                        badges: {
+                            no_schedule: {
+                                class: 'bgc-grey-200 c-grey-800',
+                                label: "NO SCHEDULE"
+                            },
+                            attendance: {
+                                present: {
+                                    class: 'bgc-green-200 c-green-800',
+                                    label: "PRESENT"
+                                },
+                                no_show: {
+                                    class: 'bgc-grey-200 c-grey-800',
+                                    label: "NO SHOW"
+                                },
+                                absent: {
+                                    class: 'bgc-grey-200 c-grey-800',
+                                    label: "ABSENT"
+                                },
+                                leave: {
+                                    class: 'bgc-yellow-200 c-yellow-800',
+                                    label: "LEAVE"
+                                },
+                                off_duty: {
+                                    class: 'bgc-grey-300 c-grey-800',
+                                    label: "OFF-DUTY"
+                                },
+                                none: {
+                                    class: 'bgc-light-blue-100 c-light-blue-800',
+                                    label: "NO ATTENDANCE"
+                                },
+                            },
+                            attendance_log: {
+                                no_logs: {
+                                    class: "bgc-grey-200 c-grey-800",
+                                    label: "NO LOGS"
+                                }
+                            },
+                            request_schedule: {
+                                pending: {
+                                    class1: "ti-time c-orange-500",
+                                    class2: "bgc-orange-100 c-orange-800",
+                                    label: "PENDING"
+                                },
+                                approved: {
+                                    class1: "ti-check c-green-500",
+                                    class2: "bgc-green-100 c-green-800",
+                                    label: "APPROVED"
+                                },
+                                denied: {
+                                    class1: "ti-alert c-red-500",
+                                    class2: "bgc-red-100 c-red-800",
+                                    label: "DENIED",
+                                },
+                                expired: {
+                                    class1: "ti-close c-grey-500",
+                                    class2: "bgc-grey-100 c-grey-800",
+                                    label: "EXPIRED",
+                                },
+                            }
+                        }
+                    }
+                }
+            },
             profile: {
                 id: "",
                 name: {
@@ -247,6 +313,12 @@ Vue.mixin({
                 });
         },
 
+        calendarFormat: function (date) {
+            return moment(date).calendar();
+        },
+        fromNow: function (date) {
+            return moment(date).fromNow();
+        },
 
         store: function (obj, action, formName) {
             let pageurl = this.endpoints[action][formName];
@@ -344,6 +416,19 @@ Vue.mixin({
         },
         split: function (str, sep, index) {
             return str.split(sep)[index];
+        },
+        dtFormat: function (date, format) {
+            return moment(date).format(format);
+        },
+        getDurationBySeconds: function (seconds) {
+            let hrs = seconds / 60 / 60;
+            return Math.round(hrs * 100) / 100;
+        },
+        strToLower: function (string) {
+            return string.toLowerCase();
+        },
+        isAfter: function (date) {
+            return moment(date).isAfter(moment())
         }
     }
 });
@@ -352,6 +437,10 @@ Vue.mixin({
 import "fullcalendar/dist/fullcalendar.min.css";
 import FullCalendar from "vue-full-calendar";
 Vue.use(FullCalendar);
+import BootstrapVue from "bootstrap-vue";
+Vue.use(BootstrapVue);
+
+
 
 import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
 import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
@@ -380,7 +469,7 @@ Vue.component("sanction-level", sanction_level);
 import sanction_type from "./components/table/sanction_type.vue";
 Vue.component("sanction-type", sanction_type);
 
-import incident_report from "./components/table/incident_report.vue";
+import incident_report from "./components/table/incident_report1.vue";
 Vue.component("incident-report", incident_report);
 
 import received_ir from "./components/table/received_ir.vue";
@@ -396,12 +485,44 @@ Vue.component("mini-calendar", mini_calendar);
 import trackerGraph from "./components/trackerGraph.vue";
 Vue.component("work-graph", trackerGraph);
 
-
 import wr_modal from "./components/dailyWorkReportModal.vue";
 Vue.component("daily-work-report-modal", wr_modal);
 
 import today_activity from "./components/table/today_activity.vue";
 Vue.component("today-activity", today_activity);
+
+import work_log from "./components/table/work_log.vue";
+Vue.component("work-log", work_log);
+
+import today_table_tr from "./components/table/today_table_tr.vue";
+Vue.component("today-table-tr", today_table_tr);
+
+import request_schedule from "./components/table/request_schedule.vue";
+Vue.component("request-schedule", request_schedule);
+
+
+import tr_loader from "./components/table/tr_loader.vue";
+Vue.component("tr-loader", tr_loader);
+import td_personnel from "./components/table/td_personnel.vue";
+Vue.component("td-personnel", td_personnel);
+import td_schedule from "./components/table/td_schedule.vue";
+Vue.component("td-schedule", td_schedule);
+import td_regular_hour_duration from "./components/table/td_regular_hour_duration.vue";
+Vue.component("td-regular-hour-duration", td_regular_hour_duration);
+import td_attendance from "./components/table/td_attendance.vue";
+Vue.component("td-attendance", td_attendance);
+import td_attendance_log from "./components/table/td_attendance_log.vue";
+Vue.component("td-attendance-log", td_attendance_log);
+import td_rendered_hours from "./components/table/td_rendered_hours.vue";
+Vue.component("td-rendered-hours", td_rendered_hours);
+import td_nonbillable_ot from "./components/table/td_nonbillable_ot.vue";
+Vue.component("td-nonbillable-ot", td_nonbillable_ot);
+import td_break_duration from "./components/table/td_break_duration.vue";
+Vue.component("td-break-duration", td_break_duration);
+import td_billable_hours from "./components/table/td_billable_hours.vue";
+Vue.component("td-billable-hours", td_billable_hours);
+
+
 
 // import ZpUI from 'zp-crm-ui'
 import Sparkline from 'vue-sparklines'
@@ -414,6 +535,8 @@ Vue.use(VModal);
 import Notifications from "vue-notification";
 import velocity from "velocity-animate";
 
+
+import moment from "moment";
 ////// VUEINIT
 
 

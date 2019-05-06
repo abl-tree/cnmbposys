@@ -14,8 +14,12 @@ class EventTitlesSeeder extends Seeder
     {
         $data = array(
             array(
-                'title' => 'Work', 
+                'title' => 'Work(Regular)', 
                 'color' => '#f44e3b', 
+            ),
+            array(
+                'title' => 'Work(Regular)', 
+                'color' => '#aea1ff', 
             ),
             array(
                 'title' => 'Leave', 
