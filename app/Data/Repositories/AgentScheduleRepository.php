@@ -59,6 +59,7 @@ class AgentScheduleRepository extends BaseRepository
                 {
                     if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
                         $arr[] = array(
+                            "cluster" => $firstPage[$x + 3][1],
                             "email" => $firstPage[$x + 3][1],
                             "title_id" => 1,
                             "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][4]),
@@ -68,7 +69,6 @@ class AgentScheduleRepository extends BaseRepository
                 }
             }
         }
-
         $arr['auth_id'] = $data['auth_id'];
         $result = $this->bulkScheduleInsertion($arr);
         return $result;
@@ -101,6 +101,9 @@ class AgentScheduleRepository extends BaseRepository
            if($result->code != 200){
                $failed[] = $save;
                unset($data[$key]);
+           }
+           else {
+
            }
 
         }
