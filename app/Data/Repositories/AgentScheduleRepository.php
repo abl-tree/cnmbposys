@@ -9,6 +9,8 @@
 namespace App\Data\Repositories;
 ini_set('max_execution_time', 180);
 ini_set('memory_limit', '-1');
+
+use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\UserInfo;
 use App\Data\Models\EventTitle;
@@ -22,6 +24,7 @@ use Carbon\CarbonPeriod;
 use DB;
 use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
+use App\Data\Repositories\AccessLevelHierarchyRepository;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -33,6 +36,8 @@ class AgentScheduleRepository extends BaseRepository
         $event_title,
         $excel_date,
         $logs,
+        $access_level_repo,
+        $access_level,
         $notification_repo;
 
     public function __construct(
@@ -41,6 +46,8 @@ class AgentScheduleRepository extends BaseRepository
         UserInfo $userInfo,
         EventTitle $eventTitle,
         ExcelDateService $excelDate,
+        AccessLevelHierarchyRepository $access_level_repository,
+        AccessLevelHierarchy $access_level_model,
         LogsRepository $logs_repo,
         NotificationRepository $notificationRepository
     ) {
@@ -50,6 +57,8 @@ class AgentScheduleRepository extends BaseRepository
         $this->event_title = $eventTitle;
         $this->excel_date = $excelDate;
         $this->logs = $logs_repo;
+        $this->access_level_repo = $access_level_repository;
+        $this->access_level = $access_level_model;
         $this->notification_repo = $notificationRepository;
     }
 
@@ -64,7 +73,7 @@ class AgentScheduleRepository extends BaseRepository
                 {
                     if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
                         $arr[] = array(
-                            "cluster" => $firstPage[$x + 3][1],
+                            "cluster" => $firstPage[$x + 3][2],
                             "email" => $firstPage[$x + 3][1],
                             "title_id" => 1,
                             "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][4]),
@@ -83,7 +92,6 @@ class AgentScheduleRepository extends BaseRepository
     public function bulkScheduleInsertion($data = [])
     {
         $failed = [];
-
         if (isset ($data[0]['auth_id'])) {
             $auth_id = $data[0]['auth_id'];
             unset($data[0]);
@@ -107,9 +115,6 @@ class AgentScheduleRepository extends BaseRepository
                $failed[] = $save;
                unset($data[$key]);
            }
-           else {
-
-           }
 
         }
 
@@ -129,6 +134,7 @@ class AgentScheduleRepository extends BaseRepository
     public function defineAgentSchedule($data = [])
     {
         // data validation
+
         $auth_id = $data['auth_id'];
         unset($data['auth_id']);
         if (!isset($data['id'])) {
@@ -211,6 +217,17 @@ class AgentScheduleRepository extends BaseRepository
         // existence check
 
         // insertion
+        if (isset($data['cluster'])) {
+
+            $user_cluster = $this->user->where('email', $data['cluster'])->first();
+            $access_hierarchy = $this->access_level->where('child_id', $data['user_id'])->first();
+            $arr  = [
+                "id" => $access_hierarchy->id,
+                "parent_id" => $user_cluster->id,
+                "child_id" => $data['user_id']
+            ];
+            $this->access_level_repo->defineAccessLevelHierarchy($arr);
+        }
 
         if (isset($data['id'])) {
             $agent_schedule = $this->agent_schedule->find($data['id']);
