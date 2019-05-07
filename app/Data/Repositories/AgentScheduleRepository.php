@@ -221,12 +221,21 @@ class AgentScheduleRepository extends BaseRepository
 
             $user_cluster = $this->user->where('email', $data['cluster'])->first();
             $access_hierarchy = $this->access_level->where('child_id', $data['user_id'])->first();
-            $arr  = [
-                "id" => $access_hierarchy->id,
-                "parent_id" => $user_cluster->id,
-                "child_id" => $data['user_id']
-            ];
-            $this->access_level_repo->defineAccessLevelHierarchy($arr);
+            if ($access_hierarchy) {
+                $arr = [
+                    "id" => $access_hierarchy->id,
+                    "parent_id" => $user_cluster->id,
+                    "child_id" => $data['user_id']
+                ];
+            }
+            else {
+                $arr = [
+                    "parent_id" => $user_cluster->id,
+                    "child_id" => $data['user_id']
+                ];
+            }
+                $this->access_level_repo->defineAccessLevelHierarchy($arr);
+
         }
 
         if (isset($data['id'])) {
