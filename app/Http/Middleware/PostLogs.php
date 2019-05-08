@@ -31,7 +31,7 @@ class PostLogs
     {
         $response = $next($request);
         
-        if($response->getData()->code != 200){
+        if($response->getStatusCode() != 200){
             return $response;
         }
 
