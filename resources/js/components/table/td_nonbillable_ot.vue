@@ -5,7 +5,6 @@
         :id="'ot-popover-'+index"
         variant="link"
         class="p-0 m-0"
-        @click="config.overtime.approve.time=schedule.overtime.nonbillable.time"
         style="font-size:1em"
       >{{getDurationBySeconds(schedule.overtime.nonbillable.second)}}</b-button>
     </template>

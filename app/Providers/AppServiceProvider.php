@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
         //page data onload
 
 
-        \View::composer(['admin.partials.menu','admin.partials.topbar','admin.schedule.rta','admin.dashboard.rta','admin.report.rta','admin.dashboard.tl','admin.report.tl','admin.incident_report.*', 'admin.rtaeventrequest.*'],function($view){
+        \View::composer(['admin.partials.menu','admin.partials.topbar','admin.schedule.*','admin.dashboard.*','admin.report.*','admin.report.*','admin.incident_report.*', 'admin.event_request.*','admin.action_log.*'],function($view){
                 //topbar, sidenav,
             $id = auth()->user()->id;
             $access_level = auth()->user()->access_id;

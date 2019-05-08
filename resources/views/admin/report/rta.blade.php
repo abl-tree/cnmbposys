@@ -7,7 +7,7 @@
     <div class="masonry-sizer col-md-6"></div>
 
     <div class="masonry-item w-100">
-        <work-log></work-log>
+        <work-log :user-id="{{json_encode($pageOnload->id)}}"></work-log>
     </div>
 </div>
 @endsection

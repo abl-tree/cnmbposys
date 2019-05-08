@@ -244,21 +244,39 @@
                   <td-rendered-hours :schedule="datum.schedule"></td-rendered-hours>
                   <td-nonbillable-ot :schedule="datum.schedule" :index="index"></td-nonbillable-ot>
                   <b-popover
-                    triggers="focus"
+                    v-if="datum.schedule.overtime.nonbillable.second>0"
+                    triggers="click"
                     placement="auto"
                     :target="'ot-popover-'+index"
                     title="Overtime"
+                    @show="popupShow(datum.schedule.overtime)"
                   >
                     <div class="w-100 text-center">
                       <span class="c-grey-600" style="font-size:0.8em;">NonBillable(OT)</span>
-                    </div>
-                    <div class="w-100 text-center">
                       <span
-                        class="c-grey-600"
+                        class="c-grey-600 mL-5"
                         style="font-size:1em;"
                       >{{datum.schedule.overtime.nonbillable.time}}</span>
                     </div>
-                    <vue-timepicker v-model="config.overtime.approve.time" format="HH:mm:ss"></vue-timepicker>
+                    <div class="w-100 text-center">
+                      <span class="c-grey-600" style="font-size:0.8em;">Billable(OT)</span>
+                      <span
+                        class="c-grey-600 mL-5"
+                        style="font-size:1em;"
+                      >{{datum.schedule.overtime.billable.time}}</span>
+                    </div>
+                    <div class="mT-5">
+                      <vue-timepicker v-model="config.overtime.approve.time" format="HH:mm:ss"></vue-timepicker>
+                    </div>
+                    <div style="margin-top:2px;">
+                      <b-button
+                        variant="danger"
+                        size="sm"
+                        class="form-control"
+                        :disabled="config.button.ot_bill"
+                        @click="billOt(datum.schedule)"
+                      >BILL</b-button>
+                    </div>
                   </b-popover>
                   <td-break-duration :schedule="datum.schedule"></td-break-duration>
                   <td-billable-hours :schedule="datum.schedule"></td-billable-hours>
@@ -273,6 +291,7 @@
         </div>
       </div>
     </div>
+    <notifications group="foo" animation-type="velocity" position="bottom right"/>
   </div>
 </template>
 
@@ -422,6 +441,9 @@ export default {
             perpage: 15
           },
           no_records: 15
+        },
+        button: {
+          ot_bill: false
         }
       },
       table: {
@@ -454,7 +476,9 @@ export default {
               if (v.schedule.length !== 0) {
                 for (var l1 = 0; l1 < v.schedule.length; l1++) {
                   var v1 = v.schedule[l1];
-                  tmp.push(this.extractSchedule(v, v1));
+                  if (v1.title_id < 3) {
+                    tmp.push(this.extractSchedule(v, v1));
+                  }
                 }
               }
               obj.push(tmp);
@@ -666,6 +690,78 @@ export default {
       return moment(date)
         .format("YYYY-MM-DD")
         .isBefore(moment().format("YYYY-MM-DD"));
+    },
+    popupShow: function(ot) {
+      let billable = ot.billable.time.split(":");
+      let nonbillable = ot.nonbillable.time.split(":");
+      if (ot.billable.second > 0) {
+        this.config.overtime.approve.time.HH = billable[0];
+        this.config.overtime.approve.time.mm = billable[1];
+        this.config.overtime.approve.time.ss = billable[2];
+      } else {
+        this.config.overtime.approve.time.HH = nonbillable[0];
+        this.config.overtime.approve.time.mm = nonbillable[1];
+        this.config.overtime.approve.time.ss = nonbillable[2];
+      }
+    },
+    billOt: function(schedule) {
+      this.config.button.ot_bill = true;
+      let pageurl = "/api/v1/schedules/update/" + schedule.id;
+      let obj = {
+        auth_id: this.userId,
+        title_id: schedule.title_id,
+        start_event: schedule.start_event,
+        end_event: schedule.end_event,
+        overtime:
+          this.config.overtime.approve.time.HH +
+          ":" +
+          this.config.overtime.approve.time.mm +
+          ":" +
+          this.config.overtime.approve.time.ss
+      };
+      console.log(obj);
+
+      fetch(pageurl, {
+        method: "post",
+        body: JSON.stringify(obj),
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.config.button.ot_bill = false;
+          if (data.code == 500) {
+            console.log("error");
+            this.notify("error", "update");
+          } else {
+            console.log(data);
+            this.notify("success", "update");
+            this.config.data.all.forEach(
+              function(v, i) {
+                if (v.schedule.id == data.parameters.id) {
+                  this.config.data.all[i].schedule = data.parameters;
+                }
+              }.bind(this)
+            );
+            this.config.data.present = this.config.data.all.filter(function(
+              present
+            ) {
+              return present.attendance == "present";
+            });
+            this.config.data.absent = this.config.data.all.filter(function(
+              absent
+            ) {
+              return absent.attendance == "absent";
+            });
+
+            this.processFilters(
+              this.config.tabs[this.config.selected_tab].code,
+              1
+            );
+          }
+        })
+        .catch(err => console.log(err));
     }
   }
 };

@@ -78,6 +78,14 @@
             <span class="">Event Request</span>
         </a>
     </li>
+    <li class="nav-item page-identifier" data-page="rtaeventrequest">
+        <a class='sidebar-link' href="/action_logs">
+            <span class="icon-holder">
+                <i class="c-red-400 ti-stamp"></i>
+            </span>
+            <span class="">Action Logs</span>
+        </a>
+    </li>
     @endif
 
     @if($pageOnload->user->access_id == 6)

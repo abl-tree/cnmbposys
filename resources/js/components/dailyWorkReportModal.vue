@@ -3,17 +3,17 @@
     name="daily-work-report-modal"
     :pivotY="0.2"
     :scrollable="true"
-    width="500px"
+    width="900px"
     height="auto"
   >
     <div class="layer">
       <div class="e-modal-header bd">
-        <h5 style="margin-bottom:0px">Work Report</h5>
+        <h6 style="margin-bottom:0px">Work Log</h6>
       </div>
       <div class="w-100 p-15 pT-80" style>
         <div class="container">
           <div class="row">
-            <div class="col-sm-2 pX-0 text-center">
+            <!-- <div class="col-sm-2 pX-0 text-center">
               <img class="bdrs-50p w-3r h-3r" src="/images/nobody.jpg">
             </div>
             <div class="col-sm-7 pX-0">
@@ -41,6 +41,91 @@
               <h6 class="mY-0">
                 <span class="badge badge-pill badge-danger fw-900 w-100">UNDERTIME</span>
               </h6>
+            </div>-->
+            <div class="col">
+              <div class="p-10">
+                <table>
+                  <t-body>
+                    <tr>
+                      <td>
+                        <td-personnel></td-personnel>
+                      </td>
+                    </tr>
+                  </t-body>
+                </table>
+              </div>
+              <div class="table-responsive pX-10 pB-20" style="height:200px;">
+                <table class="table">
+                  <thead>
+                    <tr style="position:relative">
+                      <th class="bdwT-0 text-center">Schedule</th>
+                      <th
+                        class="bdwT-0 text-center"
+                        data-toggle="tooltip"
+                        title="Scheduled Duration"
+                      >SD</th>
+                      <th class="bdwT-0 text-center">Attendance</th>
+                      <th class="bdwT-0 text-center">Logs</th>
+                      <th class="bdwT-0 text-center">
+                        <span data-toggle="tooltip" title="Work Duration">WD</span>
+                      </th>
+                      <th class="bdwT-0 text-center">
+                        <span data-toggle="tooltip" title="Non Billable Over Time Duration">NBOTD</span>
+                      </th>
+                      <th class="bdwT-0 text-center">
+                        <span data-toggle="tooltip" title="Break Duration">BD</span>
+                      </th>
+                      <th class="bdwT-0 text-right">
+                        <span data-toggle="tooltip" title="Billable Hours">BH</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- <template
+                      v-for="(datum,index) in config.filter.data.data"
+                      v-if="config.loader==false"
+                    >
+                      <tr :key="datum.id">
+                        <td-personnel
+                          :personnel="{full_name:datum.info.full_name,email:datum.info.email,}"
+                        ></td-personnel>
+                        <td-personnel :personnel="datum.info.tl"></td-personnel>
+                        <td-personnel :personnel="datum.info.om"></td-personnel>
+                        <td-schedule
+                          :schedule="!isEmpty(datum.schedule)?{start:datum.schedule.start_event,end:datum.schedule.end_event}:null"
+                        ></td-schedule>
+                        <td-regular-hour-duration :schedule="datum.schedule"></td-regular-hour-duration>
+                        <td-attendance :attendance="datum.attendance"></td-attendance>
+                        <td-attendance-log
+                          :attendance="datum.attendance"
+                          :schedule="datum.schedule"
+                        ></td-attendance-log>
+                        <td-rendered-hours :schedule="datum.schedule"></td-rendered-hours>
+                        <td-nonbillable-ot :schedule="datum.schedule" :index="index"></td-nonbillable-ot>
+                        <b-popover
+                          triggers="focus"
+                          placement="auto"
+                          :target="'ot-popover-'+index"
+                          title="Overtime"
+                        >
+                          <div class="w-100 text-center">
+                            <span class="c-grey-600" style="font-size:0.8em;">NonBillable(OT)</span>
+                          </div>
+                          <div class="w-100 text-center">
+                            <span
+                              class="c-grey-600"
+                              style="font-size:1em;"
+                            >{{datum.schedule.overtime.nonbillable.time}}</span>
+                          </div>
+                          <vue-timepicker v-model="config.overtime.approve.time" format="HH:mm:ss"></vue-timepicker>
+                        </b-popover>
+                        <td-break-duration :schedule="datum.schedule"></td-break-duration>
+                        <td-billable-hours :schedule="datum.schedule"></td-billable-hours>
+                      </tr>
+                    </template>-->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

@@ -196,7 +196,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="datum in config.filter.data.data" :key="datum.id">
+              <tr v-for="(datum,index) in config.filter.data.data" :key="datum.id">
                 <td-personnel :personnel="{full_name:datum.info.full_name,email:datum.info.email}"></td-personnel>
                 <td style="font-size:.95em">
                   <div>
@@ -204,7 +204,7 @@
                     {{datum.request.title.name}}
                   </div>
                 </td>
-                <td style="font-size:.95em">
+                <td style="font-size:.95em" class="text-center">
                   <div>
                     {{datum.request.start_date+" - "+ datum.request.end_date}}
                     <span
@@ -212,13 +212,13 @@
                     ></span>
                   </div>
                 </td>
-                <td style="font-size:.95em">
+                <td style="font-size:.95em" class="text-center">
                   <div
                     data-toggle="tooltip"
-                    :title="calendarFormat(datum.requested)"
-                  >{{fromNow(datum.requested)}}</div>
+                    :title="calendarFormat(datum.request.requested.date)"
+                  >{{fromNow(datum.request.requested.date)}}</div>
                 </td>
-                <td style="font-size:.99em">
+                <td style="font-size:.99em" class="text-center">
                   <div v-if="!isAfter(datum.request.start_date)">
                     <span class="badge badge-pill p-5 bgc-grey-100 c-grey-800 fw-900">
                       <span class="badge badge-pill p-3 bgc-white mR-5">
@@ -230,6 +230,7 @@
                     <span
                       class="badge badge-pill p-5 fw-900"
                       v-bind:class="component.table.td.badges.request_schedule[datum.request.status].class2"
+                      :id="'rs-popover-'+index"
                     >
                       <span class="badge badge-pill p-3 bgc-white mR-5">
                         <span
@@ -239,11 +240,54 @@
                       </span>
                       {{component.table.td.badges.request_schedule[datum.request.status].label}}
                     </span>
-                    <span class="mL-15 ti-pencil c-blue-500"></span>
                   </div>
+                  <b-popover
+                    v-if="datum.request.status=='pending'"
+                    triggers="click"
+                    placement="auto"
+                    :target="'rs-popover-'+index"
+                    title="Approval"
+                    @show="approvalPopShow(datum,index)"
+                  >
+                    <div class="container">
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <input
+                            type="text"
+                            class="form-control"
+                            v-model="form.response.rta_remarks[index]"
+                          >
+                        </div>
+                      </div>
+                      <div class="row" style="margin-top:2px;">
+                        <div class="col">
+                          <div class="btn-group w-100">
+                            <b-button
+                              variant="secondary"
+                              size="sm"
+                              class="form-control"
+                              :disabled="form.response.button[index]"
+                              @click="(form.response.status[index]='deny'),storeRequestResponse(datum,index)"
+                            >Deny</b-button>
+                            <b-button
+                              variant="danger"
+                              size="sm"
+                              class="form-control"
+                              :disabled="form.response.button[index]"
+                              @click="(form.response.status[index]='approve'),storeSchedule(datum,index)"
+                            >Approve</b-button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </b-popover>
                 </td>
                 <td style="font-size:.95em">
-                  <div class="c-grey-500">No remarks</div>
+                  <div
+                    v-if="datum.request.managed.remark=='' || datum.request.managed.remark==null"
+                    class="c-grey-500"
+                  >No Response</div>
+                  <div v-else class="c-grey-900">{{datum.request.managed.remark}}</div>
                 </td>
               </tr>
               <!-- LOADER -->
@@ -255,6 +299,7 @@
         </div>
       </div>
     </div>
+    <notifications group="foo" animation-type="velocity" position="bottom right"/>
   </div>
 </template>
 
@@ -352,11 +397,11 @@ export default {
         },
         filter: {
           sort: {
-            by: "agent",
+            by: "request_date",
             order: {
               agent: true,
               type: true,
-              request_date: true,
+              request_date: false,
               status: true
             }
           },
@@ -372,6 +417,13 @@ export default {
           no_records: 15
         }
       },
+      form: {
+        response: {
+          rta_remarks: [],
+          status: [],
+          button: []
+        }
+      },
       table: {
         data: []
       },
@@ -384,6 +436,9 @@ export default {
   },
   methods: {
     fetchSchedRequest: function() {
+      
+        this.config.loader = true;
+        this.config.no_display = false;
       let pageurl = "/api/v1/request_schedules";
       fetch(pageurl)
         .then(res => res.json())
@@ -453,15 +508,23 @@ export default {
               // request -> reuqested
               temp.request.requested.by.id = v.requested_by.id;
               temp.request.requested.by.full_name = v.requested_by.full_name;
-              temp.request.requested.date = "";
+              temp.request.requested.date = v.created_at;
               obj.push(temp);
             }.bind(this)
           );
           this.config.data.all = obj;
-          // this.config.data.pending = obj.filter(this.getPending);
-          // this.config.data.denied = obj.filter(this.getDenied);
-          // this.config.data.approved = obj.filter(this.getApproved);
-          // this.config.data.expired = obj.filter(this.getExpired);
+          this.config.data.pending = obj.filter(this.getPending);
+          this.config.data.denied = obj.filter(this.getDenied);
+          this.config.data.approved = obj.filter(this.getApproved);
+          this.config.data.expired = obj.filter(this.getExpired);
+
+          res.meta.request_schedules.forEach(
+            function(v, i) {
+              if (v.status == "pending" && !this.isAfter(v.start_date)) {
+                this.storeExpired(v);
+              }
+            }.bind(this)
+          );
 
           this.processFilters(
             this.config.tabs[this.config.selected_tab].code,
@@ -490,22 +553,41 @@ export default {
       if (this.config.filter.data.total_result == 0) {
         this.config.no_display = true;
       }
+      this.form.response.rta_remarks = [
+        ...new Set(
+          [].concat(
+            this.config.filter.data.data.map(a => a.request.managed.remark)
+          )
+        )
+      ];
     },
 
     getExpiredtoStore: function(status) {
-      return !this.isAfter(status.start_date) && status.status == "pending";
+      return (
+        !this.isAfter(status.request.start_date) &&
+        status.request.status == "pending"
+      );
     },
     getExpired: function(status) {
-      return !this.isAfter(status.start_date);
+      return !this.isAfter(status.request.start_date);
     },
     getPending: function(status) {
-      return this.isAfter(status.start_date) && status.status == "pending";
+      return (
+        this.isAfter(status.request.start_date) &&
+        status.request.status == "pending"
+      );
     },
     getDenied: function(status) {
-      return this.isAfter(status.start_date) && status.status == "denied";
+      return (
+        this.isAfter(status.request.start_date) &&
+        status.request.status == "denied"
+      );
     },
     getApproved: function(status) {
-      return this.isAfter(status.start_date) && status.status == "approved";
+      return (
+        this.isAfter(status.request.start_date) &&
+        status.request.status == "approved"
+      );
     },
     processFilters: function(tabCode, page) {
       if (this.config.filter.search.value != "") {
@@ -592,15 +674,28 @@ export default {
           nameB = b.request.status.toLowerCase();
           break;
         case "request_date":
-          nameA = moment(a.request.requested_by);
-          nameB = moment(b.request.requested_by);
+          nameA = moment(a.request.requested.date);
+          nameB = moment(b.request.requested.date);
           break;
       }
       return { a: nameA, b: nameB };
     },
 
-    storeExpired: function(obj) {
-      let pageurl = this.endpoints[action][formName];
+    storeExpired: function(data) {
+      let request = data.request;
+      let pageurl = "/api/v1/request_schedules/update/" + request.id;
+      let obj = {
+        id: request.id,
+        auth_id: this.user_id,
+        applicant: request.applicant.id,
+        requested_by: request.requested_by.id,
+        managed_by: this.user_id,
+        title_id: request.title.id,
+        start_date: request.start_date,
+        end_date: request.end_date,
+        status: "expired"
+      };
+      console.log(obj);
       fetch(pageurl, {
         method: "post",
         body: JSON.stringify(obj),
@@ -611,27 +706,222 @@ export default {
         .then(res => res.json())
         .then(data => {
           if (data.code == 500) {
-            // console.log("error");
-            // this.notify("error", action);
           } else {
-            console.log(data);
-            // this.fetchTableObject(formName);
+            // console.log(data);
           }
         })
         .catch(err => console.log(err));
     },
     getRequestStatus: function(data) {
       let result;
-      if (this.getExpired(data)) {
+      if (
+        (!this.isAfter(data.start_date) && data.status == "pending") ||
+        (!this.isAfter(data.start_date) && data.status == "expired")
+      ) {
         result = "expired";
-      } else if (this.getPending(data)) {
+      } else if (this.isAfter(data.start_date) && data.status == "pending") {
         result = "pending";
-      } else if (this.getDenied(data)) {
+      } else if (this.isAfter(data.start_date) && data.status == "denied") {
         result = "denied";
-      } else if (this.getApproved(data)) {
+      } else if (this.isAfter(data.start_date) && data.status == "approved") {
         result = "approved";
       }
       return result;
+    },
+    storeRequestResponse: function(req, index) {
+      if (this.form.response.status[index] == "deny") {
+        this.form.response.button[index] = true;
+      }
+      let request = req.request;
+      let pageurl = "/api/v1/request_schedules/update/" + request.id;
+      let obj = {
+        id: request.id,
+        auth_id: this.userId,
+        applicant: req.info.id,
+        requested_by: request.requested.by.id,
+        managed_by: this.userId,
+        title_id: request.title.id,
+        start_date: request.start_date,
+        end_date: request.end_date,
+        status:
+          this.form.response.status[index] == "approve" ? "approved" : "denied",
+        rta_remarks: this.form.response.rta_remarks[index]
+      };
+      // console.log(obj);
+
+      fetch(pageurl, {
+        method: "post",
+        body: JSON.stringify(obj),
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.code == 500) {
+            this.notify("error", "update");
+          } else {
+            this.form.response.button[index] = false;
+            this.notify("success", "update");
+            console.log(data);
+            this.table.data.forEach(
+              function(v, i) {
+                if (v.id == data.parameters.id) {
+                  this.table.data[i].rta_remarks = data.parameters.rta_remarks;
+                  this.table.data[i].status = data.parameters.status;
+                  console.log(data.parameters.rta_remarks);
+                  console.log(data.parameters.status);
+                }
+              }.bind(this)
+            );
+            let obj1 = [];
+            this.table.data.forEach(
+              function(v, i) {
+                let temp = {
+                  info: {
+                    full_name: "",
+                    image: "",
+                    id: "",
+                    email: ""
+                  },
+                  request: {
+                    id: "",
+                    status: "",
+                    start_date: "",
+                    end_date: "",
+                    mark: "",
+                    title: {
+                      name: "",
+                      id: "",
+                      color: ""
+                    },
+                    managed: {
+                      by: {
+                        id: "",
+                        full_name: ""
+                      },
+                      date: "",
+                      remark: ""
+                    },
+                    requested: {
+                      by: {
+                        id: "",
+                        full_name: ""
+                      },
+                      date: ""
+                    }
+                  }
+                };
+                // info
+                temp.info.full_name = v.applicant.full_name;
+                temp.info.id = v.applicant.id;
+                temp.info.image = v.applicant.info.image;
+                temp.info.email = v.applicant.email;
+                // request
+                temp.request.id = v.id;
+                temp.request.status = this.getRequestStatus(v);
+                temp.request.start_date = v.start_date;
+                temp.request.end_date = v.end_date;
+                temp.request.mark = v.mark;
+                // request -> title
+                temp.request.title.name = v.title.title;
+                temp.request.title.id = v.title.id;
+                temp.request.title.color = v.title.color;
+                // request -> managed by
+                if (v.managed_by != null) {
+                  temp.request.managed.by.id = v.managed_by.id;
+                  temp.request.managed.by.full_name = v.managed_by.full_name;
+                  temp.request.managed.date = v.response_date;
+                  temp.request.managed.remark = v.rta_remarks;
+                }
+                // request -> reuqested
+                temp.request.requested.by.id = v.requested_by.id;
+                temp.request.requested.by.full_name = v.requested_by.full_name;
+                temp.request.requested.date = v.created_at;
+                obj1.push(temp);
+              }.bind(this)
+            );
+            console.log(obj1);
+            this.config.data.all = obj1;
+            this.config.data.pending = obj1.filter(this.getPending);
+            this.config.data.denied = obj1.filter(this.getDenied);
+            this.config.data.approved = obj1.filter(this.getApproved);
+            this.config.data.expired = obj1.filter(this.getExpired);
+
+            this.processFilters(
+              this.config.tabs[this.config.selected_tab].code,
+              1
+            );
+          }
+        })
+        .catch(err => console.log(err));
+    },
+    storeSchedule: function(request, index) {
+      if (this.form.response.status[index] == "approve") {
+        this.form.response.button[index] = true;
+      }
+      let pageurl = "/api/v1/schedules/create/bulk/";
+      let data = request.request;
+      let dates = [];
+      let obj = [{ auth_id: this.userId }];
+      if (data.end_date == null) {
+        dates.push(moment(moment(data.start_date)).format("YYYY-MM-DD"));
+      } else {
+        dates = this.getDates(data.start_date, data.end_date);
+      }
+      dates.forEach(
+        function(v, i) {
+          let start = v + " 00:00:00";
+          let obj_element = {
+            title_id: data.title.id,
+            auth_id: this.userId,
+            user_id: request.info.id,
+            start_event: start,
+            end_event: moment(
+              moment(start)
+                .add("24", "h")
+                .toDate()
+            ).format("YYYY-MM-DD HH:mm:ss")
+          };
+          obj.push(obj_element);
+        }.bind(this)
+      );
+      console.log(obj);
+
+      fetch(pageurl, {
+        method: "post",
+        body: JSON.stringify(obj),
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.code == 500) {
+          } else {
+            // console.log(data);
+            this.storeRequestResponse(request, index);
+          }
+        })
+        .catch(err => console.log(err));
+    },
+    getDates: function(startDate, stopDate) {
+      // console.log("start " + startDate);
+      // console.log("end " + stopDate);
+      var dateArray = [];
+      var currentDate = moment(startDate);
+      var stopDate = moment(stopDate);
+      while (currentDate <= stopDate) {
+        dateArray.push(moment(currentDate).format("YYYY-MM-DD"));
+        currentDate = moment(currentDate).add(1, "days");
+      }
+      return dateArray;
+      // console.log(dateArray);
+    },
+    approvalPopShow: function(data, index) {
+      // console.log(data.request.managed.remark)
+      this.form.response.status[index] = "";
+      this.form.response.button[index] = false;
     }
   }
 };

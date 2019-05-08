@@ -33,6 +33,7 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
     Route::get('/rtadashboard', 'pageController@rtadashboard')->name('rtadashboard');
     Route::get('/rtareport', 'pageController@rtareport')->name('rtareport');
     Route::get('/rtaeventrequest', 'pageController@rtaeventrequest')->name('rtaevent_request');
+    Route::get('/action_logs', 'pageController@action_logs')->name('action_logs');
     
     Route::get('/tldashboard', 'pageController@tldashboard')->name('tldashboard');
     Route::get('/tlreport', 'pageController@tlreport')->name('tlreport');

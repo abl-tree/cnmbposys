@@ -63,17 +63,17 @@ Vue.mixin({
                             request_schedule: {
                                 pending: {
                                     class1: "ti-time c-orange-500",
-                                    class2: "bgc-orange-100 c-orange-800",
+                                    class2: "bgc-orange-100 c-orange-800 cur-p",
                                     label: "PENDING"
                                 },
                                 approved: {
                                     class1: "ti-check c-green-500",
-                                    class2: "bgc-green-100 c-green-800",
+                                    class2: "bgc-green-100 c-green-800 cur-p",
                                     label: "APPROVED"
                                 },
                                 denied: {
                                     class1: "ti-alert c-red-500",
-                                    class2: "bgc-red-100 c-red-800",
+                                    class2: "bgc-red-100 c-red-800 cur-p",
                                     label: "DENIED",
                                 },
                                 expired: {
@@ -357,7 +357,7 @@ Vue.mixin({
                     break;
                 case "error":
                     dtitle = "Error Notification";
-                    dtitle = "Error " + action + "ing a record.";
+                    dtitle = "Error " + action.substring(0, action.length - 1); + "ing a record.";
                     dtype = "warning";
                     break;
             }
@@ -499,6 +499,9 @@ Vue.component("today-table-tr", today_table_tr);
 
 import request_schedule from "./components/table/request_schedule.vue";
 Vue.component("request-schedule", request_schedule);
+
+import action_log from "./components/table/action_logs.vue";
+Vue.component("action-log", action_log);
 
 
 import tr_loader from "./components/table/tr_loader.vue";

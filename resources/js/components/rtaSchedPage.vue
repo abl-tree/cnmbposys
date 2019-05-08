@@ -248,12 +248,12 @@
                     <small
                       v-if="!isEmpty(local.agents.paginated)"
                       class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700"
-                      v-html="local.agents.paginated.data[local.agents.selected_index].team_leader?local.agents.paginated.data[local.agents.selected_index].team_leader:'TL not assigned'"
+                      v-html="!isEmpty(local.agents.paginated.data[local.agents.selected_index].team_leader)?local.agents.paginated.data[local.agents.selected_index].team_leader.full_name:'TL not assigned'"
                     ></small>
                     <small
                       v-if="!isEmpty(local.agents.paginated)"
                       class="badge badge-pill bgc-deep-purple-50 c-deep-purple-700"
-                      v-html="local.agents.paginated.data[local.agents.selected_index].operations_manager?local.agents.paginated.data[local.agents.selected_index].operations_manager:'OM not assigned'"
+                      v-html="!isEmpty(local.agents.paginated.data[local.agents.selected_index].operations_manager)?local.agents.paginated.data[local.agents.selected_index].operations_manager.full_name:'OM not assigned'"
                     ></small>
                   </div>
                 </div>
@@ -261,7 +261,7 @@
                   <button
                     class="btn btn-danger bdrs-50p p-15 lh-0"
                     type="button"
-                    @click="(form.schedule.action='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),showModal('schedule')"
+                    @click="(form.schedule.action='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),(form.schedule.title=''),(form.schedule.time_in=''),(form.schedule.hours=''),(form.schedule.event={}),showModal('schedule')"
                   >
                     <i class="ti-plus"></i>
                   </button>
@@ -298,6 +298,7 @@
                         placeholder="Event"
                         :options="form.schedule.select_option.title"
                         v-model="form.schedule.title"
+                        @input="form.schedule.title>2&&form.schedule.title<9? local.form.calendar.disable_time=true:local.form.calendar.disable_time=false, form.schedule.time_in='00:00',form.schedule.hours='01:00'"
                       ></model-select>
                     </div>
                   </div>
@@ -320,6 +321,7 @@
                   <div class="col">
                     <label>Time IN</label>
                     <date-time-picker
+                      :disabled="local.form.calendar.disable_time==true"
                       class="s-modal"
                       v-model="form.schedule.time_in"
                       formatted="HH:mm"
@@ -335,7 +337,9 @@
                   <div class="col">
                     <label>Hours</label>
                     <date-time-picker
+                      :disabled="local.form.calendar.disable_time==true"
                       v-model="form.schedule.hours"
+                      :disabled-hours="local.form.calendar.disable_time==false? ['00']:''"
                       formatted="HH:mm"
                       format="HH:mm"
                       time-format="HH:mm"
@@ -427,7 +431,8 @@
           </div>
         </div>
       </modal>
-      <daily-work-report-modal></daily-work-report-modal>
+
+      <!-- <daily-work-report-modal></daily-work-report-modal> -->
       <!-- notification -->
       <notifications group="foo" animation-type="velocity" position="bottom right"/>
     </div>
@@ -560,11 +565,15 @@ export default {
   mounted() {
     this.fetchTableObject("event");
     this.fetchAgentList();
+    this.showModal("daily-work-report-modal");
   },
   data() {
     return {
       user_id: this.userId,
       local: {
+        worklog: {
+          data: []
+        },
         agents: {
           array: [],
           paginated: [],
@@ -578,7 +587,8 @@ export default {
           calendar: {
             endpoints: {
               retreive: "/api/v1/schedules/agents"
-            }
+            },
+            disable_time: false
           },
           delete: false
         },
@@ -588,13 +598,17 @@ export default {
           fetch_status: "fetching",
           config: {
             eventClick: event => {
-              console.log(event.start._i);
+              // console.log(event.start._i);
               let date_today = new Date(moment().format("YYYY/MM/DD hh:mm:ss"));
               let event_start_date = new Date(event.start._i);
 
               if (date_today > event_start_date) {
                 // console.log("DISPLAY WORK REPORT MODAL");
-                this.showModal("daily-work-report-modal");
+                alert(
+                  "You cannot edit this schedule. Please see *Work reports page for the logs."
+                );
+                // console.log(this.fetchSingleSchedule(event.id));
+                // this.showModal("daily-work-report-modal");
               } else {
                 // console.log("DISPLAY EDIT SCHEDULE MODAL");
                 this.showModal("schedule");
@@ -627,7 +641,6 @@ export default {
                 this.form.schedule.schedule_id = event.id;
               }
             },
-
             eventRender(event, element) {
               if (event != null) {
                 var etitle = event.title,
@@ -687,7 +700,7 @@ export default {
         total_result: obj.length,
         total_pages: total_pages
       };
-      console.log(this.local.agents.paginated);
+      // console.log(this.local.agents.paginated);
     },
     fetchAgentSched: function(id) {
       let pageurl = "/api/v1/schedules/agents/" + id;
@@ -710,7 +723,7 @@ export default {
           .toLowerCase()
           .includes(query.trim().toLowerCase())
       );
-      console.log(obj);
+      // console.log(obj);
       if (obj.length > 0) {
         this.local.agents.search_array = obj;
         this.paginate(
@@ -721,8 +734,8 @@ export default {
       }
     },
     getDates: function(startDate, stopDate) {
-      console.log("start " + startDate);
-      console.log("end " + stopDate);
+      // console.log("start " + startDate);
+      // console.log("end " + stopDate);
       var dateArray = [];
       var currentDate = moment(startDate);
       var stopDate = moment(stopDate);
@@ -756,27 +769,28 @@ export default {
           }
           $.each(dates, function(k, v) {
             let start =
-              form.time_in != "" ? v + " " + form.time_in + ":00" : "";
+              form.title > 2 && form.title < 9
+                ? v + " " + form.time_in + ":00"
+                : v + " 00:00:00";
             let hr = form.hours.split(":");
             let obj_element = {
               title_id: form.title,
+              auth_id: this.user_id,
               user_id: id,
               start_event: start,
               end_event:
-                form.time_in != ""
-                  ? form.hours == "00:00"
-                    ? moment(
-                        moment(start)
-                          .add("24", "h")
-                          .toDate()
-                      ).format("YYYY-MM-DD HH:mm:ss")
-                    : moment(
-                        moment(start)
-                          .add(hr[0], "h")
-                          .add(hr[1], "m")
-                          .toDate()
-                      ).format("YYYY-MM-DD HH:mm:ss")
-                  : ""
+                form.title > 2 && form.title < 9
+                  ? moment(
+                      moment(start)
+                        .add("24", "h")
+                        .toDate()
+                    ).format("YYYY-MM-DD HH:mm:ss")
+                  : moment(
+                      moment(start)
+                        .add(hr[0], "h")
+                        .add(hr[1], "m")
+                        .toDate()
+                    ).format("YYYY-MM-DD HH:mm:ss")
             };
             obj.push(obj_element);
           });
@@ -789,27 +803,24 @@ export default {
                 ? form.event.start
                 : form.event.start + " " + form.time_in + ":00",
             end =
-              form.time_in != ""
-                ? form.hours == "00:00"
-                  ? moment(
-                      moment(start)
-                        .add("24", "h")
-                        .toDate()
-                    ).format("YYYY-MM-DD HH:mm:ss")
-                  : moment(
-                      moment(start)
-                        .add(hr[0], "h")
-                        .add(hr[1], "m")
-                        .toDate()
-                    ).format("YYYY-MM-DD HH:mm:ss")
-                : "";
-          obj.push({
+              form.title > 2 && form.title < 9
+                ? moment(
+                    moment(start)
+                      .add("24", "h")
+                      .toDate()
+                  ).format("YYYY-MM-DD HH:mm:ss")
+                : moment(
+                    moment(start)
+                      .add(hr[0], "h")
+                      .add(hr[1], "m")
+                      .toDate()
+                  ).format("YYYY-MM-DD HH:mm:ss");
+          obj = {
             title_id: form.title,
-            user_id: id,
+            auth_id: this.user_id,
             start_event: start,
             end_event: end
-          });
-          console.log(obj);
+          };
         }
       }
 
@@ -822,12 +833,86 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-          console.log(res);
+          // console.log(res);
           this.hideModal("schedule");
           this.notify("success", form.action);
           this.fetchAgentSched(id);
         })
         .catch(err => console.log(err));
+    },
+    fetchSingleSchedule: function(id) {
+      let pageurl = "/api/v1/schedules/fetch/" + id;
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          var tmp = [res.meta.agent_schedule];
+          var obj = [];
+          tmp.forEach(
+            function(v, i) {
+              if (!this.isEmpty(v.attendances)) {
+                v.attendances.forEach(
+                  function(v1, i1) {
+                    obj.push(this.extractSchedulePreviewData(v, v1));
+                  }.bind(this)
+                );
+              }
+            }.bind(this)
+          );
+          console.log(obj);
+          this.local.worklog.data = obj;
+        })
+        .catch(err => console.log(err));
+    },
+    extractSchedulePreviewData: function(v, v1) {
+      let temp = {
+        info: {
+          id: "",
+          image: "",
+          full_name: "",
+          email: ""
+          // tl: {
+          //   id: "",
+          //   image: "",
+          //   full_name: "",
+          //   email: ""
+          // },
+          // om: {
+          //   id: "",
+          //   image: "",
+          //   full_name: "",
+          //   email: ""
+          // }
+        },
+        schedule: {
+          id: "",
+          title: {},
+          start_event: "",
+          end_event: ""
+        },
+        attendance: {}
+      };
+      // info
+      temp.info.id = v.user_info.id;
+      temp.info.image = v.user_info.image;
+      temp.info.email = v.user_info.email;
+      temp.info.full_name = v.user_info.full_name;
+      // temp.info.tl.id;
+      // temp.info.tl.image;
+      // temp.info.tl.email;
+      // temp.info.tl.full_name;
+      // temp.info.om.id;
+      // temp.info.om.image;
+      // temp.info.om.email;
+      // temp.info.om.full_name;
+      // schedule
+      temp.schedule.id = v.id;
+      temp.schedule.start_event = v.start_event;
+      temp.schedule.end_event = v.end_event;
+      temp.schedule.title.id = v.title.id;
+      temp.schedule.title.color = v.title.color;
+      temp.schedule.title.name = v.title.title;
+      temp.attendance = v1;
+      return temp;
     }
   }
 };

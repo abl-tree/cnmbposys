@@ -94,4 +94,23 @@ class pageController extends Controller
         // }
         return view('admin.incident_report.index');
     }
+    
+    public function action_logs(){
+        // $id = auth()->user()->id;
+        // $access_level = auth()->user()->access_id;
+        // $position = '';
+        // switch($access_level){
+        //     case 1:
+        //     case 2:
+        //     case 3:
+        //         $position = 'hr';
+        //     break;
+        //     case 12:
+        //     case 13:
+        //     case 14:
+        //         $position = 'rta';
+        //     break;
+        // }
+        return view('admin.action_log.index');
+    }
 }
