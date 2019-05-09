@@ -129,7 +129,7 @@ class ReportsController extends BaseController
         }
 
         return $this->absorb($this->user_reports->getAllUserUnder($data))->json();
-    }
+    } 
 
     public function getSelectAllUserUnder(Request $request, $id)
     {

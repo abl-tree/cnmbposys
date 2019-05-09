@@ -152,6 +152,7 @@ Route::group([
 
         Route::get("/", "UserController@usersInfo");
         Route::get("/{id}", "UserController@userInfo");
+        Route::get("cluster/{id}", "UserController@getCluster");
     });
 
     Route::group([
