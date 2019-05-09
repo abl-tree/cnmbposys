@@ -14,7 +14,7 @@ class UserCluster extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'value','fullname','mail','position','position_code'
+       'value','fullname','mail','image','position','position_code'
     ];
 
 
