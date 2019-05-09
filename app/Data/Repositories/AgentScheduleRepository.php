@@ -214,6 +214,14 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
+        // check for duplicate schedules
+        $does_exist = $this->agent_schedule
+            ->where('user_id', $data['user_id'])
+            ->where('title_id', $data['title_id'])
+            ->where('start_event', $data['start_event'])
+            ->where('end_event', $data['end_event'])
+            ->first();
+
         // existence check
 
         // insertion
@@ -240,6 +248,8 @@ class AgentScheduleRepository extends BaseRepository
 
         if (isset($data['id'])) {
             $agent_schedule = $this->agent_schedule->find($data['id']);
+        } else if ($does_exist){
+            $agent_schedule = $does_exist;
         } else {
             $agent_schedule = $this->agent_schedule->init($this->agent_schedule->pullFillable($data));
         }
