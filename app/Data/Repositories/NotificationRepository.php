@@ -4,6 +4,8 @@ namespace App\Data\Repositories;
 use App\User;
 use App\Data\Models\Notification;
 use App\Data\Models\AgentSchedule;
+use App\Data\Models\UserReport;
+use App\Data\Models\ReportResponse;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\UsersInfoRepository;
 use Illuminate\Http\Request;
@@ -86,11 +88,35 @@ class NotificationRepository extends BaseRepository
             }
         }
 
+        if(strpos($data['type'], 'response') !== false){
+            $response = ReportResponse::find($data['type_id']);
+            
+            if(isset($response)){
+                $build['response'] = $response->commitment;
+                $build['report_id'] = $response->user_response_id;
+            }
+        }
+
+        if(strpos($data['type'], 'reports') !== false){
+            if(isset($build['report_id'])){
+                $report_id = $build['report_id'];
+            }else{
+                $report_id = $data['type_id'];
+            }
+
+            $report = UserReport::find($report_id);
+        
+            if(isset($report)){
+                $build['report'] = $report->description;
+            }
+        }
+
         $notification = [
             'sender_id' => $data['sender_id'],
             'recipient_id' => $data['recipient_id'],
             'type' => $data['type'],
             'type_id' => $data['type_id'],
+            'endpoint' => isset($data['endpoint']) ? $data['endpoint'] : null,
         ];
 
         $notification['description'] = config('notifications.' . $data['type']);
@@ -102,11 +128,20 @@ class NotificationRepository extends BaseRepository
         if(strpos($notification['description'], '**sender**') !== false){
             $notification['description'] = str_replace("**sender**", $build['sender'], $notification['description']);
         } 
+        //schedules
         if(strpos($notification['description'], '**start_date**') !== false){
             $notification['description'] = str_replace("**start_date**", $build['start_date'], $notification['description']);
         } 
         if(strpos($notification['description'], '**end_date**') !== false){
             $notification['description'] = str_replace("**end_date**", $build['end_date'], $notification['description']);
+        }
+        //reports
+        if(strpos($notification['description'], '**report**') !== false){
+            $notification['description'] = str_replace("**report**", $build['report'], $notification['description']);
+        }
+        //response
+        if(strpos($notification['description'], '**response**') !== false){
+            $notification['description'] = str_replace("**response**", $build['response'], $notification['description']);
         }
 
         return $notification;

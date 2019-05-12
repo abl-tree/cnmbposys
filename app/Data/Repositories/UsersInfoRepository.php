@@ -4,6 +4,7 @@ namespace App\Data\Repositories;
 use App\Data\Models\UserInfo;
 use App\User;
 use App\Data\Models\UsersData;
+use App\Data\Models\UserCluster;
 use App\Data\Repositories\BaseRepository;
 
 class UsersInfoRepository extends BaseRepository
@@ -15,10 +16,12 @@ class UsersInfoRepository extends BaseRepository
 
     public function __construct(
         UsersData $user_info,
-        User $user
+        User $user,
+        UserCluster $select_users
     ) {
         $this->user_info = $user_info;
         $this->user = $user;
+        $this->select_users = $select_users;
     } 
 
     public function usersInfo($data = [])
@@ -179,6 +182,84 @@ class UsersInfoRepository extends BaseRepository
             "parameters" => $parameters,
         ]);
     }
+    public function getCluster($data = [])
+    {
+        $meta_index = "options";
+        $parameters = [];
+        $count      = 0;
+         
+
+        $count_data = $data;
+        $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
+        $result = $this->fetchGeneric($data, $this->select_users);
+        $results=[];
+        $keys=0;
+        $parent=null;
+        foreach ($result as $key => $value) {
+              if($value->accesslevelhierarchy->child_id==$data['id']){
+                  $parent=$value->accesslevelhierarchy->parent_id;
+                  array_push($results,$value);     
+                foreach ($result as $key => $val) {
+                    $last_child2=null;
+                    if($val->accesslevelhierarchy->child_id==$parent){
+                        $keys++;
+                        $count++;  
+                        array_push($results,$val);
+                       
+                        foreach ($result as $key => $vals) {
+                            if($vals->accesslevelhierarchy->parent_id==$parent&&$vals->accesslevelhierarchy->child_id!=$data['id']){
+                                $keys++;
+                                $count++;  
+                                array_push($results,$vals);                         
+                        } 
+                            $last_child2=$val->accesslevelhierarchy->parent_id;
+                            if($vals->accesslevelhierarchy->child_id==$last_child2){
+                                $keys++;
+                                $count++;  
+                                array_push($results,$vals);
+                                
+                            }
+                          
+        
+                        } 
+                        
+                        
+                    }
+
+                } 
+                
+                $keys++;
+                $count++;  
+            }
+            
+         } 
+
+        if (!$results) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No users found",
+                "meta"       => [
+                    $meta_index => $results,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        // $count = $this->countData($count_data, refresh_model($this->users->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Users Cluster",
+            "description"=>"Cluster",
+            "meta"       => [
+                $meta_index => $results,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
 
 
 }

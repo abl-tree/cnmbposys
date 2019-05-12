@@ -21,6 +21,7 @@ class Notification extends BaseModel
         'sender_id',
         'recipient_id',
         'status',
+        'endpoint',
         'read_at',
     ];
 
@@ -30,12 +31,13 @@ class Notification extends BaseModel
      * @var array
      */
     protected $rules = [
-        'description' => 'sometimes|required|max:100',
-        'type' => 'sometimes|required|max:100',
+        'description' => 'sometimes|required',
+        'endpoint' => 'sometimes|required|max:191',
+        'type' => 'sometimes|required|max:191',
         'type_id' => 'sometimes|required|numeric',
         'sender_id' => 'sometimes|required|numeric',
         'recipient_id' => 'sometimes|required|numeric',
-        'status' => 'sometimes|required|max:100',
+        'status' => 'sometimes|required|max:191',
         'read_at' => 'nullable|date',
     ];
 
