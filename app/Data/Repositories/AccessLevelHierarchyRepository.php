@@ -86,6 +86,12 @@ class AccessLevelHierarchyRepository extends BaseRepository
             ]);
         }
 
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully defined an access level.",
+            "parameters" => $acc_level,
+        ]);
+
 
     }
 }
