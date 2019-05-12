@@ -40,7 +40,7 @@ export default {
           on_break: "/api/v1/schedules/stats?filter=on-break",
           working: "/api/v1/schedules/stats?filter=working",
           tardy: "/api/v1/schedules/stats?filter=absent",
-          leave: "/api/v1/schedules/stats?filter=on-leave",
+          leave: "/api/v1/schedules/stats?filter=on-leave"
         }
       },
       stats: {
@@ -53,8 +53,7 @@ export default {
         on_break: "On-Break",
         working: "Working",
         tardy: "Tardy",
-        leave: "On-Leave",
-
+        leave: "On-Leave"
       },
       spData4: [],
       // margin
@@ -70,15 +69,15 @@ export default {
         strokeOpacity: 1,
         strokeDasharray: "3, 3"
       },
-      nowCount:0,
+      nowCount: 0
     };
   },
   methods: {
     fetchStats: function(statName) {
       let pageurl = this.endpoints.sparkline[statName];
       this.stats.title = this.title[statName];
-      console.log(pageurl);
-      console.log(this.title[statName]);
+      // console.log(pageurl);
+      // console.log(this.title[statName]);
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {

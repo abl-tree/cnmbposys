@@ -36,19 +36,21 @@ class pageController extends Controller
             case 1:
             case 2:
             case 3:
-                $position = 'hr';
-            break;
             case 12:
             case 13:
+            case 16:
+                $view = 'admin.dashboard.hr';
+            break;
             case 14:
-                $position = 'rta';
+                $view = 'admin.dashboard.rta';
             break;
         }
-                return view('admin.dashboard.'.$position, compact('profile', 'role', 'user', 'userInfo', 'emp'));
-
-
+    return view($view, compact('profile', 'role', 'user', 'userInfo', 'emp'));
     }
 
+    public function agent(){
+        return view('admin.dashboard.agent');
+    }
     public function schedule(){
         return view('admin.schedule.rta');
     }

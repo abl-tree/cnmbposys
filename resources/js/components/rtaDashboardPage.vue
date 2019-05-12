@@ -25,7 +25,13 @@
         </div>
       </div>
     </div>
-
+    <div class="masonry-item col-md-12">
+      <div class="layers bgc-white">
+        <div class="layer w-100 p-20 bd">
+          <todays-line-graph></todays-line-graph>
+        </div>
+      </div>
+    </div>
     <div class="masonry-item col-md-12">
       <today-activity></today-activity>
     </div>

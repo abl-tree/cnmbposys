@@ -27,7 +27,7 @@
       <div>
         <span
           :class="component.table.td.badges.attendance_log.no_logs.class+' badge badge-pill p-5 fw-900 w-100'"
-        >{{component.table.td.badges.attendance_log.no_logs.label}}</span>
+        >{{ component.table.td.badges.attendance_log.no_logs.label }}</span>
       </div>
     </template>
   </td>
@@ -35,6 +35,9 @@
 <script>
 export default {
   props: ["attendance", "schedule"],
+  mounted() {
+    console.log(this.schedule);
+  },
   data() {
     return {};
   }

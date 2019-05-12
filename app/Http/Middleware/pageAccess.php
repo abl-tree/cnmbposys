@@ -16,10 +16,15 @@ class pageAccess
     {
         $uri = $request->path();
         $position="";
-        $pageAccess['hr'] = ['/','dashboard']; 
-        $pageAccess['rta'] = ['/','dashboard','schedule']; 
-        $pageAccess['admin'] = ['/','dashboard','rtadashboard','rtaschedule',"rtareport","tldashboard","tlreport",'incident_report','rtaeventrequest','action_logs'];
-        $pageAccess['tl'] = ['/',"tldashboard","tlreport"];
+        $pageAccess['hrm'] = ['/','dashboard','todays_activity',"incident_reports",'action_logs']; 
+        $pageAccess['hra'] = ['/','dashboard',"incident_reports",'action_logs']; 
+        $pageAccess['rtam'] = ['/','dashboard','todays_activity','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs']; 
+        $pageAccess['rtas'] = ['/','dashboard','todays_activity','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs']; 
+        $pageAccess['rtaa'] = ['/','dashboard','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs']; 
+        $pageAccess['admin'] = ['/','dashboard','todays_activity','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs','agent'];
+        $pageAccess['om'] = ['/','dashboard','todays_activity',"incident_reports"];
+        $pageAccess['tl'] = ['/','dashboard','todays_activity',"incident_reports"];
+        $pageAccess['agent'] = ['/','work_logs',"incident_reports"];
         // if($request->user()->access->id < 15 && $request->user()->access->id > 11){
         //     // if(in_array($route,$pageAccess['rta'])){
         //     //     return redirect($route);
@@ -32,15 +37,35 @@ class pageAccess
             case 1:
                 $position = 'admin';
             break;
-            case 2:case 3:
-                $position = 'hr';
+            case 2:
+                $position = 'hrm'; // hr manager
             break;
-            case 12:case 13:case 14:
-                $position = 'rta';
+            case 3:
+                $position = 'hra'; // hr assistant
             break;
-            
+            case 4:
+                $position = 'itsu'; //it supervisor
+            break;
+            case 5:
+                $position = 'itsp'; //it specialist
+            break;
+            case 6:
+                $position = 'itsupport';
+            break;
+            case 12:
+                $position = 'rtam';
+            break;
+            case 13:
+                $position = 'rtas';
+            break;
+            case 14:
+                $position = 'rtaa';
+            break;
             case 16:
                 $position = 'tl';
+            break;
+            case 17:
+                $position = 'agent';
             break;
         }
 

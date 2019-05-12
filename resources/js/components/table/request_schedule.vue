@@ -436,16 +436,14 @@ export default {
   },
   methods: {
     fetchSchedRequest: function() {
-      
-        this.config.loader = true;
-        this.config.no_display = false;
+      this.config.loader = true;
+      this.config.no_display = false;
       let pageurl = "/api/v1/request_schedules";
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
           this.table.data = res.meta.request_schedules;
           let obj = [];
-          var self = this;
           res.meta.request_schedules.forEach(
             function(v, i) {
               let temp = {

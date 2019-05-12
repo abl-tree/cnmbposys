@@ -23,17 +23,19 @@ Route::group([ 'middleware'=>['loginVerif']], function () {
     });*/
     
 //////////////////////////////////// PAGE ROUTES
-
-    Route::get('/', 'pageController@dashboard')->name('dashboard');
-    Route::get('/dashboard', 'pageController@dashboard')->name('dashboard');
-    Route::get('/schedule', 'pageController@schedule')->name('schedule');
-    Route::get('/incident_report', 'pageController@incident_report')->name('incident_report');
+//admin
+Route::get('/todays_activity', 'pageController@rtadashboard')->name('rtadashboard');
+Route::get('/', 'pageController@dashboard')->name('dashboard');
+Route::get('/dashboard', 'pageController@dashboard')->name('dashboard');
+Route::get('/agent_schedules', 'pageController@schedule')->name('schedule');
+Route::get('/incident_reports', 'pageController@incident_report')->name('incident_report');
+Route::get('/work_reports', 'pageController@rtareport')->name('rtareport');
+Route::get('/leave_requests', 'pageController@rtaeventrequest')->name('rtaevent_request');
+Route::get('/action_logs', 'pageController@action_logs')->name('action_logs');
+Route::get('/agent', 'pageController@agent')->name('agent');
     
     Route::get('/rtaschedule', 'pageController@rtaschedule')->name('rtaschedule');
-    Route::get('/rtadashboard', 'pageController@rtadashboard')->name('rtadashboard');
     Route::get('/rtareport', 'pageController@rtareport')->name('rtareport');
-    Route::get('/rtaeventrequest', 'pageController@rtaeventrequest')->name('rtaevent_request');
-    Route::get('/action_logs', 'pageController@action_logs')->name('action_logs');
     
     Route::get('/tldashboard', 'pageController@tldashboard')->name('tldashboard');
     Route::get('/tlreport', 'pageController@tlreport')->name('tlreport');

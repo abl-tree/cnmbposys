@@ -23,7 +23,7 @@
                         <div class='fw-500 mL-0 mX-0 pL-0 pR-20 c-blue-500' style="font-size:1em;" id='name_P'>
                             {{$profile->firstname." ".$profile->middlename." ".$profile->lastname}}</div>
                         <div class='mL-0 c-grey-600' style="font-size:.9em;" id='role_P'>{{ $role->name }}</div>
-                        <div>@if(isAdmin())
+                        <div>@if($access_id==1 || $access_id==2)
                             <span class="ti-pencil-alt form-action-button c-blue-300" id="profile-edit-button"
                                 data-portion="profile" data-action="edit" data-id="{{$profile->id}}"
                                 style='cursor:pointer'></span>
@@ -201,6 +201,8 @@
                             </thead>
                         </table>
 
+                        <profile-preview-modal v-bind:user-profile="{{json_encode($pageOnload->id)}}">
+                        </profile-preview-modal>
                         <footer class="bdT  bgc-white  ta-c p-30 lh-0 fsz-sm c-grey-600"
                             style='visibility:hidden;position:relative'>
                             <span>Copyright © 2018 Designed by
