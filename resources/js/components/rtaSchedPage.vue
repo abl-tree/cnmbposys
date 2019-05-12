@@ -57,7 +57,7 @@
                 <a
                   href="javascript:void(0)"
                   class="nav-link c-grey-800 cH-blue-500 active"
-                  @click="(form.event.action = 'update'),(endpoints.update.event=endpoints.tmp.update.event+events.id),(endpoints.delete.event=endpoints.tmp.delete.event+events.id),(form.event.title=events.title),(form.event.color.hex=events.color),showModal('event')"
+                  @click="editEventForm(events)"
                 >
                   <div class="peers ai-c jc-sb">
                     <div class="peer peer-greed">
@@ -261,7 +261,7 @@
                   <button
                     class="btn btn-danger bdrs-50p p-15 lh-0"
                     type="button"
-                    @click="(form.schedule.action='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),(form.schedule.title=''),(form.schedule.time_in=''),(form.schedule.hours=''),(form.schedule.event={}),showModal('schedule')"
+                    @click="(local.form.calendar.disable_time=false),(local.submit.schedule = false),(form.schedule.action='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),(form.schedule.title=''),(form.schedule.time_in=''),(form.schedule.hours=''),(form.schedule.event={}),showModal('schedule')"
                   >
                     <i class="ti-plus"></i>
                   </button>
@@ -278,7 +278,6 @@
           </div>
         </div>
       </div>
-      <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
       <!-- Modal -->
       <!-- Modal -->
       <!-- Schedule Form Modal -->
@@ -339,7 +338,6 @@
                     <date-time-picker
                       :disabled="local.form.calendar.disable_time==true"
                       v-model="form.schedule.hours"
-                      :disabled-hours="local.form.calendar.disable_time==false? ['00']:''"
                       formatted="HH:mm"
                       format="HH:mm"
                       time-format="HH:mm"
@@ -369,6 +367,7 @@
                 <button class="btn btn-secondary" @click="hideModal('schedule')">Cancel</button>
                 <button
                   class="btn btn-danger"
+                  :disabled="local.submit.schedule"
                   @click="(form.schedule.title!='' && form.schedule.event.start!='' && form.schedule.time_in !='' && form.schedule.hours!='' ? cudSched():formValidationError())"
                 >Confirm</button>
               </div>
@@ -434,6 +433,7 @@
 
       <!-- <daily-work-report-modal></daily-work-report-modal> -->
       <!-- notification -->
+      <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
       <notifications group="foo" animation-type="velocity" position="bottom right"/>
     </div>
   </div>
@@ -571,6 +571,9 @@ export default {
     return {
       user_id: this.userId,
       local: {
+        submit: {
+          schedule: false
+        },
         worklog: {
           data: []
         },
@@ -599,7 +602,7 @@ export default {
           config: {
             eventClick: event => {
               // console.log(event.start._i);
-              let date_today = new Date(moment().format("YYYY/MM/DD hh:mm:ss"));
+              let date_today = new Date(moment().format("YYYY/MM/DD HH:mm:ss"));
               let event_start_date = new Date(event.start._i);
 
               if (date_today > event_start_date) {
@@ -612,6 +615,8 @@ export default {
               } else {
                 // console.log("DISPLAY EDIT SCHEDULE MODAL");
                 this.showModal("schedule");
+                this.local.submit.schedule = false;
+                this.local.calendar.disable_time = false;
                 this.form.schedule.action = "update";
                 this.endpoints.update.schedule =
                   "/api/v1/schedules/update/" + event.id;
@@ -647,9 +652,9 @@ export default {
                   start = moment(
                     event.start._i.split(" ")[1],
                     "HH:mm:ss"
-                  ).format("hh:mm a"),
+                  ).format("HH:mm a"),
                   end = moment(event.end._i.split(" ")[1], "HH:mm:ss").format(
-                    "hh:mm a"
+                    "HH:mm a"
                   );
 
                 element.attr({
@@ -748,6 +753,7 @@ export default {
     },
     cudSched: function() {
       //add something
+      this.local.submit.schedule = true;
       let id = this.local.agents.paginated.data[
         this.local.agents.selected_index
       ].id;
@@ -770,8 +776,8 @@ export default {
           $.each(dates, function(k, v) {
             let start =
               form.title > 2 && form.title < 9
-                ? v + " " + form.time_in + ":00"
-                : v + " 00:00:00";
+                ? v + " 00:00:00"
+                : v + " " + form.time_in + ":00";
             let hr = form.hours.split(":");
             let obj_element = {
               title_id: form.title,
@@ -779,7 +785,7 @@ export default {
               user_id: id,
               start_event: start,
               end_event:
-                form.title > 2 && form.title < 9
+                (form.title > 2 && form.title < 9) || form.hours == "00:00"
                   ? moment(
                       moment(start)
                         .add("24", "h")
@@ -793,28 +799,29 @@ export default {
                     ).format("YYYY-MM-DD HH:mm:ss")
             };
             obj.push(obj_element);
+            // console.log(obj);
           });
         } else if (form.action == "update") {
           pageurl =
             "/api/v1/schedules/update/" + this.form.schedule.schedule_id;
           let hr = form.hours.split(":");
           let start =
-              form.time_in == ""
-                ? form.event.start
-                : form.event.start + " " + form.time_in + ":00",
-            end =
-              form.title > 2 && form.title < 9
-                ? moment(
-                    moment(start)
-                      .add("24", "h")
-                      .toDate()
-                  ).format("YYYY-MM-DD HH:mm:ss")
-                : moment(
-                    moment(start)
-                      .add(hr[0], "h")
-                      .add(hr[1], "m")
-                      .toDate()
-                  ).format("YYYY-MM-DD HH:mm:ss");
+            form.title > 2 && form.title < 9
+              ? v + " 00:00:00"
+              : v + " " + form.time_in + ":00";
+          end =
+            (form.title > 2 && form.title < 9) || form.hours == "00:00"
+              ? moment(
+                  moment(start)
+                    .add("24", "h")
+                    .toDate()
+                ).format("YYYY-MM-DD HH:mm:ss")
+              : moment(
+                  moment(start)
+                    .add(hr[0], "h")
+                    .add(hr[1], "m")
+                    .toDate()
+                ).format("YYYY-MM-DD HH:mm:ss");
           obj = {
             title_id: form.title,
             auth_id: this.user_id,
@@ -834,9 +841,14 @@ export default {
         .then(res => res.json())
         .then(res => {
           // console.log(res);
-          this.hideModal("schedule");
-          this.notify("success", form.action);
-          this.fetchAgentSched(id);
+          this.local.submit.schedule = true;
+          if (res.code == 200) {
+            this.hideModal("schedule");
+            this.notify("success", form.action);
+            this.fetchAgentSched(id);
+          } else {
+            this.notify("error", form.action);
+          }
         })
         .catch(err => console.log(err));
     },
@@ -913,6 +925,19 @@ export default {
       temp.schedule.title.name = v.title.title;
       temp.attendance = v1;
       return temp;
+    },
+    editEventForm: function(events) {
+      // console.log(events);
+      if (events.id > 8) {
+        this.form.event.action = "update";
+        this.endpoints.update.event =
+          this.endpoints.tmp.update.event + events.id;
+        this.endpoints.delete.event =
+          this.endpoints.tmp.delete.event + events.id;
+        this.form.event.title = events.title;
+        this.form.event.color.hex = events.color;
+        this.showModal("event");
+      }
     }
   }
 };

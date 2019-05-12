@@ -76,6 +76,7 @@ export default {
   data() {
     return {
       local: {
+        // temp_id: 119,
         calendar: {
           events: []
         }
@@ -118,12 +119,12 @@ export default {
     };
   },
   mounted() {
-    this.fetchAgentSched(256);
+    this.fetchAgentSched();
   },
   methods: {
     fetchAgentSched: function(id) {
       this.local.calendar.events = [];
-      let pageurl = "/api/v1/schedules/agents/" + id;
+      let pageurl = "/api/v1/schedules/agents/" + this.userId;
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {

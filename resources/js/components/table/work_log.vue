@@ -188,7 +188,7 @@
                       class="ti-exchange-vertical cur-p"
                       @click="(config.filter.sort.by='operations_manager'),(config.filter.sort.order['operations_manager'] = !config.filter.sort.order['operations_manager']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
                     ></span>
-                  </span>
+                  </span>\
                 </th>
                 <th class="bdwT-0 text-center">
                   Schedule
@@ -235,9 +235,7 @@
                   ></td-personnel>
                   <td-personnel :personnel="datum.info.tl"></td-personnel>
                   <td-personnel :personnel="datum.info.om"></td-personnel>
-                  <td-schedule
-                    :schedule="!isEmpty(datum.schedule)?{start:datum.schedule.start_event,end:datum.schedule.end_event}:null"
-                  ></td-schedule>
+                  <td-schedule :schedule="datum.schedule"></td-schedule>
                   <td-regular-hour-duration :schedule="datum.schedule"></td-regular-hour-duration>
                   <td-attendance :attendance="datum.attendance"></td-attendance>
                   <td-attendance-log :attendance="datum.attendance" :schedule="datum.schedule"></td-attendance-log>
@@ -383,7 +381,6 @@ export default {
   data() {
     return {
       user_id: this.userId,
-      tablemount: false,
       config: {
         overtime: {
           approve: {
@@ -484,6 +481,7 @@ export default {
               obj.push(tmp);
             }
             obj = [...new Set([].concat(...obj.map(a => a)))];
+            console.log(obj);
             this.config.data.all = obj;
             this.config.data.present = obj.filter(function(present) {
               return present.attendance == "present";
@@ -501,9 +499,6 @@ export default {
             console.log(err);
           });
       }
-    },
-    calendarFormat: function(date) {
-      return moment(date).calendar();
     },
     paginate: function(obj, page, per_page) {
       var page = page,

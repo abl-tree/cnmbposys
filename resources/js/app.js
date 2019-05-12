@@ -31,27 +31,33 @@ Vue.mixin({
                             attendance: {
                                 present: {
                                     class: 'bgc-green-200 c-green-800',
-                                    label: "PRESENT"
+                                    label: "PRESENT",
+                                    statusColor: "c-green-600"
                                 },
                                 no_show: {
                                     class: 'bgc-grey-200 c-grey-800',
-                                    label: "NO SHOW"
+                                    label: "NO SHOW",
+                                    statusColor: "c-green-100"
                                 },
                                 absent: {
                                     class: 'bgc-grey-200 c-grey-800',
-                                    label: "ABSENT"
+                                    label: "ABSENT",
+                                    statusColor: "c-grey-700"
                                 },
                                 leave: {
-                                    class: 'bgc-yellow-200 c-yellow-800',
-                                    label: "LEAVE"
+                                    class: 'bgc-orange-200 c-orange-800',
+                                    label: "LEAVE",
+                                    statusColor: "c-orange-500"
                                 },
                                 off_duty: {
                                     class: 'bgc-grey-300 c-grey-800',
-                                    label: "OFF-DUTY"
+                                    label: "OFF-DUTY",
+                                    statusColor: "c-grey-300"
                                 },
                                 none: {
                                     class: 'bgc-light-blue-100 c-light-blue-800',
-                                    label: "NO ATTENDANCE"
+                                    label: "NO ATTENDANCE",
+                                    statusColor: "c-grey-300"
                                 },
                             },
                             attendance_log: {
@@ -429,6 +435,9 @@ Vue.mixin({
         },
         isAfter: function (date) {
             return moment(date).isAfter(moment())
+        },
+        strToUpper: function (string) {
+            return string.toUpperCase();
         }
     }
 });
@@ -484,6 +493,8 @@ Vue.component("mini-calendar", mini_calendar);
 
 import trackerGraph from "./components/trackerGraph.vue";
 Vue.component("work-graph", trackerGraph);
+import todaysLineGraph from "./components/todaysLineGraph.vue";
+Vue.component("todays-line-graph", todaysLineGraph);
 
 import wr_modal from "./components/dailyWorkReportModal.vue";
 Vue.component("daily-work-report-modal", wr_modal);
@@ -502,6 +513,13 @@ Vue.component("request-schedule", request_schedule);
 
 import action_log from "./components/table/action_logs.vue";
 Vue.component("action-log", action_log);
+
+import sr_notif from "./components/notification/schedule_request_notif.vue";
+Vue.component("sr-notif", sr_notif);
+import ir_notif from "./components/notification/ir_notif.vue";
+Vue.component("ir-notif", ir_notif);
+import agent_widget from "./components/agent_widget.vue";
+Vue.component("agent-widget", agent_widget);
 
 
 import tr_loader from "./components/table/tr_loader.vue";

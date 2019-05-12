@@ -87,7 +87,7 @@
               <div class="form-row">
                 <div class="col">
                   <small>
-                    <b>{{profile.position}}</b>
+                    <b>{{profile.address}}</b>
                   </small>
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default {
           this.profile.name.first = obj.fname;
           this.profile.name.middle = obj.mname;
           this.profile.name.last = obj.lname;
-          this.profile.id = obj.id;
+          this.profile.id = obj.company_id;
           this.profile.gender = obj.gender;
           this.profile.birth = obj.birthdate;
           this.profile.address = obj.address;

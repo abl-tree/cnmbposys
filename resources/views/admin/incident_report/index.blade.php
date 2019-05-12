@@ -11,8 +11,6 @@
         </sanction-level>
     </div>
 
-
-
     <div class="masonry-item col-md-6">
         <sanction-type v-if="{{json_encode($access_id)}}<4" v-bind:user-Id="{{json_encode($pageOnload->id)}}"
             v-bind:access-Id="{{json_encode($access_id)}}">

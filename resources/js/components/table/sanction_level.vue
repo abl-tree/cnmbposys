@@ -24,27 +24,28 @@
         <div class="table-responsive pX-20 pB-20" style="height:200px;">
           <table class="table" style="table-layout:auto">
             <thead>
+              <tr>
                 <th class="bdwT-0">Number</th>
                 <th class="bdwT-0">Description</th>
               </tr>
             </thead>
             <tbody>
-                <tr v-for="datum in table.data" :key="datum.id" @click="(form.action='update'),(config.sanction_level.id=datum.id),(config.sanction_level.number=datum.level_number),(config.sanction_level.description=datum.level_description),showModal('sanction_level')">
-                    <td>
-                        {{datum.level_number}}
-                    </td>
-                    <td>
-                        {{datum.level_description}}
-                    </td>
-                </tr>
+              <tr
+                v-for="datum in table.data"
+                :key="datum.id"
+                @click="(form.action='update'),(config.sanction_level.id=datum.id),(config.sanction_level.number=datum.level_number),(config.sanction_level.description=datum.level_description),showModal('sanction_level')"
+              >
+                <td>{{datum.level_number}}</td>
+                <td>{{datum.level_description}}</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-    
+
     <!-- Sanction Type Form Modal -->
-    <modal name="sanction_level" :pivotY="0.2" :scrollable="true" width="350px" height="auto">
+    <modal name="sanction_level" :pivotY="0.2" :scrollable="true" width="450px" height="auto">
       <div class="layer">
         <div class="e-modal-header bd">
           <h6 style="margin-bottom:0px">Sanction Level</h6>
@@ -57,7 +58,7 @@
                   <label>Number:</label>
                   <input
                     type="number"
-                    class="form-control"
+                    class="form-control no-after"
                     min="1"
                     step="1"
                     v-model="config.sanction_level.number"
@@ -65,7 +66,11 @@
                 </div>
                 <div class="col">
                   <label>Description:</label>
-                  <input type="text" class="form-control" v-model="config.sanction_level.description">
+                  <input
+                    type="text"
+                    class="form-control"
+                    v-model="config.sanction_level.description"
+                  >
                 </div>
               </div>
             </form>
@@ -94,7 +99,7 @@
                         },form.action
                             ) :
                       formValidationError())"
-                      :disabled="form.submit_button.sanction_level"
+                :disabled="form.submit_button.sanction_level"
               >Confirm</button>
             </div>
           </div>
@@ -140,14 +145,14 @@ export default {
           level: true,
           date_filed: true
         },
-        sanction_level:{
-            id:'',
-            number:'',
-            description:''
+        sanction_level: {
+          id: "",
+          number: "",
+          description: ""
         },
         selected_page: 1,
         data: {
-          all: [],
+          all: []
         },
         filter: {
           data: [],
@@ -158,11 +163,11 @@ export default {
           no_records: 5
         }
       },
-      form:{
-        submit_button:{
-            sanction_level:false
+      form: {
+        submit_button: {
+          sanction_level: false
         },
-        action:"create"
+        action: "create"
       },
       table: {
         data: []
@@ -232,17 +237,19 @@ export default {
     ///column sorter functions END
     ///==========================================================
     ///store IR START
-    storesanctionlevel: function(obj,action) {
+    storesanctionlevel: function(obj, action) {
       this.form.submit_button.sanction_level = true;
       let pageurl;
-      if(action=="create"){
-          pageurl="/api/v1/sanction_level/create";
-      }else if(action=="update"){
-          pageurl="/api/v1/sanction_level/update/"+ this.config.sanction_level.id
-      }else if(action=="delete"){
-          pageurl="/api/v1/sanction_level/delete/"+ this.config.sanction_level.id
+      if (action == "create") {
+        pageurl = "/api/v1/sanction_level/create";
+      } else if (action == "update") {
+        pageurl =
+          "/api/v1/sanction_level/update/" + this.config.sanction_level.id;
+      } else if (action == "delete") {
+        pageurl =
+          "/api/v1/sanction_level/delete/" + this.config.sanction_level.id;
       }
-    fetch(pageurl, {
+      fetch(pageurl, {
         method: "post",
         body: JSON.stringify(obj),
         headers: {
@@ -252,19 +259,19 @@ export default {
         .then(res => res.json())
         .then(data => {
           console.log(data);
-      this.form.submit_button.sanction_level = false;
+          this.form.submit_button.sanction_level = false;
           if (data.code == 500) {
             this.notify("error", action);
           } else {
             console.log(data);
             this.fetchTableData();
-            this.hideModal('sanction_level');
+            this.hideModal("sanction_level");
             this.notify("success", action);
             // this.saveLog('succuss', formName, action, data);
           }
         })
         .catch(err => console.log(err));
-    },
+    }
   }
 };
 </script>

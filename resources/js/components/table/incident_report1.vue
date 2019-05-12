@@ -32,7 +32,6 @@
             :key="tab.id"
             class="col text-center pX-0 cur-p"
             @click="(config.searchAgent=''),(config.selected_tab = index),(config.selected_page=1),changeTableTab(tab.code,1,config.curSort)"
-            
           >
             <span
               class="text-center w-100 pY-10 badge-c"
@@ -114,9 +113,6 @@
               <tr style="position:relative">
                 <th class="bdwT-0">Image</th>
                 <th class="bdwT-0">
-                  <span class="mR-5">
-                    <i class="ti-filter cur-p"></i>
-                  </span>
                   Issued to
                   <span class="pull-right">
                     <span
@@ -177,17 +173,7 @@
                     >
                     <img v-else class="bdrs-50p w-3r h-3r" src="/images/nobody.jpg">
                   </td>
-                  <td style="font-size:.95em">
-                    <div class="fw-600">
-                      <i class="ti-user c-grey-400 mR-5"></i>
-                      {{datum.issued_to.full_name}}
-                    </div>
-                    <div>
-                      <i class="ti-email c-grey-400 mR-5"></i>
-                      {{split(datum.issued_to.email,'@',0)}}
-                    </div>
-                    <div class="c-light-blue-400">@cnmsolutions.net</div>
-                  </td>
+                  <td-personnel :personnel="datum.issued_to"></td-personnel>
                   <td style="font-size:.95em">
                     <div
                       v-if="!isEmpty(datum.report_details.sanction_type)"
@@ -208,17 +194,8 @@
                     <div>{{split(datum.report_details.created_at.date,'.',0)}}</div>
                   </td>
 
-                  <td style="font-size:.95em">
-                    <div class="fw-600">
-                      <i class="ti-user c-grey-400 mR-5"></i>
-                      {{datum.issued_by.full_name}}
-                    </div>
-                    <div>
-                      <i class="ti-email c-grey-400 mR-5"></i>
-                      {{split(datum.issued_by.email,'@',0)}}
-                    </div>
-                    <div class="c-light-blue-400">@cnmsolutions.net</div>
-                  </td>
+                  <td-personnel :personnel="datum.issued_by"></td-personnel>
+
                   <td style="font-size:.95em">
                     <div
                       class="fw-600 badge badge-pill bgc-indigo-100 c-indigo-800 w-100 fsz-xs"
@@ -499,12 +476,11 @@ export default {
   props: ["userId", "accessId"],
   mounted() {
     this.fetchIRTable();
-    if(this.access_id>3 && this.access_id!=17){
-      this.config.tabs=this.config.tabs.slice(1,3)
-    }else if(this.access_id==17){
-      this.config.tabs=this.config.tabs.slice(2,3)
-
-    };
+    if (this.access_id > 3 && this.access_id != 17) {
+      this.config.tabs = this.config.tabs.slice(1, 3);
+    } else if (this.access_id == 17) {
+      this.config.tabs = this.config.tabs.slice(2, 3);
+    }
   },
   created() {},
   data() {
@@ -550,12 +526,12 @@ export default {
           tir: "",
           description: "",
           response: {
-            id:"",
+            id: "",
             date: "",
             message: ""
           },
-          save_endpoint:"",
-          action:""
+          save_endpoint: "",
+          action: ""
         },
         selected_tab: 0, //index based,
         selected_page: 1,
@@ -575,10 +551,10 @@ export default {
           no_records: 15
         }
       },
-      form:{
-        submit_buttons:{
-          incident_report:false,
-          incident_report_response:false,
+      form: {
+        submit_buttons: {
+          incident_report: false,
+          incident_report_response: false
         }
       },
       table: {
@@ -740,7 +716,7 @@ export default {
         .then(res => res.json())
         .then(data => {
           console.log(data);
-      this.form.submit_buttons.incident_report = false;
+          this.form.submit_buttons.incident_report = false;
 
           if (data.code == 500) {
             this.notify("error", action);
@@ -775,24 +751,18 @@ export default {
       this.config.ir_details.response.date = this.isEmpty(
         report.report_details.agent_response
       )
-        ? 
-      ""
-        : report.report_details.agent_response.created_at         
-        ;
+        ? ""
+        : report.report_details.agent_response.created_at;
 
-        
-      if(this.isEmpty(
-        report.report_details.agent_response
-      )){
-        this.config.ir_details.action = "create"
-      // this.config.ir_details.save_endpoint = "/api/v1/reports/user_response"
-      }else{
-      this.config.ir_details.action = "update"
-      // this.config.ir_details.save_endpoint = "/api/v1/reports/update_response"
-      this.config.ir_details.response.id = report.report_details.agent_response.id
-        
-      }        
-
+      if (this.isEmpty(report.report_details.agent_response)) {
+        this.config.ir_details.action = "create";
+        // this.config.ir_details.save_endpoint = "/api/v1/reports/user_response"
+      } else {
+        this.config.ir_details.action = "update";
+        // this.config.ir_details.save_endpoint = "/api/v1/reports/update_response"
+        this.config.ir_details.response.id =
+          report.report_details.agent_response.id;
+      }
 
       this.config.ir_details.response.message = this.isEmpty(
         report.report_details.agent_response
@@ -805,38 +775,35 @@ export default {
         return a.id === id;
       })[0].count;
     },
-    receivedTab:function() {  
+    receivedTab: function() {
       let result;
-      if(this.access_id<4){
-        result = 2
-      }else if(this.access_id>3 && this.access_id!=17){
-
-        result = 1
-      }else if(this.access_id==17){
-        result =0
+      if (this.access_id < 4) {
+        result = 2;
+      } else if (this.access_id > 3 && this.access_id != 17) {
+        result = 1;
+      } else if (this.access_id == 17) {
+        result = 0;
       }
       return result;
     },
-    storeIRresponse:function(){
+    storeIRresponse: function() {
       this.form.submit_buttons.incident_report_response = true;
       let pageurl = "/api/v1/reports/user_response";
       fetch(pageurl, {
         method: "post",
         body: JSON.stringify(
-          this.config.ir_details.action=='create'?
-            {
-              user_response_id: this.config.ir_details.id,
-              commitment: this.config.ir_details.response.message,
-              auth_id:this.user_id
-            }
-          :
-            
-            {
-              id:this.config.ir_details.response.id,
-              user_response_id: this.config.ir_details.id,
-              commitment: this.config.ir_details.response.message,
-              auth_id:this.user_id
-            }
+          this.config.ir_details.action == "create"
+            ? {
+                user_response_id: this.config.ir_details.id,
+                commitment: this.config.ir_details.response.message,
+                auth_id: this.user_id
+              }
+            : {
+                id: this.config.ir_details.response.id,
+                user_response_id: this.config.ir_details.id,
+                commitment: this.config.ir_details.response.message,
+                auth_id: this.user_id
+              }
         ),
         headers: {
           "content-type": "application/json"
@@ -845,15 +812,15 @@ export default {
         .then(res => res.json())
         .then(data => {
           console.log(data);
-      this.form.submit_buttons.incident_report_response = false;
+          this.form.submit_buttons.incident_report_response = false;
 
           if (data.code == 500) {
-            this.notify("error", 'update');
+            this.notify("error", "update");
           } else {
             console.log(data);
             this.fetchIRTable();
-            this.hideModal('preview-only-incident-report');
-            this.notify("success", 'update');
+            this.hideModal("preview-only-incident-report");
+            this.notify("success", "update");
             // this.saveLog('succuss', formName, action, data);
           }
         })
