@@ -13,6 +13,7 @@ use App\Data\Models\SanctionLevel;
 use App\Data\Models\SanctionTypes;
 use App\Data\Models\SanctionLevels;
 use App\Data\Models\ReportResponse;
+use App\Data\Repositories\NotificationRepository;
 use App\Data\Repositories\BaseRepository;
 
 class ReportsRepository extends BaseRepository
@@ -30,7 +31,8 @@ class ReportsRepository extends BaseRepository
         $sanction_levels,
         $report_response,
         $sanction_level,
-        $logs;
+        $logs,
+        $notification_repo;
 
     public function __construct(
         UserInfo $user_info,
@@ -44,7 +46,8 @@ class ReportsRepository extends BaseRepository
         ReportResponse $report_response,
         UserReport $user_reports,
         IncidentReport $incident_report,
-        LogsRepository $logs_repo
+        LogsRepository $logs_repo,
+        NotificationRepository $notificationRepository
     ) {
         $this->user_info = $user_info;
         $this->users = $users;
@@ -58,6 +61,7 @@ class ReportsRepository extends BaseRepository
         $this->report_response = $report_response;
         $this->incident_report = $incident_report;
         $this->logs = $logs_repo;
+        $this->notification_repo = $notificationRepository;
     } 
 
     public function getAllReports($data = [])
@@ -190,6 +194,7 @@ class ReportsRepository extends BaseRepository
                     "affected_data" => $auth->full_name."[".$auth->access->name."] Updated the Incident Report filed by  ".$reports->issued_by->full_name."[".$reports->issued_by->position."] to ".$reports->issued_to->full_name."[".$reports->issued_to->position."]"
                 ];
                 $this->logs->logsInputCheck($logged_data);
+                $notification_type = 'reports.update';
             } else{
                 $reports = $this->user_reports->init($this->user_reports->pullFillable($data));
                 $filed_by = $this->user->find($data['filed_by']);
@@ -202,6 +207,7 @@ class ReportsRepository extends BaseRepository
                     "affected_data" => $filed_by->full_name."[".$filed_by->access->name."] Filed an Incident Report to ".$filed_to->full_name."[".$filed_to->access->name."] with a Sanction type of ".$sanctiont->text." and a Sanction Level of ".$sanctionl->text."."
                 ];
                 $this->logs->logsInputCheck($logged_data);
+                $notification_type = 'reports.create';
             }
             
            
@@ -216,6 +222,14 @@ class ReportsRepository extends BaseRepository
                 ],
             ]);
         }
+
+        // trigger notification
+        $notification = $this->notification_repo->triggerNotification([
+            'sender_id' => $reports->filed_by,
+            'recipient_id' => $reports->user_reports_id,
+            'type' => $notification_type,
+            'type_id' => $reports->id
+        ]);
 
         return $this->setResponse([
             "code"       => 200,
@@ -265,6 +279,14 @@ class ReportsRepository extends BaseRepository
             $this->logs->logsInputCheck($logged_data);
     
         }
+
+        // trigger notification
+        $notification = $this->notification_repo->triggerNotification([
+            'sender_id' => $record->filed_by,
+            'recipient_id' => $record->user_reports_id,
+            'type' => 'reports.delete',
+            'type_id' => $record->id
+        ]);
         
         return $this->setResponse([
             "code"        => 200,
@@ -609,12 +631,12 @@ class ReportsRepository extends BaseRepository
         
     }
 
-         public function userResponse($data = [])
+    public function userResponse($data = [])
     {
         // data validation
         $auth = $this->user->find($data['auth_id']);
-        $param=null;
-        $title;
+        $param = null;
+        $title = null;
         if (!isset($data['user_response_id'])) {
             if (!isset($data['user_response_id'])) {
                 return $this->setResponse([
@@ -651,6 +673,7 @@ class ReportsRepository extends BaseRepository
             $this->logs->logsInputCheck($logged_data);
             $param=$data['user_response_id'];
             $title= "Successfully Edited an IR response.";
+            $notification_type = 'reports.edit_response';
         } else{
             $response = $this->report_response->init($this->report_response->pullFillable($data));
             $logged_data = [
@@ -660,11 +683,9 @@ class ReportsRepository extends BaseRepository
             ];
             $this->logs->logsInputCheck($logged_data);
             $title= "Successfully Added an IR response.";
+            $notification_type = 'reports.add_response';
         }
         
-            
-            
-
         if (!$response->save($data)) {
             return $this->setResponse([
                 "code"        => 500,
@@ -675,6 +696,17 @@ class ReportsRepository extends BaseRepository
                 ],
             ]);
         }
+
+        // fetch report related to response
+        $report = $this->user_reports->find($response->user_response_id); 
+
+        // trigger notification
+        $notification = $this->notification_repo->triggerNotification([
+            'sender_id' => $auth->id,
+            'recipient_id' => isset($report) ? $report->filed_by : 0,
+            'type' => $notification_type,
+            'type_id' => $response->id
+        ]);
 
         return $this->setResponse([
             "code"       => 200,
