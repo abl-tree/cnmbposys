@@ -30,7 +30,7 @@ class Notification extends BaseModel
      * @var array
      */
     protected $rules = [
-        'description' => 'sometimes|required|max:100',
+        'description' => 'sometimes|required',
         'type' => 'sometimes|required|max:100',
         'type_id' => 'sometimes|required|numeric',
         'sender_id' => 'sometimes|required|numeric',
