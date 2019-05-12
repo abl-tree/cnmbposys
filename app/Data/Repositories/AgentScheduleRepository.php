@@ -363,9 +363,9 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = ["user_info", 'title'];
+        $data['relations'] = ["user_info.user", 'title'];
 
-        $result     = $this->fetchGeneric($data, $this->agent_schedule);
+        $result = $this->fetchGeneric($data, $this->agent_schedule);
 
         if (!$result) {
             return $this->setResponse([
@@ -379,6 +379,18 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
+
+        if(!is_array($result)){
+            $result = [
+                $result
+            ];
+        }
+
+        foreach($result as $key => $value){
+            $value->team_leader = $value->user_info->user->team_leader;
+            $value->operations_manager = $value->user_info->user->operations_manager;
+            unset($value->user_info->user);
+        }
 
         return $this->setResponse([
             "code"       => 200,
