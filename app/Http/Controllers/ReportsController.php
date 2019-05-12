@@ -32,6 +32,8 @@ class ReportsController extends BaseController
     public function create(Request $request)
     {
         $data = $request->all();
+        //for notification
+        $data['endpoint'] = $request->route()->uri;
         return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();     
     }
 
@@ -49,6 +51,8 @@ class ReportsController extends BaseController
      public function userResponse(Request $request)
     {
         $data = $request->all();
+        //for notification
+        $data['endpoint'] = $request->route()->uri;
         return $this->absorb($this->user_reports->userResponse($data))->json();     
     }
 
@@ -182,6 +186,8 @@ class ReportsController extends BaseController
     {
         $data = $request->all();
         $data['id'] = $id;
+        //for notification
+        $data['endpoint'] = $request->route()->uri;
 
         return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();
     }
@@ -189,6 +195,8 @@ class ReportsController extends BaseController
     {
         $data = $request->all();
         $data['user_response_id'] = $id;
+        //for notification
+        $data['endpoint'] = $request->route()->uri;
 
         return $this->absorb($this->user_reports->userResponse($data))->json();
     }
@@ -209,6 +217,8 @@ class ReportsController extends BaseController
     {
         $data       = $request->all();
         $data['id'] = $id;
+        //for notification
+        $data['endpoint'] = $request->route()->uri;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||

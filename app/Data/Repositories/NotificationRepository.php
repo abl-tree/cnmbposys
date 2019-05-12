@@ -116,6 +116,7 @@ class NotificationRepository extends BaseRepository
             'recipient_id' => $data['recipient_id'],
             'type' => $data['type'],
             'type_id' => $data['type_id'],
+            'endpoint' => isset($data['endpoint']) ? $data['endpoint'] : null,
         ];
 
         $notification['description'] = config('notifications.' . $data['type']);

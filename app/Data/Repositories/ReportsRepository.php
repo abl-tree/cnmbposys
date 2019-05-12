@@ -146,13 +146,13 @@ class ReportsRepository extends BaseRepository
             if (!isset($data['sanction_type_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "saction type is not set.",
+                    'title' => "sanction type is not set.",
                 ]);
             }
             if (!isset($data['sanction_level_id'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "saction level is not set.",
+                    'title' => "sanction level is not set.",
                 ]);
             }
         }   else{
@@ -228,7 +228,8 @@ class ReportsRepository extends BaseRepository
             'sender_id' => $reports->filed_by,
             'recipient_id' => $reports->user_reports_id,
             'type' => $notification_type,
-            'type_id' => $reports->id
+            'type_id' => $reports->id,
+            'endpoint' => $data['endpoint']
         ]);
 
         return $this->setResponse([
@@ -285,7 +286,8 @@ class ReportsRepository extends BaseRepository
             'sender_id' => $record->filed_by,
             'recipient_id' => $record->user_reports_id,
             'type' => 'reports.delete',
-            'type_id' => $record->id
+            'type_id' => $record->id,
+            'endpoint' => $data['endpoint']
         ]);
         
         return $this->setResponse([
@@ -705,7 +707,8 @@ class ReportsRepository extends BaseRepository
             'sender_id' => $auth->id,
             'recipient_id' => isset($report) ? $report->filed_by : 0,
             'type' => $notification_type,
-            'type_id' => $response->id
+            'type_id' => $response->id,
+            'endpoint' => $data['endpoint']
         ]);
 
         return $this->setResponse([
