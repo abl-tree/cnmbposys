@@ -75,6 +75,13 @@ class AccessLevelHierarchyRepository extends BaseRepository
             $acc_level = $this->access_level->init($this->access_level->pullFillable($data));
         }
 
+        if (!$acc_level) {
+            return $this->setResponse([
+                'code'  => 404,
+                'title' => "Access level not found.",
+            ]);
+        }
+
         if (!$acc_level->save($data)) {
             return $this->setResponse([
                 "code"        => 500,

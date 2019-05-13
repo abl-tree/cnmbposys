@@ -27,4 +27,10 @@ class ClusterController extends BaseController
         $data = $request->all();
         return $this->absorb($this->cluster_repo->defineCluster($data))->json();
     }
+
+    public function update(Request $request, $cluster_id)
+    {
+        $data = $request->all();
+        return $this->absorb($this->cluster_repo->defineCluster($data))->json();
+    }
 }

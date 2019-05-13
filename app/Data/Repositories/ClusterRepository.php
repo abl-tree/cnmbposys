@@ -97,6 +97,13 @@ class ClusterRepository extends BaseRepository
             $cluster = $this->clusters->init($this->clusters->pullFillable($data));
         }
 
+        if (!$cluster) {
+            return $this->setResponse([
+                'code'  => 404,
+                'title' => "Cluster not found.",
+            ]);
+        }
+
         if (!$cluster->save($data)) {
             return $this->setResponse([
                 "code"        => 500,
