@@ -444,6 +444,7 @@ export default {
         .then(res => {
           this.table.data = res.meta.request_schedules;
           let obj = [];
+          console.log(res.meta.request_schedules)
           res.meta.request_schedules.forEach(
             function(v, i) {
               let temp = {
@@ -511,10 +512,10 @@ export default {
             }.bind(this)
           );
           this.config.data.all = obj;
-          this.config.data.pending = obj.filter(this.getPending);
-          this.config.data.denied = obj.filter(this.getDenied);
-          this.config.data.approved = obj.filter(this.getApproved);
-          this.config.data.expired = obj.filter(this.getExpired);
+          // this.config.data.pending = obj.filter(this.getPending);
+          // this.config.data.denied = obj.filter(this.getDenied);
+          // this.config.data.approved = obj.filter(this.getApproved);
+          // this.config.data.expired = obj.filter(this.getExpired);
 
           res.meta.request_schedules.forEach(
             function(v, i) {
@@ -559,7 +560,6 @@ export default {
         )
       ];
     },
-
     getExpiredtoStore: function(status) {
       return (
         !this.isAfter(status.request.start_date) &&
@@ -680,11 +680,14 @@ export default {
     },
 
     storeExpired: function(data) {
-      let request = data.request;
+      console.log(data)
+      let request = data;
       let pageurl = "/api/v1/request_schedules/update/" + request.id;
-      let obj = {
+      fetch(pageurl, {
+        method: "post",
+        body: JSON.stringify({
         id: request.id,
-        auth_id: this.user_id,
+        auth_id: this.userId,
         applicant: request.applicant.id,
         requested_by: request.requested_by.id,
         managed_by: this.user_id,
@@ -692,11 +695,7 @@ export default {
         start_date: request.start_date,
         end_date: request.end_date,
         status: "expired"
-      };
-      console.log(obj);
-      fetch(pageurl, {
-        method: "post",
-        body: JSON.stringify(obj),
+      }),
         headers: {
           "content-type": "application/json"
         }

@@ -133,7 +133,6 @@
                         </div>
                     </div>
                     <div class="row">
-                      <work-graph :userId='1'></work-graph>
                     </div>
                     <div class="row">
                     </div>

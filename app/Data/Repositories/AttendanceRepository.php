@@ -12,6 +12,7 @@ ini_set('memory_limit', '-1');
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\Attendance;
+use App\Events\StartWork;
 use App\User;
 use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
@@ -117,6 +118,16 @@ class AttendanceRepository extends BaseRepository
                 }
             }
 
+            if(isset($data['user_id'])){
+                $user = $this->user->where('id',$data['user_id'])->first();
+                if(isset($user->id)){
+                    $schedule = $this->agent_schedule->where('user_id', $user->id);
+                        if (isset($schedule->id)) {
+                            $data['schedule_id'] = $schedule->id;
+                        }
+                }
+            }
+
             // data validation
             if (!isset($data['time_in'])) {
                 return $this->setResponse([
@@ -126,12 +137,12 @@ class AttendanceRepository extends BaseRepository
             }
 
             // data validation
-            if (!isset($data['time_out'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "Time out is not set.",
-                ]);
-            }
+            // if (!isset($data['time_out'])) {
+            //     return $this->setResponse([
+            //         'code'  => 500,
+            //         'title' => "Time out is not set.",
+            //     ]);
+            // }
 
         }
 
@@ -145,7 +156,16 @@ class AttendanceRepository extends BaseRepository
                 ]);
             }
         }
-
+        
+        if(isset($data['user_id'])){
+            $user = $this->user->where('id',$data['user_id'])->first();
+            if(isset($user->id)){
+                $schedule = $this->agent_schedule->where('user_id', $user->id);
+                    if (isset($schedule->id)) {
+                        $data['schedule_id'] = $schedule->id;
+                    }
+            }
+        }
         // insertion
         if (isset($data['id'])) {
             $attendance = $this->attendance_repo->find($data['id']);
@@ -184,6 +204,10 @@ class AttendanceRepository extends BaseRepository
             "affected_data" =>$message
         ];
         $this->logs->logsInputCheck($logged_data);
+
+        //pusher data
+        event(new StartWork($attendance));
+
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully defined an attendance.",

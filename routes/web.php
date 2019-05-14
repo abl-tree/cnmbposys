@@ -1,4 +1,6 @@
 <?php
+use Pusher\Laravel\Facades\Pusher;
+use App\Events\StartWork;
 
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Auth::routes();
@@ -34,16 +36,16 @@ Route::get('/leave_requests', 'pageController@rtaeventrequest')->name('rtaevent_
 Route::get('/action_logs', 'pageController@action_logs')->name('action_logs');
 Route::get('/agent', 'pageController@agent')->name('agent');
     
-    Route::get('/rtaschedule', 'pageController@rtaschedule')->name('rtaschedule');
-    Route::get('/rtareport', 'pageController@rtareport')->name('rtareport');
-    
-    Route::get('/tldashboard', 'pageController@tldashboard')->name('tldashboard');
-    Route::get('/tlreport', 'pageController@tlreport')->name('tlreport');
+Route::get('/rtaschedule', 'pageController@rtaschedule')->name('rtaschedule');
+Route::get('/rtareport', 'pageController@rtareport')->name('rtareport');
 
+Route::get('/tldashboard', 'pageController@tldashboard')->name('tldashboard');
+Route::get('/tlreport', 'pageController@tlreport')->name('tlreport');
 
-
-
-
+Route::get('/pusher',function(){
+    event(new StartWork(['user_id'=>119]));
+    return "triggered";
+});
 
 
 

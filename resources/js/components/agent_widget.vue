@@ -36,7 +36,7 @@
               </div>
             </div>
             <div class="row pY-10 bdB">
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="layer w-100 bdL bdR p-20">
                   <div class="layer w-100 text-center">
                     <small>Days under CNM</small>
@@ -46,7 +46,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="layer w-100 bdL bdR p-20">
                   <div class="layer w-100 text-center">
                     <small>Total Work Schedule</small>
@@ -56,7 +56,9 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+            </div>
+            <div class="row pY-10 bdB">
+              <div class="col-md-6">
                 <div class="layer w-100 bdL bdR p-20">
                   <div class="layer w-100 text-center">
                     <small>Present Days</small>
@@ -66,7 +68,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="layer w-100 bdL bdR p-20">
                   <div class="layer w-100 text-center">
                     <small>Leave Days</small>
@@ -74,42 +76,6 @@
                   <div class="layer w-100 text-center">
                     <h1>{{ agent_widget.config.stats.leaved_days }}</h1>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div class="row pY-10 bdB">
-              <div class="col-md-6 peers pR-30">
-                <div class="peer mL-20 mR-15">
-                  <button
-                    class="btn btn-primary"
-                    :disabled="agent_widget.config.button.start_work"
-                    @click="startWork"
-                  >START WORK</button>
-                </div>
-                <div class="peer peer-greed h-100 text-center" style="display:table">
-                  <div style="display:table-cell;vertical-align:middle">
-                    <h6>
-                      <small class="c-grey-800">WORK DURATION:</small>
-                    </h6>
-                  </div>
-                </div>
-                <div class="peer">
-                  <h3>3.5</h3>
-                </div>
-              </div>
-              <div class="col-md-6 peers pR-30">
-                <div class="peer mL-20 mR-15">
-                  <button class="btn btn-primary">BREAK</button>
-                </div>
-                <div class="peer peer-greed h-100 text-center" style="display:table">
-                  <div style="display:table-cell;vertical-align:middle">
-                    <h6>
-                      <small class="c-grey-800">BREAK DURATION:</small>
-                    </h6>
-                  </div>
-                </div>
-                <div class="peer">
-                  <h3>0.5</h3>
                 </div>
               </div>
             </div>
@@ -132,11 +98,11 @@ export default {
   props: ["userId"],
   mounted() {
     this.fetchStats();
-    this.fetchTodaysSchedule();
   },
   data() {
     return {
       agent_widget: {
+        datetime: 0,
         config: {
           form: {
             schedule: {
@@ -237,57 +203,6 @@ export default {
           console.log(err);
         });
     },
-    fetchTodaysSchedule: function() {
-      let pageurl = "/api/v1/schedules/work/today";
-      fetch(pageurl)
-        .then(res => res.json())
-        .then(res => {
-          //   console.log(res);
-          let sched = res.meta.agent_schedules.filter(this.agentSchedule)[0];
-          sched.schedule = sched.schedule[0];
-          this.agent_widget.config.form.schedule.id = sched.schedule.id;
-
-          //   console.log(sched);
-          if (!this.isEmpty(sched.schedule.attendances)) {
-            let latestAttendance =
-              sched.schedule.attendances[sched.schedule.attendances.length - 1];
-            if (
-              latestAttendance.time_out == null &&
-              latestAttendance.time_in != null
-            ) {
-              //timeout
-              console.log("Enable timeout");
-              this.agent_widget.config.button.start_work = false;
-              this.agent_widget.config.form.schedule.attendance.action =
-                "update";
-              console.log(latestAttendance);
-              this.agent_widget.config.form.schedule.attendance.id =
-                latestAttendance.id;
-              this.agent_widget.config.form.schedule.attendance.time_in =
-                latestAttendance.time_in;
-            } else if (
-              latestAttendance.time_out != null &&
-              latestAttendance.time_in != null
-            ) {
-              //enable store new attendance
-              this.agent_widget.config.button.start_work = false;
-              this.agent_widget.config.form.schedule.attendance.action =
-                "create";
-              console.log("Enable attendance insert");
-            }
-          } else {
-            this.agent_widget.config.button.start_work = false;
-            this.agent_widget.config.form.schedule.attendance.action = "create";
-            console.log("Empty Attendance");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    agentSchedule: function(index) {
-      return index.id == this.userId;
-    },
     workSchedules: function(index) {
       return index.schedule.title_id < 3;
     },
@@ -297,78 +212,13 @@ export default {
     leavedSchedules: function(index) {
       return index.schedule.title_id > 2 && index.schedule.title_id < 9;
     },
-    addAttendance: function() {
-      let pageurl = "/api/v1/attendance/create";
-      let schedule = this.agent_widget.config.form.schedule;
-      fetch(pageurl, {
-        method: "post",
-        body: JSON.stringify({
-          auth_id: this.userId,
-          schedule_id: schedule.id,
-          id: schedule.attendance.id,
-          // time_in: moment().format("YYYY-MM-DD HH:mm:ss"),
-          time_out: null
-        }),
-        headers: {
-          "content-type": "application/json"
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
-          this.agent_widget.config.button.start_work = false;
-          if (data.code == 500) {
-            alert(
-              "Something's wrong, the system can't process your request. Please check connection or call for IT support."
-            );
-          } else {
-            console.log(data);
-          }
-        })
-        .catch(err => console.log(err));
-    },
-    updateAttendance: function() {
-      let schedule = this.agent_widget.config.form.schedule;
-      let pageurl = "/api/v1/attendance/update/" + schedule.attendance.id;
-      fetch(pageurl, {
-        method: "post",
-        body: JSON.stringify({
-          auth_id: this.userId,
-          schedule_id: schedule.id,
-          id: schedule.attendance.id,
-          time_in: schedule.attendance.time_in,
-          time_out: moment().format("YYYY-MM-DD HH:mm:ss")
-        }),
-        headers: {
-          "content-type": "application/json"
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
-          this.agent_widget.config.button.start_work = false;
-          if (data.code == 500) {
-            alert(
-              "Something's wrong, the system can't process your request. Please check connection or call for IT support."
-            );
-          } else {
-            console.log(data);
-          }
-        })
-        .catch(err => console.log(err));
-    },
-    startWork: function() {
-      this.agent_widget.config.button.start_work = true;
-      if (
-        this.agent_widget.config.form.schedule.attendance.action == "create"
-      ) {
-        this.addAttendance();
-      } else if (
-        this.agent_widget.config.form.schedule.attendance.action == "update"
-      ) {
-        this.updateAttendance();
-      }
+    updateDateTime: function() {
+      this.agent_widget.datetime = moment().format("LTS");
     }
+  },
+  created() {
+    this.agent_widget.datetime = moment().format("LTS");
+    setInterval(() => this.updateDateTime(), 1 * 1000);
   }
 };
 </script>

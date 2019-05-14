@@ -486,6 +486,8 @@ Vue.component("received-ir", received_ir);
 
 import issued_ir from "./components/table/issued_ir.vue";
 Vue.component("issued-ir", issued_ir);
+import timeTracker from "./components/timeTracker.vue";
+Vue.component("time-tracker", timeTracker);
 
 
 import mini_calendar from "./components/mini_calendar.vue";

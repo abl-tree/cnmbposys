@@ -17,7 +17,7 @@ class CreateAttendancesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('schedule_id');
             $table->foreign('schedule_id')->references('id')->on('agent_schedules')->onDelete('cascade');
-            $table->timestamp('time_in');
+            $table->timestamp('time_in')->nullable();
             $table->timestamp('time_out')->nullable();
         });
     }

@@ -7,7 +7,19 @@
     <div class="masonry-item w-100">
         <div class="bd bgc-white">
             {{-- <agent-widget v-bind:user-id="{{ json_encode($pageOnload->id) }}"></agent-widget> --}}
+            <time-tracker v-bind:user-id="119"></time-tracker>
+        </div>
+    </div>
+    <div class="masonry-item w-100">
+        <div class="bd bgc-white">
+            {{-- <agent-widget v-bind:user-id="{{ json_encode($pageOnload->id) }}"></agent-widget> --}}
             <agent-widget v-bind:user-id="119"></agent-widget>
+        </div>
+    </div>
+    {{-- work reports --}}
+    <div class="masonry-item w-100">
+        <div class="bd bgc-white">
+            <work-graph v-bind:user-id='119'></work-graph>
         </div>
     </div>
 </div>
