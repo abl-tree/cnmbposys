@@ -74,6 +74,32 @@ Route::group([
     });
 
     Route::group([
+        "prefix"    => "access_levels",
+    ], function () {
+
+        //Route::get("/", "AgentController@all");
+        Route::post("create", "AccessLevelHierarchyController@create");
+        // Route::post('delete/{id}', 'AgentController@delete');
+        //Route::get("fetch/{agent_id}", "AgentController@fetch");
+        // Route::post('update/{id}', 'AgentController@update');
+        //Route::get("search", "AgentController@search");
+
+    });
+
+    Route::group([
+        "prefix"    => "clusters",
+    ], function () {
+
+        //Route::get("/", "AgentController@all");
+        Route::post("create", "ClusterController@create");
+        // Route::post('delete/{id}', 'AgentController@delete');
+        //Route::get("fetch/{agent_id}", "AgentController@fetch");
+        // Route::post('update/{id}', 'AgentController@update');
+        //Route::get("search", "AgentController@search");
+
+    });
+
+    Route::group([
         "prefix"    => "agents",
     ], function () {
 

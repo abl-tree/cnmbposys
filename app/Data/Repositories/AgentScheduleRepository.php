@@ -24,7 +24,7 @@ use Carbon\CarbonPeriod;
 use DB;
 use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
-use App\Data\Repositories\AccessLevelHierarchyRepository;
+use App\Data\Repositories\ClusterRepository;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -37,7 +37,7 @@ class AgentScheduleRepository extends BaseRepository
         $excel_date,
         $logs,
         $access_level_repo,
-        $access_level,
+        $clusters,
         $notification_repo;
 
     public function __construct(
@@ -46,8 +46,7 @@ class AgentScheduleRepository extends BaseRepository
         UserInfo $userInfo,
         EventTitle $eventTitle,
         ExcelDateService $excelDate,
-        AccessLevelHierarchyRepository $access_level_repository,
-        AccessLevelHierarchy $access_level_model,
+        ClusterRepository $cluster,
         LogsRepository $logs_repo,
         NotificationRepository $notificationRepository
     ) {
@@ -57,8 +56,7 @@ class AgentScheduleRepository extends BaseRepository
         $this->event_title = $eventTitle;
         $this->excel_date = $excelDate;
         $this->logs = $logs_repo;
-        $this->access_level_repo = $access_level_repository;
-        $this->access_level = $access_level_model;
+        $this->clusters = $cluster;
         $this->notification_repo = $notificationRepository;
     }
 
@@ -74,10 +72,11 @@ class AgentScheduleRepository extends BaseRepository
                     if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
                         $arr[] = array(
                             "cluster" => $firstPage[$x + 3][2],
+                            "tl_id" => $firstPage[$x + 3][3],
                             "email" => $firstPage[$x + 3][1],
                             "title_id" => 1,
-                            "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][4]),
-                            "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
+                            "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
+                            "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][6]),
                         );
                     }
                 }
@@ -224,28 +223,8 @@ class AgentScheduleRepository extends BaseRepository
 
         // existence check
 
+
         // insertion
-        if (isset($data['cluster'])) {
-
-            $user_cluster = $this->user->where('email', $data['cluster'])->first();
-            $access_hierarchy = $this->access_level->where('child_id', $data['user_id'])->first();
-            if ($access_hierarchy) {
-                $arr = [
-                    "id" => $access_hierarchy->id,
-                    "parent_id" => $user_cluster->id,
-                    "child_id" => $data['user_id']
-                ];
-            }
-            else {
-                $arr = [
-                    "parent_id" => $user_cluster->id,
-                    "child_id" => $data['user_id']
-                ];
-            }
-                $this->access_level_repo->defineAccessLevelHierarchy($arr);
-
-        }
-
         if (isset($data['id'])) {
             $agent_schedule = $this->agent_schedule->find($data['id']);
         } else if ($does_exist){
@@ -294,6 +273,19 @@ class AgentScheduleRepository extends BaseRepository
             'type' => 'schedules.assign',
             'type_id' => $agent_schedule->id
         ]);
+
+        // insertion of cluster
+        if (isset($data['cluster']) && isset($data['tl_id'])) {
+            $om = $this->user->where('email',$data['cluster'])->first();
+            $tl = $this->user->where('email',$data['tl_id'])->first();
+            $arr = [
+                "om_id" => $om->id,
+                "tl_id" => $tl->id,
+                "agent_id" => $data['user_id']
+            ];
+            $this->clusters->defineCluster($arr);
+
+        }
 
         return $this->setResponse([
             "code"       => 200,

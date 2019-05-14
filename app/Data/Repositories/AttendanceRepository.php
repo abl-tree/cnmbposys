@@ -119,12 +119,27 @@ class AttendanceRepository extends BaseRepository
             }
 
             if(isset($data['user_id'])){
+<<<<<<< HEAD
                 $user = $this->user->where('id',$data['user_id'])->first();
                 if(isset($user->id)){
                     $schedule = $this->agent_schedule->where('user_id', $user->id);
                         if (isset($schedule->id)) {
                             $data['schedule_id'] = $schedule->id;
                         }
+=======
+                $user = $this->user->find($data['user_id']);
+                if(isset($user->id)){
+                    $schedule = $this->agent_schedule->where('user_id', $user->id)->first();
+                    if (isset($schedule->id)) {
+                        $data['schedule_id'] = $schedule->id;
+                    }
+                    else {
+                        return $this->setResponse([
+                            'code'  => 500,
+                            'title' => "Schedule ID is not available.",
+                        ]);
+                    }
+>>>>>>> initial_backend_phase2
                 }
             }
 
@@ -173,6 +188,13 @@ class AttendanceRepository extends BaseRepository
             $attendance = $this->attendance_repo->init($this->attendance_repo->pullFillable($data));
         }
 
+        if (!$attendance) {
+            return $this->setResponse([
+                'code'  => 404,
+                'title' => "Attendance not found.",
+            ]);
+        }
+
         if (!$attendance->save($data)) {
             return $this->setResponse([
                 "code"        => 500,
@@ -183,13 +205,13 @@ class AttendanceRepository extends BaseRepository
                 ],
             ]);
         }
-        if ($auth_id != null) {
+        if ($auth_id != null ) {
             $logged_in_user = $this->user->find($auth_id);
-            $timed_in_user = $this->user->find($user->id);
+            $timed_in_user = $attendance ? $this->user->find($attendance->id) : $this->user->find($user->id);
             $message =  "Successfully created an attendance for ".$timed_in_user->full_name."[".$timed_in_user->access->name."]"." by ".$logged_in_user->full_name."[".$logged_in_user->access->name."].";
         }
         else{
-            $logged_in_user = $this->user->find($user->id);
+            $logged_in_user = $attendance ? $this->user->find($attendance->id) : $this->user->find($user->id);
             $message =  "Successfully created an attendance for ".$logged_in_user->full_name."[".$logged_in_user->access->name."].";
         }
         if (!$logged_in_user) {
@@ -199,7 +221,7 @@ class AttendanceRepository extends BaseRepository
             ]);
         }
         $logged_data = [
-            "user_id" => $auth_id != null ? $auth_id : $user->id,
+            "user_id" => $auth_id != null ? $auth_id : $attendance ? $attendance->id : $user->id,
             "action" => "POST",
             "affected_data" =>$message
         ];

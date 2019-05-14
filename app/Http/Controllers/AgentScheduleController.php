@@ -90,10 +90,10 @@ class AgentScheduleController extends BaseController
         return $this->absorb($this->agent_schedule_repo->fetchAllAgentsWithSchedule($data))->json();
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $attendance_id)
     {
         $data = $request->all();
-        $data['id'] = $id;
+        $data['id'] = $attendance_id;
 
         return $this->absorb($this->agent_schedule_repo->defineAgentSchedule($data))->json();
     }
