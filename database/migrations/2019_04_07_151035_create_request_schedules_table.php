@@ -18,7 +18,7 @@ class CreateRequestSchedulesTable extends Migration
             $table->unsignedInteger('applicant');
             $table->foreign('applicant')->references('id')->on('users')->onDelete('cascade');
             $table->date('start_date');
-            $table->date('end_date');
+            $table->date('end_date'); 
             $table->unsignedInteger('title_id');
             $table->foreign('title_id')->references('id')->on('event_titles')->onDelete('cascade');
             $table->unsignedInteger('requested_by');

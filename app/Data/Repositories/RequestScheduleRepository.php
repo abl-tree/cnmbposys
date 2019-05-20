@@ -64,12 +64,13 @@ class RequestScheduleRepository extends BaseRepository
                 ]);
             }
 
-            if (!isset($data['managed_by'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "Manager is not set.",
-                ]);
-            }
+            //  commented, managed_by is not required on create action
+            // if (!isset($data['managed_by'])) {
+            //     return $this->setResponse([
+            //         'code'  => 500,
+            //         'title' => "Manager is not set.",
+            //     ]);
+            // }
 
         }
         // end data validation

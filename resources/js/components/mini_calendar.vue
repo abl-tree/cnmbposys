@@ -7,11 +7,11 @@
 .mini-calendar {
   width: 100%;
   margin: 0 auto;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .mini-calendar .fc-toolbar {
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .mini-calendar .fc-header-toolbar {
@@ -20,8 +20,9 @@
 }
 
 .mini-calendar .fc-toolbar h2 {
-  font-size: 0.9em !important;
+  font-size: 1.5em !important;
   white-space: normal !important;
+  font-weight: lighter;
 }
 
 /* click +2 more for popup */
@@ -45,7 +46,8 @@
 .mini-calendar .fc-content {
   font-size: 0;
   overflow: hidden;
-  height: 2px;
+  height: 6px;
+  border-radius: 2px;
 }
 
 .mini-calendar .fc-view-agendaWeek .fc-event-vert {
@@ -99,19 +101,19 @@ export default {
             });
           }
         },
-        defaultView: "month",
+        defaultView: "listMonth",
         header: {
           left: "title",
           center: "",
-          right: "today,prev,next"
+          right: "month,listMonth today,prev,next"
         },
         views: {
           month: {
-            titleFormat: "MMMM D"
+            titleFormat: "MMMM Do YYYY"
           }
         },
         buttonText: {
-          today: "T"
+          today: "Today"
         },
         disableDragging: true,
         editable: false

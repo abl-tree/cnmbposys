@@ -2,26 +2,16 @@
 
 @section('content')
 
-<div class="row gap-20 masonry pos-r">
-    <div class="masonry-sizer col-md-6"></div>
-    <div class="masonry-item w-100">
-        <div class="bd bgc-white">
-            {{-- <agent-widget v-bind:user-id="{{ json_encode($pageOnload->id) }}"></agent-widget> --}}
-            <time-tracker v-bind:user-id="119"></time-tracker>
-        </div>
+<div class="row fluid-container pos-r">
+    <agent-tracker-only v-bind:user-id="{{json_encode($pageOnload->id)}}"></agent-tracker-only>
+    <div class="col-md-12">
+        <stats-component-2 v-bind:user-Id="{{json_encode($pageOnload->id)}}"
+            v-bind:access-Id="{{json_encode($access_id)}}"></stats-component-2>
     </div>
-    <div class="masonry-item w-100">
-        <div class="bd bgc-white">
-            {{-- <agent-widget v-bind:user-id="{{ json_encode($pageOnload->id) }}"></agent-widget> --}}
-            <agent-widget v-bind:user-id="119"></agent-widget>
-        </div>
+    <div class="col-md-12 mT-20">
+        <agent-cluster v-bind:user-Id="{{json_encode($pageOnload->id)}}"
+            v-bind:access-Id="{{json_encode($access_id)}}"></agent-cluster>
     </div>
-    {{-- work reports --}}
-    <div class="masonry-item w-100">
-        <div class="bd bgc-white">
-            <work-graph v-bind:user-id='119'></work-graph>
-        </div>
-    </div>
-</div>
+  <div>
 
 @endsection

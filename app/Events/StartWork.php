@@ -13,15 +13,15 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 class StartWork implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $attendance;
+    public $schedule;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($attendance)
+    public function __construct($schedule)
     {
-        $this->attendance = $attendance;
+        $this->schedule = $schedule;
     }
 
     /**
@@ -31,6 +31,6 @@ class StartWork implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('workingAgent.'.$this->attendance->schedule_id);
+        return new PrivateChannel('workingAgent.'.$this->schedule->meta->user_id);
     }
 }

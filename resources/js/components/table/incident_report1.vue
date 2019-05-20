@@ -10,6 +10,7 @@
           </div>
           <div class="peer mL-10">
             <button
+              v-if="accessId!=17"
               class="btn bdrs-50p p-5 lh-0"
               data-toggle="tooltip"
               title="Create Incident Report"

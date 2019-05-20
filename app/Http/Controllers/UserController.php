@@ -213,4 +213,3 @@ class UserController extends BaseController
         return back()->withSuccess(trans('app.success_destroy')); 
     }
 }
-

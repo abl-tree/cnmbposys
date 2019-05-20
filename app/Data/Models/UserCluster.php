@@ -14,7 +14,7 @@ class UserCluster extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'value','fullname','mail','image','position','position_code'
+       'value','fullname','mail','image','position','position_code','hired_date','access','first_name','last_name'
     ];
 
 
@@ -110,6 +110,35 @@ class UserCluster extends BaseModel
             $name = $this->accesslevel->code;
         }
         
+        return $name; 
+    }
+    public function getHireddateAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->hired_date;
+        }
+        return $name; 
+    }
+    
+    public function getAccessAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->access_id;
+        }
+        return $name; 
+    }
+    public function getFirstNameAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->firstname;
+        }
+        return $name; 
+    }
+    public function getLastNameAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->lastname;
+        }
         return $name; 
     }
     

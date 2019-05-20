@@ -15,8 +15,8 @@ Vue.use(VPopover, {
     tooltip: true
 });
 $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-})
+    $('[data-toggle="tooltip"]').tooltip();
+});
 Vue.mixin({
     data() {
         return {
@@ -25,40 +25,40 @@ Vue.mixin({
                     td: {
                         badges: {
                             no_schedule: {
-                                class: 'bgc-grey-200 c-grey-800',
+                                class: "bgc-grey-200 c-grey-800",
                                 label: "NO SCHEDULE"
                             },
                             attendance: {
                                 present: {
-                                    class: 'bgc-green-200 c-green-800',
+                                    class: "bgc-green-200 c-green-800",
                                     label: "PRESENT",
                                     statusColor: "c-green-600"
                                 },
                                 no_show: {
-                                    class: 'bgc-grey-200 c-grey-800',
+                                    class: "bgc-grey-200 c-grey-800",
                                     label: "NO SHOW",
                                     statusColor: "c-green-100"
                                 },
                                 absent: {
-                                    class: 'bgc-grey-200 c-grey-800',
+                                    class: "bgc-grey-200 c-grey-800",
                                     label: "ABSENT",
                                     statusColor: "c-grey-700"
                                 },
                                 leave: {
-                                    class: 'bgc-orange-200 c-orange-800',
+                                    class: "bgc-orange-200 c-orange-800",
                                     label: "LEAVE",
                                     statusColor: "c-orange-500"
                                 },
                                 off_duty: {
-                                    class: 'bgc-grey-300 c-grey-800',
+                                    class: "bgc-grey-300 c-grey-800",
                                     label: "OFF-DUTY",
                                     statusColor: "c-grey-300"
                                 },
                                 none: {
-                                    class: 'bgc-light-blue-100 c-light-blue-800',
+                                    class: "bgc-light-blue-100 c-light-blue-800",
                                     label: "NO ATTENDANCE",
                                     statusColor: "c-grey-300"
-                                },
+                                }
                             },
                             attendance_log: {
                                 no_logs: {
@@ -74,19 +74,19 @@ Vue.mixin({
                                 },
                                 approved: {
                                     class1: "ti-check c-green-500",
-                                    class2: "bgc-green-100 c-green-800 cur-p",
+                                    class2: "bgc-green-100 c-green-800",
                                     label: "APPROVED"
                                 },
                                 denied: {
                                     class1: "ti-alert c-red-500",
-                                    class2: "bgc-red-100 c-red-800 cur-p",
-                                    label: "DENIED",
+                                    class2: "bgc-red-100 c-red-800",
+                                    label: "DENIED"
                                 },
                                 expired: {
                                     class1: "ti-close c-grey-500",
                                     class2: "bgc-grey-100 c-grey-800",
-                                    label: "EXPIRED",
-                                },
+                                    label: "EXPIRED"
+                                }
                             }
                         }
                     }
@@ -111,38 +111,37 @@ Vue.mixin({
                     ph: "",
                     pibg: ""
                 },
-                image: "",
+                image: ""
             },
             endpoints: {
                 tmp: {
                     update: {
                         event: "/api/v1/events/update/",
-                        incident_report_response: '/api/v1/update_response/',
+                        incident_report_response: "/api/v1/update_response/",
                         sanction_level: "/api/v1/sanction_level/update/",
                         sanction_type: "/api/v1/sanction_type/update/",
-                        issued_incident_report: '',
+                        issued_incident_report: ""
                     },
                     delete: {
                         event: "/api/v1/events/delete/",
                         sanction_level: "/api/v1/sanction_level/delete/",
                         sanction_type: "/api/v1/sanction_type/delete/",
-                        issued_incident_report: '',
-
-                    },
+                        issued_incident_report: ""
+                    }
                 },
                 update: {
                     event: "",
-                    incident_report_response: '',
+                    incident_report_response: "",
                     sanction_level: "",
                     sanction_type: "",
-                    issued_incident_report: '',
-                    schedule: '',
+                    issued_incident_report: "",
+                    schedule: ""
                 },
                 delete: {
                     event: "",
                     sanction_level: "",
                     sanction_type: "",
-                    issued_incident_report: '',
+                    issued_incident_report: "",
                     schedule: ""
                 },
                 create: {
@@ -150,8 +149,8 @@ Vue.mixin({
                     sanction_type: "/api/v1/sanction_type/create",
                     issued_incident_report: "/api/v1/reports/create",
                     event: "/api/v1/events/create",
-                    incident_report_response: '/api/v1/user_response',
-                    schedule: ''
+                    incident_report_response: "/api/v1/user_response",
+                    schedule: ""
                 },
                 table: {
                     sanction_level: "/api/v1/sanction_level/sanction_levels",
@@ -161,13 +160,13 @@ Vue.mixin({
                     event: "/api/v1/events",
                     agent: "/api/v1/agents",
                     agent_search: "/api/v1/agents/search",
-                    rta_scheduler: '/api/schedules/agents/'
+                    rta_scheduler: "/api/schedules/agents/"
                 },
                 select: {
                     sanction_level: "/api/v1/sanction_level/select_sanction_levels",
                     sanction_type: "/api/v1/sanction_type/select_sanction_types",
                     child_list: "/api/v1/reports/select_all_users/1", //TEMPORARY ID PARAM
-                    schedule_title: "/api/v1/events/select", //TEMPORARY ID PARAM
+                    schedule_title: "/api/v1/events/select" //TEMPORARY ID PARAM
                 }
             },
             form: {
@@ -223,20 +222,20 @@ Vue.mixin({
                     },
                     title: "",
                     action: "create",
-                    id: "",
+                    id: ""
                 },
                 schedule: {
-                    action: 'create',
-                    id: '',
-                    schedule_id: '', //FOR UPDATE
-                    user: '',
-                    title: '',
+                    action: "create",
+                    id: "",
+                    schedule_id: "", //FOR UPDATE
+                    user: "",
+                    title: "",
                     event: {
-                        start: '',
-                        end: ''
+                        start: "",
+                        end: ""
                     },
-                    time_in: '',
-                    hours: '',
+                    time_in: "",
+                    hours: "",
                     select_option: {
                         title: []
                     }
@@ -245,35 +244,35 @@ Vue.mixin({
             table: {
                 sanction_level: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 },
                 sanction_type: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 },
                 received_incident_report: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 },
                 issued_incident_report: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 },
                 event: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 },
                 agent: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 },
                 agent_search: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 },
                 calendar: {
                     data: [],
-                    fetch_status: 'fetching'
+                    fetch_status: "fetching"
                 }
             },
             stats: {
@@ -302,20 +301,19 @@ Vue.mixin({
 
         fetchTableObject: function (tableName) {
             let pageurl = this.endpoints.table[tableName];
-            this.table[tableName].fetch_status = 'fetching';
+            this.table[tableName].fetch_status = "fetching";
             fetch(pageurl)
                 .then(res => res.json())
                 .then(res => {
                     console.log(res);
-                    this.table[tableName].fetch_status = 'fetched';
+                    this.table[tableName].fetch_status = "fetched";
                     if (res.code == 200) {
                         this.table[tableName].data = res.meta;
                     }
                 })
                 .catch(err => {
                     console.log(err);
-                    this.table[tableName].fetch_status = 'fetched';
-
+                    this.table[tableName].fetch_status = "fetched";
                 });
         },
 
@@ -363,7 +361,8 @@ Vue.mixin({
                     break;
                 case "error":
                     dtitle = "Error Notification";
-                    dtitle = "Error " + action.substring(0, action.length - 1); + "ing a record.";
+                    dtitle = "Error " + action.substring(0, action.length - 1); +
+                    "ing a record.";
                     dtype = "warning";
                     break;
             }
@@ -377,7 +376,7 @@ Vue.mixin({
         formValidationError: function () {
             this.$notify({
                 group: "foo",
-                title: 'Form Validation',
+                title: "Form Validation",
                 text: "Please fill all fields.<br/><small>CNM Solutions WebApp</small>",
                 type: "info"
             });
@@ -395,7 +394,8 @@ Vue.mixin({
                 .then(res => res.json())
                 .then(res => {
                     if (res.code == 200) {
-                        this.form[formName].select_option[element] = res.meta.options;
+                        this.form[formName].select_option[element] =
+                            res.meta.options;
                     }
                     // console.log(res.meta.options);
                 })
@@ -412,7 +412,8 @@ Vue.mixin({
             );
             this.form.incident_report_response.sanction.level =
                 obj.sanction_level.text;
-            this.form.incident_report_response.sanction.type = obj.sanction_type.text;
+            this.form.incident_report_response.sanction.type =
+                obj.sanction_type.text;
             this.form.incident_report_response.ir_description = obj.description;
             this.form.incident_report_response.ir_date = obj.created_at;
             this.form.incident_report_response.received_by = this.table.received_incident_report.data.reports_data[0].full_name;
@@ -434,7 +435,8 @@ Vue.mixin({
             return string.toLowerCase();
         },
         isAfter: function (date) {
-            return moment(date).isAfter(moment())
+            let now = moment().format('YYYY-MM-DD')
+            return moment(date, 'YYYY-MM-DD').isAfter(now);
         },
         strToUpper: function (string) {
             return string.toUpperCase();
@@ -442,18 +444,17 @@ Vue.mixin({
     }
 });
 
-
 import "fullcalendar/dist/fullcalendar.min.css";
 import FullCalendar from "vue-full-calendar";
 Vue.use(FullCalendar);
 import BootstrapVue from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
-
-
 import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
 import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
 Vue.component("date-time-picker", VueCtkDateTimePicker);
+import VueMasonry from 'vue-masonry-css'
+Vue.use(VueMasonry);
 
 import rtaVue from "./components/rtaSchedPage.vue";
 Vue.component("rta-sched-section", rtaVue);
@@ -469,6 +470,8 @@ Vue.component("profile-preview-modal", profilePreview);
 
 import stats_component1 from "./components/statsComponent1.vue";
 Vue.component("stats-component-1", stats_component1);
+import stats_component2 from "./components/statsComponent2.vue";
+Vue.component("stats-component-2", stats_component2);
 
 import rtaReports from "./components/RTA/reports/rtaReports";
 Vue.component("rta-reports", rtaReports);
@@ -488,7 +491,14 @@ import issued_ir from "./components/table/issued_ir.vue";
 Vue.component("issued-ir", issued_ir);
 import timeTracker from "./components/timeTracker.vue";
 Vue.component("time-tracker", timeTracker);
-
+import agentWorkReport from "./components/agentWorkReport.vue";
+Vue.component("agent-work-report", agentWorkReport);
+import agentTrackerOnly from "./components/agentTrackerOnly.vue";
+Vue.component("agent-tracker-only", agentTrackerOnly);
+import agentCluster from "./components/agentCluster.vue";
+Vue.component("agent-cluster", agentCluster);
+// import agentDashboard from "./components/agentDashboard.vue";
+// Vue.component("agent-dashboard", agentDashboard);
 
 import mini_calendar from "./components/mini_calendar.vue";
 Vue.component("mini-calendar", mini_calendar);
@@ -512,6 +522,8 @@ Vue.component("today-table-tr", today_table_tr);
 
 import request_schedule from "./components/table/request_schedule.vue";
 Vue.component("request-schedule", request_schedule);
+import agent_request_schedule from "./components/table/agent_request_schedule.vue";
+Vue.component("agent-request-schedule", agent_request_schedule);
 
 import action_log from "./components/table/action_logs.vue";
 Vue.component("action-log", action_log);
@@ -522,7 +534,6 @@ import ir_notif from "./components/notification/ir_notif.vue";
 Vue.component("ir-notif", ir_notif);
 import agent_widget from "./components/agent_widget.vue";
 Vue.component("agent-widget", agent_widget);
-
 
 import tr_loader from "./components/table/tr_loader.vue";
 Vue.component("tr-loader", tr_loader);
@@ -545,12 +556,10 @@ Vue.component("td-break-duration", td_break_duration);
 import td_billable_hours from "./components/table/td_billable_hours.vue";
 Vue.component("td-billable-hours", td_billable_hours);
 
-
-
 // import ZpUI from 'zp-crm-ui'
-import Sparkline from 'vue-sparklines'
+import Sparkline from "vue-sparklines";
 // Vue.use(ZpUI)
-Vue.use(Sparkline)
+Vue.use(Sparkline);
 
 import VModal from "vue-js-modal";
 Vue.use(VModal);
@@ -558,10 +567,8 @@ Vue.use(VModal);
 import Notifications from "vue-notification";
 import velocity from "velocity-animate";
 
-
 import moment from "moment";
 ////// VUEINIT
-
 
 Vue.use(Notifications, {
     velocity
@@ -631,9 +638,8 @@ $(document).on("click", ".passChange", function (e) {
 });
 var curpage = "dashboad";
 
-
 // >> FOR ADMIN, HR MANAGER, HR ASSISTANT value = 1,2,3
-if ($('#hr-dashboard').length) {
+if ($("#hr-dashboard").length) {
     //global variables
     var ir_id;
     var description;
@@ -792,23 +798,26 @@ if ($('#hr-dashboard').length) {
 
     $(document).popover(popOverSettings);
 
-    $(document).on('click', '#hierarchy-profile-toggle', function (e) {
-        var state = $('#hierarchy-profile-toggle');
-        if (state.attr('state').toString() == 'open') {
-            $('#hierarchy-profile-toggle').attr('state', 'close');
-            $('#hierarchy-profile-preview').css('display', 'none');
-            $('#hierarchy-profile-toggle span').removeClass('ti-angle-left').addClass('ti-angle-right');
-            $('#hierarchy-profile-toggle').css({
-                left: '15px',
-            })
-        } else if (state.attr('state').toString() == 'close') {
-            $('#hierarchy-profile-toggle').attr('state', 'open');
-            $('#hierarchy-profile-preview').css('display', '');
-            $('#hierarchy-profile-toggle span').removeClass('ti-angle-right').addClass('ti-angle-left');
-            $('#hierarchy-profile-toggle').css({
-                left: '0px',
-            })
-
+    $(document).on("click", "#hierarchy-profile-toggle", function (e) {
+        var state = $("#hierarchy-profile-toggle");
+        if (state.attr("state").toString() == "open") {
+            $("#hierarchy-profile-toggle").attr("state", "close");
+            $("#hierarchy-profile-preview").css("display", "none");
+            $("#hierarchy-profile-toggle span")
+                .removeClass("ti-angle-left")
+                .addClass("ti-angle-right");
+            $("#hierarchy-profile-toggle").css({
+                left: "15px"
+            });
+        } else if (state.attr("state").toString() == "close") {
+            $("#hierarchy-profile-toggle").attr("state", "open");
+            $("#hierarchy-profile-preview").css("display", "");
+            $("#hierarchy-profile-toggle span")
+                .removeClass("ti-angle-right")
+                .addClass("ti-angle-left");
+            $("#hierarchy-profile-toggle").css({
+                left: "0px"
+            });
         }
     });
 
@@ -940,7 +949,7 @@ if ($('#hr-dashboard').length) {
     $(document).on("click", ".view-employee", function () {
         let id = $(this).attr("id");
         $("#profile-edit-button").attr("data-id", id);
-        $('#hierarchy-profile-preview').css('display', '');
+        $("#hierarchy-profile-preview").css("display", "");
 
         prevProfiles.push(id);
         showBenefits = prevProfiles.length;
@@ -956,7 +965,6 @@ if ($('#hr-dashboard').length) {
 
                 initialize_employee_table("/updateEmployeeList/" + id);
                 prevButton.prop("disabled", false);
-
             }
         });
     });
@@ -2055,8 +2063,8 @@ if ($('#hr-dashboard').length) {
         // var spn = document.getElementsByClassName("close_pic")[0];
 
         // When the user clicks on <span> (x), close the modal
-        $(document).on('click', '.close_pic', function () {
+        $(document).on("click", ".close_pic", function () {
             modal.style.display = "none";
-        })
+        });
     });
 }

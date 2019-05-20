@@ -21,10 +21,10 @@ class pageAccess
         $pageAccess['rtam'] = ['/','dashboard','todays_activity','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs']; 
         $pageAccess['rtas'] = ['/','dashboard','todays_activity','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs']; 
         $pageAccess['rtaa'] = ['/','dashboard','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs']; 
-        $pageAccess['admin'] = ['/','dashboard','todays_activity','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs','agent'];
+        $pageAccess['admin'] = ['/','dashboard','todays_activity','agent_schedules',"incident_reports","work_reports","leave_requests",'action_logs'];
         $pageAccess['om'] = ['/','dashboard','todays_activity',"incident_reports"];
         $pageAccess['tl'] = ['/','dashboard','todays_activity',"incident_reports"];
-        $pageAccess['agent'] = ['/','work_logs',"incident_reports"];
+        $pageAccess['agent'] = ['/','work_reports',"incident_reports","leave_requests"];
         // if($request->user()->access->id < 15 && $request->user()->access->id > 11){
         //     // if(in_array($route,$pageAccess['rta'])){
         //     //     return redirect($route);

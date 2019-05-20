@@ -119,27 +119,12 @@ class AttendanceRepository extends BaseRepository
             }
 
             if(isset($data['user_id'])){
-<<<<<<< HEAD
                 $user = $this->user->where('id',$data['user_id'])->first();
                 if(isset($user->id)){
                     $schedule = $this->agent_schedule->where('user_id', $user->id);
                         if (isset($schedule->id)) {
                             $data['schedule_id'] = $schedule->id;
                         }
-=======
-                $user = $this->user->find($data['user_id']);
-                if(isset($user->id)){
-                    $schedule = $this->agent_schedule->where('user_id', $user->id)->first();
-                    if (isset($schedule->id)) {
-                        $data['schedule_id'] = $schedule->id;
-                    }
-                    else {
-                        return $this->setResponse([
-                            'code'  => 500,
-                            'title' => "Schedule ID is not available.",
-                        ]);
-                    }
->>>>>>> initial_backend_phase2
                 }
             }
 
@@ -184,8 +169,10 @@ class AttendanceRepository extends BaseRepository
         // insertion
         if (isset($data['id'])) {
             $attendance = $this->attendance_repo->find($data['id']);
+            $schedule = $this->agent_schedule->find($data['schedule_id']);
         } else {
             $attendance = $this->attendance_repo->init($this->attendance_repo->pullFillable($data));
+            $schedule = $this->agent_schedule->find($data['schedule_id']);
         }
 
         if (!$attendance) {
@@ -227,14 +214,15 @@ class AttendanceRepository extends BaseRepository
         ];
         $this->logs->logsInputCheck($logged_data);
 
-        //pusher data
-        event(new StartWork($attendance));
-
-        return $this->setResponse([
+        $response  = $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully defined an attendance.",
+            'meta'       => $schedule,
             "parameters" => $attendance,
         ]);
+        //pusher
+        // event(new StartWork($response));
+        return $response;
 
     }
 

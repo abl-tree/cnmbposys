@@ -44,8 +44,11 @@ class pageController extends Controller
             case 14:
                 $view = 'admin.dashboard.rta';
             break;
+            case 17:
+                $view = 'admin.dashboard.agent';
+            break;
         }
-    return view($view, compact('profile', 'role', 'user', 'userInfo', 'emp'));
+        return view($view, compact('profile', 'role', 'user', 'userInfo', 'emp'));
     }
 
     public function agent(){
@@ -64,7 +67,25 @@ class pageController extends Controller
     }
 
     public function rtareport(){
-        return view('admin.report.rta');
+        $id = auth()->user()->id;
+        $access_level = auth()->user()->access_id;
+        $role = AccessLevel::find($access_level);
+        $profile = UserInfo::with('benefits')->find($id);
+        $user = User::find($id);
+        $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id')->get();
+
+        $userInfo = AccessLevel::all();
+
+        $position = '';
+        switch($access_level){
+            case 17:
+                $view = 'admin.report.agent';
+            break;
+            default:
+                $view = 'admin.report.rta';
+            break;
+        }
+        return view($view);
     }
 
     public function tldashboard(){
@@ -76,25 +97,47 @@ class pageController extends Controller
     }
 
     public function rtaeventrequest(){
+        $id = auth()->user()->id;
+        $access_level = auth()->user()->access_id;
+        $role = AccessLevel::find($access_level);
+        $profile = UserInfo::with('benefits')->find($id);
+        $user = User::find($id);
+        $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id')->get();
+
+        $userInfo = AccessLevel::all();
+
+        $position = '';
+        switch($access_level){
+            case 17:
+                $view = 'admin.event_request.agent';
+            break;
+            default:
+                $view = 'admin.event_request.rta';
+            break;
+        }
+        return view($view);
         return view('admin.event_request.rta');
     }
     public function incident_report(){
-        // $id = auth()->user()->id;
-        // $access_level = auth()->user()->access_id;
-        // $position = '';
-        // switch($access_level){
-        //     case 1:
-        //     case 2:
-        //     case 3:
-        //         $position = 'hr';
-        //     break;
-        //     case 12:
-        //     case 13:
-        //     case 14:
-        //         $position = 'rta';
-        //     break;
-        // }
-        return view('admin.incident_report.index');
+        $id = auth()->user()->id;
+        $access_level = auth()->user()->access_id;
+        $role = AccessLevel::find($access_level);
+        $profile = UserInfo::with('benefits')->find($id);
+        $user = User::find($id);
+        $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id')->get();
+
+        $userInfo = AccessLevel::all();
+
+        $position = '';
+        switch($access_level){
+            case 17:
+                $view = 'admin.incident_report.agent';
+            break;
+            default:
+                $view = 'admin.incident_report.index';
+            break;
+        }
+        return view($view);
     }
     
     public function action_logs(){

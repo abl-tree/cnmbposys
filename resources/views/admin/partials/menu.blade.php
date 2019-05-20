@@ -136,14 +136,6 @@
                 <span class="">Action Logs</span>
             </a>
         </li>
-        <li class="nav-item page-identifier" data-page="action_logs">
-            <a class='sidebar-link' href="/agent">
-                <span class="icon-holder">
-                    <i class="c-red-400">A</i>
-                </span>
-                <span class="">Agent</span>
-            </a>
-        </li>
         @endif
 
         @if($pageOnload->user->access_id == 6)
@@ -235,4 +227,41 @@
                     <span class="">Incident Reports</span>
                 </a>
             </li>
+            @endif
+            <!-- ////////////////////////////agent -->
+            @if($pageOnload->user->access_id == 17)
+            <li class="nav-item page-identifier" data-page="cluster">
+                <a class='sidebar-link' href="/">
+                    <span class="icon-holder">
+                        <i class="c-red-400 ti-home"></i>
+                    </span>
+                    <span class="">Cluster</span>
+                </a>
+            </li>
+            <li class="nav-item page-identifier" data-page="work_reports">
+                <a class='sidebar-link' href="/work_reports">
+                    <span class="icon-holder">
+                        <i class="c-red-400 ti-id-badge"></i>
+                    </span>
+                    <span class="">Work Reports</span>
+                </a>
+            </li>
+            
+            <li class="nav-item page-identifier" data-page="leave_requests">
+                <a class='sidebar-link' href="/leave_requests">
+                    <span class="icon-holder">
+                        <i class="c-red-400 ti-agenda"></i>
+                    </span>
+                    <span class="">Event Requests</span>
+                </a>
+            </li>
+            <li class="nav-item page-identifier" data-page="incident_reports">
+                <a class='sidebar-link' href="/incident_reports">
+                    <span class="icon-holder">
+                        <i class="c-red-400 ti-write"></i>
+                    </span>
+                    <span class="">Incident Reports</span>
+                </a>
+            </li>
+
             @endif

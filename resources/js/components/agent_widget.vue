@@ -86,6 +86,30 @@
         </div>
       </div>
     </div>
+
+    <div class="w-100">
+      <div class="row gap-20">
+        <!-- #Toatl Visits ==================== -->
+        <div class="col-md-3">
+          <stats-component-1 stat-name="scheduled"></stats-component-1>
+        </div>
+
+        <!-- #Total Page Views ==================== -->
+        <div class="col-md-3">
+          <stats-component-1 stat-name="working"></stats-component-1>
+        </div>
+
+        <!-- #Unique Visitors ==================== -->
+        <div class="col-md-3">
+          <stats-component-1 stat-name="leave"></stats-component-1>
+        </div>
+
+        <!-- #Bounce Rate ==================== -->
+        <div class="col-md-3">
+          <stats-component-1 stat-name="off_duty"></stats-component-1>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

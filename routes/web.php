@@ -34,7 +34,7 @@ Route::get('/incident_reports', 'pageController@incident_report')->name('inciden
 Route::get('/work_reports', 'pageController@rtareport')->name('rtareport');
 Route::get('/leave_requests', 'pageController@rtaeventrequest')->name('rtaevent_request');
 Route::get('/action_logs', 'pageController@action_logs')->name('action_logs');
-Route::get('/agent', 'pageController@agent')->name('agent');
+// Route::get('/agent', 'pageController@agent')->name('agent');
     
 Route::get('/rtaschedule', 'pageController@rtaschedule')->name('rtaschedule');
 Route::get('/rtareport', 'pageController@rtareport')->name('rtareport');
@@ -43,7 +43,7 @@ Route::get('/tldashboard', 'pageController@tldashboard')->name('tldashboard');
 Route::get('/tlreport', 'pageController@tlreport')->name('tlreport');
 
 Route::get('/pusher',function(){
-    event(new StartWork(['user_id'=>119]));
+    event(new StartWork());
     return "triggered";
 });
 
