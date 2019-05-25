@@ -188,7 +188,7 @@
                       class="ti-exchange-vertical cur-p"
                       @click="(config.filter.sort.by='operations_manager'),(config.filter.sort.order['operations_manager'] = !config.filter.sort.order['operations_manager']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
                     ></span>
-                  </span>\
+                  </span>
                 </th>
                 <th class="bdwT-0 text-center">
                   Schedule

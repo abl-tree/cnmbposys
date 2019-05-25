@@ -30,7 +30,7 @@
         @include('admin.partials.sidebar')
 
         <!-- #Main ============================ -->
-        <div class="page-container">
+        <div class="page-container" v-bind:style="page_busy?'cursor:progess':''">
             <!-- ### $Topbar ### -->
             @include('admin.partials.topbar')
 
@@ -44,7 +44,6 @@
 
                         @include('admin.partials.messages')
                         @yield('content')
-
                     </div>
                 </div>
             </main>

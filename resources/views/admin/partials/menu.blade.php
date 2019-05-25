@@ -65,7 +65,7 @@
                 <span class="icon-holder">
                     <i class="c-red-400 ti-agenda"></i>
                 </span>
-                <span class="">Event Requests</span>
+                <span class="">Leave Requests</span>
             </a>
         </li>
         <li class="nav-item page-identifier" data-page="action_logs">
@@ -93,6 +93,14 @@
                     <i class="c-red-400 ti-id-badge"></i>
                 </span>
                 <span class="">Employee</span>
+            </a>
+        </li>
+        <li class="nav-item page-identifier">
+            <a class='sidebar-link' href="/hierarchy?user={!!$crypt_id!!}">
+                <span class="icon-holder">
+                    <i class="c-red-400 ti-id-badge"></i>
+                </span>
+                <span class="">Hierarchy</span>
             </a>
         </li>
         <li class="nav-item page-identifier" data-page="agent_schedules">
@@ -230,12 +238,12 @@
             @endif
             <!-- ////////////////////////////agent -->
             @if($pageOnload->user->access_id == 17)
-            <li class="nav-item page-identifier" data-page="cluster">
-                <a class='sidebar-link' href="/">
+            <li class="nav-item page-identifier" data-page="Dashboard">
+                <a class='sidebar-link' href="/dashboard">
                     <span class="icon-holder">
-                        <i class="c-red-400 ti-home"></i>
+                        <i class="c-red-400 ti-stats-up"></i>
                     </span>
-                    <span class="">Cluster</span>
+                    <span class="">Dashboard</span>
                 </a>
             </li>
             <li class="nav-item page-identifier" data-page="work_reports">

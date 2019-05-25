@@ -192,7 +192,6 @@
         </div>
       </div>
     </div>
-    <notifications group="foo" animation-type="velocity" position="bottom right"/>
   </div>
 </template>
 

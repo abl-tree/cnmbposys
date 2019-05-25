@@ -203,6 +203,7 @@
 
                         <profile-preview-modal v-bind:user-profile="{{json_encode($pageOnload->id)}}">
                         </profile-preview-modal>
+                        <notifications group="foo" animation-type="velocity" position="bottom right"/>
                         <footer class="bdT  bgc-white  ta-c p-30 lh-0 fsz-sm c-grey-600"
                             style='visibility:hidden;position:relative'>
                             <span>Copyright © 2018 Designed by

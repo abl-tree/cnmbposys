@@ -156,20 +156,20 @@ export default {
         config: {
           stats: {
             days: {
-              decimal: "",
-              percentage: ""
+              decimal: 0,
+              percentage: 0
             },
             work_days: {
-              decimal: "",
-              percentage: ""
+              decimal: 0,
+              percentage: 0
             },
             present_days: {
-              decimal: "",
-              percentage: ""
+              decimal: 0,
+              percentage: 0
             },
             leaved_days: {
-              decimal: "",
-              percentage: ""
+              decimal: 0,
+              percentage: 0
             }
           }
         }

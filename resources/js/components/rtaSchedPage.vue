@@ -433,8 +433,8 @@
 
       <!-- <daily-work-report-modal></daily-work-report-modal> -->
       <!-- notification -->
-      <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
-      <notifications group="foo" animation-type="velocity" position="bottom right"/>
+      <!-- <profile-preview-modal v-bind:user-profile="userId"></profile-preview-modal>
+      <notifications group="foo" animation-type="velocity" position="bottom right"/>-->
     </div>
   </div>
 </template>
@@ -685,7 +685,9 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.local.agents.array = res.meta.agents;
+          this.local.agents.array = res.meta.agents.filter(function(index) {
+            return index.info.status != "inactive";
+          });
           this.paginate(this.local.agents.array, 1, this.local.agents.per_page);
         })
         .catch(err => console.log(err));

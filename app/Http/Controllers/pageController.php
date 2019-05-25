@@ -3,21 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Data\Models\UserBenefit;
 use App\Data\Models\AccessLevel;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\UserInfo;
 use App\User;
+use Illuminate\Support\Facades\Crypt;
 
 class pageController extends Controller
 {
-
+    protected $id,$acces_id;
     
     public function __construct()
     {
         $this->middleware('loginVerif');
         $this->middleware('pageAccess');
+        // $this->id = auth()->user()->id;
+        // $this->access_id = auth()->user()->access_id;
     }
 
 
@@ -51,9 +53,6 @@ class pageController extends Controller
         return view($view, compact('profile', 'role', 'user', 'userInfo', 'emp'));
     }
 
-    public function agent(){
-        return view('admin.dashboard.agent');
-    }
     public function schedule(){
         return view('admin.schedule.rta');
     }
@@ -141,21 +140,33 @@ class pageController extends Controller
     }
     
     public function action_logs(){
-        // $id = auth()->user()->id;
-        // $access_level = auth()->user()->access_id;
-        // $position = '';
-        // switch($access_level){
-        //     case 1:
-        //     case 2:
-        //     case 3:
-        //         $position = 'hr';
-        //     break;
-        //     case 12:
-        //     case 13:
-        //     case 14:
-        //         $position = 'rta';
-        //     break;
-        // }
         return view('admin.action_log.index');
+    }
+    //hierarchy page
+    public function hierarchy(Request $request){
+        $id = Crypt::decrypt($request['user']);
+        $access_id = User::find($id)->access_id;
+        $role = AccessLevel::find($access_id);
+        $profile = UserInfo::with('benefits')->find($id);
+        $user = User::find($id);
+        $parent=[
+            'id' => $id,
+            'access_id' => $access_id
+        ];
+        $auth = [
+            'id' => auth()->user()->id,
+            'access_id' => auth()->user()->access_id
+        ];
+        
+            $child_id = AccessLevel::where('parent',$id)->get();
+        if(isset($request['user'])){
+            // if($parent->access_id <= $auth->access_id){
+                return view('admin.hierarchy.index',compact("parent","auth","profile","user",'role','child_id'));
+            // }else{
+            //     abort(404);
+            // }
+        }else{
+            abort(404);
+        }   
     }
 }

@@ -4,24 +4,28 @@
 
     <div class="masonry-item w-100">
       <div class="row gap-20">
-        <!-- #Toatl Visits ==================== -->
-        <div class="col-md-3">
+        <!-- #Scheduled ==================== -->
+        <div class="col">
           <stats-component-1 stat-name="scheduled"></stats-component-1>
         </div>
 
-        <!-- #Total Page Views ==================== -->
-        <div class="col-md-3">
-          <stats-component-1 stat-name="working"></stats-component-1>
+        <!-- #Present ==================== -->
+        <div class="col">
+          <stats-component-1 stat-name="present"></stats-component-1>
         </div>
 
-        <!-- #Unique Visitors ==================== -->
-        <div class="col-md-3">
+        <!-- #On-Leave ==================== -->
+        <div class="col">
           <stats-component-1 stat-name="leave"></stats-component-1>
         </div>
 
-        <!-- #Bounce Rate ==================== -->
-        <div class="col-md-3">
+        <!-- #Off duty ==================== -->
+        <div class="col">
           <stats-component-1 stat-name="off_duty"></stats-component-1>
+        </div>
+        <!-- #Tardy ==================== -->
+        <div class="col">
+          <stats-component-1 stat-name="tardy"></stats-component-1>
         </div>
       </div>
     </div>
@@ -81,8 +85,8 @@
     <!-- Modals -->
 
     <!-- profile preview modal -->
-    <profile-preview-modal v-bind:user-profile="this.userId"></profile-preview-modal>
-    <notifications group="foo" animation-type="velocity" position="bottom right"/>
+    <!-- <profile-preview-modal v-bind:user-profile="this.userId"></profile-preview-modal>
+    <notifications group="foo" animation-type="velocity" position="bottom right"/>-->
   </div>
 </template>
 

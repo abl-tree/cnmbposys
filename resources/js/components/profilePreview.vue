@@ -2,7 +2,7 @@
   <modal name="profile_preview" :pivotY="0.2" :scrollable="true" height="auto">
     <div class="layer">
       <div class="e-modal-header bd">
-        <h5 style="margin-bottom:0px">Incident Report</h5>
+        <h5 style="margin-bottom:0px">Profile</h5>
       </div>
       <div class="w-100 p-15 pT-80" style>
         <div class="container">

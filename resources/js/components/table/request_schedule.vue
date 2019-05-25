@@ -219,14 +219,7 @@
                   >{{fromNow(datum.request.requested.date)}}</div>
                 </td>
                 <td style="font-size:.99em" class="text-center">
-                  <div v-if="!isAfter(datum.request.start_date)">
-                    <span class="badge badge-pill p-5 bgc-grey-100 c-grey-800 fw-900">
-                      <span class="badge badge-pill p-3 bgc-white mR-5">
-                        <span class="ti-close c-grey-500 fw-900"></span>
-                      </span>EXPIRED
-                    </span>
-                  </div>
-                  <div v-else>
+                  <div>
                     <span
                       class="badge badge-pill p-5 fw-900"
                       v-bind:class="component.table.td.badges.request_schedule[datum.request.status].class2"
@@ -267,14 +260,14 @@
                               size="sm"
                               class="form-control"
                               :disabled="form.response.button[index]"
-                              @click="(form.response.status[index]='deny'),storeRequestResponse(datum,index)"
+                              @click.once="(form.response.status[index]='deny'),storeRequestResponse(datum,index)"
                             >Deny</b-button>
                             <b-button
                               variant="danger"
                               size="sm"
                               class="form-control"
                               :disabled="form.response.button[index]"
-                              @click="(form.response.status[index]='approve'),storeSchedule(datum,index)"
+                              @click.once="(form.response.status[index]='approve'),storeSchedule(datum,index)"
                             >Approve</b-button>
                           </div>
                         </div>
@@ -444,7 +437,7 @@ export default {
         .then(res => {
           this.table.data = res.meta.request_schedules;
           let obj = [];
-          console.log(res.meta.request_schedules)
+          console.log(res.meta.request_schedules);
           res.meta.request_schedules.forEach(
             function(v, i) {
               let temp = {
@@ -498,12 +491,14 @@ export default {
               temp.request.title.id = v.title.id;
               temp.request.title.color = v.title.color;
               // request -> managed by
-              if (v.managed_by != null) {
-                temp.request.managed.by.id = v.managed_by.id;
-                temp.request.managed.by.full_name = v.managed_by.full_name;
-                temp.request.managed.date = v.response_date;
-                temp.request.managed.remark = v.rta_remarks;
-              }
+              temp.request.managed.by.id = v.managed_by
+                ? v.managed_by.id
+                : null;
+              temp.request.managed.by.full_name = v.managed_by
+                ? v.managed_by.full_name
+                : null;
+              temp.request.managed.date = v.response_date;
+              temp.request.managed.remark = v.rta_remarks;
               // request -> reuqested
               temp.request.requested.by.id = v.requested_by.id;
               temp.request.requested.by.full_name = v.requested_by.full_name;
@@ -512,10 +507,10 @@ export default {
             }.bind(this)
           );
           this.config.data.all = obj;
-          // this.config.data.pending = obj.filter(this.getPending);
-          // this.config.data.denied = obj.filter(this.getDenied);
-          // this.config.data.approved = obj.filter(this.getApproved);
-          // this.config.data.expired = obj.filter(this.getExpired);
+          this.config.data.pending = obj.filter(this.getPending);
+          this.config.data.denied = obj.filter(this.getDenied);
+          this.config.data.approved = obj.filter(this.getApproved);
+          this.config.data.expired = obj.filter(this.getExpired);
 
           res.meta.request_schedules.forEach(
             function(v, i) {
@@ -552,13 +547,15 @@ export default {
       if (this.config.filter.data.total_result == 0) {
         this.config.no_display = true;
       }
-      this.form.response.rta_remarks = [
-        ...new Set(
-          [].concat(
-            this.config.filter.data.data.map(a => a.request.managed.remark)
-          )
-        )
-      ];
+      let temp=[];
+      this.config.filter.data.data.forEach(
+        function(v,i){
+          temp.push(v.request.managed.remark);
+        }
+      );
+      this.form.response.rta_remarks =temp;
+      console.log(this.config.filter.data.data);
+      console.log(this.form.response.rta_remarks);
     },
     getExpiredtoStore: function(status) {
       return (
@@ -567,27 +564,19 @@ export default {
       );
     },
     getExpired: function(status) {
-      return !this.isAfter(status.request.start_date);
+      return status.request.status == "expired";
     },
     getPending: function(status) {
-      return (
-        this.isAfter(status.request.start_date) &&
-        status.request.status == "pending"
-      );
+      return status.request.status == "pending";
     },
     getDenied: function(status) {
-      return (
-        this.isAfter(status.request.start_date) &&
-        status.request.status == "denied"
-      );
+      return status.request.status == "denied";
     },
     getApproved: function(status) {
-      return (
-        this.isAfter(status.request.start_date) &&
-        status.request.status == "approved"
-      );
+      return status.request.status == "approved";
     },
     processFilters: function(tabCode, page) {
+      this.config.no_display = false;
       if (this.config.filter.search.value != "") {
         this.searchBy();
       }
@@ -680,22 +669,22 @@ export default {
     },
 
     storeExpired: function(data) {
-      console.log(data)
+      console.log(data);
       let request = data;
       let pageurl = "/api/v1/request_schedules/update/" + request.id;
       fetch(pageurl, {
         method: "post",
         body: JSON.stringify({
-        id: request.id,
-        auth_id: this.userId,
-        applicant: request.applicant.id,
-        requested_by: request.requested_by.id,
-        managed_by: this.user_id,
-        title_id: request.title.id,
-        start_date: request.start_date,
-        end_date: request.end_date,
-        status: "expired"
-      }),
+          id: request.id,
+          auth_id: this.userId,
+          applicant: request.applicant.id,
+          requested_by: request.requested_by.id,
+          managed_by: this.user_id,
+          title_id: request.title.id,
+          start_date: request.start_date,
+          end_date: request.end_date,
+          status: "expired"
+        }),
         headers: {
           "content-type": "application/json"
         }
@@ -710,18 +699,26 @@ export default {
         .catch(err => console.log(err));
     },
     getRequestStatus: function(data) {
+      console.log(data);
       let result;
-      if (
-        (!this.isAfter(data.start_date) && data.status == "pending") ||
-        (!this.isAfter(data.start_date) && data.status == "expired")
-      ) {
-        result = "expired";
-      } else if (this.isAfter(data.start_date) && data.status == "pending") {
-        result = "pending";
-      } else if (this.isAfter(data.start_date) && data.status == "denied") {
-        result = "denied";
-      } else if (this.isAfter(data.start_date) && data.status == "approved") {
-        result = "approved";
+      if (!this.isAfter(data.start_date)) {
+        if (data.status == "pending") {
+          result = "expired";
+        } else if (data.status == "denied") {
+          result = "denied";
+        } else if (data.status == "approved") {
+          result = "approved";
+        } else if (data.status == "expired") {
+          result = "expired";
+        }
+      } else {
+        if (data.status == "pending") {
+          result = "pending";
+        } else if (data.status == "denied") {
+          result = "denied";
+        } else if (data.status == "approved") {
+          result = "approved";
+        }
       }
       return result;
     },
@@ -740,6 +737,7 @@ export default {
         title_id: request.title.id,
         start_date: request.start_date,
         end_date: request.end_date,
+        response_date: moment().format("YYYY-MM-DD HH:mm:ss"),
         status:
           this.form.response.status[index] == "approve" ? "approved" : "denied",
         rta_remarks: this.form.response.rta_remarks[index]
@@ -825,12 +823,14 @@ export default {
                 temp.request.title.id = v.title.id;
                 temp.request.title.color = v.title.color;
                 // request -> managed by
-                if (v.managed_by != null) {
-                  temp.request.managed.by.id = v.managed_by.id;
-                  temp.request.managed.by.full_name = v.managed_by.full_name;
-                  temp.request.managed.date = v.response_date;
-                  temp.request.managed.remark = v.rta_remarks;
-                }
+                temp.request.managed.by.id = v.managed_by
+                  ? v.managed_by.id
+                  : null;
+                temp.request.managed.by.full_name = v.managed_by
+                  ? v.managed_by.full_name
+                  : null;
+                temp.request.managed.date = v.response_date;
+                temp.request.managed.remark = v.rta_remarks;
                 // request -> reuqested
                 temp.request.requested.by.id = v.requested_by.id;
                 temp.request.requested.by.full_name = v.requested_by.full_name;

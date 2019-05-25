@@ -239,6 +239,10 @@
                             class="c-green-300"
                           >{{ getDurationBySeconds(datum.rendered_hours.billable.second) }}</span>
                         </span>
+                        <span class="pX-5" data-toggle="tooltip" title="Overtime Billable">
+                          <small class="fw-900">OB:</small>
+                          <span class="c-orange-300">{{ datum.overtime.billable.time }}</span>
+                        </span>
                       </div>
                     </div>
                   </div>

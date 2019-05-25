@@ -46,25 +46,26 @@ export default {
         },
         series: [
           {
-            data: []
+            data: this.init_graph
           },
           {
-            data: []
+            data: this.init_graph
           },
           {
-            data: []
+            data: this.init_graph
           },
           {
-            data: []
+            data: this.init_graph
           },
           {
-            data: []
+            data: this.init_graph
           },
           {
-            data: []
+            data: this.init_graph
           }
         ]
-      }
+      },
+      init_graph: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     };
   },
   mounted() {
@@ -102,10 +103,15 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.table.data = res.meta.agent_schedules;
+          this.table.data = res.meta.agent_schedules.filter(function(index) {
+            return index.info.status != "inactive";
+          });
+          let filtered = res.meta.agent_schedules.filter(function(index) {
+            return index.info.status != "inactive";
+          });
           var obj = [];
-          for (var l = 0; l < res.meta.agent_schedules.length; l++) {
-            var v = res.meta.agent_schedules[l];
+          for (var l = 0; l < filtered.length; l++) {
+            var v = filtered[l];
             var tmp = [];
             // console.log(v.schedule);
             if (v.schedule.length !== 0) {
@@ -198,9 +204,7 @@ export default {
                 ).length
               );
               //off
-              off.push(
-                res.meta.agent_schedules.length - (leave[i] + scheduled[i])
-              );
+              off.push(filtered.length - (leave[i] + scheduled[i]));
 
               //   tardy.push(
               //     obj.filter(
@@ -236,7 +240,7 @@ export default {
           this.chartOptions.series[1].stack = 0;
           this.chartOptions.series[2].data = tardy;
           this.chartOptions.series[2].name = "Tardy";
-          this.chartOptions.series[2].color = "#FEBD00";
+          this.chartOptions.series[2].color = "#e93a75";
           this.chartOptions.series[2].opacity = 0.8;
           this.chartOptions.series[2].stack = 0;
           this.chartOptions.series[3].data = absent;

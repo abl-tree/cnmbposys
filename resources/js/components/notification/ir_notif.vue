@@ -35,7 +35,7 @@ export default {
           let reports = [
             ...new Set([].concat(...res.meta.all_reports.map(o => o.reports)))
           ];
-          // console.log(reports);
+          console.log(reports);
           this.count = reports.filter(this.getUserUnrespondedReports).length;
           this.title =
             "You've got " + this.count + " unresponded IR report/s...";
@@ -48,7 +48,8 @@ export default {
     getUserUnrespondedReports: function(report) {
       return (
         report.issued_to.id == this.userId &&
-        (report.report_details != null || report.report_details != "")
+        report.report_details != null &&
+        report.report_details.agent_response === null
       );
     }
   }

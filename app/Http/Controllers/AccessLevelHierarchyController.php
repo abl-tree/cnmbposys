@@ -27,4 +27,8 @@ class AccessLevelHierarchyController extends BaseController
         $data = $request->all();
         return $this->absorb($this->access_level_repo->defineAccessLevelHierarchy($data))->json();
     }
+
+    public function getUnderPosition(){
+
+    }
 }

@@ -20,6 +20,7 @@ $(function () {
 Vue.mixin({
     data() {
         return {
+            page_busy:false,
             component: {
                 table: {
                     td: {
@@ -361,8 +362,8 @@ Vue.mixin({
                     break;
                 case "error":
                     dtitle = "Error Notification";
-                    dtitle = "Error " + action.substring(0, action.length - 1); +
-                    "ing a record.";
+                    dtitle = "Error " + action.substring(0, action.length - 1) +
+                        "ing a record.";
                     dtype = "warning";
                     break;
             }
@@ -555,7 +556,8 @@ import td_break_duration from "./components/table/td_break_duration.vue";
 Vue.component("td-break-duration", td_break_duration);
 import td_billable_hours from "./components/table/td_billable_hours.vue";
 Vue.component("td-billable-hours", td_billable_hours);
-
+import hierarchy from "./components/table/hierarchy.vue";
+Vue.component("hierarchy-table", hierarchy);
 // import ZpUI from 'zp-crm-ui'
 import Sparkline from "vue-sparklines";
 // Vue.use(ZpUI)

@@ -25,7 +25,10 @@
     <!-- Modals -->
 
     <!-- profile preview modal -->
-    <!-- <profile-preview-modal v-bind:user-profile="this.userId"></profile-preview-modal>
-    <notifications group="foo" animation-type="velocity" position="bottom right"/> -->
+    
+<profile-preview-modal v-bind:user-profile="{{json_encode($pageOnload->id)}}">
+</profile-preview-modal>
+<notifications group="foo" animation-type="velocity" position="bottom right"/>
+    
 </div>
 @endsection

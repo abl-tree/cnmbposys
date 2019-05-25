@@ -12,7 +12,7 @@
               class="btn bdrs-50p p-5 lh-0"
               data-toggle="tooltip"
               title="Create Leave Request"
-              @click="showModal('schedule')"
+              @click="showModal('schedule'),resetForm(),getLeaveOptions()"
             >
               <!-- @click="(local.form.calendar.disable_time=false),(local.submit.schedule = false),(form.schedule.action='create'),fetchSelectOptions(endpoints.select.schedule_title,'schedule','title'),(form.schedule.title=''),(form.schedule.time_in=''),(form.schedule.hours=''),(form.schedule.event={}),showModal('schedule')" -->
 
@@ -179,7 +179,15 @@
           <table class="table">
             <thead>
               <tr style="position:relative">
-                <th class="bdwT-0 text-center">Status</th>
+                <th class="bdwT-0 text-center">
+                  Status
+                  <span class="pull-right">
+                    <span
+                      class="ti-exchange-vertical cur-p"
+                      @click="(config.filter.sort.by='status'),(config.filter.sort.order['status'] = !config.filter.sort.order['status']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                    ></span>
+                  </span>
+                </th>
                 <th class="bdwT-0 text-center">
                   Type
                   <span class="pull-right">
@@ -200,7 +208,15 @@
                   </span>
                 </th>
                 <th class="bdwT-0 text-center">RTA Remarks</th>
-                <th class="bdwT-0 text-center">Response Date</th>
+                <th class="bdwT-0 text-center">
+                  Response Date
+                  <span class="pull-right">
+                    <span
+                      class="ti-exchange-vertical cur-p"
+                      @click="(config.filter.sort.by='response_date'),(config.filter.sort.order['response_date'] = !config.filter.sort.order['response_date']),processFilters((config.filter.search.value=='' ? config.tabs[config.selected_tab].code : 'search' ),config.selected_page)"
+                    ></span>
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -210,6 +226,7 @@
                     <span
                       class="badge badge-pill p-5 fw-900"
                       v-bind:class="component.table.td.badges.request_schedule[datum.request.status].class2"
+                      @click="datum.request.status=='pending'? openEditForm(datum.request):'';"
                     >
                       <span class="badge badge-pill p-3 bgc-white mR-5">
                         <span
@@ -259,7 +276,7 @@
               </tr>
               <!-- LOADER -->
               <template v-if="config.loader">
-                <tr-loader v-for="d in 5" :key="d.id" :tablename="config.code"></tr-loader>
+                <tr-loader v-for="d in 10" :key="d.id" :tablename="config.code"></tr-loader>
               </template>
             </tbody>
           </table>
@@ -339,9 +356,9 @@
           <div class="row">
             <div class="peer peer-greed text-left pL-20">
               <button
-                v-show="form.request.action=='update'"
+                v-show="form.request.delete_button"
                 class="btn"
-                @click="form.request.delete=true"
+                @click.once="deleteRequest()"
               >Delete</button>
               <!-- 
               @click="(local.form.delete=true),cudSched()"-->
@@ -440,7 +457,7 @@ export default {
   props: ["userId"],
   mounted() {
     this.fetchSchedRequest();
-    this.getLeaveOptions();
+    // this.getLeaveOptions();
   },
   created() {},
   data() {
@@ -450,8 +467,8 @@ export default {
       no_display: false,
       config: {
         loader: true,
-        table_name: "Schedule Request",
-        code: "schedule_request",
+        table_name: "Requests",
+        code: "agent_leave_request",
         tabs: [
           { tab_name: "All", code: "all" },
           { tab_name: "Pending", code: "pending" },
@@ -476,7 +493,8 @@ export default {
               agent: true,
               type: true,
               request_date: false,
-              status: true
+              status: true,
+              response_date: true
             }
           },
           search: {
@@ -496,6 +514,7 @@ export default {
           rta_remarks: []
         },
         request: {
+          action: "create",
           id: null,
           date: {
             start: null,
@@ -503,7 +522,8 @@ export default {
           },
           title_id: null,
           event_options: [],
-          disable_button: false
+          disable_button: false,
+          delete_button: false
         }
       },
       table: {
@@ -586,8 +606,12 @@ export default {
               temp.request.managed.by.full_name = v.managed_by
                 ? v.managed_by.full_name
                 : null;
-              temp.request.managed.date = v.response_date;
-              temp.request.managed.remark = v.rta_remarks;
+              temp.request.managed.date = v.response_date
+                ? v.response_date
+                : null;
+              temp.request.managed.remark = v.rta_remarks
+                ? v.rta_remarks
+                : null;
               // request -> reuqested
               temp.request.requested.by.id = v.requested_by.id;
               temp.request.requested.by.full_name = v.requested_by.full_name;
@@ -600,6 +624,7 @@ export default {
           this.config.data.denied = obj.filter(this.getDenied);
           this.config.data.approved = obj.filter(this.getApproved);
           this.config.data.expired = obj.filter(this.getExpired);
+          console.log(obj);
 
           res.meta.request_schedules.forEach(
             function(v, i) {
@@ -651,25 +676,16 @@ export default {
       );
     },
     getExpired: function(status) {
-      return !this.isAfter(status.request.start_date);
+      return status.request.status == "expired";
     },
     getPending: function(status) {
-      return (
-        this.isAfter(status.request.start_date) &&
-        status.request.status == "pending"
-      );
+      return status.request.status == "pending";
     },
     getDenied: function(status) {
-      return (
-        this.isAfter(status.request.start_date) &&
-        status.request.status == "denied"
-      );
+      return status.request.status == "denied";
     },
     getApproved: function(status) {
-      return (
-        this.isAfter(status.request.start_date) &&
-        status.request.status == "approved"
-      );
+      return status.request.status == "approved";
     },
     processFilters: function(tabCode, page) {
       this.config.no_display = false;
@@ -730,15 +746,37 @@ export default {
     },
     desc: function(a, b) {
       let name = this.sortCondition(a, b);
-      if (name.a > name.b) return -1;
-      if (name.a < name.b) return 1;
-      return 0;
+      // if (name.a > name.b) return -1;
+      // if (name.a < name.b) return 1;
+      // return 0;
+      if (name.a === null) {
+        return 1;
+      } else if (name.b === null) {
+        return -1;
+      } else if (name.a > name.b) {
+        return -1;
+      } else if (name.a < name.b) {
+        return 1;
+      } else {
+        return 0;
+      }
     },
     asc: function(a, b) {
       let name = this.sortCondition(a, b);
-      if (name.a < name.b) return -1;
-      if (name.a > name.b) return 1;
-      return 0;
+      // if (name.a < name.b) return -1;
+      // if (name.a > name.b) return 1;
+      // return 0;
+      if (name.a === null) {
+        return 1;
+      } else if (name.b === null) {
+        return -1;
+      } else if (name.a < name.b) {
+        return -1;
+      } else if (name.a > name.b) {
+        return 1;
+      } else {
+        return 0;
+      }
     },
     sortCondition: function(a, b) {
       let nameA = "",
@@ -759,6 +797,11 @@ export default {
         case "request_date":
           nameA = moment(a.request.requested.date);
           nameB = moment(b.request.requested.date);
+          break;
+
+        case "response_date":
+          nameA = moment(a.request.managed.date);
+          nameB = moment(b.request.managed.date);
           break;
       }
       return { a: nameA, b: nameB };
@@ -923,8 +966,12 @@ export default {
                 temp.request.managed.by.full_name = v.managed_by
                   ? v.managed_by.full_name
                   : null;
-                temp.request.managed.date = v.response_date;
-                temp.request.managed.remark = v.rta_remarks;
+                temp.request.managed.date = v.response_date
+                  ? v.response_date
+                  : null;
+                temp.request.managed.remark = v.rta_remarks
+                  ? v.rta_remarks
+                  : null;
                 // request -> reuqested
                 temp.request.requested.by.id = v.requested_by.id;
                 temp.request.requested.by.full_name = v.requested_by.full_name;
@@ -1053,10 +1100,38 @@ export default {
       }
 
       if (!isPast && !endDateNull) {
+        let obj = this.getPostObject(data, this.form.request.action),
+          pageurl = this.getPostUrl(this.form.request.action);
         // alert("PROCEED");
-        fetch("/api/v1/request_schedules/create", {
+        // console.log(pageurl);
+        // console.log(obj);
+        fetch(pageurl, {
           method: "post",
-          body: JSON.stringify({
+          body: JSON.stringify(obj),
+          headers: {
+            "content-type": "application/json"
+          }
+        })
+          .then(res => res.json())
+          .then(res => {
+            data.disable_button = false;
+            if (res.code == "200") {
+              this.requestNotif("success");
+              this.hideModal("schedule");
+              this.fetchSchedRequest();
+            } else {
+              this.requestNotif("error");
+            }
+            console.log(res);
+          })
+          .catch(err => console.log(err));
+      }
+    },
+    getPostObject: function(data, action) {
+      let obj = [];
+      switch (action) {
+        case "create":
+          obj = {
             auth_id: this.userId,
             title_id: data.title_id,
             start_date: data.date.start,
@@ -1064,17 +1139,111 @@ export default {
             applicant: this.userId,
             requested_by: this.userId,
             mark: "unread"
-          }),
-          headers: {
-            "content-type": "application/json"
+          };
+          break;
+        case "update":
+          obj = {
+            auth_id: this.userId,
+            title_id: data.title_id,
+            start_date: data.date.start,
+            end_date: data.date.end
+          };
+          break;
+      }
+      return obj;
+    },
+    getPostUrl: function(action) {
+      let result;
+      switch (action) {
+        case "create":
+          result = "/api/v1/request_schedules/create";
+          break;
+        case "update":
+          result = "/api/v1/request_schedules/update/" + this.form.request.id;
+          break;
+      }
+      return result;
+    },
+    requestNotif: function(status, action) {
+      let dtitle = "";
+      let dtext = "";
+      let dtype = "";
+      let msg = {
+        delete: "Request Deleted.",
+        create: "Request Created.",
+        update: "Request Updated."
+      };
+      switch (status) {
+        case "success":
+          dtitle = "Success Notification";
+          dtext = msg[action];
+          dtype = "success";
+          break;
+        case "error":
+          dtitle = "Error Notification";
+          dtitle = "Error on registering your request.";
+          dtype = "warning";
+          break;
+      }
+      this.$notify({
+        group: "foo",
+        title: dtitle,
+        text: dtext + "<br/><small>CNM Solutions WebApp</small>",
+        type: dtype
+      });
+    },
+    resetForm: function() {
+      this.form.request.title_id = null;
+      this.form.request.date.start = null;
+      this.form.request.date.end = null;
+      this.form.request.delete_button = false;
+      this.form.request.action = "create";
+    },
+    openEditForm: function(data) {
+      //check if request is still pending or not
+      // this.page_busy = true;
+      fetch("/api/v1/request_schedules/fetch/" + data.id)
+        .then(res => res.json())
+        .then(res => {
+          if (res.meta.request_schedule.status == "pending") {
+            // if still pending allow update
+            this.form.request.date.start = data.start_date;
+            this.form.request.date.end = data.end_date;
+            this.form.request.delete_button = true;
+            this.form.request.action = "update";
+            this.getLeaveOptions();
+            this.form.request.title_id = data.title.id;
+            this.form.request.id = data.id;
+            this.showModal("schedule");
+          } else {
+            // if not pending suggest refresh
+            alert(
+              "Your request is already been processed, please try to refresh your page to see the update."
+            );
           }
         })
-          .then(res => res.json())
-          .then(res => {
-            console.log(res);
-          })
-          .catch(err => console.log(err));
-      }
+        .catch(err => console.log(err));
+    },
+    deleteRequest: function() {
+      fetch("/api/v1/request_schedules/delete/" + this.form.request.id, {
+        method: "post",
+        body: JSON.stringify({ auth_id: this.userId }),
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.code == "200") {
+            this.requestNotif("success");
+            this.hideModal("schedule");
+            this.fetchSchedRequest();
+          } else {
+            this.requestNotif("error");
+          }
+          console.log(res);
+        })
+        .catch(err => console.log(err));
     }
   }
 };

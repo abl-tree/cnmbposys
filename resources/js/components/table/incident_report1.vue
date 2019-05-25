@@ -15,7 +15,7 @@
               data-toggle="tooltip"
               title="Create Incident Report"
               @click="
-                  fetchSelectOptions(endpoints.select.child_list,'issued_incident_report','child_list'),
+                  getChildList(),
                   fetchSelectOptions(endpoints.select.sanction_level,'issued_incident_report','sanction_level'),
                   fetchSelectOptions(endpoints.select.sanction_type,'issued_incident_report','sanction_type'),
                   (form.issued_incident_report.action='create'),
@@ -411,8 +411,6 @@
         </div>
       </div>
     </modal>
-    <profile-preview-modal v-bind:user-profile="this.userId"></profile-preview-modal>
-    <notifications group="foo" animation-type="velocity" position="bottom right"/>
   </div>
 </template>
 
@@ -823,6 +821,23 @@ export default {
             this.hideModal("preview-only-incident-report");
             this.notify("success", "update");
             // this.saveLog('succuss', formName, action, data);
+          }
+        })
+        .catch(err => console.log(err));
+    },
+    getChildList: function() {
+      let pageurl;
+      if (this.access_id === 1) {
+        pageurl = "/api/v1/reports/select_all_users/1";
+      } else {
+        pageurl = "/api/v1/reports/select_all_users/" + this.userId;
+      }
+      fetch(pageurl)
+        .then(res => res.json())
+        .then(res => {
+          if (res.code == 200) {
+            this.form.issued_incident_report.select_option.child_list =
+              res.meta.options;
           }
         })
         .catch(err => console.log(err));

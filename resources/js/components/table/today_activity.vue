@@ -375,9 +375,6 @@ export default {
   props: ["userId"],
   mounted() {
     this.fetchTodaysTable();
-    this.$nextTick(() => {
-      this.tablemount = true;
-    });
   },
   created() {},
   data() {
@@ -444,10 +441,15 @@ export default {
       fetch(pageurl)
         .then(res => res.json())
         .then(res => {
-          this.table.data = res.meta.agent_schedules;
+          this.table.data = res.meta.agent_schedules.filter(function(index) {
+            return index.info.status != "inactive";
+          });
+          let filtered = res.meta.agent_schedules.filter(function(index) {
+            return index.info.status != "inactive";
+          });
           var obj = [];
-          for (var l = 0; l < res.meta.agent_schedules.length; l++) {
-            var v = res.meta.agent_schedules[l];
+          for (var l = 0; l < filtered.length; l++) {
+            var v = filtered[l];
             var tmp = [];
             if (!this.isEmpty(v.schedule) && v.schedule[0].title_id < 9) {
               tmp.push(this.extractSchedule(v, v.schedule[0]));
@@ -467,7 +469,7 @@ export default {
           this.config.data.leave = obj.filter(this.getLeave);
           this.config.data.off_duty = obj.filter(this.getNoSchedule);
           this.config.data.all = obj;
-          let temp = res.meta.agent_schedules;
+          let temp = filtered;
 
           this.processFilters(
             this.config.tabs[this.config.selected_tab].code,
@@ -508,6 +510,7 @@ export default {
       }
     },
     processFilters: function(tabCode, page) {
+      this.config.no_display = false;
       if (this.config.filter.search.value != "") {
         this.searchBy();
       }

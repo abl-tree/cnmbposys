@@ -34,6 +34,7 @@ Route::get('/incident_reports', 'pageController@incident_report')->name('inciden
 Route::get('/work_reports', 'pageController@rtareport')->name('rtareport');
 Route::get('/leave_requests', 'pageController@rtaeventrequest')->name('rtaevent_request');
 Route::get('/action_logs', 'pageController@action_logs')->name('action_logs');
+Route::get('/hierarchy', 'pageController@hierarchy')->name('hierarchy');
 // Route::get('/agent', 'pageController@agent')->name('agent');
     
 Route::get('/rtaschedule', 'pageController@rtaschedule')->name('rtaschedule');
