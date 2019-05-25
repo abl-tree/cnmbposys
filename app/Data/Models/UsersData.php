@@ -14,7 +14,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate'
+       'lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate','parent_id','child_id'
     ];
 
 
@@ -95,6 +95,22 @@ class UsersData extends BaseModel
         $name = null;
         if(isset($this->accesslevel)){
             $name = $this->accesslevel->name;
+        }
+        
+        return $name;
+    }
+    public function getParentidAttribute(){
+        $name = null;
+        if(isset($this->accesslevelhierarchy)){
+            $name = $this->accesslevelhierarchy->parent_id;
+        }
+        
+        return $name;
+    }
+    public function getChildidAttribute(){
+        $name = null;
+        if(isset($this->accesslevelhierarchy)){
+            $name = $this->accesslevelhierarchy->child_id;
         }
         
         return $name;
