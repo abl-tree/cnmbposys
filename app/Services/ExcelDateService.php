@@ -17,7 +17,6 @@ class ExcelDateService
      * @return string | datetime
      */
     public function excelDateToPHPDate ($dateValue ){
-
         if (!is_numeric($dateValue)) {
             if (!$this->checkIsAValidDate($dateValue)) {
                 return $dateValue;
