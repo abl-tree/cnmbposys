@@ -5,13 +5,13 @@
       <div class="email-side-nav remain-height ov-h">
         <div class="h-100 layers">
           <div class="p-20 bgc-grey-200 layer w-100 text-center">
-            <input ref="file" type="file" id="file" name="file" hidden>
             <div class="btn-group">
               <button
-                @click="$refs.file.click()"
+                :disabled="uploadExcelState"
+                @click="postProcessFiles"
                 class="btn btn-danger btn-block pX-40"
-              >Import excel</button>
-              <button class="btn btn-danger">
+              >{{uploadExcelState ? `Importing...` : `Import excel`}}</button>
+              <button :disabled="uploadExcelState" class="btn btn-danger">
                 <i class="ti-download"></i>
               </button>
             </div>
@@ -570,6 +570,7 @@ export default {
   data() {
     return {
       user_id: this.userId,
+      uploadExcelState: false,
       local: {
         submit: {
           schedule: false
@@ -601,16 +602,13 @@ export default {
           fetch_status: "fetching",
           config: {
             eventClick: event => {
-              // console.log(event.start._i);
               let date_today = new Date(moment().format("YYYY/MM/DD HH:mm:ss"));
               let event_start_date = new Date(event.start._i);
 
               if (date_today > event_start_date) {
-                // console.log("DISPLAY WORK REPORT MODAL");
                 alert(
                   "You cannot edit this schedule. Please see *Work reports page for the logs."
                 );
-                // console.log(this.fetchSingleSchedule(event.id));
                 // this.showModal("daily-work-report-modal");
               } else {
                 // console.log("DISPLAY EDIT SCHEDULE MODAL");
@@ -709,6 +707,52 @@ export default {
       };
       // console.log(this.local.agents.paginated);
     },
+    /**
+     * Renders a sweetalert dialog and uploads the file
+     */
+    postProcessFiles(){
+      this.$swal({
+        type: 'question',
+        text: 'Upload your schedule file',
+        input: 'file',
+        showCancelButton: true,
+        confirmButtonText: 'Upload File',
+        showLoaderOnConfirm: true,
+        inputValidator: (value) => {
+          if (!value) {
+            return 'You need to have a file to proceed!'
+          }
+        },
+        preConfirm: (e) => {
+            this.uploadExcelState = true
+            let formData = new FormData()
+            formData.append("auth_id", this.user_id)
+            formData.append("file", e)
+            return fetch(`/api/v1/schedules/create/bulk/excel`, {
+              method: 'POST', // *GET, POST, PUT, DELETE, etc.
+              body: formData, // body data type must match "Content-Type" header
+            })
+            .then(response => {
+              this.uploadExcelState = false
+              if (!response.ok) {
+                this.$swal('Oh no!', response.statusText, 'error')
+              }
+            })
+            .catch(error => {
+              this.uploadExcelState = false
+              this.$swal('Oh no!', 'Something went wrong', 'error')
+            })
+
+        },
+        allowOutsideClick: false
+        }).then((result) => {
+          this.uploadExcelState = false
+          if (result.value) {
+            this.fetchAgentList()
+            this.$swal('Success!', 'Successfully uploaded schedule records', 'success')
+          }
+        })
+    },
     fetchAgentSched: function(id) {
       let pageurl = "/api/v1/schedules/agents/" + id;
       fetch(pageurl)
@@ -730,7 +774,6 @@ export default {
           .toLowerCase()
           .includes(query.trim().toLowerCase())
       );
-      // console.log(obj);
       if (obj.length > 0) {
         this.local.agents.search_array = obj;
         this.paginate(
@@ -741,8 +784,6 @@ export default {
       }
     },
     getDates: function(startDate, stopDate) {
-      // console.log("start " + startDate);
-      // console.log("end " + stopDate);
       var dateArray = [];
       var currentDate = moment(startDate);
       var stopDate = moment(stopDate);
@@ -751,7 +792,6 @@ export default {
         currentDate = moment(currentDate).add(1, "days");
       }
       return dateArray;
-      // console.log(dateArray);
     },
     cudSched: function() {
       //add something
@@ -801,7 +841,6 @@ export default {
                     ).format("YYYY-MM-DD HH:mm:ss")
             };
             obj.push(obj_element);
-            // console.log(obj);
           });
         } else if (form.action == "update") {
           pageurl =
@@ -842,7 +881,6 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-          // console.log(res);
           this.local.submit.schedule = true;
           if (res.code == 200) {
             this.hideModal("schedule");
@@ -872,7 +910,6 @@ export default {
               }
             }.bind(this)
           );
-          console.log(obj);
           this.local.worklog.data = obj;
         })
         .catch(err => console.log(err));

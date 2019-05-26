@@ -11,6 +11,9 @@ require("./bootstrap");
 require("datatables.net-fixedcolumns");
 // require("./page/dashboard");
 import VPopover from "vue-js-popover";
+import VueSweetalert2 from 'vue-sweetalert2'
+
+Vue.use(VueSweetalert2)
 Vue.use(VPopover, {
     tooltip: true
 });
