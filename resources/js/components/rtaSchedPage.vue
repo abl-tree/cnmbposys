@@ -413,6 +413,7 @@
                 <button class="btn btn-secondary" @click="hideModal('event')">Cancel</button>
                 <button
                   class="btn btn-danger"
+                  :disabled="fetchState"
                   @click="(form.event.color != '' && form.event.title != '' ? 
                       store(
                         {
@@ -571,6 +572,13 @@ export default {
     return {
       user_id: this.userId,
       uploadExcelState: false,
+      total_success: 0,
+      total_failed: 0,
+      flag: {
+        is_error: false,
+        is_success: false,
+      },
+      error_message:"",
       local: {
         submit: {
           schedule: false
@@ -724,7 +732,11 @@ export default {
           }
         },
         preConfirm: (e) => {
-            this.uploadExcelState = true
+          this.flag.is_error = false
+          this.flag.is_success = false
+          this.total_success = 0
+          this.total_failed = 0
+          this.uploadExcelState = true
             let formData = new FormData()
             formData.append("auth_id", this.user_id)
             formData.append("file", e)
@@ -732,25 +744,30 @@ export default {
               method: 'POST', // *GET, POST, PUT, DELETE, etc.
               body: formData, // body data type must match "Content-Type" header
             })
+            .then(response => response.json())
             .then(response => {
               this.uploadExcelState = false
-              if (!response.ok) {
-                this.$swal('Oh no!', response.statusText, 'error')
+              if (response.code == 200) {
+                this.fetchAgentList()
+                this.flag.is_success = true
+                this.total_success =  response.meta.total_success
+                this.total_failed = response.meta.total_failed
+                }
+              else {
+                this.flag.is_error = true
+                this.error_message = response.title
               }
             })
-            .catch(error => {
-              this.uploadExcelState = false
-              this.$swal('Oh no!', 'Something went wrong', 'error')
-            })
-
         },
         allowOutsideClick: false
         }).then((result) => {
-          this.uploadExcelState = false
-          if (result.value) {
-            this.fetchAgentList()
-            this.$swal('Success!', 'Successfully uploaded schedule records', 'success')
+          if(this.flag.is_error) {
+            this.$swal('Oh no!', this.error_message, 'error')
           }
+        if(this.flag.is_success) {
+            this.$swal('Success!', 'Successfully uploaded schedule records success: ' + this.total_success + ', failed: ' + this.total_failed, 'success')
+          }
+          this.uploadExcelState = false
         })
     },
     fetchAgentSched: function(id) {
