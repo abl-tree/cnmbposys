@@ -53,6 +53,12 @@ class UserController extends BaseController
         $data = $request->all();
         return $this->absorb($this->user_info->usersInfo($data))->json();     
     }
+
+    public function updateStatus(Request $request)
+    {       
+        $data = $request->all();
+        return $this->absorb($this->user_info->updateStatus($data))->json();
+    }
     public function userInfo(Request $request, $id)
     {
         $data['id'] = $id;
