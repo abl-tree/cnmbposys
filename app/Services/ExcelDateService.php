@@ -17,13 +17,12 @@ class ExcelDateService
      * @return string | datetime
      */
     public function excelDateToPHPDate ($dateValue ){
-
         if (!is_numeric($dateValue)) {
             if (!$this->checkIsAValidDate($dateValue)) {
                 return $dateValue;
             }
             else {
-                return date('Y-m-d h:i:s', strtotime($dateValue));
+                return date('Y-m-d G:i:s', strtotime($dateValue));
             }
         }
 
@@ -31,7 +30,7 @@ class ExcelDateService
             $unix_date = ($dateValue - 25569) * 86400;
             $dateValue = 25569 + ($unix_date / 86400);
             $unix_date = ($dateValue - 25569) * 86400;
-            return gmdate("Y-m-d h:i:s", $unix_date);
+            return gmdate("Y-m-d G:i:s", $unix_date);
         }
 
     }

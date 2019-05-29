@@ -11,6 +11,9 @@ require("./bootstrap");
 require("datatables.net-fixedcolumns");
 // require("./page/dashboard");
 import VPopover from "vue-js-popover";
+import VueSweetalert2 from 'vue-sweetalert2'
+
+Vue.use(VueSweetalert2)
 Vue.use(VPopover, {
     tooltip: true
 });
@@ -20,6 +23,7 @@ $(function () {
 Vue.mixin({
     data() {
         return {
+            fetchState : false,
             page_busy:false,
             component: {
                 table: {
@@ -306,14 +310,12 @@ Vue.mixin({
             fetch(pageurl)
                 .then(res => res.json())
                 .then(res => {
-                    console.log(res);
                     this.table[tableName].fetch_status = "fetched";
                     if (res.code == 200) {
                         this.table[tableName].data = res.meta;
                     }
                 })
                 .catch(err => {
-                    console.log(err);
                     this.table[tableName].fetch_status = "fetched";
                 });
         },
@@ -327,6 +329,7 @@ Vue.mixin({
 
         store: function (obj, action, formName) {
             let pageurl = this.endpoints[action][formName];
+            this.fetchState =  true
             fetch(pageurl, {
                     method: "post",
                     body: JSON.stringify(obj),
@@ -336,19 +339,19 @@ Vue.mixin({
                 })
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
+                    this.fetchState = false
                     if (data.code == 500) {
-                        console.log("error");
                         this.notify("error", action);
                     } else {
-                        console.log(data);
+
                         this.fetchTableObject(formName);
                         this.hideModal(formName);
                         this.notify("success", action);
-                        // this.saveLog('succuss', formName, action, data);
                     }
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    this.fetchState = false
+                });
         },
         notify: function (status, action) {
             let dtitle = "";
@@ -398,9 +401,11 @@ Vue.mixin({
                         this.form[formName].select_option[element] =
                             res.meta.options;
                     }
-                    // console.log(res.meta.options);
+
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+
+                });
         },
         loadIRResponseForm: function (report_id) {
             let obj = [];
@@ -736,7 +741,6 @@ if ($("#hr-dashboard").length) {
                     render: function (data, type, row, meta) {
                         // var data = btoa(data.substr(data.indexOf(',')));
                         if (data) {
-                            // console.log(data);
                             return (
                                 '<div class="table-image-cover bdrs-50p" data-img="' +
                                 data +
@@ -892,8 +896,6 @@ if ($("#hr-dashboard").length) {
         $("#address_P").html(data.profile.address);
         $("#email_P").html(data.user.email);
         $("#hired_P").html(data.profile.hired_date);
-
-        console.log(data.viewer);
 
         if (
             data.viewer == 1 ||
@@ -1082,7 +1084,6 @@ if ($("#hr-dashboard").length) {
     //display input file image before upload on change
     $("#photo").change(function () {
         readURL(this);
-        // console.log(this);
     });
     $(document).on("change", "#excel_file", function () {
         if (
@@ -1127,7 +1128,6 @@ if ($("#hr-dashboard").length) {
             success: function (result) {
                 if (result.errors) {
                     $(".alert-danger").html("");
-                    // console.log(result.errors);
                     var compact_req_msg = "false"; //compact required message
                     var unique_email_msg = "false";
                     var unique_name_msg = "false";
@@ -1136,7 +1136,6 @@ if ($("#hr-dashboard").length) {
                     $.each(result.errors, function (key, value) {
                         $("#" + key).addClass("is-invalid");
                         value = "" + value;
-                        console.log(value.indexOf("is required."));
                         if (value.indexOf("is required.") != -1) {
                             compact_req_msg = "true";
                         }
@@ -1232,7 +1231,6 @@ if ($("#hr-dashboard").length) {
                                     "url(/images/nobody.jpg)"
                                 );
                             }
-                            console.log(result.user);
                             $("#company_id_P").html(result.user.company_id);
                             if (result.info.status == "new_hired") {
                                 result.info.status = "Newly Hired";
@@ -1290,7 +1288,6 @@ if ($("#hr-dashboard").length) {
                 }
             }
         } else if (action == "add") {
-            // console.log($('#position').val());
             fetch($("#position").val());
         }
         $("#employee-form-modal-header-title").html(ucword(action));
@@ -1305,7 +1302,6 @@ if ($("#hr-dashboard").length) {
         var action = $(this).attr("data-action");
         $("#action").val(action);
         if (action == "add") {
-            // console.log($('#position').val());
         }
         $("#position-modal-header").html(ucword(action));
 
@@ -1329,7 +1325,6 @@ if ($("#hr-dashboard").length) {
                     }
                 },
                 error: function (data) {
-                    console.log(data);
                 }
             });
         }
@@ -1530,7 +1525,6 @@ if ($("#hr-dashboard").length) {
             },
             error: function (data) {
                 swal("Oh no!", "Something went wrong, try again.", "error");
-                // console.log(data)
                 button.disabled = false;
                 input.html("Confirm");
             }
@@ -1645,13 +1639,11 @@ if ($("#hr-dashboard").length) {
                 }
             },
             error: function (req, status, error) {
-                console.log(req);
             }
         });
     });
 
     let excelstore = function (i, obj) {
-        console.log(row);
 
         //index,obj
         var index = i;
@@ -1667,7 +1659,6 @@ if ($("#hr-dashboard").length) {
                     result = JSON.parse(result);
                     var progress = (100 / (obj.arr.length - 1)) * index;
                     $("#import-employee-p-bar").css("width", progress + "%");
-                    console.log(result.status);
                     if (obj.action == "Add") {
                         if (result.status == 0) {
                             obj.saved = obj.saved + 1;
@@ -1686,7 +1677,6 @@ if ($("#hr-dashboard").length) {
                     excelstore(++i, obj);
                 },
                 error: function (request) {
-                    console.log(request);
                 }
             });
         } else {
@@ -1767,20 +1757,17 @@ if ($("#hr-dashboard").length) {
     }
     //display photo before upload
     function readURL(input) {
-        // console.log(input);
 
         var reader = new FileReader();
         if (input.files && input.files[0]) {
             reader.onload = function (e) {
                 $("#upload-image-display").attr("src", e.target.result);
-                //  console.log($('#photo').attr());
             };
             reader.readAsDataURL(input.files[0]);
         } else {
             $("#upload-image-display").attr("src", input);
             $("#captured_photo").val(input);
         }
-        // console.log($('#captured_photo').val());
     }
 
     //ucword
@@ -1802,7 +1789,6 @@ if ($("#hr-dashboard").length) {
             },
             success: function (result) {
                 $("#designation").html(result);
-                //    console.log(eid);
             }
         });
     }
@@ -1820,7 +1806,6 @@ if ($("#hr-dashboard").length) {
                 id: id
             },
             success: function (result) {
-                console.log(result);
                 $("#first_name").val(result.userinfo.firstname);
                 $("#middle_name").val(result.userinfo.middlename);
                 $("#last_name").val(result.userinfo.lastname);

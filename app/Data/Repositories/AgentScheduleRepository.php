@@ -81,7 +81,7 @@ class AgentScheduleRepository extends BaseRepository
                     }
                 }
             }
-        }
+        };
         $arr['auth_id'] = $data['auth_id'];
         $result = $this->bulkScheduleInsertion($arr);
         return $result;
