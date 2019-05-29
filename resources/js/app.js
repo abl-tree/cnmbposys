@@ -558,6 +558,9 @@ import td_billable_hours from "./components/table/td_billable_hours.vue";
 Vue.component("td-billable-hours", td_billable_hours);
 import hierarchy from "./components/table/hierarchy.vue";
 Vue.component("hierarchy-table", hierarchy);
+
+import emp_table from "./components/table/employeeTable.vue";
+Vue.component("employee-table", emp_table);
 // import ZpUI from 'zp-crm-ui'
 import Sparkline from "vue-sparklines";
 // Vue.use(ZpUI)

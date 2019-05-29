@@ -32,7 +32,7 @@ class pageController extends Controller
         $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id')->get();
 
         $userInfo = AccessLevel::all();
-
+        $tabledata=[];
         $position = '';
         switch($access_level){
             case 1:

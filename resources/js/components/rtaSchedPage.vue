@@ -672,7 +672,8 @@ export default {
             },
             nowIndicator: true,
             disableDragging: true,
-            editable: false
+            editable: false,
+            timeFormat: 'H:mm'
           }
         }
       }
