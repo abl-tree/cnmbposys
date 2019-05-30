@@ -21,10 +21,10 @@ export default {
     return {
       chartOptions: {
         chart: {
-          type: "line"
+          type: "spline"
         },
         title: {
-          text: "15 days Graph",
+          text: "15-day Graph",
           align: "left"
         },
         xAxis: {

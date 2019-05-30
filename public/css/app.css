@@ -82109,10 +82109,11 @@ body {
   cursor: pointer;
   -webkit-transition: 0.3s;
   transition: 0.3s;
+  opacity: 0.95;
 }
 
 #profile-image-display:hover {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 /* The Modal (background) */
@@ -82485,5 +82486,96 @@ pre.ir_description {
   height: 15px;
   border: 2px solid #545454;
   border-radius: 7.5px;
+}
+
+.badge-c {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+}
+
+.loader-12 {
+  height: 12px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #bdbdbd;
+}
+
+.loader-12:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 12px;
+  background-color: #ababab;
+  -webkit-animation: loading 2s linear infinite;
+          animation: loading 2s linear infinite;
+}
+
+@-webkit-keyframes loading {
+  from {
+    left: -200px;
+    width: 30%;
+  }
+
+  50% {
+    width: 30%;
+  }
+
+  70% {
+    width: 70%;
+  }
+
+  80% {
+    left: 50%;
+  }
+
+  95% {
+    left: 120%;
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+@keyframes loading {
+  from {
+    left: -200px;
+    width: 30%;
+  }
+
+  50% {
+    width: 30%;
+  }
+
+  70% {
+    width: 70%;
+  }
+
+  80% {
+    left: 50%;
+  }
+
+  95% {
+    left: 120%;
+  }
+
+  to {
+    left: 100%;
+  }
 }
 

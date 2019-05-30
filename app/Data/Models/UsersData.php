@@ -7,6 +7,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use App\Data\Models\UserInfo;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\BaseModel;
+use Illuminate\Support\Facades\Crypt;
 
 class UsersData extends BaseModel
 {
@@ -14,7 +15,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate','parent_id','child_id'
+       'full_name','lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate','parent_id','child_id','crypted_id'
     ];
 
 
@@ -173,10 +174,20 @@ class UsersData extends BaseModel
         
         return $name;
     }
-
-
-
-
-    
-
+    public function getCryptedIdAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = Crypt::encrypt($this->user_info->id);
+        }
+        
+        return $name;
+    }
+    public function getFullNameAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->firstname." ".$this->user_info->middlename." ".$this->user_info->lastname;
+        }
+        
+        return $name;
+    }
 }
