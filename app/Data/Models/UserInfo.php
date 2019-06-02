@@ -13,7 +13,10 @@ class UserInfo extends BaseModel
      * The attributes that are mass assignable.
      *
      * @var array
+     * 
      */
+    protected $primaryKey = 'id';
+    protected $table = 'user_infos';
     protected $fillable = [
         'firstname','middlename', 'lastname',
         'birthdate', 'gender', 'contact_number',

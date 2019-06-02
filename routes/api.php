@@ -179,6 +179,7 @@ Route::group([
         Route::get("/", "UserController@usersInfo");
         Route::get("/{id}", "UserController@userInfo");
         Route::get("cluster/{id}", "UserController@getCluster");
+        Route::post("change_status", "UserController@updateStatus");
     });
 
     Route::group([
