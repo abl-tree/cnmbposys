@@ -15,7 +15,13 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'full_name','lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate','parent_id','child_id','crypted_id'
+       'full_name','lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate','parent_id','child_id','crypted_id','head_name','status_color'
+    ];
+
+    public $status_color = [
+        'active' => 'bg-primary',
+        'new_hired' => 'bg-success',
+        'inactive' => 'bg-danger'
     ];
 
 
@@ -108,6 +114,19 @@ class UsersData extends BaseModel
         
         return $name;
     }
+    public function getHeadNameAttribute(){
+        $name = null;
+        if(isset($this->accesslevelhierarchy)){
+            if($this->accesslevelhierarchy->parent_id){
+                $head_details = UserInfo::find($this->accesslevelhierarchy->parent_id);
+                $name = $head_details->firstname." ".$head_details->lastname;
+            }else{
+                $name = null;
+            }
+        }
+        
+        return $name;
+    }
     public function getChildidAttribute(){
         $name = null;
         if(isset($this->accesslevelhierarchy)){
@@ -160,7 +179,19 @@ class UsersData extends BaseModel
     public function getStatusAttribute(){
         $name = null;
         if(isset($this->user_info)){
-            $name = $this->user_info->status;
+            if(strtolower($this->user_info->status) == 'new_hired'){
+                $name = strtoupper('NEW');
+            }else{
+                $name = strtoupper($this->user_info->status);
+            }
+        }
+        
+        return $name;
+    }
+    public function getStatusColorAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->status_color[strtolower($this->user_info->status)];
         }
         
         return $name;

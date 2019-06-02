@@ -66,6 +66,7 @@
         "vue-sweetalert2": "^2.0.5",
         "vue-template-compiler": "^2.6.1",
         "vue-tooltipster": "^1.2.0",
+        "vue-web-cam": "^1.5.0",
         "vuejs-timepicker": "^0.1.4"
     }
 }

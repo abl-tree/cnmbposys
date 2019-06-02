@@ -38,3 +38,4 @@ mix.js('resources/js/app.js', 'public/js')
     .browserSync('laradminator.local')
     .version()
     .sourceMaps();
+mix.browserSync('localhost:8000');

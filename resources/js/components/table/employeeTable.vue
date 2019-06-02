@@ -6,7 +6,19 @@
       </div>
       <div class="p-5 pX-30 layer w-100">
         <div class="row">
-          <div class="col-md-6"></div>
+          <div class="col-md-6">
+            <a
+              href="/employee/create"
+              class="p-10 btn google-hover c-grey-800"
+              style="border-radius:25px"
+              @click="showModal('employee-form-modal')"
+            >
+              Create
+              <span class="pL-5 fw-900">
+                <i class="ti-plus w-3r h-3r fw-900"></i>
+              </span>
+            </a>
+          </div>
           <div class="col-md-6 text-right">
             <div class="pull-right">
               <div class="input-group">
@@ -124,10 +136,10 @@
             </div>
           </div>
         </div>
-        <div class="table-responsive pX-20 pB-20" style="height:500px;">
+        <div class="table-responsive text-nowrap pX-20 pB-20" style="height:500px;">
           <table class="table">
             <thead>
-              <tr style="position:relative">
+              <tr>
                 <th class="bdwT-0">
                   User
                   <span class="pull-right">
@@ -137,16 +149,105 @@
                     ></span>
                   </span>
                 </th>
+                <th class="bdwT-0">Contact Details</th>
+                <th class="bdwT-0">Head</th>
               </tr>
             </thead>
             <tbody>
               <!-- LOADER -->
               <template v-for="datum in employeeTable.config.filter.data.data">
                 <tr :key="datum.id">
-                  <td-personnel
-                    :personnel="{full_name:datum.full_name,email:datum.email,fname:datum.fname,lname:datum.lname}"
-                    :image="datum.image?datum.image:''"
-                  ></td-personnel>
+                  <td>
+                    <div class="p-5" style="float:left">
+                      <div class="checkbox checkbox-circle checkbox-info peers ai-c mB-15">
+                        <input
+                          type="checkbox"
+                          id="inputCall1"
+                          name="inputCheckboxesCall"
+                          class="peer"
+                        >
+                        <label for="inputCall1" class="peers peer-greed js-sb ai-c"></label>
+                      </div>
+                    </div>
+                    <div class="p-5" style="float:left">
+                      <img v-if="datum.image!=null" class="bdrs-50p w-3r h-3r" :src="datum.image">
+                      <div v-else class="bdrs-50p w-3r h-3r bgc-grey-200" style="display:flex">
+                        <span
+                          class="fsz-lg c-grey-500 text-center w-100"
+                          style="align-self:center"
+                        >{{ getNameInitials(datum.fname,datum.lname) }}</span>
+                      </div>
+                    </div>
+                    <div class="p-5" style="float:left">
+                      <div class="c-blue-500 fsz-xs fw-300">{{ datum.full_name }}</div>
+                      <div class="c-grey-600" style="font-weight:lighter">{{ datum.position }}</div>
+                      <div class="c-grey-600" style="font-weight:lighter">
+                        <span class="badge c-white" :class="datum.status_color">{{ datum.status }}</span>
+                      </div>
+                      <!-- <div class="c-grey-600 pT-5">
+                        <button class="w-2r h-2r p-5 bdrs-50p btn">
+                          <i class="ti-eye"></i>
+                        </button>
+                        <button class="w-2r h-2r p-5 bdrs-50p btn">
+                          <i class="ti-pencil-alt"></i>
+                        </button>
+                      </div>-->
+                    </div>
+                    <div class="pL-5" style="float:left">
+                      <button class="w-2r h-2r p-5 bdrs-50p btn c-grey-700 google-hover">
+                        <i class="ti-pencil-alt"></i>
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="pB-5">
+                      <span class="pL-5">
+                        <i class="ti-email c-grey-700"></i>
+                      </span>
+                      <span class="pL-10">
+                        <span class="c-grey-600">{{ datum.email }}</span>
+                      </span>
+                    </div>
+                    <div class="pB-5">
+                      <span class="pL-5">
+                        <i class="ti-mobile c-grey-700"></i>
+                      </span>
+                      <span class="pL-10">
+                        <span v-if="datum.contact!=null" class="c-grey-600">{{ datum.contact }}</span>
+                        <span v-else>
+                          <i class="c-grey-400">NA</i>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="pB-5">
+                      <span class="pL-5 c-grey-700 fsz-xs">
+                        <i class="ti-home"></i>
+                      </span>
+                      <span class="pL-10">
+                        <span class="c-grey-600">{{ datum.address }}</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="w-100">
+                      <div class="text-center">
+                        <span
+                          v-if="datum.head_name != null"
+                          class="c-grey-600"
+                          style="font-weight:lighter;"
+                        >{{ datum.head_name }}</span>
+                        <span v-else class="c-grey-400" style="font-weight:normal;">
+                          <i>Not Assigned</i>
+                        </span>
+                      </div>
+                      <div>
+                        <span
+                          class="fsz-xs w-100 badge c-white"
+                          style="font-weight:lighter;"
+                        >{{ datum.status }}</span>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               </template>
               <template v-if="employeeTable.config.loader">
@@ -157,9 +258,15 @@
         </div>
       </div>
     </div>
-    <notifications group="foo" animation-type="velocity" position="bottom right"/>
+
+    <!-- <notifications group="foo" animation-type="velocity" position="bottom right"/> -->
   </div>
 </template>
+<style>
+.google-hover:hover {
+  background-color: #f2f3f5;
+}
+</style>
 
 <script>
 import Moment from "moment/moment";
@@ -346,6 +453,10 @@ export default {
           break;
       }
       return { a: nameA, b: nameB };
+    },
+
+    getNameInitials: function(fname, lname) {
+      return fname[0] + "" + lname[0].toUpperCase();
     }
   }
 };

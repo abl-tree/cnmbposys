@@ -48,7 +48,7 @@ class EmployeeController extends BaseController
      */
     public function create()
     {
-        //
+        return view('admin.form.employee.create');
     }
 
     /**

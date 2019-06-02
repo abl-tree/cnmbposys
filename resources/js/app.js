@@ -23,8 +23,8 @@ $(function () {
 Vue.mixin({
     data() {
         return {
-            fetchState : false,
-            page_busy:false,
+            fetchState: false,
+            page_busy: false,
             component: {
                 table: {
                     td: {
@@ -329,7 +329,7 @@ Vue.mixin({
 
         store: function (obj, action, formName) {
             let pageurl = this.endpoints[action][formName];
-            this.fetchState =  true
+            this.fetchState = true
             fetch(pageurl, {
                     method: "post",
                     body: JSON.stringify(obj),
@@ -467,6 +467,9 @@ Vue.component("rta-sched-section", rtaVue);
 
 import IrResponseModal from "./components/IrResponseModal.vue";
 Vue.component("ir-response-modal", IrResponseModal);
+
+import employeeForm from "./components/employeeForm.vue";
+Vue.component("employee-form", employeeForm);
 
 import rtaDashboard from "./components/rtaDashboardPage.vue";
 Vue.component("rta-dashboard-section", rtaDashboard);
@@ -1301,8 +1304,7 @@ if ($("#hr-dashboard").length) {
     $(document).on("click", ".add-position-button", function () {
         var action = $(this).attr("data-action");
         $("#action").val(action);
-        if (action == "add") {
-        }
+        if (action == "add") {}
         $("#position-modal-header").html(ucword(action));
 
         function ajax1() {
@@ -1324,8 +1326,7 @@ if ($("#hr-dashboard").length) {
                         );
                     }
                 },
-                error: function (data) {
-                }
+                error: function (data) {}
             });
         }
 
@@ -1638,8 +1639,7 @@ if ($("#hr-dashboard").length) {
                     }
                 }
             },
-            error: function (req, status, error) {
-            }
+            error: function (req, status, error) {}
         });
     });
 
@@ -1676,8 +1676,7 @@ if ($("#hr-dashboard").length) {
                     }
                     excelstore(++i, obj);
                 },
-                error: function (request) {
-                }
+                error: function (request) {}
             });
         } else {
             leavepagenotif = false;
