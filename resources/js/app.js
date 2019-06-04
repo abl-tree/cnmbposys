@@ -455,6 +455,8 @@ import FullCalendar from "vue-full-calendar";
 Vue.use(FullCalendar);
 import BootstrapVue from "bootstrap-vue";
 Vue.use(BootstrapVue);
+import VeeValidate from 'vee-validate';
+Vue.use(VeeValidate);
 
 import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
 import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";

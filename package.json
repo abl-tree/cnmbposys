@@ -51,6 +51,7 @@
         "select2": "^4.0.6-rc.1",
         "tooltip-js": "^3.0.0",
         "v-tooltip": "^2.0.0",
+        "vee-validate": "^2.2.9",
         "velocity-animate": "^1.5.2",
         "vue-color": "^2.7.0",
         "vue-ctk-date-time-picker": "^1.4.3",
@@ -67,6 +68,7 @@
         "vue-template-compiler": "^2.6.1",
         "vue-tooltipster": "^1.2.0",
         "vue-web-cam": "^1.5.0",
+        "vuejs-datepicker": "^1.5.4",
         "vuejs-timepicker": "^0.1.4"
     }
 }

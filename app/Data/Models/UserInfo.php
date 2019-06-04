@@ -18,17 +18,17 @@ class UserInfo extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'user_infos';
     protected $fillable = [
-        'firstname','middlename', 'lastname',
+        'firstname','middlename', 'lastname','suffix',
         'birthdate', 'gender', 'contact_number',
-        'address', 'image', 'salary_rate','image_ext',
+        'address', 'image', 'salary_rate',
         'status', 'hired_date', 'separation_date', 'excel_hash',
         'p_email','created_at','updated_at'
     ];
 
     protected $searchable = [
-        'firstname','middlename', 'lastname',
+        'firstname','middlename', 'lastname', 'suffix',
         'birthdate', 'gender', 'contact_number',
-        'address', 'image', 'salary_rate','image_ext',
+        'address', 'image', 'salary_rate',
         'status', 'hired_date', 'separation_date', 'excel_hash',
         'p_email','created_at','updated_at'
     ];
@@ -59,6 +59,11 @@ class UserInfo extends BaseModel
         $this->attributes['lastname'] = strtolower($value);
     }
 
+    public function setSuffixAttribute($value)
+    {
+        $this->attributes['suffix'] = strtolower($value);
+    }
+
     public function setAddressAttribute($value)
     {
         $this->attributes['address'] = strtolower($value);
@@ -84,6 +89,11 @@ class UserInfo extends BaseModel
     {
         return ucwords($value);        
     }
+    
+    public function getSuffixAttribute($value)
+    {
+        return ucwords($value);        
+    }
 
     public function getAddressAttribute($value)
     {
@@ -93,8 +103,7 @@ class UserInfo extends BaseModel
 
     public function getFullNameAttribute(){
         $name = null;
-        $name = $this->firstname . ' ' . $this->middlename . ' ' . $this->lastname;
-        
+        $name = $this->firstname . ' ' . $this->middlename . ' ' . $this->lastname. ' ' . $this->suffix;
         return $name;
     }
 

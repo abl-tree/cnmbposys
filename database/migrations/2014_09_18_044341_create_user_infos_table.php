@@ -20,12 +20,12 @@ class CreateUserInfosTable extends Migration
             $table->string('firstname')->nullable();
             $table->string('middlename')->nullable();
             $table->string('lastname')->nullable();
+            $table->string('suffix')->nullable();
             $table->string('birthdate')->nullable();
             $table->string('gender')->nullable();
             $table->string('contact_number')->nullable();
             $table->string('address')->nullable();
             $table->double('salary_rate', 8, 2)->nullable();
-            $table->string('image_ext')->nullable();
             $table->string('status')->nullable();
             $table->string('hired_date')->nullable();
             $table->string('separation_date')->nullable();

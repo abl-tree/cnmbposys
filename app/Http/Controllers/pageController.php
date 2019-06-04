@@ -25,8 +25,8 @@ class pageController extends Controller
 
     public function dashboard(){
         $id = auth()->user()->id;
-        $access_level = auth()->user()->access_id;
-        $role = AccessLevel::find($access_level);
+        $access_id = auth()->user()->access_id;
+        $role = AccessLevel::find($access_id);
         $profile = UserInfo::with('benefits')->find($id);
         $user = User::find($id);
         $emp = AccessLevelHierarchy::with('childInfo.user.access')->orderBy('parent_id')->get();
@@ -34,7 +34,7 @@ class pageController extends Controller
         $userInfo = AccessLevel::all();
         $tabledata=[];
         $position = '';
-        switch($access_level){
+        switch($access_id){
             case 1:
             case 2:
             case 3:

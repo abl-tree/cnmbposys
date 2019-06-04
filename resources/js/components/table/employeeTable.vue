@@ -237,14 +237,9 @@
                           style="font-weight:lighter;"
                         >{{ datum.head_name }}</span>
                         <span v-else class="c-grey-400" style="font-weight:normal;">
-                          <i>Not Assigned</i>
+                          <i v-if="datum.id!=1">Not Assigned</i>
+                          <i v-else>ADMIN</i>
                         </span>
-                      </div>
-                      <div>
-                        <span
-                          class="fsz-xs w-100 badge c-white"
-                          style="font-weight:lighter;"
-                        >{{ datum.status }}</span>
                       </div>
                     </div>
                   </td>

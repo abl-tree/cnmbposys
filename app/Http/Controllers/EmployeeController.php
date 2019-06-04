@@ -29,6 +29,7 @@ class EmployeeController extends BaseController
     public function __construct()
     {
         $this->middleware('loginVerif');
+        $this->middleware('pageAccess');
     }
 
     /**
@@ -48,7 +49,13 @@ class EmployeeController extends BaseController
      */
     public function create()
     {
-        return view('admin.form.employee.create');
+        $form = [
+            'positions' => AccessLevel::all(),
+
+        ];
+        $accessId = auth()->user()->access_id;
+        $action="create";
+        return view('admin.form.employee.create',compact('form','accessId','action'));
     }
 
     /**
@@ -59,140 +66,138 @@ class EmployeeController extends BaseController
      */
     public function store(Request $request)
     {
-        $user="";
-        $userinfo="";
-        $access_level_hierarchy="";
-        $email="";
-        $pemail="";
-        $fullname_hash = str_replace(' ', '', strtolower($request->first_name.$request->middle_name.$request->last_name));
-        $excel_hash = UserInfo::all()->pluck('excel_hash')->toArray();
-        $admin_designation = "required";
-        $role = $request->role;
+        // $user="";
+        // $userinfo="";
+        // $access_level_hierarchy="";
+        // $email="";
+        // $pemail="";
+        // $fullname_hash = str_replace(' ', '', strtolower($request->first_name.$request->middle_name.$request->last_name));
+        // $excel_hash = UserInfo::all()->pluck('excel_hash')->toArray();
+        // // $admin_designation = "required";
+        // $role = $request->role;
 
-        if($role==1){
-            $admin_designation="";
-        }
+        // if($role==1){
+        //     $admin_designation="";
+        // }
 
-        if($request->action=='add'){
-            $userinfo = new UserInfo;
-            $user = new User;
-            $access_level_hierarchy = new AccessLevelHierarchy;
-            $email = 'required|unique:users|email';
-            //check if fullname exist
-            if(in_array($fullname_hash,$excel_hash)){
-                return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
-            }
-        }else if($request->action=='edit'){
-            $userinfo = UserInfo::find($request->id);
-            $user = User::find($request->id);
-            $access_level_hierarchy = AccessLevelHierarchy::where('child_id','=',$request->id)->first();
-            if($user->email == $request->email){
-                $email = 'required|email';
-            }else{
-                $email = 'required|unique:users|email';
-            }
-            if($userinfo->p_email == $request->p_email){
-                $pemail = 'required|email';
-            }else{
-                $pemail = 'required|unique:user_infos|email';
-            }
-            if($userinfo->excel_hash != $fullname_hash){
-                if(in_array($fullname_hash,$excel_hash)){
-                    return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
-                }
-            }
-        }
+        // if($request->action=='add'){
+        //     $userinfo = new UserInfo;
+        //     $user = new User;
+        //     $access_level_hierarchy = new AccessLevelHierarchy;
+        //     $email = 'required|unique:users|email';
+        //     //check if fullname exist
+        //     if(in_array($fullname_hash,$excel_hash)){
+        //         return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
+        //     }
+        // }else if($request->action=='edit'){
+        //     $userinfo = UserInfo::find($request->id);
+        //     $user = User::find($request->id);
+        //     $access_level_hierarchy = AccessLevelHierarchy::where('child_id','=',$request->id)->first();
+        //     if($user->email == $request->email){
+        //         $email = 'required|email';
+        //     }else{
+        //         $email = 'required|unique:users|email';
+        //     }
+        //     if($userinfo->p_email == $request->p_email){
+        //         $pemail = 'required|email';
+        //     }else{
+        //         $pemail = 'required|unique:user_infos|email';
+        //     }
+        //     if($userinfo->excel_hash != $fullname_hash){
+        //         if(in_array($fullname_hash,$excel_hash)){
+        //             return response()->json(['errors'=>['first_name'=>'Name Already Exist.','middle_name'=>'Name Already Exist.','last_name'=>'Name Already Exist.']]);
+        //         }
+        //     }
+        // }
 
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'middle_name' => 'required',
-            'address' => 'required',
-            'birthdate' => 'required',
-            'gender' => 'required',
-            'company_id' => 'required',
-            // 'p_email' => $pemail,
-            // 'contact' => 'required',
-            'email' => $email,
-            'position' => 'required',
-            // 'salary' => 'required',
-            'designation'=>$admin_designation,
-            'hired_date'=>'required',
-            'photo'=>'image|max:2000',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'first_name' => 'required',
+        //     'last_name' => 'required',
+        //     'middle_name' => 'required',
+        //     'address' => 'required',
+        //     'birthdate' => 'required',
+        //     'gender' => 'required',
+        //     'company_id' => 'required',
+        //     'email' => $email,
+        //     'position' => 'required',
+        //     'designation'=>$admin_designation,
+        //     'hired_date'=>'required',
+        //     'photo'=>'image|max:2000',
+        // ]);
 
 
-        if ($validator->fails())
-        {
-            return response()->json(['errors'=>$validator->errors()]);
-        }
+        // if ($validator->fails())
+        // {
+        //     return response()->json(['errors'=>$validator->errors()]);
+        // }
 
-        $userinfo->firstname=$request->first_name;
-        $userinfo->lastname=$request->last_name;
-        $userinfo->middlename=$request->middle_name;
-        $userinfo->address=$request->address;
-        $userinfo->birthdate=$request->birthdate;
-        $userinfo->gender=$request->gender;
-        $userinfo->salary_rate=$request->salary;
-        $userinfo->contact_number=$request->contact;
-        $userinfo->hired_date=$request->hired_date;
-        if($request->action == "add"){
-            $userinfo->status="new_hired";
-        }
-        $userinfo->excel_hash = $fullname_hash;
-        $userinfo->p_email = $request->p_email;
-        if($request->hasFile('photo')){
-            $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
-            $userinfo->image_ext= explode(".", strtolower($_FILES['photo']['name']))[1];
-            $userinfo->image = 'data:image/'.explode(".", strtolower($_FILES['photo']['name']))[1].';base64,'.base64_encode($binaryfile);
-            $userinfo->save();
-        }
-        if($request->captured_photo){
-            $userinfo->image_ext='jpg';
-            $userinfo->image = $request->captured_photo;
-            $userinfo->save();
-        }
-        $userinfo->save();
+        // $userinfo->firstname=$request->first_name;
+        // $userinfo->lastname=$request->last_name;
+        // $userinfo->middlename=$request->middle_name;
+        // $userinfo->address=$request->address;
+        // $userinfo->birthdate=$request->birthdate;
+        // $userinfo->gender=$request->gender;
+        // $userinfo->salary_rate=$request->salary;
+        // $userinfo->contact_number=$request->contact;
+        // $userinfo->hired_date=$request->hired_date;
+        // if($request->action == "add"){
+        //     $userinfo->status="new_hired";
+        // }
+        // $userinfo->excel_hash = $fullname_hash;
+        // $userinfo->p_email = $request->p_email;
+        // if($request->hasFile('photo')){
+        //     $binaryfile = file_get_contents($_FILES['photo']['tmp_name']);
+        //     $userinfo->image_ext= explode(".", strtolower($_FILES['photo']['name']))[1];
+        //     $userinfo->image = 'data:image/'.explode(".", strtolower($_FILES['photo']['name']))[1].';base64,'.base64_encode($binaryfile);
+        //     $userinfo->save();
+        // }
+        // if($request->captured_photo){
+        //     $userinfo->image_ext='jpg';
+        //     $userinfo->image = $request->captured_photo;
+        //     $userinfo->save();
+        // }
+        // $userinfo->save();
 
         
-        $user->uid= $userinfo->id;
-        $user->email = $request->email;
-        if($request->action=="add"){
-            $user->password = str_replace(' ', '', strtolower($userinfo->firstname.$userinfo->lastname));
-        }
-        $user->access_id = $request->position;
-        $user->contract = $request->contract;
-        $user->company_id = $request->company_id;
-        $user->save();
+        // $user->uid= $userinfo->id;
+        // $user->email = $request->email;
+        // if($request->action=="add"){
+        //     $user->password = str_replace(' ', '', strtolower($userinfo->firstname.$userinfo->lastname));
+        // }
+        // $user->access_id = $request->position;
+        // $user->contract = $request->contract;
+        // $user->company_id = $request->company_id;
+        // $user->save();
 
-        $obj_benefit=[];
+        // $obj_benefit=[];
         
-        if($request->action=='add'){
-            for($l=0;$l<4;$l++){
-                $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$request->id_number[$l]];
-            }
-            UserBenefit::insert($obj_benefit);
-            $access_level_hierarchy->child_id = $userinfo->id;
-        }else if($request->action=='edit'){
-            for($l=0;$l<4;$l++){
-                UserBenefit::where('user_info_id',$request->id)
-                ->where('benefit_id',$l+1)
-                ->update(['id_number'=>$request->id_number[$l]]);
-            }
-            $access_level_hierarchy->child_id = $request->id;
-        }
-        if($request->position>1){
-            $access_level_hierarchy->parent_id = $request->designation;
-        }else if($request->position==1){
-            $access_level_hierarchy->parent_id = null;
-        }
+        // if($request->action=='add'){
+        //     for($l=0;$l<4;$l++){
+        //         $obj_benefit[]=['user_info_id'=>$userinfo->id,'benefit_id'=>$l+1,'id_number'=>$request->id_number[$l]];
+        //     }
+        //     UserBenefit::insert($obj_benefit);
+        //     $access_level_hierarchy->child_id = $userinfo->id;
+        // }else if($request->action=='edit'){
+        //     for($l=0;$l<4;$l++){
+        //         UserBenefit::where('user_info_id',$request->id)
+        //         ->where('benefit_id',$l+1)
+        //         ->update(['id_number'=>$request->id_number[$l]]);
+        //     }
+        //     $access_level_hierarchy->child_id = $request->id;
+        // }
+        // if($request->position>1){
+        //     $access_level_hierarchy->parent_id = $request->designation;
+        // }else if($request->position==1){
+        //     $access_level_hierarchy->parent_id = null;
+        // }
         
-        $check = $access_level_hierarchy->save();
-        if($check){
-            $etv = new ExcelTemplateValidator;
-            $etv = $etv->updateExcelToken("Reassign");
-            return response()->json(['success'=>'Record is successfully added','info'=>$userinfo,'user'=>$user,'benefit'=>UserBenefit::where('user_info_id',$request->id)->get()]);
-        }
+        // $check = $access_level_hierarchy->save();
+        // if($check){
+        //     $etv = new ExcelTemplateValidator;
+        //     $etv = $etv->updateExcelToken("Reassign");
+        //     return response()->json(['success'=>'Record is successfully added','info'=>$userinfo,'user'=>$user,'benefit'=>UserBenefit::where('user_info_id',$request->id)->get()]);
+        // }
+        return json_encode($request->all());
     }
 
     /**

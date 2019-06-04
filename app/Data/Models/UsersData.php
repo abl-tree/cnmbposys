@@ -15,7 +15,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'full_name','lname','fname','mname','position','address','contact','gender','image','imagext','status','birthdate','parent_id','child_id','crypted_id','head_name','status_color'
+       'full_name','lname','fname','mname','position','address','contact','gender','image','suffix','status','birthdate','parent_id','child_id','crypted_id','head_name','status_color'
     ];
 
     public $status_color = [
@@ -53,7 +53,7 @@ class UsersData extends BaseModel
      * @var array
      */
     protected $hidden = [
-        'user_info','password','deleted_at', 'remember_token', 'hierarchy','accesslevel','accesslevelhierarchy','access_id','loginFlag','created_at','updated_at'
+        'user_info','password','deleted_at', 'remember_token', 'hierarchy','accesslevel','accesslevelhierarchy','loginFlag','created_at','updated_at'
     ];
 
   
@@ -94,6 +94,14 @@ class UsersData extends BaseModel
         $name = null;
         if(isset($this->user_info)){
             $name = $this->user_info->middlename;
+        }
+        
+        return $name;
+    }
+    public function getSuffixAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->suffix;
         }
         
         return $name;
@@ -168,14 +176,6 @@ class UsersData extends BaseModel
         return $name;
     }
 
-    public function getImagextAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->image_ext;
-        }
-        
-        return $name;
-    }
     public function getStatusAttribute(){
         $name = null;
         if(isset($this->user_info)){
@@ -216,7 +216,7 @@ class UsersData extends BaseModel
     public function getFullNameAttribute(){
         $name = null;
         if(isset($this->user_info)){
-            $name = $this->user_info->firstname." ".$this->user_info->middlename." ".$this->user_info->lastname;
+            $name = $this->user_info->firstname." ".$this->user_info->middlename." ".$this->user_info->lastname." ".$this->user_info->suffix;
         }
         
         return $name;
