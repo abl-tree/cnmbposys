@@ -15,7 +15,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'full_name','lname','fname','mname','position','address','contact','gender','image','suffix','status','birthdate','parent_id','child_id','crypted_id','head_name','status_color',
+       'full_name','lname','fname','mname','position','address','contact','gender','image','suffix','status','type','birthdate','parent_id','child_id','crypted_id','head_name','status_color',
     ];
 
     public $status_color = [
@@ -66,14 +66,14 @@ class UsersData extends BaseModel
         return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'uid');
     }
     public function benefits() {
-        return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'id');
+        return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'uid');
     }
     
     public function accesslevel(){
        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
     public function accesslevelhierarchy(){
-        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
+        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'uid');
      }
     public function getFnameAttribute(){
         $name = null;
@@ -186,6 +186,14 @@ class UsersData extends BaseModel
             }else{
                 $name = strtoupper($this->user_info->status);
             }
+        }
+        
+        return $name;
+    }
+    public function getTypeAttribute(){
+        $name = null;
+        if(isset($this->user_info)){  
+                $name = strtoupper($this->user_info->type);
         }
         
         return $name;

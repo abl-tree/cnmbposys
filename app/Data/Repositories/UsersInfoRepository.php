@@ -9,17 +9,22 @@ use App\Data\Models\UserCluster;
 use App\Data\Models\UpdateStatus;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\UserBenefit;
+use App\Data\Models\BenefitUpdate;
+use App\Data\Models\HierarchyUpdate;
 use App\Data\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Storage;
 
 class UsersInfoRepository extends BaseRepository
 {
 
     protected 
         $user_info,$user_datum,$user_status,$user_benefits,$user_infos,
-        $user,$access_level_hierarchy;
+        $user,$access_level_hierarchy,$benefit_update,$hierarchy_update;
 
     public function __construct(
         UsersData $user_info,
+        BenefitUpdate $benefit_update,
+        HierarchyUpdate $hierarchy_update,
         UserInfo $user_infos,
         User $user,
         Users $user_datum,
@@ -30,6 +35,8 @@ class UsersInfoRepository extends BaseRepository
     ) {
         $this->user_info = $user_info;
         $this->user_infos = $user_infos;
+        $this->benefit_update = $benefit_update;
+        $this->hierarchy_update = $hierarchy_update;
         $this->user = $user;
         $this->user_datum = $user_datum;
         $this->user_status = $user_status;
@@ -153,6 +160,7 @@ class UsersInfoRepository extends BaseRepository
         $hierarchy = [];
         $cluster=[];
         $user_benefits=[];
+        $benefits=[];
         if (!isset($data['id'])) {
             if (!isset($data['firstname'])) {
                 return $this->setResponse([
@@ -218,6 +226,9 @@ class UsersInfoRepository extends BaseRepository
             if (isset($data['status'])) {
                 $user_information['status']= $data['status'];
             }
+            if (isset($data['type'])) {
+                $user_information['type']= $data['type'];
+            }
             if (isset($data['hired_date'])) {
                 $user_information['hired_date']= $data['hired_date'];
             }
@@ -263,7 +274,8 @@ class UsersInfoRepository extends BaseRepository
             }
             $user_data['password'] = bcrypt(strtolower($data['firstname'].$data['lastname']));
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
-           // $users_data->save();
+            $users_data;
+
             $benefits=[];
             $ben=[];
             $array=json_decode($data['benefits'], true );
@@ -279,30 +291,154 @@ class UsersInfoRepository extends BaseRepository
             $status_logs['user_id']=$user_id;
             $status_logs['status']=$data['status'];
             }
-            if (isset($data['reason'])) {
-            $status_logs['reason']=$data['status'];
+            if (isset($data['type'])) {
+                $status_logs['type']=$data['type'];
             }
             if (isset($data['status_reason'])) {
             $status_logs['reason']=$data['status_reason'];
             }
-            if (isset($data['separation_date'])) {
+            if (isset($data['hired_date'])) {
             $status_logs['hired_date']=$data['hired_date'];
             }
             if (isset($data['separation_date'])) {
             $status_logs['separation_date']=$data['separation_date'];
             }
             $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
-            $status->save();         
+            $status->save(); 
+            $action="Created";        
         }else{
-            if (isset($data['id'])) {   
-                $does_exist = $this->users->find($data['id']);
-                if (!$does_exist) {
+            if (isset($data['id'])) {
+                $user_information = $this->user_infos->find($data['id']);
+                if($user_information){
+                if (isset($data['firstname'])) {
+                    $user_information['firstname']= $data['firstname'];
+                }
+                if (isset($data['lastname'])) {
+                    $user_information['lastname']= $data['lastname'];
+                }
+                if (isset($data['middlename'])) {
+                    $user_information['middlename']= $data['middlename'];
+                }
+                if (isset($data['suffix'])) {
+                    $user_information['suffix']= $data['suffix'];
+                }
+                if (isset($data['address'])) {
+                    $user_information['address']= $data['address'];
+                }
+                if (isset($data['contact_number'])) {
+                    $user_information['contact_number']= $data['contact_number'];
+                }
+                if (isset($data['salary_rate'])) {
+                    $user_information['salary_rate']= $data['salary_rate'];
+                }
+                if (isset($data['status'])) {
+                    $user_information['status']= $data['status'];
+                }   
+                if (isset($data['type'])) {
+                    $user_information['type']= $data['type'];
+                }   
+                if (isset($data['hired_date'])) {
+                    $user_information['hired_date']= $data['hired_date'];
+                }   
+                if (isset($data['separation_date'])) {
+                    $user_information['separation_date']= $data['separation_date'];
+                }  
+                if (isset($data['birthdate'])) {
+                    $user_information['birthdate']= $data['birthdate'];
+                }    
+                if (isset($data['p_email'])) {
+                    $user_information['p_email']= $data['p_email'];
+                }   
+                if (isset($data['status_reason'])) {
+                    $user_information['status_reason']= $data['status_reason'];
+                }
+                if (isset($data['gender'])) {
+                    $user_information['gender']= $data['gender'];
+                }        
+                if (isset($data['imageName'])) {
+                    if($user_information->image_url==null){
+                        define('UPLOAD_DIR', 'storage/images/');
+                        $file =  request()->image->move(UPLOAD_DIR,$data['imageName']);
+                        $url= asset($file);
+                        $user_information['image_url'] = $url;
+                    }else{
+                        $url = $user_information->image_url; 
+                        $file_name = basename($url);
+                        Storage::delete('images/'.$file_name);
+                        define('UPLOAD_DIR', 'storage/images/');
+                        $file =  request()->image->move(UPLOAD_DIR,$data['imageName']);
+                        $url= asset($file);
+                        $user_information['image_url'] = $url;
+                    }
+                   
+                }
+                if(isset($data['benefits'])){
+                
+                $ben=[];
+                $data['user_info_id']=$data['id'];
+                if (isset($data['id']) &&
+                is_numeric($data['id'])) {
+    
+                $meta_index     = "metadata";
+                $data['single'] = false;
+                $data['where']  = [
+                    [
+                        "target"   => "user_info_id",
+                        "operator" => "=",
+                        "value"    => $data['id'],
+                    ],
+                ];
+    
+                $parameters['id'] = $data['id'];
+    
+            }
+                $user_ben =$this->fetchGeneric($data, $this->user_benefits);
+                $array=json_decode($data['benefits'], true );
+                foreach($array as $key => $value ){
+                        $user_bene = $this->benefit_update->find($user_ben[$key]->id_number);
+                        $user_bene['id_number'] = $value;
+                        array_push($benefits,$user_bene);
+                        $user_bene->save();   
+                }  
+            }
+                    $user_data =  $this->user_datum->find($data['id']);
+                    if (isset($data['email'])) {
+                        $user_data['email']= $data['email'];
+                    }
+                    if (isset($data['access_id'])) {
+                        $user_data['access_id']= $data['access_id'];
+                    }
+                    if (isset($data['company_id'])) {
+                        $user_data['company_id']= $data['company_id'];
+                    }
+                    if (isset($data['contract'])) {
+                        $user_data['contract']= $data['contract'];
+                    }
+                   $hierarchy =  $this->hierarchy_update->find($data['id']);
+                    if (isset($data['parent_id'])) {
+                        $hierarchy['parent_id']= $data['parent_id'];
+                    }
+                $user_information->save();
+                $user_data->save();
+                $hierarchy->save();
+                $action="Updated";
+                return $this->setResponse([
+                    "code"       => 200,
+                    "title"      => "Successfully ".$action." a User.",
+                    "meta"        => [
+                        "user_information" => $user_information,
+                        "user" => $user_data,
+                        "benefits" => $benefits,
+                        "hierarchy"=>$hierarchy
+                    ]
+                ]);
+                }else{
                     return $this->setResponse([
                         'code'  => 500,
                         'title' => 'User Not Found.',
                     ]);
+               
                 }
-
             }
         }
             // if (isset($data['id'])) {
@@ -323,7 +459,7 @@ class UsersInfoRepository extends BaseRepository
                 "title"       => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
                 "meta"        => [
-                    "errors" => $Users->errors(),
+                    "errors" => $users_data->errors(),
                 ],
             ]);
         }
@@ -362,11 +498,18 @@ class UsersInfoRepository extends BaseRepository
                     'title' => "reason is not set.",
                 ]);
             }   
+            if (!isset($data['type'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "type is not set.",
+                ]);
+            }   
 
                 $status = $this->user_status->init($this->user_status->pullFillable($data));
                 $Users = $this->user_infos->find($data['user_id']);
                 $Users->status=$data['status'];
                 $Users->status_reason=$data['reason'];
+                $Users->type=$data['type'];
                 if(isset($data['hired_date'])){
                     $Users->hired_date=$data['hired_date'];
                 }
