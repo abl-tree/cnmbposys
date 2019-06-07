@@ -15,13 +15,14 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'full_name','lname','fname','mname','position','address','contact','gender','image','suffix','status','birthdate','parent_id','child_id','crypted_id','head_name','status_color'
+       'full_name','lname','fname','mname','position','address','contact','gender','image','suffix','status','birthdate','parent_id','child_id','crypted_id','head_name','status_color',
     ];
 
     public $status_color = [
         'active' => 'bg-primary',
         'new_hired' => 'bg-success',
-        'inactive' => 'bg-danger'
+        'inactive' => 'bg-danger',
+        'terminated' => 'bg-danger'
     ];
 
 
@@ -53,7 +54,7 @@ class UsersData extends BaseModel
      * @var array
      */
     protected $hidden = [
-        'user_info','password','deleted_at', 'remember_token', 'hierarchy','accesslevel','accesslevelhierarchy','loginFlag','created_at','updated_at'
+        'user_info','password','deleted_at', 'remember_token', 'hierarchy','accesslevel','accesslevelhierarchy','loginFlag','created_at','updated_at',
     ];
 
   
@@ -106,6 +107,7 @@ class UsersData extends BaseModel
         
         return $name;
     }
+    
     public function getPositionAttribute(){
         $name = null;
         if(isset($this->accesslevel)){
@@ -170,7 +172,7 @@ class UsersData extends BaseModel
     public function getImageAttribute(){
         $name = null;
         if(isset($this->user_info)){
-            $name = $this->user_info->image;
+            $name = $this->user_info->image_url;
         }
         
         return $name;
@@ -191,7 +193,10 @@ class UsersData extends BaseModel
     public function getStatusColorAttribute(){
         $name = null;
         if(isset($this->user_info)){
-            $name = $this->status_color[strtolower($this->user_info->status)];
+            if($this->user_info->status!=null){
+                $name = $this->status_color[strtolower($this->user_info->status)];
+            }
+           
         }
         
         return $name;
