@@ -21,7 +21,7 @@ class UserInfo extends BaseModel
         'firstname','middlename', 'lastname','suffix',
         'birthdate', 'gender', 'contact_number',
         'address', 'image', 'salary_rate','image_url',
-        'status', 'hired_date', 'separation_date', 'excel_hash',
+        'status','type','hired_date', 'separation_date', 'excel_hash',
         'p_email','created_at','updated_at'
     ];
 

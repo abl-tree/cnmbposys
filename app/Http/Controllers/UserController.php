@@ -57,13 +57,34 @@ class UserController extends BaseController
     public function addUser(Request $request)
     {
         $data = $request->all();
-        request()->validate([
+        if(isset($data['image'])){
+            request()->validate([
 
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    
+            ]);
+            $imageName = time().'.'.request()->image->getClientOriginalExtension();
+            $data['imageName']= $imageName;
+        }
+       
+        return $this->absorb($this->user_info->addUser($data))->json();     
+    }
 
-        ]);
-        $imageName = time().'.'.request()->image->getClientOriginalExtension();
-        $data['imageName']= $imageName;
+    public function updateUser(Request $request,$id)
+    {
+        
+        $data = $request->all();
+        $data['id'] = $id;
+        if(isset($data['image'])){
+            request()->validate([
+
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    
+            ]);
+            $imageName = time().'.'.request()->image->getClientOriginalExtension();
+            $data['imageName']= $imageName;
+        }
+       
         return $this->absorb($this->user_info->addUser($data))->json();     
     }
 

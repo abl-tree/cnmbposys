@@ -24,7 +24,7 @@ class UpdateStatus extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'user_id','status', 'reason', 'hired_date','separation_date','created_at','updated_at','deleted_at'
+        'user_id','status', 'type','reason', 'hired_date','separation_date','created_at','updated_at','deleted_at'
     ];
 
     protected $searchable = [
