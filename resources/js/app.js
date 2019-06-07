@@ -470,6 +470,10 @@ Vue.component("rta-sched-section", rtaVue);
 import IrResponseModal from "./components/IrResponseModal.vue";
 Vue.component("ir-response-modal", IrResponseModal);
 
+
+import rta_schedule_page from "./components/RTA/schedule/rta_schedule_page.vue";
+Vue.component("rta-schedule-page", rta_schedule_page);
+
 import employeeForm from "./components/employeeForm.vue";
 Vue.component("employee-form", employeeForm);
 
