@@ -180,6 +180,9 @@ Route::group([
         Route::get("/{id}", "UserController@userInfo");
         Route::get("cluster/{id}", "UserController@getCluster");
         Route::post("change_status", "UserController@updateStatus");
+        Route::post("bulk_change_status", "UserController@bulkUpdateStatus");
+        Route::post("create", "UserController@addUser");
+
     });
 
     Route::group([

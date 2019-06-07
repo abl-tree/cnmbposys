@@ -20,7 +20,7 @@ class UserInfo extends BaseModel
     protected $fillable = [
         'firstname','middlename', 'lastname','suffix',
         'birthdate', 'gender', 'contact_number',
-        'address', 'image', 'salary_rate',
+        'address', 'image', 'salary_rate','image_url',
         'status', 'hired_date', 'separation_date', 'excel_hash',
         'p_email','created_at','updated_at'
     ];
@@ -28,19 +28,20 @@ class UserInfo extends BaseModel
     protected $searchable = [
         'firstname','middlename', 'lastname', 'suffix',
         'birthdate', 'gender', 'contact_number',
-        'address', 'image', 'salary_rate',
+        'address', 'image', 'salary_rate','image_url',
         'status', 'hired_date', 'separation_date', 'excel_hash',
         'p_email','created_at','updated_at'
     ];
 
     protected $appends = [
-        'full_name','count'
+        'full_name','count','image'
     ];
     
     protected $hidden = [
         'created_at', 
         'updated_at', 
         'deleted_at',
+        'image','image_ext'
     ];
 
      //Mutator

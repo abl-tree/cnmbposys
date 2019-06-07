@@ -54,7 +54,7 @@ class UserReport extends BaseModel
     }
     public function getIssuedtoAttribute(){
         $obj = (object) array('id' => $this->user->id,
-        'image' => $this->user->userdata->image, 
+        'image' => $this->user->userdata->image_url, 
         'full_name' => $this->user->name, 
         'position' => $this->user->position->name, 
         'email' => $this->user->email);
@@ -63,7 +63,7 @@ class UserReport extends BaseModel
 
     public function getIssuedbyAttribute(){
         $obj = (object) array('id' => $this->filedby->id,
-        'image' => $this->filedby->userdata->image, 
+        'image' => $this->filedby->userdata->image_url, 
         'full_name' => $this->filedby->name, 
         'position' => $this->filedby->position->name, 
         'email' => $this->filedby->email);

@@ -54,10 +54,28 @@ class UserController extends BaseController
         return $this->absorb($this->user_info->usersInfo($data))->json();     
     }
 
+    public function addUser(Request $request)
+    {
+        $data = $request->all();
+        request()->validate([
+
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+
+        ]);
+        $imageName = time().'.'.request()->image->getClientOriginalExtension();
+        $data['imageName']= $imageName;
+        return $this->absorb($this->user_info->addUser($data))->json();     
+    }
+
     public function updateStatus(Request $request)
     {       
         $data = $request->all();
         return $this->absorb($this->user_info->updateStatus($data))->json();
+    }
+    public function bulkUpdateStatus(Request $request)
+    {       
+        $data = $request->all();
+        return $this->absorb($this->user_info->bulkUpdateStatus($data))->json();
     }
     public function userInfo(Request $request, $id)
     {
