@@ -1,22 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Janrey
- * Date: 30/10/2018
- * Time: 2:12 PM
- */
 
 namespace App\Data\Repositories;
 
 use App\Data\Models\UserInfo;
-use App\User;
 use App\Data\Repositories\BaseRepository;
+use App\User;
 
 class AgentRepository extends BaseRepository
 {
 
-    protected 
-        $user_info,
+    protected $user_info,
         $user;
 
     public function __construct(
@@ -31,23 +24,23 @@ class AgentRepository extends BaseRepository
     {
         $meta_index = "agents";
         $parameters = [];
-        $count      = 0;
+        $count = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "agent";
+            $meta_index = "agent";
             $data['single'] = true;
-            $data['where']  = [
+            $data['where'] = [
                 [
-                    "target"   => "id",
+                    "target" => "id",
                     "operator" => "=",
-                    "value"    => $data['id'],
+                    "value" => $data['id'],
                 ],
                 [
-                    "target"   => "access_id",
+                    "target" => "access_id",
                     "operator" => "=",
-                    "value"    => '17',
+                    "value" => '17',
                 ],
             ];
 
@@ -55,16 +48,14 @@ class AgentRepository extends BaseRepository
 
         } else {
 
-            $data['where']  = [
+            $data['where'] = [
                 [
-                    "target"   => "access_id",
+                    "target" => "access_id",
                     "operator" => "=",
-                    "value"    => '17',
+                    "value" => '17',
                 ],
             ];
         }
-
-        
 
         $count_data = $data;
 
@@ -74,9 +65,9 @@ class AgentRepository extends BaseRepository
 
         if (!$result) {
             return $this->setResponse([
-                'code'       => 404,
-                'title'      => "No agents are found",
-                "meta"       => [
+                'code' => 404,
+                'title' => "No agents are found",
+                "meta" => [
                     $meta_index => $result,
                 ],
                 "parameters" => $parameters,
@@ -86,11 +77,11 @@ class AgentRepository extends BaseRepository
         $count = $this->countData($count_data, refresh_model($this->user->getModel()));
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully retrieved agents",
-            "meta"       => [
+            "code" => 200,
+            "title" => "Successfully retrieved agents",
+            "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
             "parameters" => $parameters,
         ]);
@@ -98,10 +89,10 @@ class AgentRepository extends BaseRepository
 
     public function searchAgent($data)
     {
-        if(!isset($data['query'])){
+        if (!isset($data['query'])) {
             return $this->setResponse([
-                "code"       => 500,
-                "title"      => "Query is not set",
+                "code" => 500,
+                "title" => "Query is not set",
                 "parameters" => $data,
             ]);
         }
@@ -115,15 +106,15 @@ class AgentRepository extends BaseRepository
 
         $data['relations'] = ['info'];
 
-        $data['where']  = [
+        $data['where'] = [
             [
-                "target"   => "access_id",
+                "target" => "access_id",
                 "operator" => "=",
-                "value"    => '17',
+                "value" => '17',
             ],
         ];
 
-        if(isset($data['target'])){
+        if (isset($data['target'])) {
             foreach ((array) $data['target'] as $index => $column) {
                 if (str_contains($column, "full_name")) {
                     $data['target'][] = 'info.firstname';
@@ -147,7 +138,6 @@ class AgentRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-        
 
         $count_data['search'] = true;
         $count = $this->countData($count_data, refresh_model($this->user->getModel()));
@@ -157,7 +147,7 @@ class AgentRepository extends BaseRepository
             "title" => "Successfully searched agents",
             "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
             "parameters" => $parameters,
         ]);

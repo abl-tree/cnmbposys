@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: DELL
- * Date: 07/04/2019
- * Time: 10:22 AM
- */
 
 namespace App\Services;
-
 
 class ExcelDateService
 {
@@ -16,17 +9,15 @@ class ExcelDateService
      * @param $dateValue
      * @return string | datetime
      */
-    public function excelDateToPHPDate ($dateValue ){
+    public function excelDateToPHPDate($dateValue)
+    {
         if (!is_numeric($dateValue)) {
             if (!$this->checkIsAValidDate($dateValue)) {
                 return $dateValue;
-            }
-            else {
+            } else {
                 return date('Y-m-d G:i:s', strtotime($dateValue));
             }
-        }
-
-        else{
+        } else {
             $unix_date = ($dateValue - 25569) * 86400;
             $dateValue = 25569 + ($unix_date / 86400);
             $unix_date = ($dateValue - 25569) * 86400;
@@ -40,7 +31,8 @@ class ExcelDateService
      * @param $myDateString
      * @return bool
      */
-    public function checkIsAValidDate($myDateString){
-        return (bool)strtotime($myDateString);
+    public function checkIsAValidDate($myDateString)
+    {
+        return (bool) strtotime($myDateString);
     }
 }

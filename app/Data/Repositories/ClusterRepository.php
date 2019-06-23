@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: DELL
- * Date: 12/05/2019
- * Time: 5:03 PM
- */
 
 namespace App\Data\Repositories;
 
-use App\Data\Repositories\BaseRepository;
 use App\Data\Models\AccessLevelHierarchy;
-use App\Data\Repositories\AccessLevelHierarchyRepository;
 use App\Data\Models\Clusters;
 use App\Data\Models\UserInfo;
-
+use App\Data\Repositories\AccessLevelHierarchyRepository;
+use App\Data\Repositories\BaseRepository;
 
 class ClusterRepository extends BaseRepository
 {
@@ -39,7 +32,7 @@ class ClusterRepository extends BaseRepository
             // data validation
             if (!isset($data['agent_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Agent ID is not set.",
                 ]);
             }
@@ -47,14 +40,14 @@ class ClusterRepository extends BaseRepository
             // data validation
             if (!isset($data['tl_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Child ID is not set.",
                 ]);
             }
 
             if (!isset($data['om_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Child ID is not set.",
                 ]);
             }
@@ -66,7 +59,7 @@ class ClusterRepository extends BaseRepository
         if (isset($data['agent_id'])) {
             if (!$this->user_info->find($data['agent_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "User is not available.",
                 ]);
             }
@@ -75,7 +68,7 @@ class ClusterRepository extends BaseRepository
         if (isset($data['tl_id'])) {
             if (!$this->user_info->find($data['tl_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "User is not available.",
                 ]);
             }
@@ -84,7 +77,7 @@ class ClusterRepository extends BaseRepository
         if (isset($data['om_id'])) {
             if (!$this->user_info->find($data['om_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "User is not available.",
                 ]);
             }
@@ -99,17 +92,17 @@ class ClusterRepository extends BaseRepository
 
         if (!$cluster) {
             return $this->setResponse([
-                'code'  => 404,
+                'code' => 404,
                 'title' => "Cluster not found.",
             ]);
         }
 
         if (!$cluster->save($data)) {
             return $this->setResponse([
-                "code"        => 500,
-                "title"       => "Data Validation Error.",
+                "code" => 500,
+                "title" => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
-                "meta"        => [
+                "meta" => [
                     "errors" => $cluster->errors(),
                 ],
             ]);
@@ -120,7 +113,7 @@ class ClusterRepository extends BaseRepository
             $arr = [
                 "id" => $access_hierarchy_agent->id,
                 "parent_id" => $data['tl_id'],
-                "child_id" => $data['agent_id']
+                "child_id" => $data['agent_id'],
             ];
             $access_level_hierarchy = $this->access_level_repo->defineAccessLevelHierarchy($arr);
             if ($access_level_hierarchy) {
@@ -129,23 +122,21 @@ class ClusterRepository extends BaseRepository
                     $arr = [
                         "id" => $access_hierarchy->id,
                         "parent_id" => $data['om_id'],
-                        "child_id" => $data['tl_id']
+                        "child_id" => $data['tl_id'],
                     ];
                     $this->access_level_repo->defineAccessLevelHierarchy($arr);
-                }
-                else{
+                } else {
                     $arr = [
                         "parent_id" => $data['om_id'],
-                        "child_id" => $data['tl_id']
+                        "child_id" => $data['tl_id'],
                     ];
                     $this->access_level_repo->defineAccessLevelHierarchy($arr);
                 }
             }
-        }
-        else {
+        } else {
             $arr = [
                 "parent_id" => $data['tl_id'],
-                "child_id" => $data['agent_id']
+                "child_id" => $data['agent_id'],
             ];
             $access_level_hierarchy = $this->access_level_repo->defineAccessLevelHierarchy($arr);
             if ($access_level_hierarchy) {
@@ -154,30 +145,24 @@ class ClusterRepository extends BaseRepository
                     $arr = [
                         "id" => $access_hierarchy->id,
                         "parent_id" => $data['om_id'],
-                        "child_id" => $data['tl_id']
+                        "child_id" => $data['tl_id'],
                     ];
                     $this->access_level_repo->defineAccessLevelHierarchy($arr);
-                }
-                else{
+                } else {
                     $arr = [
                         "parent_id" => $data['om_id'],
-                        "child_id" => $data['tl_id']
+                        "child_id" => $data['tl_id'],
                     ];
                     $this->access_level_repo->defineAccessLevelHierarchy($arr);
                 }
             }
         }
-
-
-
 
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined a cluster.",
             "parameters" => $cluster,
         ]);
-
-
 
     }
 }

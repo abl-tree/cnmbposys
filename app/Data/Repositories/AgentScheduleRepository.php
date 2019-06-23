@@ -1,43 +1,35 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Janrey
- * Date: 30/10/2018
- * Time: 2:12 PM
- */
 
 namespace App\Data\Repositories;
+
 ini_set('max_execution_time', 180);
 ini_set('memory_limit', '-1');
 
-use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\AgentSchedule;
-use App\Data\Models\UserInfo;
 use App\Data\Models\EventTitle;
-use App\User;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Data\Repositories\ExcelRepository;
+use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
-use App\Services\ExcelDateService;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
-use DB;
+use App\Data\Repositories\ClusterRepository;
+use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
-use App\Data\Repositories\ClusterRepository;
+use App\Services\ExcelDateService;
+use App\User;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AgentScheduleRepository extends BaseRepository
 {
 
-    protected 
-        $agent_schedule,
-        $user,
-        $user_info,
-        $event_title,
-        $excel_date,
-        $logs,
-        $access_level_repo,
-        $clusters,
+    protected $agent_schedule,
+    $user,
+    $user_info,
+    $event_title,
+    $excel_date,
+    $logs,
+    $access_level_repo,
+    $clusters,
         $notification_repo;
 
     public function __construct(
@@ -64,11 +56,10 @@ class AgentScheduleRepository extends BaseRepository
     {
         $excel = Excel::toArray(new ExcelRepository, $data['file']);
         $arr = [];
-        $firstPage  = $excel[0];
+        $firstPage = $excel[0];
         for ($x = 0; $x < count($firstPage); $x++) {
-            if(isset($firstPage[$x+3])){
-                if($firstPage[$x+3][1] != null)
-                {
+            if (isset($firstPage[$x + 3])) {
+                if ($firstPage[$x + 3][1] != null) {
                     if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
                         $arr[] = array(
                             "cluster" => $firstPage[$x + 3][2],
@@ -91,42 +82,42 @@ class AgentScheduleRepository extends BaseRepository
     public function bulkScheduleInsertion($data = [])
     {
         $failed = [];
-        if (isset ($data[0]['auth_id'])) {
+        if (isset($data[0]['auth_id'])) {
             $auth_id = $data[0]['auth_id'];
             unset($data[0]);
         }
-        if (isset ($data['auth_id'])){
+        if (isset($data['auth_id'])) {
             $auth_id = $data['auth_id'];
             unset($data['auth_id']);
         }
-        if(!isset($auth_id)){
+        if (!isset($auth_id)) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "No user was logged in.",
             ]);
         }
-        foreach($data as $key => $save){
+        foreach ($data as $key => $save) {
             $save['auth_id'] = $auth_id;
             $result = $this->defineAgentSchedule($save);
             // logs POST data
 
-           if($result->code != 200){
-               $failed[] = $save;
-               unset($data[$key]);
-           }
+            if ($result->code != 200) {
+                $failed[] = $save;
+                unset($data[$key]);
+            }
 
         }
 
         $result->meta = [
             'total_success' => count($data),
-            'total_failed' => count($failed)
+            'total_failed' => count($failed),
         ];
 
         $result->parameters = [
             'success' => $data,
-            'failed' => $failed
+            'failed' => $failed,
         ];
-        
+
         return $result;
     }
 
@@ -141,40 +132,40 @@ class AgentScheduleRepository extends BaseRepository
             if (!isset($data['user_id']) ||
                 !is_numeric($data['user_id']) ||
                 $data['user_id'] <= 0) {
-                
-                if(isset($data['email'])){
+
+                if (isset($data['email'])) {
                     $user = $this->user->where('email', $data['email'])->first();
-                    if(isset($user->id)){
+                    if (isset($user->id)) {
                         $data['user_id'] = $user->id;
                     }
                 }
-                
-                if(!isset($data['user_id'])){
-                    return $this->setResponse([ 
-                        'code'  => 500,
+
+                if (!isset($data['user_id'])) {
+                    return $this->setResponse([
+                        'code' => 500,
                         'title' => "User ID is not set. | Email is not registered",
-                        'parameters' => $data
+                        'parameters' => $data,
                     ]);
-                }    
+                }
             }
 
             if (!isset($data['title_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Title ID is not set.",
                 ]);
             }
 
             if (!isset($data['start_event'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Start date is not set.",
                 ]);
             }
 
             if (!isset($data['end_event'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "End date is not set.",
                 ]);
             }
@@ -187,7 +178,7 @@ class AgentScheduleRepository extends BaseRepository
         if (isset($data['user_id'])) {
             if (!$this->user_info->find($data['user_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "User ID is not available.",
                 ]);
             }
@@ -196,7 +187,7 @@ class AgentScheduleRepository extends BaseRepository
         if (isset($data['title_id'])) {
             if (!$this->event_title->find($data['title_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Title ID is not available.",
                 ]);
             }
@@ -207,7 +198,7 @@ class AgentScheduleRepository extends BaseRepository
 
             if (!$does_exist) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => 'Agent Schedule ID does not exist.',
                 ]);
             }
@@ -223,11 +214,10 @@ class AgentScheduleRepository extends BaseRepository
 
         // existence check
 
-
         // insertion
         if (isset($data['id'])) {
             $agent_schedule = $this->agent_schedule->find($data['id']);
-        } else if ($does_exist){
+        } else if ($does_exist) {
             $agent_schedule = $does_exist;
         } else {
             $agent_schedule = $this->agent_schedule->init($this->agent_schedule->pullFillable($data));
@@ -235,61 +225,60 @@ class AgentScheduleRepository extends BaseRepository
 
         if (!$agent_schedule->save($data)) {
             return $this->setResponse([
-                "code"        => 500,
-                "title"       => "Data Validation Error.",
+                "code" => 500,
+                "title" => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
-                "meta"        => [
+                "meta" => [
                     "errors" => $agent_schedule->errors(),
                 ],
             ]);
         }
 
-        if ( isset($auth_id) ||
+        if (isset($auth_id) ||
             !is_numeric($auth_id) ||
-            $auth_id <= 0 )
-        {
+            $auth_id <= 0) {
             $logged_in_user = $this->user->find($auth_id);
             $current_employee = isset($data['user_id']) ? $this->user->find($data['user_id']) : $this->user->find($agent_schedule->user_id);
             if (!$logged_in_user) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "User ID is not available.",
                 ]);
             }
-            
+
             $logged_data = [
                 "user_id" => $auth_id,
                 "action" => "POST",
-                "affected_data" => "Successfully created a schedule for ".$current_employee->full_name."[".$current_employee->access->name."] on ".$data['start_event']." to ".$data['end_event']." via excel upload by ".$logged_in_user->full_name." [".$logged_in_user->access->name."]."
+                "affected_data" => "Successfully created a schedule for " . $current_employee->full_name . "[" . $current_employee->access->name . "] on " . $data['start_event'] . " to " . $data['end_event'] . " via excel upload by " . $logged_in_user->full_name . " [" . $logged_in_user->access->name . "].",
             ];
             $this->logs->logsInputCheck($logged_data);
         }
 
         // insertion
-        
+
         $notification = $this->notification_repo->triggerNotification([
             'sender_id' => $auth_id,
             'recipient_id' => isset($data['user_id']) ? $data['user_id'] : $agent_schedule->user_id,
             'type' => 'schedules.assign',
-            'type_id' => $agent_schedule->id
+            'type_id' => $agent_schedule->id,
         ]);
 
         // insertion of cluster
         if (isset($data['cluster']) && isset($data['tl_id'])) {
-            $om = $this->user->where('email',$data['cluster'])->first();
-            $tl = $this->user->where('email',$data['tl_id'])->first();
+            $om = $this->user->where('email', $data['cluster'])->first();
+            $tl = $this->user->where('email', $data['tl_id'])->first();
             $arr = [
                 "om_id" => $om->id,
                 "tl_id" => $tl->id,
-                "agent_id" => $data['user_id']
+                "agent_id" => $data['user_id'],
             ];
             $this->clusters->defineCluster($arr);
 
         }
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully defined an agent schedule.",
+            "code" => 200,
+            "title" => "Successfully defined an agent schedule.",
             "parameters" => $agent_schedule,
         ]);
 
@@ -301,31 +290,31 @@ class AgentScheduleRepository extends BaseRepository
 
         if (!$record) {
             return $this->setResponse([
-                "code"        => 404,
-                "title"       => "Agent schedule not found"
+                "code" => 404,
+                "title" => "Agent schedule not found",
             ]);
         }
 
         if (!$record->delete()) {
             return $this->setResponse([
-                "code"    => 500,
+                "code" => 500,
                 "message" => "Deleting agent schedule was not successful.",
-                "meta"    => [
+                "meta" => [
                     "errors" => $record->errors(),
                 ],
                 "parameters" => [
-                    'schedule_id' => $data['id']
-                ]
+                    'schedule_id' => $data['id'],
+                ],
             ]);
         }
 
         return $this->setResponse([
-            "code"        => 200,
-            "title"       => "Agent schedule deleted",
+            "code" => 200,
+            "title" => "Agent schedule deleted",
             "description" => "An agent schedule was deleted.",
-            "parameters"        => [
-                "schedule_id" => $data['id']
-            ]
+            "parameters" => [
+                "schedule_id" => $data['id'],
+            ],
         ]);
 
     }
@@ -334,18 +323,18 @@ class AgentScheduleRepository extends BaseRepository
     {
         $meta_index = "agent_schedules";
         $parameters = [];
-        $count      = 0;
+        $count = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "agent_schedule";
+            $meta_index = "agent_schedule";
             $data['single'] = true;
-            $data['where']  = [
+            $data['where'] = [
                 [
-                    "target"   => "id",
+                    "target" => "id",
                     "operator" => "=",
-                    "value"    => $data['id'],
+                    "value" => $data['id'],
                 ],
             ];
 
@@ -361,9 +350,9 @@ class AgentScheduleRepository extends BaseRepository
 
         if (!$result) {
             return $this->setResponse([
-                'code'       => 404,
-                'title'      => "No agent schedules are found",
-                "meta"       => [
+                'code' => 404,
+                'title' => "No agent schedules are found",
+                "meta" => [
                     $meta_index => $result,
                 ],
                 "parameters" => $parameters,
@@ -372,24 +361,24 @@ class AgentScheduleRepository extends BaseRepository
 
         $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
 
-        if(!is_array($result)){
+        if (!is_array($result)) {
             $result = [
-                $result
+                $result,
             ];
         }
 
-        foreach($result as $key => $value){
+        foreach ($result as $key => $value) {
             $value->team_leader = $value->user_info->user->team_leader;
             $value->operations_manager = $value->user_info->user->operations_manager;
             unset($value->user_info->user);
         }
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully retrieved agent schedules",
-            "meta"       => [
+            "code" => 200,
+            "title" => "Successfully retrieved agent schedules",
+            "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
             "parameters" => $parameters,
         ]);
@@ -399,35 +388,35 @@ class AgentScheduleRepository extends BaseRepository
     {
         $meta_index = "agents";
         $parameters = [];
-        $count      = 0;
+        $count = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "agent";
+            $meta_index = "agent";
             $data['single'] = true;
-            $data['where']  = [
+            $data['where'] = [
                 [
-                    "target"   => "id",
+                    "target" => "id",
                     "operator" => "=",
-                    "value"    => $data['id'],
+                    "value" => $data['id'],
                 ],
                 [
-                    "target"   => "access_id",
+                    "target" => "access_id",
                     "operator" => "=",
-                    "value"    => '17',
+                    "value" => '17',
                 ],
             ];
 
             $parameters['agent_id'] = $data['id'];
 
         } else {
-            
-            $data['where']  = [
+
+            $data['where'] = [
                 [
-                    "target"   => "access_id",
+                    "target" => "access_id",
                     "operator" => "=",
-                    "value"    => '17',
+                    "value" => '17',
                 ],
             ];
         }
@@ -436,12 +425,12 @@ class AgentScheduleRepository extends BaseRepository
 
         $data['relations'] = ['info', 'schedule.title'];
 
-        $result     = $this->fetchGeneric($data, $this->user);
+        $result = $this->fetchGeneric($data, $this->user);
         if (!$result) {
             return $this->setResponse([
-                'code'       => 404,
-                'title'      => "No agents with schedules are found",
-                "meta"       => [
+                'code' => 404,
+                'title' => "No agents with schedules are found",
+                "meta" => [
                     $meta_index => $result,
                 ],
                 "parameters" => $parameters,
@@ -450,11 +439,11 @@ class AgentScheduleRepository extends BaseRepository
 
         $count = $this->countData($count_data, refresh_model($this->user->getModel()));
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully retrieved agent schedules",
-            "meta"       => [
+            "code" => 200,
+            "title" => "Successfully retrieved agent schedules",
+            "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
             "parameters" => $parameters,
         ]);
@@ -492,7 +481,7 @@ class AgentScheduleRepository extends BaseRepository
             "title" => "Successfully searched agent schedules",
             "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
             "parameters" => $parameters,
         ]);
@@ -501,16 +490,16 @@ class AgentScheduleRepository extends BaseRepository
     public function agentScheduleStats($data)
     {
         $result = $this->agent_schedule;
-        
+
         $meta_index = "agent_schedules";
 
         $sparkline = array();
 
         $title = null;
 
-        if(isset($data['filter'])) {
+        if (isset($data['filter'])) {
             $parameters = [
-                'filter' => $data['filter']
+                'filter' => $data['filter'],
             ];
         } else {
             $parameters = [];
@@ -522,7 +511,7 @@ class AgentScheduleRepository extends BaseRepository
         $data['no_all_method'] = true;
         $data['relations'] = ['user_info'];
 
-        if(isset($data['filter']) && $data['filter'] === 'working') {
+        if (isset($data['filter']) && $data['filter'] === 'working') {
 
             $sparkline = $this->sparkline($data, $result, $data['filter']);
 
@@ -531,18 +520,18 @@ class AgentScheduleRepository extends BaseRepository
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'start_event',
                 'operator' => '<=',
-                'value' => Carbon::now()
+                'value' => Carbon::now(),
             ],
-            [
-                'target' => 'end_event',
-                'operator' => '>=',
-                'value' => Carbon::now()
-            ],
-            [
-                'target' => 'title_id',
-                'operator' => '=',
-                'value' => 1
-            ]));
+                [
+                    'target' => 'end_event',
+                    'operator' => '>=',
+                    'value' => Carbon::now(),
+                ],
+                [
+                    'target' => 'title_id',
+                    'operator' => '=',
+                    'value' => 1,
+                ]));
 
             $result = $this->fetchGeneric($data, $result);
 
@@ -550,7 +539,7 @@ class AgentScheduleRepository extends BaseRepository
                 $result = $result->where('is_working', 1);
             }
 
-        } else if(isset($data['filter']) && $data['filter'] === 'absent') {
+        } else if (isset($data['filter']) && $data['filter'] === 'absent') {
 
             $sparkline = $this->sparkline($data, $result, $data['filter']);
 
@@ -559,18 +548,18 @@ class AgentScheduleRepository extends BaseRepository
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'agent_schedules.start_event',
                 'operator' => '<=',
-                'value' => Carbon::now()
+                'value' => Carbon::now(),
             ],
-            [
-                'target' => 'agent_schedules.end_event',
-                'operator' => '>=',
-                'value' => Carbon::now()
-            ],
-            [
-                'target' => 'title_id',
-                'operator' => '=',
-                'value' => 1
-            ]));
+                [
+                    'target' => 'agent_schedules.end_event',
+                    'operator' => '>=',
+                    'value' => Carbon::now(),
+                ],
+                [
+                    'target' => 'title_id',
+                    'operator' => '=',
+                    'value' => 1,
+                ]));
 
             $result = $this->fetchGeneric($data, $result);
 
@@ -578,7 +567,7 @@ class AgentScheduleRepository extends BaseRepository
                 $result = $result->where('is_present', 0);
             }
 
-        } else if(isset($data['filter']) && $data['filter'] === 'off-duty') {
+        } else if (isset($data['filter']) && $data['filter'] === 'off-duty') {
 
             $result = $this->user;
 
@@ -587,27 +576,27 @@ class AgentScheduleRepository extends BaseRepository
             $sparkline = $this->sparkline($data, $result, $data['filter']);
 
             $title = "Agent Off-Duty.";
-            
+
             $result = $this->fetchGeneric($data, $result);
 
             if ($result) {
                 $result = $result->where('is_agent', 1)->where('has_schedule', 0);
             }
 
-        } else if(isset($data['filter']) && $data['filter'] === 'on-break') {
+        } else if (isset($data['filter']) && $data['filter'] === 'on-break') {
 
             $title = "Agent on break.";
 
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'start_event',
                 'operator' => '<=',
-                'value' => Carbon::now()
+                'value' => Carbon::now(),
             ],
-            [
-                'target' => 'end_event',
-                'operator' => '>=',
-                'value' => Carbon::now()
-            ]));
+                [
+                    'target' => 'end_event',
+                    'operator' => '>=',
+                    'value' => Carbon::now(),
+                ]));
 
             $result = $this->fetchGeneric($data, $result);
 
@@ -615,7 +604,7 @@ class AgentScheduleRepository extends BaseRepository
                 $result = $result->where('is_present', 1)->where('is_working', 0);
             }
 
-        } else if(isset($data['filter']) && $data['filter'] === 'on-leave') {
+        } else if (isset($data['filter']) && $data['filter'] === 'on-leave') {
 
             $title = "Agent on leave.";
 
@@ -624,19 +613,19 @@ class AgentScheduleRepository extends BaseRepository
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'start_event',
                 'operator' => '<=',
-                'value' => Carbon::now()
+                'value' => Carbon::now(),
             ],
-            [
-                'target' => 'end_event',
-                'operator' => '>=',
-                'value' => Carbon::now()
-            ],
-            [
-                'target' => 'title_id',
-                'operator' => '!=',
-                'value' => 1
-            ]
-        ));
+                [
+                    'target' => 'end_event',
+                    'operator' => '>=',
+                    'value' => Carbon::now(),
+                ],
+                [
+                    'target' => 'title_id',
+                    'operator' => '!=',
+                    'value' => 1,
+                ],
+            ));
 
             $result = $this->fetchGeneric($data, $result);
 
@@ -649,18 +638,18 @@ class AgentScheduleRepository extends BaseRepository
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'start_event',
                 'operator' => '<=',
-                'value' => Carbon::now()
+                'value' => Carbon::now(),
             ],
-            [
-                'target' => 'end_event',
-                'operator' => '>=',
-                'value' => Carbon::now()
-            ],
-            [
-                'target' => 'title_id',
-                'operator' => '=',
-                'value' => 1
-            ]));
+                [
+                    'target' => 'end_event',
+                    'operator' => '>=',
+                    'value' => Carbon::now(),
+                ],
+                [
+                    'target' => 'title_id',
+                    'operator' => '=',
+                    'value' => 1,
+                ]));
 
             $result = $this->fetchGeneric($data, $result);
 
@@ -673,7 +662,7 @@ class AgentScheduleRepository extends BaseRepository
                 "meta" => [
                     $meta_index => $result,
                     "sparkline" => $sparkline,
-                    "count" => $result->count()
+                    "count" => $result->count(),
                 ],
                 "parameters" => $parameters,
             ]);
@@ -685,73 +674,74 @@ class AgentScheduleRepository extends BaseRepository
             "meta" => [
                 $meta_index => $result,
                 "sparkline" => $sparkline,
-                "count"     => $result->count()
+                "count" => $result->count(),
             ],
             "parameters" => $parameters,
         ]);
     }
 
-    private function sparkline($data, $result, $filter = null) {
+    private function sparkline($data, $result, $filter = null)
+    {
 
         $sparkline = array();
 
         $now = Carbon::now();
 
         $previous = Carbon::now()->subDays(9)->format('Y-m-d');
-        
+
         $period = CarbonPeriod::create($previous, $now->format('Y-m-d'))->toArray();
 
         $now = $now->addDays(1)->format('Y-m-d');
 
-        if($filter === 'working') {
+        if ($filter === 'working') {
             $data['where_between'] = array_merge($data['where_between'], array([
                 'target' => 'start_event',
-                'value' => [$previous, $now]
-            ])); 
-            
+                'value' => [$previous, $now],
+            ]));
+
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'title_id',
                 'operator' => '=',
-                'value' => 1
-            ])); 
+                'value' => 1,
+            ]));
 
             $data['relations'] = array('attendances');
 
             $count_attr = 'attendances';
 
             $only_attr = ['date', 'attendances'];
-        } else if($filter === 'on-leave') {
+        } else if ($filter === 'on-leave') {
             $data['where_between'] = array_merge($data['where_between'], array([
                 'target' => 'start_event',
-                'value' => [$previous, $now]
-            ])); 
+                'value' => [$previous, $now],
+            ]));
 
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'title_id',
                 'operator' => '!=',
-                'value' => 1
-            ])); 
+                'value' => 1,
+            ]));
 
             $only_attr = ['start_event', 'end_event'];
-        } else if($filter === 'off-duty') {
-            $data['relations'] = array('schedule' => function($query) use ($previous, $now){
+        } else if ($filter === 'off-duty') {
+            $data['relations'] = array('schedule' => function ($query) use ($previous, $now) {
                 $query->whereBetween('start_event', [$previous, $now]);
             });
 
             $only_attr = ['schedule'];
 
             $result = $this->fetchGeneric($data, $result)->where('is_agent', 1);
-        } else if($filter === 'absent') {
+        } else if ($filter === 'absent') {
             $data['where_between'] = array_merge($data['where_between'], array([
                 'target' => 'start_event',
-                'value' => [$previous, $now]
-            ])); 
-            
+                'value' => [$previous, $now],
+            ]));
+
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'title_id',
                 'operator' => '=',
-                'value' => 1
-            ])); 
+                'value' => 1,
+            ]));
 
             $count_attr = 'attendances';
 
@@ -759,24 +749,24 @@ class AgentScheduleRepository extends BaseRepository
         } else {
             $data['where_between'] = array_merge($data['where_between'], array([
                 'target' => 'start_event',
-                'value' => [$previous, $now]
-            ])); 
+                'value' => [$previous, $now],
+            ]));
 
             $data['where'] = array_merge($data['where'], array([
                 'target' => 'title_id',
                 'operator' => '=',
-                'value' => 1
-            ])); 
+                'value' => 1,
+            ]));
 
             $only_attr = ['start_event', 'end_event'];
         }
 
-        if($filter !== 'off-duty') {
+        if ($filter !== 'off-duty') {
             $result = $this->fetchGeneric($data, $result);
         }
 
         if ($result) {
-            $result = $result->map(function ($result) use ($only_attr){
+            $result = $result->map(function ($result) use ($only_attr) {
                 return collect($result->toArray())
                     ->only($only_attr)
                     ->all();
@@ -789,14 +779,14 @@ class AgentScheduleRepository extends BaseRepository
 
                     $dates = array();
 
-                    if($filter === 'working') {
+                    if ($filter === 'working') {
 
-                        if(!empty($value[$count_attr])) {
+                        if (!empty($value[$count_attr])) {
 
                             $temp = array();
 
                             $time_in = Carbon::parse($value[$count_attr][0]['time_in'])->format('Y-m-d');
-    
+
                             $time_out = ($value[$count_attr][count($value[$count_attr]) - 1]['time_out']) ? Carbon::parse($value[$count_attr][count($value[$count_attr]) - 1]['time_out'])->format('Y-m-d') : Carbon::now()->format('Y-m-d');
 
                             $dates = CarbonPeriod::create($time_in, $time_out);
@@ -804,12 +794,12 @@ class AgentScheduleRepository extends BaseRepository
                         }
 
                         foreach ($dates as $filtered_date) {
-                            if(Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
+                            if (Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
                                 $count += 1;
                             }
                         }
 
-                    } else if($filter === 'on-leave') {
+                    } else if ($filter === 'on-leave') {
 
                         $emp_sched = array();
 
@@ -823,11 +813,11 @@ class AgentScheduleRepository extends BaseRepository
                             $emp_sched[] = $period->format('Y-m-d');
                         }
 
-                        if(in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+                        if (in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
                             $count += 1;
                         }
 
-                    } else if($filter === 'absent'){
+                    } else if ($filter === 'absent') {
 
                         $temp = array();
 
@@ -840,12 +830,12 @@ class AgentScheduleRepository extends BaseRepository
                         $value[$count_attr] = (count($value[$count_attr]) > 0) ? 0 : 1;
 
                         foreach ($dates as $filtered_date) {
-                            if(Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
+                            if (Carbon::parse($filtered_date->format('Y-m-d'))->equalTo($date)) {
                                 $count += $value[$count_attr];
                             }
                         }
 
-                    } else if($filter === 'off-duty') {
+                    } else if ($filter === 'off-duty') {
 
                         $emp_sched = array();
 
@@ -861,28 +851,28 @@ class AgentScheduleRepository extends BaseRepository
                             }
                         }
 
-                        if(!in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+                        if (!in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
                             $count += 1;
                         }
-                        
+
                     } else {
 
                         $emp_sched = array();
-    
+
                         $start = Carbon::parse($value['start_event'])->format('Y-m-d');
-    
+
                         $end = Carbon::parse($value['end_event'])->format('Y-m-d');
-    
+
                         $periods = CarbonPeriod::create($start, $end);
-                        
+
                         foreach ($periods as $period) {
                             $emp_sched[] = $period->format('Y-m-d');
                         }
-    
-                        if(in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
+
+                        if (in_array(Carbon::parse($date)->format('Y-m-d'), $emp_sched)) {
                             $count += 1;
                         }
-    
+
                     }
                 }
 
@@ -890,63 +880,64 @@ class AgentScheduleRepository extends BaseRepository
             }
 
             $result = $sparkline;
-        } 
+        }
 
-        if(!$result) {
+        if (!$result) {
             $result = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         }
 
         return $result;
     }
 
-    public function workInfo($data, $option) {
+    public function workInfo($data, $option)
+    {
 
         $result = $this->user;
-        
+
         $meta_index = "agent_schedules";
 
         $sparkline = array();
 
         $parameters = array();
 
-        if($option === 'today') {
+        if ($option === 'today') {
 
             $title = "Today's Activity";
 
-            $data['relations'] = array('schedule' => function($query) {
+            $data['relations'] = array('schedule' => function ($query) {
                 $query->where('start_event', '<=', Carbon::now());
                 $query->where('end_event', '>=', Carbon::now());
             });
 
-        } else if($option === 'report') {
+        } else if ($option === 'report') {
 
-            if(isset($data['start']) && isset($data['end'])) {
+            if (isset($data['start']) && isset($data['end'])) {
 
-                $title = "Work Reports (".$data['start']." to ".$data['end'].")";
+                $title = "Work Reports (" . $data['start'] . " to " . $data['end'] . ")";
 
                 $parameters = [
                     'start' => $data['start'],
-                    'end' => $data['end']
+                    'end' => $data['end'],
                 ];
 
-                if(isset($data['userid'])) {
+                if (isset($data['userid'])) {
                     $parameters = [
                         'userid' => $data['userid'],
                         'start' => $data['start'],
-                        'end' => $data['end']
+                        'end' => $data['end'],
                     ];
 
                     $data['where'] = array([
-                        'target' => 'id', 
-                        'operator' => '=', 
-                        'value' => $data['userid']
+                        'target' => 'id',
+                        'operator' => '=',
+                        'value' => $data['userid'],
                     ]);
                 }
 
-                $data['relations'] = array('schedule' => function($query) use ($parameters){
+                $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);
                     $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
-    
+
                     $query->where('start_event', '>=', Carbon::parse($parameters['start']));
                     $query->where('end_event', '<', $end);
                 });
@@ -957,7 +948,7 @@ class AgentScheduleRepository extends BaseRepository
                     "title" => "Required parameters are not set.",
                     "meta" => [
                         $meta_index => null,
-                        "count" => null
+                        "count" => null,
                     ],
                     "parameters" => $parameters,
                 ]);
@@ -971,7 +962,7 @@ class AgentScheduleRepository extends BaseRepository
         $data['wherehas'] = array([
             'relation' => 'access',
             'target' => 'code',
-            'value' => 'representative_op'
+            'value' => 'representative_op',
         ]);
 
         $result = $this->fetchGeneric($data, $result);
@@ -982,7 +973,7 @@ class AgentScheduleRepository extends BaseRepository
                 "title" => "No activities found at the moment",
                 "meta" => [
                     $meta_index => $result,
-                    "count" => $result->count()
+                    "count" => $result->count(),
                 ],
                 "parameters" => $parameters,
             ]);
@@ -993,7 +984,7 @@ class AgentScheduleRepository extends BaseRepository
             "title" => $title,
             "meta" => [
                 $meta_index => $result,
-                "count"     => $result->count()
+                "count" => $result->count(),
             ],
             "parameters" => $parameters,
         ]);

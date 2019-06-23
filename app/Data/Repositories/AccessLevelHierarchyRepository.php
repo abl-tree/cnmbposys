@@ -1,21 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: DELL
- * Date: 06/05/2019
- * Time: 10:25 PM
- */
 
 namespace App\Data\Repositories;
 
-use App\Data\Repositories\BaseRepository;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\UserInfo;
+use App\Data\Repositories\BaseRepository;
 
 class AccessLevelHierarchyRepository extends BaseRepository
 {
     protected $access_level, $user_info;
-
 
     public function __construct(
         AccessLevelHierarchy $access_level,
@@ -33,7 +26,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
             // data validation
             if (!isset($data['parent_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Parent ID is not set.",
                 ]);
             }
@@ -41,7 +34,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
             // data validation
             if (!isset($data['child_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "Child ID is not set.",
                 ]);
             }
@@ -53,7 +46,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
         if (isset($data['parent_id'])) {
             if (!$this->user_info->find($data['parent_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "User is not available.",
                 ]);
             }
@@ -62,7 +55,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
         if (isset($data['child_id'])) {
             if (!$this->user_info->find($data['child_id'])) {
                 return $this->setResponse([
-                    'code'  => 500,
+                    'code' => 500,
                     'title' => "User is not available.",
                 ]);
             }
@@ -77,17 +70,17 @@ class AccessLevelHierarchyRepository extends BaseRepository
 
         if (!$acc_level) {
             return $this->setResponse([
-                'code'  => 404,
+                'code' => 404,
                 'title' => "Access level not found.",
             ]);
         }
 
         if (!$acc_level->save($data)) {
             return $this->setResponse([
-                "code"        => 500,
-                "title"       => "Data Validation Error.",
+                "code" => 500,
+                "title" => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
-                "meta"        => [
+                "meta" => [
                     "errors" => $acc_level->errors(),
                 ],
             ]);
@@ -98,7 +91,6 @@ class AccessLevelHierarchyRepository extends BaseRepository
             "title" => "Successfully defined an access level.",
             "parameters" => $acc_level,
         ]);
-
 
     }
 }

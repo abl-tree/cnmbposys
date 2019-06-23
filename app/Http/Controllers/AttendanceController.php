@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: DELL
- * Date: 10/04/2019
- * Time: 9:41 PM
- */
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
 use App\Data\Repositories\AttendanceRepository;
-
+use App\Http\Controllers\BaseController;
+use Illuminate\Http\Request;
 
 class AttendanceController extends BaseController
 {
@@ -19,7 +12,7 @@ class AttendanceController extends BaseController
 
     public function __construct(
         AttendanceRepository $attendanceRepository
-    ){
+    ) {
         $this->attendance_repo = $attendanceRepository;
     }
 
@@ -43,14 +36,14 @@ class AttendanceController extends BaseController
 
     public function delete(Request $request, $id)
     {
-        $data       = $request->all();
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Schedule ID is not set.",
             ]);
         }
@@ -73,7 +66,7 @@ class AttendanceController extends BaseController
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Attendance ID is invalid.",
             ]);
         }
