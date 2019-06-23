@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -46,6 +47,45 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        $skip = false;
+
+        if ($this->isHttpException($exception)) {
+            $skip = false;
+            $code = 500;
+            $message = "Unauthorized action.";
+
+            $statusCode = $exception->getStatusCode();
+
+            switch ($statusCode) {
+                case '404':
+                    $code = 404;
+                    $message = "Invalid endpoint.";
+                    break;
+            }
+
+            $response = response()->json([
+                "code" => $code,
+                "title" => $message,
+            ], $code);
+
+            $skip = true;
+        }
+
+        if ($exception instanceof AuthenticationException) {
+
+            $response = response()->json([
+                "code" => 401,
+                "title" => 'Unauthorized action.',
+                "description" => 'You do not have permission to access this endpoint. Please log in with proper credentials',
+            ], 401);
+
+            $skip = true;
+        }
+
+        if ($skip === true) {
+            return $response;
+        }
+
         return parent::render($request, $exception);
     }
 }
