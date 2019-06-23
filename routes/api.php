@@ -11,18 +11,19 @@ use Illuminate\Http\Request;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::group([
-    "prefix"    => "v1",
+    "prefix" => "v1",
+    "middleware" => "auth:api",
 ], function () {
 
     Route::group([
-        "prefix"    => "attendance",
+        "prefix" => "attendance",
     ], function () {
 
         Route::get("/", "AttendanceController@all");
@@ -37,7 +38,7 @@ Route::group([
     });
 
     Route::group([
-        "prefix"    => "schedules",
+        "prefix" => "schedules",
     ], function () {
 
         Route::get("/", "AgentScheduleController@all");
@@ -55,9 +56,8 @@ Route::group([
 
     });
 
-    
     Route::group([
-        "prefix"    => "request_schedules",
+        "prefix" => "request_schedules",
     ], function () {
 
         Route::get("/", "RequestScheduleController@all");
@@ -74,7 +74,7 @@ Route::group([
     });
 
     Route::group([
-        "prefix"    => "access_levels",
+        "prefix" => "access_levels",
     ], function () {
 
         //Route::get("/", "AgentController@all");
@@ -87,7 +87,7 @@ Route::group([
     });
 
     Route::group([
-        "prefix"    => "clusters",
+        "prefix" => "clusters",
     ], function () {
 
         //Route::get("/", "AgentController@all");
@@ -100,7 +100,7 @@ Route::group([
     });
 
     Route::group([
-        "prefix"    => "agents",
+        "prefix" => "agents",
     ], function () {
 
         Route::get("/", "AgentController@all");
@@ -113,7 +113,7 @@ Route::group([
     });
 
     Route::group([
-        "prefix"    => "events",
+        "prefix" => "events",
     ], function () {
 
         Route::get("/", "EventTitleController@all");
@@ -127,7 +127,7 @@ Route::group([
     });
 
     Route::group([
-        "prefix"    => "logs",
+        "prefix" => "logs",
     ], function () {
 
         Route::get("/", "LogsController@index");
@@ -136,7 +136,7 @@ Route::group([
     });
 
     Route::group([
-        "prefix"    => "reports",
+        "prefix" => "reports",
     ], function () {
 
         Route::get("/", "ReportsController@index");
@@ -147,13 +147,13 @@ Route::group([
         Route::get("all_users/{id}", "ReportsController@getAllUserUnder");
         Route::post("create", "ReportsController@create");
         Route::post('update/{ir_id}', 'ReportsController@update');
-        Route::post('delete/{ir_id}', 'ReportsController@delete');       
+        Route::post('delete/{ir_id}', 'ReportsController@delete');
         Route::post("user_response", "ReportsController@userResponse");
         Route::post('update_response/{id}', 'ReportsController@update_response');
     });
 
     Route::group([
-        "prefix"    => "sanction_type",
+        "prefix" => "sanction_type",
     ], function () {
 
         Route::get("select_sanction_types", "ReportsController@getSanctionType");
@@ -163,7 +163,7 @@ Route::group([
         Route::post("create", "ReportsController@addSanctionType");
     });
     Route::group([
-        "prefix"    => "sanction_level",
+        "prefix" => "sanction_level",
     ], function () {
         Route::get("select_sanction_levels", "ReportsController@getSanctionLevel");
         Route::get("sanction_levels", "ReportsController@getSanctionLevels");
@@ -172,8 +172,8 @@ Route::group([
         Route::post("create", "ReportsController@addSanctionLevel");
     });
 
-     Route::group([
-        "prefix"    => "users",
+    Route::group([
+        "prefix" => "users",
     ], function () {
 
         Route::get("/", "UserController@usersInfo");
@@ -201,7 +201,11 @@ Route::group([
 
 });
 
-
-Route::get("/", function(){ //test lang kung working
+Route::get("/", function () { //test lang kung working
     return 'ano yan kapatid?';
+});
+
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Unauthorized action. If error persists, contact bfjax5@gmail.com'], 404);
 });
