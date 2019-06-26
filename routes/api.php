@@ -177,12 +177,14 @@ Route::group([
     ], function () {
 
         Route::get("/", "UserController@usersInfo");
-        Route::get("/{id}", "UserController@userInfo");
+        Route::get("fetch/{id}", "UserController@userInfo");
         Route::get("cluster/{id}", "UserController@getCluster");
         Route::post("change_status", "UserController@updateStatus");
         Route::post("bulk_change_status", "UserController@bulkUpdateStatus");
         Route::post("create", "UserController@addUser");
         Route::post("update/{id}", "UserController@updateUser");
+        Route::get("search", "UserController@search");
+       
 
     });
 

@@ -54,6 +54,13 @@ class UserController extends BaseController
         return $this->absorb($this->user_info->usersInfo($data))->json();     
     }
 
+    public function search(Request $request)
+    {
+       
+        $data = $request->all();
+        return $this->absorb($this->user_info->search($data))->json();     
+    }
+
     public function addUser(Request $request)
     {
         $data = $request->all();

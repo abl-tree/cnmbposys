@@ -19,7 +19,7 @@ class UsersInfoRepository extends BaseRepository
 
     protected 
         $user_info,$user_datum,$user_status,$user_benefits,$user_infos,
-        $user,$access_level_hierarchy,$benefit_update,$hierarchy_update;
+        $user,$access_level_hierarchy,$benefit_update,$hierarchy_update,$no_sort;
 
     public function __construct(
         UsersData $user_info,
@@ -43,6 +43,7 @@ class UsersInfoRepository extends BaseRepository
         $this->select_users = $select_users;
         $this->user_benefits = $user_benefits;
         $this->access_level_hierarchy = $access_level_hierarchy;
+        
     } 
 
     public function usersInfo($data = [])
@@ -69,7 +70,7 @@ class UsersInfoRepository extends BaseRepository
         }
 
         $count_data = $data;
-        $data['relations'] = ["user_info", "accesslevel", "benefits"];        
+        $data['relations'] = ["user_info", "accesslevel", "benefits"];
         $count_data = $data;    
         $result = $this->fetchGeneric($data, $this->user_info);
 
@@ -622,6 +623,71 @@ class UsersInfoRepository extends BaseRepository
         
     }
 
+    public function search($data)
+    {
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+
+        $result = $this->user;
+
+        $meta_index = "users";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        $data['relations'] = ["user_info","user_logs","accesslevel"];     
+
+        // $data['where'] = [
+        //     [
+        //         "target" => "access_id",
+        //         "operator" => "=",
+        //         "value" => '17',
+        //     ],
+        // ];
+
+        if (isset($data['target'])) {
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'info.firstname';
+                    $data['target'][] = 'info.middlename';
+                    $data['target'][] = 'info.lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if ($result == null) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No user are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count_data['search'] = true;
+        $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully searched Users",
+            "meta" => [
+                $meta_index => $result,
+                "count" => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
 
 
       public function fetchUserLog($data = [])

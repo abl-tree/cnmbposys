@@ -166,12 +166,6 @@ class ReportsRepository extends BaseRepository
                     ]);
                 }
             }
-            if(!isset($data['auth_id'])){
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "No user was logged in.",
-                ]);
-            }
             if (isset($data['user_reports_id'])) {
                 $user_reports_id = $this->user_reports->find($data['user_reports_id']);
     
@@ -187,9 +181,10 @@ class ReportsRepository extends BaseRepository
         
             if (isset($data['id'])) {
                 $reports = $this->user_reports->find($data['id']);
-                $auth = $this->user->find($data['auth_id']);
+                $auth_id=auth()->user()->id;
+                $auth = $this->user->find($auth_id);
                 $logged_data = [
-                    "user_id" => $data['auth_id'],
+                    "user_id" => $auth_id,
                     "action" => "Update",
                     "affected_data" => $auth->full_name."[".$auth->access->name."] Updated the Incident Report filed by  ".$reports->issued_by->full_name."[".$reports->issued_by->position."] to ".$reports->issued_to->full_name."[".$reports->issued_to->position."]"
                 ];
@@ -245,8 +240,9 @@ class ReportsRepository extends BaseRepository
 
     public function deleteReport($data = [])
     {
-        $record = $this->user_reports->find($data['id']);   
-        $auth = $this->user->find($data['auth_id']);
+        $record = $this->user_reports->find($data['id']); 
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         if(!isset($auth)){
             return $this->setResponse([
                 'code'  => 500,
@@ -308,7 +304,8 @@ class ReportsRepository extends BaseRepository
     public function deleteStype($data = [])
     {
         $record = $this->sanction_type->find($data['id']);
-        $auth = $this->user->find($data['auth_id']);
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         if(!isset($auth)){
             return $this->setResponse([
                 'code'  => 500,
@@ -361,7 +358,8 @@ class ReportsRepository extends BaseRepository
     public function deleteSlevel($data = [])
     {
         $record = $this->sanction_level->find($data['id']);
-        $auth = $this->user->find($data['auth_id']);
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         if(!isset($auth)){
             return $this->setResponse([
                 'code'  => 500,
@@ -468,16 +466,11 @@ class ReportsRepository extends BaseRepository
 
      public function addSanctionType($data = [])
     {
-        $auth = $this->user->find($data['auth_id']);
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         $sanction;
         $param=null;
         $title;
-        if (!isset($data['auth_id'])) {
-            return $this->setResponse([
-                'code'  => 500,
-                'title' => "No user was logged in.",
-            ]);
-        }
         // data validation
         if (!isset($data['id'])) {
             if (!isset($data['type_number'])) {
@@ -554,7 +547,8 @@ class ReportsRepository extends BaseRepository
 
  public function addSanctionLevel($data = [])
     {
-        $auth = $this->user->find($data['auth_id']);
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         $sanction;
         $param=null;
         $title;
@@ -636,7 +630,8 @@ class ReportsRepository extends BaseRepository
     public function userResponse($data = [])
     {
         // data validation
-        $auth = $this->user->find($data['auth_id']);
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         $param = null;
         $title = null;
         if (!isset($data['user_response_id'])) {
