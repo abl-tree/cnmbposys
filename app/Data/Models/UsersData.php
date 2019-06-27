@@ -39,13 +39,23 @@ class UsersData extends BaseModel
         'user_info.firstname',
         'user_info.middlename',
         'user_info.lastname',
+        'user_info.p_email',
         'id',
         'uid',
         'email', 
         'password', 
         'access_id',
         'loginFlag',
-        'company_id'
+        'company_id',
+        'contract',
+        'accesslevel.name',
+        'user_info.gender',
+        'user_info.status',
+        'user_info.type',
+        'user_info.address',
+        'user_info.birthdate',
+        'user_info.hired_date',
+        'user_info.separation_date',
     ];
 
     /**
