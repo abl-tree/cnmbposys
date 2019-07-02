@@ -178,8 +178,10 @@ Route::group([
 
         Route::get("/", "UserController@usersInfo");
         Route::get("fetch/{id}", "UserController@userInfo");
+        Route::post("status_list", "UserController@statusList");
         Route::get("cluster/{id}", "UserController@getCluster");
         Route::post("change_status", "UserController@updateStatus");
+        Route::post("add_user_status", "UserController@addStatus");
         Route::post("bulk_change_status", "UserController@bulkUpdateStatus");
         Route::post("create", "UserController@addUser");
         Route::post("update/{id}", "UserController@updateUser");

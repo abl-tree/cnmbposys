@@ -14,16 +14,20 @@ use Mail;
 use Auth;
 use App\Http\Controllers\BaseController;
 use App\Data\Repositories\UsersInfoRepository;
+use App\Data\Repositories\UserStatusRepository;
 
 class UserController extends BaseController
 {
 
     protected $user_info;
+    protected $user_status;
 
     public function __construct(
-        UsersInfoRepository $user_info
+        UsersInfoRepository $user_info,
+        UserStatusRepository $user_status
     ){
         $this->user_info = $user_info;
+        $this->user_status = $user_status;
     }
 
     /**
@@ -77,6 +81,8 @@ class UserController extends BaseController
         return $this->absorb($this->user_info->addUser($data))->json();     
     }
 
+
+
     public function updateUser(Request $request,$id)
     {
         
@@ -99,6 +105,16 @@ class UserController extends BaseController
     {       
         $data = $request->all();
         return $this->absorb($this->user_info->updateStatus($data))->json();
+    }
+    public function addStatus(Request $request)
+    {       
+        $data = $request->all();
+        return $this->absorb($this->user_status->addStatus($data))->json();
+    }
+    public function statusList(Request $request)
+    {       
+        $data = $request->all();
+        return $this->absorb($this->user_status->getStatus($data))->json();
     }
     public function bulkUpdateStatus(Request $request)
     {       
