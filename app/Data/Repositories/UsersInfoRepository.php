@@ -59,7 +59,7 @@ class UsersInfoRepository extends BaseRepository
             is_numeric($data['id'])) {
 
             $meta_index     = "metadata";
-            $data['single'] = true;
+            $data['single'] = false;
             $data['where']  = [
                 [
                     "target"   => "id",
@@ -72,6 +72,172 @@ class UsersInfoRepository extends BaseRepository
 
         }
 
+        if (isset($data['target'])) {
+            $result = $this->user_info;
+            $data['relations'] = ["user_info","accesslevel","benefits"];     
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'user_info.firstname';
+                    $data['target'][] = 'user_info.middlename';
+                    $data['target'][] = 'user_info.lastname';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "gender")) {
+                    $data['target'][] = 'user_info.gender';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "position")) {
+                    $data['target'][] = 'accesslevel.name';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "p_email")) {
+                    $data['target'][] = 'user_info.p_email';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "status")) {
+                    $data['target'][] = 'user_info.status';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "type")) {
+                    $data['target'][] = 'user_info.type';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "address")) {
+                    $data['target'][] = 'user_info.address';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "birthdate")) {
+                    $data['target'][] = 'user_info.birthdate';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "hired_date")) {
+                $count=0;
+                $array=json_decode($data['query'], true );
+                $general=[];
+                $start    = new DateTime($array[0]);
+                $end      = (new DateTime($array[1]))->modify('+1 day');
+                $interval = new DateInterval('P1D');
+                $period   = new DatePeriod($start, $interval, $end);
+                foreach ($period as $dt) {
+                   // array_push($date,$dt->format("Y-m-d"));
+                    $data['query'] = $dt->format("Y-m-d");
+                    $data['target'][] = 'user_info.hired_date';
+                    unset($data['target'][$index]);
+
+                   // $count_data = $data;
+                    $results = $this->genericSearch($data, $result)->get()->all();
+                    if($results){
+                        array_push($general,$results);
+                         $count+=1;
+                    }
+                   
+                }  
+                $new = [];
+                while($item = array_shift($general)){
+                    array_push($new, ...$item);
+                }           
+                    if ($result == null) {
+                        return $this->setResponse([
+                            'code' => 404,
+                            'title' => "No user are found",
+                            "meta" => [
+                                $meta_index => $new,
+                            ],
+                            "parameters" => $parameters,
+                        ]);
+                    }
+            
+                    $count_data['search'] = true;
+                   // $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+            
+                    return $this->setResponse([
+                        "code" => 200,
+                        "title" => "Successfully searched Users",
+                        "meta" => [
+                            $meta_index => $new,
+                            "count" => $count,
+                        ],
+                        "parameters" => $parameters,
+                    ]);
+                }
+                if (str_contains($column, "separation_date")) {
+                    $count=0;
+                    $array=json_decode($data['query'], true );
+                    $general=[];
+                    $start    = new DateTime($array[0]);
+                    $end      = (new DateTime($array[1]))->modify('+1 day');
+                    $interval = new DateInterval('P1D');
+                    $period   = new DatePeriod($start, $interval, $end);
+                    foreach ($period as $dt) {
+                       // array_push($date,$dt->format("Y-m-d"));
+                        $data['query'] = $dt->format("Y-m-d");
+                        $data['target'][] = 'user_info.separation_date';
+                        unset($data['target'][$index]);
+    
+                       // $count_data = $data;
+                        $results = $this->genericSearch($data, $result)->get()->all();
+                        if($results){
+                            array_push($general,$results);
+                             $count+=1;
+                        }
+                       
+                    }  
+                    $new = [];
+                    while($item = array_shift($general)){
+                        array_push($new, ...$item);
+                    }           
+                        if ($result == null) {
+                            return $this->setResponse([
+                                'code' => 404,
+                                'title' => "No user are found",
+                                "meta" => [
+                                    $meta_index => $new,
+                                ],
+                                "parameters" => $parameters,
+                            ]);
+                        }
+                
+                        $count_data['search'] = true;
+                       // $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+                
+                        return $this->setResponse([
+                            "code" => 200,
+                            "title" => "Successfully searched Users",
+                            "meta" => [
+                                $meta_index => $new,
+                                "count" => $count,
+                            ],
+                            "parameters" => $parameters,
+                        ]);
+                    }
+            }
+            $count_data = $data;
+            $result = $this->genericSearch($data, $result)->get()->all();
+    
+            if ($result == null) {
+                return $this->setResponse([
+                    'code' => 404,
+                    'title' => "No user are found",
+                    "meta" => [
+                        $meta_index => $result,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+    
+            $count_data['search'] = true;
+            $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+    
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "Successfully searched Users",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $count,
+                ],
+                "parameters" => $parameters,
+            ]);   
+        }
         $count_data = $data;
         $data['relations'] = ["user_info", "accesslevel", "benefits"];
         $count_data = $data;    
@@ -92,7 +258,7 @@ class UsersInfoRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully retrieved users Information",
+            "title"      => "Successfully retrieved users Informations",
             "description"=>"UserInfo",
             "meta"       => [
                 $meta_index => $result,

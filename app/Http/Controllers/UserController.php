@@ -14,20 +14,23 @@ use Mail;
 use Auth;
 use App\Http\Controllers\BaseController;
 use App\Data\Repositories\UsersInfoRepository;
+use App\Data\Repositories\AccessLevelHierarchyRepository;
 use App\Data\Repositories\UserStatusRepository;
 
 class UserController extends BaseController
 {
 
     protected $user_info;
-    protected $user_status;
+    protected $user_status,$access;
 
     public function __construct(
         UsersInfoRepository $user_info,
-        UserStatusRepository $user_status
+        UserStatusRepository $user_status,
+        AccessLevelHierarchyRepository $access
     ){
         $this->user_info = $user_info;
         $this->user_status = $user_status;
+        $this->access = $access;
     }
 
     /**
@@ -56,6 +59,16 @@ class UserController extends BaseController
     {
         $data = $request->all();
         return $this->absorb($this->user_info->usersInfo($data))->json();     
+    }
+    public function usersInfoLogged(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_info->usersInfo($data))->json();     
+    }
+    public function accessLevel(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->accessLevel($data))->json();     
     }
 
     public function search(Request $request)

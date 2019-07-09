@@ -178,6 +178,8 @@ Route::group([
 
         Route::get("/", "UserController@usersInfo");
         Route::get("fetch/{id}", "UserController@userInfo");
+        Route::get("logged_user", "UserController@userInfoLogged");
+        Route::get("access_levels", "UserController@accessLevel");
         Route::post("status_list", "UserController@statusList");
         Route::get("cluster/{id}", "UserController@getCluster");
         Route::post("change_status", "UserController@updateStatus");
@@ -189,6 +191,7 @@ Route::group([
        
 
     });
+    
 
     Route::group([
         "prefix" => "notifications",

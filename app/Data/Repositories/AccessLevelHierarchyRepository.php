@@ -4,17 +4,20 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\UserInfo;
+use App\Data\Models\AccessLevel;
 use App\Data\Repositories\BaseRepository;
 
 class AccessLevelHierarchyRepository extends BaseRepository
 {
-    protected $access_level, $user_info;
+    protected $access_level, $user_info,$access;
 
     public function __construct(
         AccessLevelHierarchy $access_level,
+        AccessLevel $access,
         UserInfo $user_info
     ) {
         $this->access_level = $access_level;
+        $this->access = $access;
         $this->user_info = $user_info;
     }
 
@@ -92,5 +95,60 @@ class AccessLevelHierarchyRepository extends BaseRepository
             "parameters" => $acc_level,
         ]);
 
+    }
+
+    public function accessLevel($data = [])
+    {
+        $meta_index = "metadata";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "metadata";
+            $data['single'] = true;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['id'] = $data['id'];
+
+        }
+
+        $count_data = $data;
+       // $data['relations'] = ["user_info", "accesslevel", "benefits"];
+        $count_data = $data;    
+        $result = $this->fetchGeneric($data, $this->access);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No List are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->access->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Access Level Information",
+            "description"=>"UserInfo",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "count"     => $count,
+            "parameters" => $parameters,
+            
+        ]);
     }
 }
