@@ -16,6 +16,7 @@ class UsersData extends BaseModel
     protected $table = 'users';
     protected $appends = [
        'full_name','lname','fname','mname','position','address','contact','gender','image','suffix','status','type','birthdate','parent_id','child_id','crypted_id','head_name','status_color',
+       'hired_date','separation_date'
     ];
 
     public $status_color = [
@@ -240,6 +241,23 @@ class UsersData extends BaseModel
         $name = null;
         if(isset($this->user_info)){
             $name = $this->user_info->firstname." ".$this->user_info->middlename." ".$this->user_info->lastname." ".$this->user_info->suffix;
+        }
+        
+        return $name;
+    }
+
+    public function getHireddateAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->hired_date;
+        }
+        
+        return $name;
+    }
+    public function getSeparationdateAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->separation_date;
         }
         
         return $name;

@@ -420,15 +420,28 @@ class UsersInfoRepository extends BaseRepository
                 $url= asset($file);
                 $user_information['image_url']= $url;
             }
+            $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
             $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
-            $user_informations->save();
+            if (!$user_informations->save($data)) {
+                $url = $user_informations->image_url; 
+                $file_name = basename($url);
+                Storage::delete('images/'.$file_name);
+                return $this->setResponse([
+                    "code"        => 500,
+                    "title"       => "Data Validation Error.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta"        => [
+                        "errors" => $user_informations->errors(),
+                    ],
+                ]);
+            }         
             $user_id= $user_informations->id;
             $hierarchy['child_id']= $user_id;
             if (isset($data['parent_id'])) {
                 $hierarchy['parent_id']= $data['parent_id'];
             }
            $user_hierarchy= $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($hierarchy));
-           $user_hierarchy->save();
+          
            $user_data['uid']= $user_id;
             if (isset($data['email'])) {
                 $user_data['email']= $data['email'];
@@ -474,8 +487,55 @@ class UsersInfoRepository extends BaseRepository
             $status_logs['separation_date']=$data['separation_date'];
             }
             $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
-            $status->save(); 
-            $action="Created";        
+            $action="Created";  
+            if (!$status->save($data)) {
+                $user_info_delete = $this->user_infos->find($user_id);    
+                $user_info_delete->forceDelete();
+                $url = $user_info_delete->image_url; 
+                        $file_name = basename($url);
+                        Storage::delete('images/'.$file_name);
+                       
+                return $this->setResponse([
+                    "code"        => 500,
+                    "title"       => "Data Validation Error.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta"        => [
+                        "errors" => $status->errors(),
+                    ],
+                ]);
+            }
+            if (!$user_hierarchy->save($data)) {
+                $user_info_delete = $this->user_infos->find($user_id);    
+                $user_info_delete->forceDelete();
+                $url = $user_info_delete->image_url; 
+                $file_name = basename($url);
+                Storage::delete('images/'.$file_name);
+                return $this->setResponse([
+                    "code"        => 500,
+                    "title"       => "Data Validation Error.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta"        => [
+                        "errors" => $user_hierarchy->errors(),
+                    ],
+                ]);
+            }   
+            if (!$users_data->save($data)) {
+                $user_id;
+                $user_info_delete = $this->user_infos->find($user_id);    
+                $user_info_delete->forceDelete();
+                $url = $user_info_delete->image_url; 
+                $file_name = basename($url);
+                Storage::delete('images/'.$file_name);
+                return $this->setResponse([
+                    "code"        => 500,
+                    "title"       => "Data Validation Error.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta"        => [
+                        "errors" => $users_data->errors(),
+                    ],
+                ]);
+            }     
+           
         }else{
             if (isset($data['id'])) {
                 $user_information = $this->user_infos->find($data['id']);
