@@ -27,7 +27,6 @@ class UserStatusRepository extends BaseRepository
         $meta_index = "metadata";
         $parameters = [];
         $count      = 0;
-
         if (isset($data['type'])) {
 
             $meta_index     = "metadata";

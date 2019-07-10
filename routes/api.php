@@ -180,7 +180,7 @@ Route::group([
         Route::get("fetch/{id}", "UserController@userInfo");
         Route::get("logged_user", "UserController@userInfoLogged");
         Route::get("access_levels", "UserController@accessLevel");
-        Route::post("status_list", "UserController@statusList");
+        Route::get("status_list", "UserController@statusList");
         Route::get("cluster/{id}", "UserController@getCluster");
         Route::post("change_status", "UserController@updateStatus");
         Route::post("add_user_status", "UserController@addStatus");
