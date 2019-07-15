@@ -15,6 +15,7 @@ use App\Data\Repositories\BaseRepository;
 use DateTime;
 use DateInterval;
 use DatePeriod;
+use ArrayObject;
 use Illuminate\Support\Facades\Storage;
 
 class UsersInfoRepository extends BaseRepository
@@ -324,6 +325,9 @@ class UsersInfoRepository extends BaseRepository
     public function addUser($data = [])
     {
         // data validation
+      //  $arrayobj = new stdClass();
+        $error_array = new ArrayObject();
+        $error_count=0;
         $action=null;
         $user_datani=[];
         $user_information = [];
@@ -333,55 +337,66 @@ class UsersInfoRepository extends BaseRepository
         $benefits=[];
         if (!isset($data['id'])) {
             if (!isset($data['firstname'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "First Name is not set.",
-                ]);
+               $error_array->offsetSet('firstname', "The username field is required.");
+               $error_count++;
             }else{
                 $user_information['firstname']= $data['firstname'];
             }
             if (!isset($data['middlename'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "middlename is not set.",
-                ]);
+                $error_array->offsetSet('middlename', "The middlename field is required.");
+                $error_count++;
+                // return $this->setResponse([
+                //     'code'  => 500,
+                //     'title' => $arrayobj,
+                //     'meta' => $error_count,
+                // ]);
             }else{
                 $user_information['middlename']= $data['middlename'];
             }
             if (!isset($data['lastname'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "lastname is not set.",
-                ]);
+                $error_array->offsetSet('lastname', "The lastname field is required.");
+                $error_count++;
+                // return $this->setResponse([
+                //     'code'  => 500,
+                //     'title' => "lastname is not set.",
+                // ]);
             }else{
                 $user_information['lastname']= $data['lastname'];
             }
             if (!isset($data['birthdate'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "birthdate is not set.",
-                ]);
+                $error_array->offsetSet('birthdate', "The birthdate field is required.");
+                $error_count++;
+                // return $this->setResponse([
+                //     'code'  => 500,
+                //     'title' => "birthdate is not set.",
+                // ]);
             }else{
                 $user_information['birthdate']= $data['birthdate'];
             }
             if (!isset($data['gender'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "gender is not set.",
-                ]);
+                $error_array->offsetSet('gender', "The gender field is required.");
+                $error_count++;
+                // return $this->setResponse([
+                //     'code'  => 500,
+                //     'title' => "gender is not set.",
+                // ]);
             }else{
                 $user_information['gender']= $data['gender'];
             }    
             if (!isset($data['email'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "Email is not set.",
-                ]);
+                $error_array->offsetSet('email', "The email field is required.");
+                $error_count++;
+                // return $this->setResponse([
+                //     'code'  => 500,
+                //     'title' => "Email is not set.",
+                // ]);
             }if (!isset($data['access_id'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "access_id is not set.",
-                ]);
+                $error_array->offsetSet('access_id', "The access field is required.");
+                $error_count++;
+                // return $this->setResponse([
+                //     'code'  => 500,
+                //     'title' => "access_id is not set.",
+                // ]);
             }
 
             if (isset($data['contact_number'])) {
@@ -393,11 +408,21 @@ class UsersInfoRepository extends BaseRepository
             if (isset($data['salary_rate'])) {
                 $user_information['salary_rate']= $data['salary_rate'];
             }
-            if (isset($data['status'])) {
+            if (!isset($data['status'])) {
+                $error_array->offsetSet('employee_status', "Please define employee status.");
+                $error_count++;
+            }else{
                 $user_information['status']= $data['status'];
             }
-            if (isset($data['type'])) {
+            if (!isset($data['type'])) {
+                $error_array->offsetSet('employee_type', "Please define employee status type.");
+                $error_count++;
+            }else{
                 $user_information['type']= $data['type'];
+            }
+            if (!isset($data['hired_date'])) {
+                $error_array->offsetSet('hired_date', "Hired date must be provided.");
+                $error_count++;
             }
             if (isset($data['hired_date'])) {
                 $user_information['hired_date']= $data['hired_date'];
@@ -420,21 +445,57 @@ class UsersInfoRepository extends BaseRepository
                 $url= asset($file);
                 $user_information['image_url']= $url;
             }
-            $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
-            $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
-            if (!$user_informations->save($data)) {
-                $url = $user_informations->image_url; 
-                $file_name = basename($url);
-                Storage::delete('images/'.$file_name);
+            // if($error_count>0){
+            //     return $this->setResponse([
+            //         "code"        => 500,
+            //         "title"       => "Data Validation Error.",
+            //         "description" => "An error was detected on one of the inputted data.",
+            //         "meta"        => [
+            //             "errors" => $arrayobj,
+            //         ],
+            //     ]);
+            // }
+            if(isset($data['firstname'],$data['middlename'],$data['lastname'])){
+                $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
+                $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
+                if (!$user_informations->save($data)) {
+                    $url = $user_informations->image_url; 
+                    $file_name = basename($url);
+                    Storage::delete('images/'.$file_name);
+                    if (strpos($user_informations->errors(), 'user_infos_excel_hash_unique') !== false) {
+                        $error_array->offsetSet('excelhash', "Full Name is already in Use. Please use another Name.");
+                        $error_count++;
+                        // return $this->setResponse([
+                        //     "code"        => 500,
+                        //     "title"       => "Data Validation Error.",
+                        //     "description" => "An error was detected on one of the inputted data.",
+                        //     "meta"        => [
+                        //         "errors" => "Excel Hash Error",
+                        //     ],
+                        // ]);
+                    }else{
+                        return $this->setResponse([
+                            "code"        => 500,
+                            "title"       => "Data Validation Error.",
+                            "description" => "An error was detected on one of the inputted data.",
+                            "meta"        => [
+                                "errors" => $user_informations->errors(),
+                            ],
+                        ]);
+                    }
+                }      
+            }
+            
+            if($error_count>0){
                 return $this->setResponse([
                     "code"        => 500,
                     "title"       => "Data Validation Error.",
                     "description" => "An error was detected on one of the inputted data.",
                     "meta"        => [
-                        "errors" => $user_informations->errors(),
+                        "errors" => $error_array,
                     ],
                 ]);
-            }         
+            }   
             $user_id= $user_informations->id;
             $hierarchy['child_id']= $user_id;
             if (isset($data['parent_id'])) {
@@ -448,6 +509,10 @@ class UsersInfoRepository extends BaseRepository
             }
             if (isset($data['access_id'])) {
                 $user_data['access_id']= $data['access_id'];
+            }
+            if (!isset($data['company_id'])) {
+                $error_array->offsetSet('company_id', "Company ID must be provided.");
+                $error_count++;
             }
             if (isset($data['company_id'])) {
                 $user_data['company_id']= $data['company_id'];
@@ -492,17 +557,18 @@ class UsersInfoRepository extends BaseRepository
                 $user_info_delete = $this->user_infos->find($user_id);    
                 $user_info_delete->forceDelete();
                 $url = $user_info_delete->image_url; 
-                        $file_name = basename($url);
-                        Storage::delete('images/'.$file_name);
-                       
-                return $this->setResponse([
-                    "code"        => 500,
-                    "title"       => "Data Validation Error.",
-                    "description" => "An error was detected on one of the inputted data.",
-                    "meta"        => [
-                        "errors" => $status->errors(),
-                    ],
-                ]);
+                $file_name = basename($url);
+                Storage::delete('images/'.$file_name);
+                $error_array->offsetSet('status_save', "Saving Error on Status");
+                $error_count++;       
+                // return $this->setResponse([
+                //     "code"        => 500,
+                //     "title"       => "Data Validation Error.",
+                //     "description" => "An error was detected on one of the inputted data.",
+                //     "meta"        => [
+                //         "errors" => $status->errors(),
+                //     ],
+                // ]);
             }
             if (!$user_hierarchy->save($data)) {
                 $user_info_delete = $this->user_infos->find($user_id);    
@@ -510,14 +576,16 @@ class UsersInfoRepository extends BaseRepository
                 $url = $user_info_delete->image_url; 
                 $file_name = basename($url);
                 Storage::delete('images/'.$file_name);
-                return $this->setResponse([
-                    "code"        => 500,
-                    "title"       => "Data Validation Error.",
-                    "description" => "An error was detected on one of the inputted data.",
-                    "meta"        => [
-                        "errors" => $user_hierarchy->errors(),
-                    ],
-                ]);
+                $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
+                $error_count++;  
+                // return $this->setResponse([
+                //     "code"        => 500,
+                //     "title"       => "Data Validation Error.",
+                //     "description" => "An error was detected on one of the inputted data.",
+                //     "meta"        => [
+                //         "errors" => $user_hierarchy->errors(),
+                //     ],
+                // ]);
             }   
             if (!$users_data->save($data)) {
                 $user_id;
@@ -526,18 +594,21 @@ class UsersInfoRepository extends BaseRepository
                 $url = $user_info_delete->image_url; 
                 $file_name = basename($url);
                 Storage::delete('images/'.$file_name);
-                return $this->setResponse([
-                    "code"        => 500,
-                    "title"       => "Data Validation Error.",
-                    "description" => "An error was detected on one of the inputted data.",
-                    "meta"        => [
-                        "errors" => $users_data->errors(),
-                    ],
-                ]);
-            }     
-           
-        }else{
-            if (isset($data['id'])) {
+                if (strpos($users_data->errors(), 'users_email_unique') !== false) {
+                    $error_array->offsetSet('duplicate_email', "Email is already in use. Please use another valid email.");
+                    $error_count++;  
+                    // return $this->setResponse([
+                    //     "code"        => 500,
+                    //     "title"       => "Data Validation Error.",
+                    //     "description" => "An error was detected on one of the inputted data.",
+                    //     "meta"        => [
+                    //         "errors" => "Duplicate Email",
+                    //     ],
+                    // ]);
+                }
+               
+            }           
+        }else if (isset($data['id'])) {
                 $user_information = $this->user_infos->find($data['id']);
                 if($user_information){
                 if (isset($data['firstname'])) {
@@ -670,7 +741,7 @@ class UsersInfoRepository extends BaseRepository
                
                 }
             }
-        }
+        
             // if (isset($data['id'])) {
             //     $Users = $this->users->find($data['id']);
             //     $action="Updated";
@@ -683,13 +754,23 @@ class UsersInfoRepository extends BaseRepository
             
            
 
-        if (!$users_data->save($data)) {
+        // if (!$users_data->save($data)) {
+        //     return $this->setResponse([
+        //         "code"        => 500,
+        //         "title"       => "Data Validation Error.",
+        //         "description" => "An error was detected on one of the inputted data.",
+        //         "meta"        => [
+        //             "errors" => $users_data->errors(),
+        //         ],
+        //     ]);
+        // }
+        if($error_count>0){
             return $this->setResponse([
                 "code"        => 500,
                 "title"       => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
                 "meta"        => [
-                    "errors" => $users_data->errors(),
+                    "errors" => $error_array,
                 ],
             ]);
         }
