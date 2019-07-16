@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterExcelHash extends Migration
+class CreateOvertimeSchedulesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class AlterExcelHash extends Migration
      */
     public function up()
     {
-        Schema::table('user_infos', function($table) {
-            $table->dropColumn('excel_hash');
-         });
-       
+        Schema::create('overtime_schedules', function (Blueprint $table) {
+            $table->increments('id');
+            $table->dateTime('start_event');
+            $table->dateTime('end_event');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -26,8 +28,6 @@ class AlterExcelHash extends Migration
      */
     public function down()
     {
-        Schema::table('user_infos', function($table) {
-            $table->string('excel_hash')->nullable();
-         });
+        Schema::dropIfExists('overtime_schedules');
     }
 }

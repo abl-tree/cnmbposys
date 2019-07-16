@@ -53,7 +53,7 @@ class AgentSchedule extends BaseModel
         $sched_hours = $sched_end->diffInSeconds($sched_start);
         $day = "";
 
-        if($sched_hours > 86400) {
+        if($sched_hours >= 86400) {
             $day = (int) ($sched_hours/86400) . 'd ';
         }
 
@@ -95,15 +95,15 @@ class AgentSchedule extends BaseModel
             $rendered_time_billable = $rendered_time;
         }
 
-        if($rendered_time > 86400) {
+        if($rendered_time >= 86400) {
             $day = (int) ($rendered_time/86400) . 'd ';
         }
 
-        if($rendered_time_billable > 86400) {
+        if($rendered_time_billable >= 86400) {
             $day_billable = (int) ($rendered_time_billable/86400) . 'd ';
         }
 
-        if($rendered_time_nonbillable > 86400) {
+        if($rendered_time_nonbillable >= 86400) {
             $day_nonbillable = (int) ($rendered_time_nonbillable/86400) . 'd ';
         }
 
@@ -209,7 +209,7 @@ class AgentSchedule extends BaseModel
                 }
 
                 if($key + 1 >= 3) {
-                    if($break_duration > 86400) {
+                    if($break_duration >= 86400) {
                         $day = (int) ($break_duration/86400) . 'd ';
                     }
                     
@@ -220,7 +220,7 @@ class AgentSchedule extends BaseModel
             
             $data['remaining'] -= ($this->attendances->count() - 1);
             
-            if($break_duration > 86400) {
+            if($break_duration >= 86400) {
                 $day = (int) ($break_duration/86400) . 'd ';
             }
             
@@ -259,17 +259,23 @@ class AgentSchedule extends BaseModel
 
         $day = "";
 
-        if($overtime_nb > 86400) {
+        $otDay = "";
+
+        if($overtime_nb >= 86400) {
             $day = (int) ($overtime_nb/86400) . 'd ';
+        }
+        
+        if($overtime >= 86400) {
+            $otDay = (int) ($overtime/86400) . 'd ';
         }
 
         return array(
             'nonbillable' => array(
-                'time' => gmdate('H:i:s', $overtime_nb), 
+                'time' => $day.gmdate('H:i:s', $overtime_nb), 
                 'second' => $overtime_nb   
             ),
             'billable' => array(
-                'time' => gmdate('H:i:s', $overtime), 
+                'time' => $otDay.gmdate('H:i:s', $overtime), 
                 'second' => $overtime   
             )
         );
