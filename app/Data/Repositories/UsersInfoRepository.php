@@ -91,6 +91,41 @@ class UsersInfoRepository extends BaseRepository
                     $data['target'][] = 'accesslevel.name';
                     unset($data['target'][$index]);
                 }
+                if (str_contains($column, "access_id")) {
+                    $array=[];
+                    $countresult=0;
+                    $data['target'][] = 'access_id';
+                    unset($data['target'][$index]);
+                    $results = $this->genericSearch($data, $result)->get()->all();
+                    foreach ($results as $key => $value) {
+                        if($value->access_id==$data['query']){
+                            array_push($array,$value);
+                            $countresult+=1;
+                        }                            
+                    }
+                    if($array!=[]){
+                        return $this->setResponse([
+                            "code" => 200,
+                            "title" => "Successfully searched Users",
+                            "meta" => [
+                                $meta_index => $array,
+                                "count" => $countresult,
+                            ],
+                            "parameters" => $parameters,
+                        ]);
+                    }else{
+                        return $this->setResponse([
+                            'code' => 404,
+                            'title' => "No user are found",
+                            "meta" => [
+                                $meta_index => $array,
+                            ],
+                            "parameters" => $parameters,
+                        ]);
+                    }
+                  
+                  
+                }
                 if (str_contains($column, "p_email")) {
                     $data['target'][] = 'user_info.p_email';
                     unset($data['target'][$index]);
@@ -325,7 +360,6 @@ class UsersInfoRepository extends BaseRepository
     public function addUser($data = [])
     {
         // data validation
-      //  $arrayobj = new stdClass();
         $error_array = new ArrayObject();
         $error_count=0;
         $action=null;
@@ -345,64 +379,42 @@ class UsersInfoRepository extends BaseRepository
             if (!isset($data['middlename'])) {
                 $error_array->offsetSet('middlename', "The middlename field is required.");
                 $error_count++;
-                // return $this->setResponse([
-                //     'code'  => 500,
-                //     'title' => $arrayobj,
-                //     'meta' => $error_count,
-                // ]);
             }else{
                 $user_information['middlename']= $data['middlename'];
             }
             if (!isset($data['lastname'])) {
                 $error_array->offsetSet('lastname', "The lastname field is required.");
                 $error_count++;
-                // return $this->setResponse([
-                //     'code'  => 500,
-                //     'title' => "lastname is not set.",
-                // ]);
             }else{
                 $user_information['lastname']= $data['lastname'];
             }
             if (!isset($data['birthdate'])) {
                 $error_array->offsetSet('birthdate', "The birthdate field is required.");
                 $error_count++;
-                // return $this->setResponse([
-                //     'code'  => 500,
-                //     'title' => "birthdate is not set.",
-                // ]);
             }else{
                 $user_information['birthdate']= $data['birthdate'];
             }
             if (!isset($data['gender'])) {
                 $error_array->offsetSet('gender', "The gender field is required.");
                 $error_count++;
-                // return $this->setResponse([
-                //     'code'  => 500,
-                //     'title' => "gender is not set.",
-                // ]);
             }else{
                 $user_information['gender']= $data['gender'];
             }    
             if (!isset($data['email'])) {
                 $error_array->offsetSet('email', "The email field is required.");
                 $error_count++;
-                // return $this->setResponse([
-                //     'code'  => 500,
-                //     'title' => "Email is not set.",
-                // ]);
             }if (!isset($data['access_id'])) {
                 $error_array->offsetSet('access_id', "The access field is required.");
                 $error_count++;
-                // return $this->setResponse([
-                //     'code'  => 500,
-                //     'title' => "access_id is not set.",
-                // ]);
             }
 
             if (isset($data['contact_number'])) {
                 $user_information['contact_number']= $data['contact_number'];
             }
-            if (isset($data['address'])) {
+            if (!isset($data['address'])) {
+                $error_array->offsetSet('address', "The address field is required.");
+                $error_count++;
+            }else{
                 $user_information['address']= $data['address'];
             }
             if (isset($data['salary_rate'])) {
@@ -445,16 +457,6 @@ class UsersInfoRepository extends BaseRepository
                 $url= asset($file);
                 $user_information['image_url']= $url;
             }
-            // if($error_count>0){
-            //     return $this->setResponse([
-            //         "code"        => 500,
-            //         "title"       => "Data Validation Error.",
-            //         "description" => "An error was detected on one of the inputted data.",
-            //         "meta"        => [
-            //             "errors" => $arrayobj,
-            //         ],
-            //     ]);
-            // }
             if(isset($data['firstname'],$data['middlename'],$data['lastname'])){
                 $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
                 $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
@@ -465,14 +467,6 @@ class UsersInfoRepository extends BaseRepository
                     if (strpos($user_informations->errors(), 'user_infos_excel_hash_unique') !== false) {
                         $error_array->offsetSet('excelhash', "Full Name is already in Use. Please use another Name.");
                         $error_count++;
-                        // return $this->setResponse([
-                        //     "code"        => 500,
-                        //     "title"       => "Data Validation Error.",
-                        //     "description" => "An error was detected on one of the inputted data.",
-                        //     "meta"        => [
-                        //         "errors" => "Excel Hash Error",
-                        //     ],
-                        // ]);
                     }else{
                         return $this->setResponse([
                             "code"        => 500,
@@ -523,18 +517,6 @@ class UsersInfoRepository extends BaseRepository
             $user_data['password'] = bcrypt(strtolower($data['firstname'].$data['lastname']));
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
             $users_data;
-
-            $benefits=[];
-            $ben=[];
-            $array=json_decode($data['benefits'], true );
-            foreach($array as $key => $value ){
-                    $ben['benefit_id'] = $key+1;
-                    $ben['id_number'] = $value;
-                    $ben['user_info_id'] = $user_id;
-                    $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
-                    array_push($benefits,$user_ben);
-                    $user_ben->save();   
-            }  
             if (isset($data['status'])) {
             $status_logs['user_id']=$user_id;
             $status_logs['status']=$data['status'];
@@ -561,14 +543,6 @@ class UsersInfoRepository extends BaseRepository
                 Storage::delete('images/'.$file_name);
                 $error_array->offsetSet('status_save', "Saving Error on Status");
                 $error_count++;       
-                // return $this->setResponse([
-                //     "code"        => 500,
-                //     "title"       => "Data Validation Error.",
-                //     "description" => "An error was detected on one of the inputted data.",
-                //     "meta"        => [
-                //         "errors" => $status->errors(),
-                //     ],
-                // ]);
             }
             if (!$user_hierarchy->save($data)) {
                 $user_info_delete = $this->user_infos->find($user_id);    
@@ -578,14 +552,6 @@ class UsersInfoRepository extends BaseRepository
                 Storage::delete('images/'.$file_name);
                 $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
                 $error_count++;  
-                // return $this->setResponse([
-                //     "code"        => 500,
-                //     "title"       => "Data Validation Error.",
-                //     "description" => "An error was detected on one of the inputted data.",
-                //     "meta"        => [
-                //         "errors" => $user_hierarchy->errors(),
-                //     ],
-                // ]);
             }   
             if (!$users_data->save($data)) {
                 $user_id;
@@ -597,65 +563,128 @@ class UsersInfoRepository extends BaseRepository
                 if (strpos($users_data->errors(), 'users_email_unique') !== false) {
                     $error_array->offsetSet('duplicate_email', "Email is already in use. Please use another valid email.");
                     $error_count++;  
-                    // return $this->setResponse([
-                    //     "code"        => 500,
-                    //     "title"       => "Data Validation Error.",
-                    //     "description" => "An error was detected on one of the inputted data.",
-                    //     "meta"        => [
-                    //         "errors" => "Duplicate Email",
-                    //     ],
-                    // ]);
                 }
                
-            }           
+            }  
+            $benefits=[];
+            $ben=[];
+            $array=json_decode($data['benefits'], true );
+            foreach($array as $key => $value ){
+                    $ben['benefit_id'] = $key+1;
+                    $ben['id_number'] = $value;
+                    $ben['user_info_id'] = $user_id;
+                    $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
+                    array_push($benefits,$user_ben);
+                    $user_ben->save();   
+            }   
+            
+            if($error_count>0){
+                $user_info_delete = $this->user_infos->find($user_id);    
+               if($user_info_delete){
+                $user_info_delete->forceDelete();
+                $url = $user_info_delete->image_url; 
+                $file_name = basename($url);
+                Storage::delete('images/'.$file_name);
+               }
+                return $this->setResponse([
+                    "code"        => 500,
+                    "title"       => "Data Validation Error.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta"        => [
+                        "errors" => $error_array,
+                    ],
+                ]);
+            }
+            return $this->setResponse([
+                "code"       => 200,
+                "title"      => "Successfully ".$action." a User.",
+                "meta"        => [
+                    "user_information" => $user_informations,
+                    "user" => $users_data,
+                    "benefits" => $benefits
+                ]
+            ]);
         }else if (isset($data['id'])) {
                 $user_information = $this->user_infos->find($data['id']);
                 if($user_information){
-                if (isset($data['firstname'])) {
-                    $user_information['firstname']= $data['firstname'];
-                }
-                if (isset($data['lastname'])) {
-                    $user_information['lastname']= $data['lastname'];
-                }
-                if (isset($data['middlename'])) {
+                if (!isset($data['firstname'])) {
+                    $error_array->offsetSet('firstname', "The username field is required.");
+                    $error_count++;
+                    }else{
+                        $user_information['firstname']= $data['firstname'];
+                    }
+                if (!isset($data['middlename'])) {
+                    $error_array->offsetSet('middlename', "The middlename field is required.");
+                    $error_count++;
+                }else{
                     $user_information['middlename']= $data['middlename'];
                 }
-                if (isset($data['suffix'])) {
-                    $user_information['suffix']= $data['suffix'];
+                if (!isset($data['lastname'])) {
+                    $error_array->offsetSet('lastname', "The lastname field is required.");
+                    $error_count++;
+                }else{
+                    $user_information['lastname']= $data['lastname'];
                 }
-                if (isset($data['address'])) {
-                    $user_information['address']= $data['address'];
+                if (!isset($data['birthdate'])) {
+                    $error_array->offsetSet('birthdate', "The birthdate field is required.");
+                    $error_count++;
+                }else{
+                    $user_information['birthdate']= $data['birthdate'];
                 }
+                if (!isset($data['gender'])) {
+                    $error_array->offsetSet('gender', "The gender field is required.");
+                    $error_count++;
+                }else{
+                    $user_information['gender']= $data['gender'];
+                }    
+                if (!isset($data['email'])) {
+                    $error_array->offsetSet('email', "The email field is required.");
+                    $error_count++;
+                }if (!isset($data['access_id'])) {
+                    $error_array->offsetSet('access_id', "The access field is required.");
+                    $error_count++;
+                }
+    
                 if (isset($data['contact_number'])) {
                     $user_information['contact_number']= $data['contact_number'];
+                }
+                if (!isset($data['address'])) {
+                    $error_array->offsetSet('address', "The address field is required.");
+                    $error_count++;
+                }else{
+                    $user_information['address']= $data['address'];
                 }
                 if (isset($data['salary_rate'])) {
                     $user_information['salary_rate']= $data['salary_rate'];
                 }
-                if (isset($data['status'])) {
+                if (!isset($data['status'])) {
+                    $error_array->offsetSet('employee_status', "Please define employee status.");
+                    $error_count++;
+                }else{
                     $user_information['status']= $data['status'];
-                }   
-                if (isset($data['type'])) {
+                }
+                if (!isset($data['type'])) {
+                    $error_array->offsetSet('employee_type', "Please define employee status type.");
+                    $error_count++;
+                }else{
                     $user_information['type']= $data['type'];
-                }   
+                }
+                if (!isset($data['hired_date'])) {
+                    $error_array->offsetSet('hired_date', "Hired date must be provided.");
+                    $error_count++;
+                }
                 if (isset($data['hired_date'])) {
                     $user_information['hired_date']= $data['hired_date'];
-                }   
+                }
                 if (isset($data['separation_date'])) {
                     $user_information['separation_date']= $data['separation_date'];
                 }  
-                if (isset($data['birthdate'])) {
-                    $user_information['birthdate']= $data['birthdate'];
-                }    
                 if (isset($data['p_email'])) {
                     $user_information['p_email']= $data['p_email'];
                 }   
                 if (isset($data['status_reason'])) {
                     $user_information['status_reason']= $data['status_reason'];
                 }
-                if (isset($data['gender'])) {
-                    $user_information['gender']= $data['gender'];
-                }        
                 if (isset($data['imageName'])) {
                     if($user_information->image_url==null){
                         define('UPLOAD_DIR', 'storage/images/');
@@ -673,35 +702,6 @@ class UsersInfoRepository extends BaseRepository
                     }
                    
                 }
-                if(isset($data['benefits'])){
-                
-                $ben=[];
-                $data['user_info_id']=$data['id'];
-                if (isset($data['id']) &&
-                is_numeric($data['id'])) {
-    
-                $meta_index     = "metadata";
-                $data['single'] = false;
-                $data['where']  = [
-                    [
-                        "target"   => "user_info_id",
-                        "operator" => "=",
-                        "value"    => $data['id'],
-                    ],
-                ];
-    
-                $parameters['id'] = $data['id'];
-    
-            }
-                $user_ben =$this->fetchGeneric($data, $this->user_benefits);
-                $array=json_decode($data['benefits'], true );
-                foreach($array as $key => $value ){
-                        $user_bene = $this->benefit_update->find($user_ben[$key]->id_number);
-                        $user_bene['id_number'] = $value;
-                        array_push($benefits,$user_bene);
-                        $user_bene->save();   
-                }  
-            }
                     $user_data =  $this->user_datum->find($data['id']);
                     if (isset($data['email'])) {
                         $user_data['email']= $data['email'];
@@ -719,9 +719,48 @@ class UsersInfoRepository extends BaseRepository
                     if (isset($data['parent_id'])) {
                         $hierarchy['parent_id']= $data['parent_id'];
                     }
+                    if($error_count>0){
+                        return $this->setResponse([
+                            "code"        => 500,
+                            "title"       => "Data Validation Error.",
+                            "description" => "An error was detected on one of the inputted data.",
+                            "meta"        => [
+                                "errors" => $error_array,
+                            ],
+                        ]);
+                    }
                 $user_information->save();
                 $user_data->save();
                 $hierarchy->save();
+                if(isset($data['benefits'])){
+                
+                    $ben=[];
+                    $data['user_info_id']=$data['id'];
+                    if (isset($data['id']) &&
+                    is_numeric($data['id'])) {
+        
+                    $meta_index     = "metadata";
+                    $data['single'] = false;
+                    $data['where']  = [
+                        [
+                            "target"   => "user_info_id",
+                            "operator" => "=",
+                            "value"    => $data['id'],
+                        ],
+                    ];
+        
+                    $parameters['id'] = $data['id'];
+        
+                }
+                    $user_ben =$this->fetchGeneric($data, $this->user_benefits);
+                    $array=json_decode($data['benefits'], true );
+                    foreach($array as $key => $value ){
+                            $user_bene = $this->benefit_update->find($user_ben[$key]->id_number);
+                            $user_bene['id_number'] = $value;
+                            array_push($benefits,$user_bene);
+                            $user_bene->save();   
+                    }  
+                }
                 $action="Updated";
                 return $this->setResponse([
                     "code"       => 200,
@@ -764,25 +803,7 @@ class UsersInfoRepository extends BaseRepository
         //         ],
         //     ]);
         // }
-        if($error_count>0){
-            return $this->setResponse([
-                "code"        => 500,
-                "title"       => "Data Validation Error.",
-                "description" => "An error was detected on one of the inputted data.",
-                "meta"        => [
-                    "errors" => $error_array,
-                ],
-            ]);
-        }
-        return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully ".$action." a User.",
-            "meta"        => [
-                "user_information" => $user_informations,
-                "user" => $users_data,
-                "benefits" => $benefits
-            ]
-        ]);
+        
         
     }
 
@@ -975,6 +996,41 @@ class UsersInfoRepository extends BaseRepository
                 if (str_contains($column, "position")) {
                     $data['target'][] = 'accesslevel.name';
                     unset($data['target'][$index]);
+                }
+                if (str_contains($column, "access_id")) {
+                    $array=[];
+                    $countresult=0;
+                    $data['target'][] = 'access_id';
+                    unset($data['target'][$index]);
+                    $results = $this->genericSearch($data, $result)->get()->all();
+                    foreach ($results as $key => $value) {
+                        if($value->access_id==$data['query']){
+                            array_push($array,$value);
+                            $countresult+=1;
+                        }                            
+                    }
+                    if($array!=[]){
+                        return $this->setResponse([
+                            "code" => 200,
+                            "title" => "Successfully searched Users",
+                            "meta" => [
+                                $meta_index => $array,
+                                "count" => $countresult,
+                            ],
+                            "parameters" => $parameters,
+                        ]);
+                    }else{
+                        return $this->setResponse([
+                            'code' => 404,
+                            'title' => "No user are found",
+                            "meta" => [
+                                $meta_index => $array,
+                            ],
+                            "parameters" => $parameters,
+                        ]);
+                    }
+                  
+                  
                 }
                 if (str_contains($column, "p_email")) {
                     $data['target'][] = 'user_info.p_email';
