@@ -15,7 +15,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
-       'full_name','lname','fname','mname','position','address','contact','gender','image','suffix','status','type','birthdate','parent_id','child_id','crypted_id','head_name','status_color',
+       'full_name','lname','fname','mname','excel_hash','position','address','contact','gender','image','suffix','status','type','birthdate','parent_id','child_id','crypted_id','head_name','status_color',
        'hired_date','separation_date'
     ];
 
@@ -98,6 +98,14 @@ class UsersData extends BaseModel
         $name = null;
         if(isset($this->user_info)){
             $name = $this->user_info->lastname;
+        }
+        
+        return $name;
+    }
+    public function getExcelhashAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->excel_hash;
         }
         
         return $name;
