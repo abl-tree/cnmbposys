@@ -729,9 +729,38 @@ class UsersInfoRepository extends BaseRepository
                             ],
                         ]);
                     }
-                $user_information->save();
-                $user_data->save();
-                $hierarchy->save();
+                    if (!$user_data->save($data)) {
+                        $user_info_delete = $this->user_infos->find($data['id']);    
+                        $user_info_delete->forceDelete();
+                        $url = $user_info_delete->image_url; 
+                        $file_name = basename($url);
+                        Storage::delete('images/'.$file_name);
+                        if (strpos($users_data->errors(), 'users_email_unique') !== false) {
+                            $error_array->offsetSet('duplicate_email', "Email is already in use. Please use another valid email.");
+                            $error_count++;  
+                        }
+                       
+                    }  
+                    if (!$user_data->save($data)) {
+                        $user_info_delete = $this->user_infos->find($data['id']);    
+                        $user_info_delete->forceDelete();
+                        $url = $user_info_delete->image_url; 
+                        $file_name = basename($url);
+                        Storage::delete('images/'.$file_name);
+                        if (strpos($users_data->errors(), 'users_email_unique') !== false) {
+                            $error_array->offsetSet('duplicate_email', "Email is already in use. Please use another valid email.");
+                            $error_count++;  
+                        }  
+                    }    
+                    if (!$hierarchy->save($data)) {
+                        $user_info_delete = $this->user_infos->find($data['id']);    
+                        $user_info_delete->forceDelete();
+                        $url = $user_info_delete->image_url; 
+                        $file_name = basename($url);
+                        Storage::delete('images/'.$file_name);
+                        $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
+                        $error_count++;  
+                    }  
                 if(isset($data['benefits'])){
                 
                     $ben=[];
@@ -780,31 +809,6 @@ class UsersInfoRepository extends BaseRepository
                
                 }
             }
-        
-            // if (isset($data['id'])) {
-            //     $Users = $this->users->find($data['id']);
-            //     $action="Updated";
-            // } else{
-            //     $data['password'] = bcrypt('password');
-            //     $Users = $this->users->init($this->users->pullFillable($data));
-            //     $user_information =  $this->user_infos->init($this->user_infos->pullFillable($data));
-            //     $action="Added";
-            // }
-            
-           
-
-        // if (!$users_data->save($data)) {
-        //     return $this->setResponse([
-        //         "code"        => 500,
-        //         "title"       => "Data Validation Error.",
-        //         "description" => "An error was detected on one of the inputted data.",
-        //         "meta"        => [
-        //             "errors" => $users_data->errors(),
-        //         ],
-        //     ]);
-        // }
-        
-        
     }
 
     public function updateStatus($data = [])
