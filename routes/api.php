@@ -127,6 +127,32 @@ Route::group([
     });
 
     Route::group([
+        "prefix" => "leaves",
+    ], function () {
+
+        Route::get("/", "LeaveController@all");
+        Route::post("{action}/{leave_id}", "LeaveController@approval")->where('action', 'approve|reject');
+        Route::post("create", "LeaveController@create");
+        Route::post('delete/{leave_id}', 'LeaveController@delete');
+        Route::get("fetch/{leave_id}", "LeaveController@fetch");
+        Route::post('update/{leave_id}', 'LeaveController@update');
+        Route::get('search', 'LeaveController@search');
+
+        Route::group([
+            "prefix" => "credits",
+        ], function () {
+
+            Route::get("/", "LeaveCreditController@all");
+            Route::post("create", "LeaveCreditController@create");
+            Route::post('delete/{leave_credit_id}', 'LeaveCreditController@delete');
+            Route::get("fetch/{leave_credit_id}", "LeaveCreditController@fetch");
+            Route::post('update/{leave_credit_id}', 'LeaveCreditController@update');
+            Route::get('search', 'LeaveCreditController@search');
+
+        });
+    });
+
+    Route::group([
         "prefix" => "logs",
     ], function () {
 
@@ -188,10 +214,8 @@ Route::group([
         Route::post("create", "UserController@addUser");
         Route::post("update/{id}", "UserController@updateUser");
         Route::get("search", "UserController@search");
-       
 
     });
-    
 
     Route::group([
         "prefix" => "notifications",
