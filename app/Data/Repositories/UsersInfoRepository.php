@@ -625,6 +625,7 @@ class UsersInfoRepository extends BaseRepository
                 }else{
                     $user_information['lastname']= $data['lastname'];
                 }
+                $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
                 if (!isset($data['birthdate'])) {
                     $error_array->offsetSet('birthdate', "The birthdate field is required.");
                     $error_count++;
@@ -719,39 +720,12 @@ class UsersInfoRepository extends BaseRepository
                     if (isset($data['parent_id'])) {
                         $hierarchy['parent_id']= $data['parent_id'];
                     }
-                    if($error_count>0){
-                        return $this->setResponse([
-                            "code"        => 500,
-                            "title"       => "Data Validation Error.",
-                            "description" => "An error was detected on one of the inputted data.",
-                            "meta"        => [
-                                "errors" => $error_array,
-                            ],
-                        ]);
-                    }
-                    
-                        $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
-                        $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
-                        if (!$user_informations->save($data)) {
-                            $url = $user_informations->image_url; 
-                            $file_name = basename($url);
-                            Storage::delete('images/'.$file_name);
-                            if (strpos($user_informations->errors(), 'user_infos_excel_hash_unique') !== false) {
-                                $error_array->offsetSet('excelhash', "Full Name is already in Use. Please use another Name.");
-                                $error_count++;
-                            }else{
-                                return $this->setResponse([
-                                    "code"        => 500,
-                                    "title"       => "Data Validation Error.",
-                                    "description" => "An error was detected on one of the inputted data.",
-                                    "meta"        => [
-                                        "errors" => $user_informations->errors(),
-                                    ],
-                                ]);
-                            }
-                        }      
-                   
-                    
+                    if (!$user_information->save($data)) {
+                        if (strpos($user_information->errors(), 'user_infos_excel_hash_unique') !== false) {
+                            $error_array->offsetSet('excelhash', "Full Name is already in Use. Please use another Name.");
+                            $error_count++;
+                        }
+                    }      
                     if (!$user_data->save($data)) {
                         $user_info_delete = $this->user_infos->find($data['id']);    
                         $user_info_delete->forceDelete();
@@ -772,26 +746,36 @@ class UsersInfoRepository extends BaseRepository
                         $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
                         $error_count++;  
                     }  
-                if(isset($data['benefits'])){
-                
-                    $ben=[];
-                    $data['user_info_id']=$data['id'];
-                    if (isset($data['id']) &&
-                    is_numeric($data['id'])) {
-        
-                    $meta_index     = "metadata";
-                    $data['single'] = false;
-                    $data['where']  = [
-                        [
-                            "target"   => "user_info_id",
-                            "operator" => "=",
-                            "value"    => $data['id'],
-                        ],
-                    ];
-        
-                    $parameters['id'] = $data['id'];
-        
-                }
+                    if($error_count>0){
+                        return $this->setResponse([
+                            "code"        => 500,
+                            "title"       => "Data Validation Error.",
+                            "description" => "An error was detected on one of the inputted data.",
+                            "meta"        => [
+                                "errors" => $error_array,
+                            ],
+                        ]);
+                    }
+                    if(isset($data['benefits'])){
+                    
+                        $ben=[];
+                        $data['user_info_id']=$data['id'];
+                        if (isset($data['id']) &&
+                        is_numeric($data['id'])) {
+            
+                        $meta_index     = "metadata";
+                        $data['single'] = false;
+                        $data['where']  = [
+                            [
+                                "target"   => "user_info_id",
+                                "operator" => "=",
+                                "value"    => $data['id'],
+                            ],
+                        ];
+            
+                        $parameters['id'] = $data['id'];
+            
+                    }
                     $user_ben =$this->fetchGeneric($data, $this->user_benefits);
                     $array=json_decode($data['benefits'], true );
                     foreach($array as $key => $value ){
