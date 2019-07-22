@@ -658,13 +658,13 @@ class UsersInfoRepository extends BaseRepository
                     $user_information['salary_rate']= $data['salary_rate'];
                 }
                 if (!isset($data['status'])) {
-                    $error_array->offsetSet('employee_status', "Please define employee status.");
+                    $error_array->offsetSet('status', "Please define employee status.");
                     $error_count++;
                 }else{
                     $user_information['status']= $data['status'];
                 }
                 if (!isset($data['type'])) {
-                    $error_array->offsetSet('employee_type', "Please define employee status type.");
+                    $error_array->offsetSet('type', "Please define employee status type.");
                     $error_count++;
                 }else{
                     $user_information['type']= $data['type'];
@@ -729,18 +729,29 @@ class UsersInfoRepository extends BaseRepository
                             ],
                         ]);
                     }
-                    if (!$user_data->save($data)) {
-                        $user_info_delete = $this->user_infos->find($data['id']);    
-                        $user_info_delete->forceDelete();
-                        $url = $user_info_delete->image_url; 
-                        $file_name = basename($url);
-                        Storage::delete('images/'.$file_name);
-                        if (strpos($users_data->errors(), 'users_email_unique') !== false) {
-                            $error_array->offsetSet('duplicate_email', "Email is already in use. Please use another valid email.");
-                            $error_count++;  
-                        }
-                       
-                    }  
+                    
+                        $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
+                        $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
+                        if (!$user_informations->save($data)) {
+                            $url = $user_informations->image_url; 
+                            $file_name = basename($url);
+                            Storage::delete('images/'.$file_name);
+                            if (strpos($user_informations->errors(), 'user_infos_excel_hash_unique') !== false) {
+                                $error_array->offsetSet('excelhash', "Full Name is already in Use. Please use another Name.");
+                                $error_count++;
+                            }else{
+                                return $this->setResponse([
+                                    "code"        => 500,
+                                    "title"       => "Data Validation Error.",
+                                    "description" => "An error was detected on one of the inputted data.",
+                                    "meta"        => [
+                                        "errors" => $user_informations->errors(),
+                                    ],
+                                ]);
+                            }
+                        }      
+                   
+                    
                     if (!$user_data->save($data)) {
                         $user_info_delete = $this->user_infos->find($data['id']);    
                         $user_info_delete->forceDelete();
