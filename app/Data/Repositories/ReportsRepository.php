@@ -949,14 +949,6 @@ class ReportsRepository extends BaseRepository
         $results=[];
         $keys=0;
         $last_child=null;
-        // return $this->setResponse([
-        //     'code'       => 404,
-        //     'title'      => "No users found",
-        //     "meta"       => [
-        //         $meta_index => $result,
-        //     ],
-        //     "parameters" => $parameters,
-        // ]);
         foreach ($result as $key => $value) {
               if($value->accesslevelhierarchy->parent_id==$data['id']){
                   $last_child=$value->accesslevelhierarchy->child_id;
