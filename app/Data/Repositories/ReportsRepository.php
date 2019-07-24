@@ -3,6 +3,7 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\UserInfo;
 use App\Data\Models\Users;
+use App\Data\Models\UsersData;
 use App\Data\Models\SelectUsers;
 use App\User;
 use App\Data\Repositories\LogsRepository;
@@ -22,6 +23,7 @@ class ReportsRepository extends BaseRepository
     protected 
         $user_info,
         $users,
+        $usersData,
         $select_users,
         $user,
         $incident_report,
@@ -37,6 +39,7 @@ class ReportsRepository extends BaseRepository
     public function __construct(
         UserInfo $user_info,
         Users $users,
+        UsersData $usersData,
         SelectUsers $select_users,
         User $user,
         SanctionType $sanction_type,
@@ -50,6 +53,7 @@ class ReportsRepository extends BaseRepository
         NotificationRepository $notificationRepository
     ) {
         $this->user_info = $user_info;
+        $this->usersData = $usersData;
         $this->users = $users;
         $this->select_users = $select_users;
         $this->user = $user;
@@ -941,10 +945,18 @@ class ReportsRepository extends BaseRepository
 
         $count_data = $data;
         $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
-        $result = $this->fetchGeneric($data, $this->users);
+        $result = $this->fetchGeneric($data, $this->usersData);
         $results=[];
         $keys=0;
         $last_child=null;
+        // return $this->setResponse([
+        //     'code'       => 404,
+        //     'title'      => "No users found",
+        //     "meta"       => [
+        //         $meta_index => $result,
+        //     ],
+        //     "parameters" => $parameters,
+        // ]);
         foreach ($result as $key => $value) {
               if($value->accesslevelhierarchy->parent_id==$data['id']){
                   $last_child=$value->accesslevelhierarchy->child_id;
