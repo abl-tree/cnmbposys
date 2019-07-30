@@ -1187,6 +1187,43 @@ class ReportsRepository extends BaseRepository
         ]);
     }
 
+    public function getAll_Ir($data = [])
+    {
+       $meta_index = "reports";
+        $parameters = [];
+        $count      = 0;
+
+        $count_data = $data;
+        $data['relations'] = [];   
+        $result = $this->fetchGeneric($data, $this->incident_report);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Reports are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->incident_report->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Users with Reports",
+            "description"=>"Users With Incident Reports",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
+
 
 
 

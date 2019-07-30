@@ -169,6 +169,7 @@ Route::group([
         Route::get("issued_to/{id}", "ReportsController@report");
         Route::get("issued_by/{id}", "ReportsController@userFiledIR");
         Route::get("select_all_users/{id}", "ReportsController@getSelectAllUserUnder");
+        Route::get("IR", "ReportsController@getAll_Ir");
         Route::get("all_users", "ReportsController@getAllUser");
         Route::get("all_users/{id}", "ReportsController@getAllUserUnder");
         Route::post("create", "ReportsController@create");
