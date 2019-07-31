@@ -461,10 +461,9 @@ class ReportsRepository extends BaseRepository
             "description"=>"Users With Incident Reports",
             "meta"       => [
                 $meta_index => $result,
-                "count"     => $count
+                "count"     => $count,  
             ],
-            
-            
+           
         ]);
     }
 
@@ -480,14 +479,14 @@ class ReportsRepository extends BaseRepository
             if (!isset($data['type_number'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "type_number is not set.",
+                    'title' => "Type Number is not set.",
                 ]);
             }
 
             if (!isset($data['type_description'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "type description is not set.",
+                    'title' => "Type Description is not set.",
                 ]);
             }
         }else{
@@ -1135,6 +1134,66 @@ class ReportsRepository extends BaseRepository
             
         ]);
     }
+    public function getSanctionTypesSearch($data = [])
+    {
+        $meta_index = "";
+        $parameters = [];
+        $count      = 0;
+
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+        $result = $this->sanction_types;
+
+        $meta_index = "sanction_types";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        // if (isset($data['target'])) {
+        //     foreach ((array) $data['target'] as $index => $column) {
+        //     if (str_contains($column, "type_description")) {
+        //         $data['target'][] = 'type_description';
+        //         unset($data['target'][$index]);
+        //     }
+        // }
+        // }
+       
+       
+        $count_data = $data;
+        $count_data['search'] = true;
+         $result = $this->genericSearch($data, $result)->get()->all();
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Types are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+        
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_types->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Type List",
+            "description"=>"Sanction Type",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
      public function getSanctionLevels($data = [])
     {
         $meta_index = "options";
@@ -1178,6 +1237,56 @@ class ReportsRepository extends BaseRepository
             "code"       => 200,
             "title"      => "Successfully retrieved Sanction Level List",
             "description"=>"Sanction Level",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+    public function getSanctionLevelsSearch($data = [])
+    {
+        $meta_index = "";
+        $parameters = [];
+        $count      = 0;
+
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+        $result = $this->sanction_levels;
+
+        $meta_index = "sanction_levels";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+       
+        $count_data = $data;
+        $count_data['search'] = true;
+         $result = $this->genericSearch($data, $result)->get()->all();
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Level are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+        
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_levels->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Level List",
+            "description"=>"Sanction level",
             "meta"       => [
                 $meta_index => $result,
                 "count"     => $count

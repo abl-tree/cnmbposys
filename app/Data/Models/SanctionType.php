@@ -20,6 +20,10 @@ class SanctionType extends BaseModel
     protected $hidden = [
         'created_at','updated_at','deleted_at','id','type_number', 'type_description'
     ];
+
+    protected $searchable = [
+        'type_description'
+    ];
     public function getValueAttribute(){
         $value = null;
         $value = $this->id;

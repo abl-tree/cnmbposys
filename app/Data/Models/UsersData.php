@@ -13,10 +13,9 @@ class UsersData extends BaseModel
 {
     use Notifiable;
     protected $primaryKey = 'id';
-    protected $table = 'users';
+    protected $table = 'user_infos';
     protected $appends = [
-       'full_name','lname','fname','mname','excel_hash','position','address','contact','gender','image','suffix','status','type','birthdate','parent_id','child_id','crypted_id','head_name','status_color',
-       'hired_date','separation_date'
+       'full_name','email','company_id','contract','contact','access_id','position','parent_id','child_id','crypted_id','head_name','status_color',
     ];
 
     public $status_color = [
@@ -33,30 +32,33 @@ class UsersData extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'uid','email', 'password', 'access_id','loginFlag','company_id','created_at','updated_at'
+        'firstname','middlename', 'lastname','suffix',
+        'birthdate', 'gender', 'contact_number',
+        'address', 'image', 'salary_rate','image_url',
+        'status','type','hired_date', 'separation_date', 'excel_hash',
+        'p_email','created_at','updated_at'
     ];
 
     protected $searchable = [
-        'user_info.firstname',
-        'user_info.middlename',
-        'user_info.lastname',
-        'user_info.p_email',
+        'firstname',
+        'middlename',
+        'lastname',
+        'p_email',
         'id',
-        'uid',
-        'email', 
-        'password', 
-        'access_id',
-        'loginFlag',
-        'company_id',
-        'contract',
+        'user_info.uid',
+        'user_info.email', 
+        'user_info.access_id',
+        'user_info.loginFlag',
+        'user_info.company_id',
+        'user_info.contract',
         'accesslevel.name',
-        'user_info.gender',
-        'user_info.status',
-        'user_info.type',
-        'user_info.address',
-        'user_info.birthdate',
-        'user_info.hired_date',
-        'user_info.separation_date',
+        'gender',
+        'status',
+        'type',
+        'address',
+        'birthdate',
+        'hired_date',
+        'separation_date',
     ];
 
     /**
@@ -65,7 +67,7 @@ class UsersData extends BaseModel
      * @var array
      */
     protected $hidden = [
-        'user_info','password','deleted_at', 'remember_token', 'hierarchy','accesslevel','accesslevelhierarchy','loginFlag','created_at','updated_at',
+        'user_info','password','deleted_at', 'remember_token', 'hierarchy','accesslevel','accesslevelhierarchy','loginFlag','created_at','updated_at','contact_number'
     ];
 
   
@@ -74,54 +76,62 @@ class UsersData extends BaseModel
     }
 
     public function user_info() {
-        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'uid');
+        return $this->hasOne('\App\Data\Models\Users', 'uid', 'id');
     }
     public function benefits() {
-        return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'uid');
+        return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'id');
     }
     
     public function accesslevel(){
        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
     public function accesslevelhierarchy(){
-        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'uid');
+        return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
      }
-    public function getFnameAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->firstname;
-        }
+    // public function getFnameAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->firstname;
+    //     }
         
-        return $name;
-    }
-    public function getlnameAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->lastname;
-        }
+    //     return $name;
+    // }
+    // public function getlnameAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->lastname;
+    //     }
         
-        return $name;
-    }
-    public function getExcelhashAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->excel_hash;
-        }
+    //     return $name;
+    // }
+    // public function getExcelhashAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->excel_hash;
+    //     }
         
-        return $name;
-    }
-    public function getMnameAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->middlename;
-        }
+    //     return $name;
+    // }
+    // public function getMnameAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->middlename;
+    //     }
         
-        return $name;
-    }
-    public function getSuffixAttribute(){
+    //     return $name;
+    // }
+    // // public function getSuffixAttribute(){
+    // //     $name = null;
+    // //     if(isset($this->user_info)){
+    // //         $name = $this->user_info->suffix;
+    // //     }
+        
+    // //     return $name;
+    // // }
+    public function getAccessidAttribute(){
         $name = null;
         if(isset($this->user_info)){
-            $name = $this->user_info->suffix;
+            $name = $this->user_info->access_id;
         }
         
         return $name;
@@ -164,110 +174,129 @@ class UsersData extends BaseModel
         
         return $name;
     }
-    public function getAddressAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->address;
-        }
+    // public function getAddressAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->address;
+    //     }
         
-        return $name;
-    }
+    //     return $name;
+    // }
     public function getContactAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->contact_number;
-        }
+       $name = $this->contact_number;
+    
         
         return $name;
     }
-    public function getGenderAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->gender;
-        }
+    // public function getGenderAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->gender;
+    //     }
         
-        return $name;
-    }
-    public function getImageAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->image_url;
-        }
+    //     return $name;
+    // }
+    // public function getImageAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->image_url;
+    //     }
         
-        return $name;
-    }
+    //     return $name;
+    // }
 
-    public function getStatusAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            if(strtolower($this->user_info->status) == 'new_hired'){
-                $name = strtoupper('NEW');
-            }else{
-                $name = strtoupper($this->user_info->status);
-            }
-        }
+    // public function getStatusAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         if(strtolower($this->user_info->status) == 'new_hired'){
+    //             $name = strtoupper('NEW');
+    //         }else{
+    //             $name = strtoupper($this->user_info->status);
+    //         }
+    //     }
         
-        return $name;
-    }
-    public function getTypeAttribute(){
-        $name = null;
-        if(isset($this->user_info)){  
-                $name = strtoupper($this->user_info->type);
-        }
+    //     return $name;
+    // }
+    // public function getTypeAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){  
+    //             $name = strtoupper($this->user_info->type);
+    //     }
         
-        return $name;
-    }
+    //     return $name;
+    // }
     public function getStatusColorAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            if($this->user_info->status!=null){
-                $name = $this->status_color[strtolower($this->user_info->status)];
+        $name = null;   
+            if($this->status!=null){
+                $name = $this->status_color[strtolower($this->status)];
             }
            
-        }
+        
         
         return $name;
     }
 
-    public function getBirthdateAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->birthdate;
-        }
+    // // public function getBirthdateAttribute(){
+    // //     $name = null;
+    // //     if(isset($this->user_info)){
+    // //         $name = $this->user_info->birthdate;
+    // //     }
         
-        return $name;
-    }
+    // //     return $name;
+    // // }
     public function getCryptedIdAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = Crypt::encrypt($this->user_info->id);
-        }
+        $name = null;      
+            $name = Crypt::encrypt($this->id);
         
         return $name;
     }
     public function getFullNameAttribute(){
         $name = null;
+      
+            $name = $this->firstname." ".$this->middlename." ".$this->lastname." ".$this->suffix;
+   
+        
+        return $name;
+    }
+    public function getEmailAttribute(){
+        $name = null;
         if(isset($this->user_info)){
-            $name = $this->user_info->firstname." ".$this->user_info->middlename." ".$this->user_info->lastname." ".$this->user_info->suffix;
+            $name = $this->user_info->email;
         }
         
+        return $name;
+    }
+    public function getCompanyidAttribute(){
+        $name = null;
+        if(isset($this->user_info)){
+            $name = $this->user_info->company_id;
+        }
+        
+        return $name;
+    }
+    public function getContractAttribute(){
+        $name = null;   
+        if(isset($this->user_info)){   
+            $name = $this->user_info->contract;
+        }
         return $name;
     }
 
-    public function getHireddateAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->hired_date;
-        }
+
+    // public function getHireddateAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->hired_date;
+    //     }
         
-        return $name;
-    }
-    public function getSeparationdateAttribute(){
-        $name = null;
-        if(isset($this->user_info)){
-            $name = $this->user_info->separation_date;
-        }
+    //     return $name;
+    // }
+    // public function getSeparationdateAttribute(){
+    //     $name = null;
+    //     if(isset($this->user_info)){
+    //         $name = $this->user_info->separation_date;
+    //     }
         
-        return $name;
-    }
+    //     return $name;
+    // }
 }

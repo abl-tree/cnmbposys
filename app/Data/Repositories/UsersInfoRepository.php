@@ -276,8 +276,8 @@ class UsersInfoRepository extends BaseRepository
         }
         $count_data = $data;
         $data['relations'] = ["user_info", "accesslevel", "benefits"];
-        $count_data = $data;    
         $result = $this->fetchGeneric($data, $this->user_info);
+        $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
 
         if (!$result) {
             return $this->setResponse([
@@ -289,16 +289,12 @@ class UsersInfoRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-       
-        $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved users Informations",
             "description"=>"UserInfo",
             "meta"       => [
                 $meta_index => $result,
-                "count"     => $count,
             ],
             "count"     => $count,
             "parameters" => $parameters,
@@ -905,6 +901,12 @@ class UsersInfoRepository extends BaseRepository
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "reason is not set.",
+                ]);
+            }   
+            if (!isset($data['type'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "type is not set.",
                 ]);
             }   
 

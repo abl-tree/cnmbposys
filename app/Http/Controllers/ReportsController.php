@@ -76,10 +76,20 @@ class ReportsController extends BaseController
         $data = $request->all();
         return $this->absorb($this->user_reports->getSanctionTypes($data))->json();     
     }
+    public function getSanctionTypesSearch(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getSanctionTypesSearch($data))->json();     
+    }
      public function getSanctionLevels(Request $request)
     {
         $data = $request->all();
         return $this->absorb($this->user_reports->getSanctionLevels($data))->json();     
+    }
+    public function getSanctionLevelsSearch(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getSanctionLevelsSearch($data))->json();     
     }
 
     public function getAll_Ir(Request $request)

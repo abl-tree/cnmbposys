@@ -18,6 +18,9 @@ class SanctionLevel extends BaseModel
     protected $hidden = [
         'created_at','updated_at','deleted_at','id','level_number', 'level_description'
     ];
+    protected $searchable = [
+        'level_description'
+    ];
     public function getValueAttribute(){
         $value = null;
         $value = $this->id;

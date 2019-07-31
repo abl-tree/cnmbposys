@@ -184,7 +184,8 @@ Route::group([
     ], function () {
 
         Route::get("select_sanction_types", "ReportsController@getSanctionType");
-        Route::get("sanction_types", "ReportsController@getSanctionTypes");
+        Route::get("/", "ReportsController@getSanctionTypes");
+        Route::get("search", "ReportsController@getSanctionTypesSearch");
         Route::post('delete/{id}', 'ReportsController@delete_stype');
         Route::post('update/{id}', 'ReportsController@update_stype');
         Route::post("create", "ReportsController@addSanctionType");
@@ -193,7 +194,8 @@ Route::group([
         "prefix" => "sanction_level",
     ], function () {
         Route::get("select_sanction_levels", "ReportsController@getSanctionLevel");
-        Route::get("sanction_levels", "ReportsController@getSanctionLevels");
+        Route::get("/", "ReportsController@getSanctionLevels");
+        Route::get("search", "ReportsController@getSanctionLevelsSearch");
         Route::post('delete/{id}', 'ReportsController@delete_slevel');
         Route::post('update/{id}', 'ReportsController@update_slevel');
         Route::post("create", "ReportsController@addSanctionLevel");
