@@ -985,13 +985,13 @@ class UsersInfoRepository extends BaseRepository
         if (isset($data['target'])) {
             foreach ((array) $data['target'] as $index => $column) {
                 if (str_contains($column, "full_name")) {
-                    $data['target'][] = 'user_info.firstname';
-                    $data['target'][] = 'user_info.middlename';
-                    $data['target'][] = 'user_info.lastname';
+                    $data['target'][] = 'firstname';
+                    $data['target'][] = 'middlename';
+                    $data['target'][] = 'lastname';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "gender")) {
-                    $data['target'][] = 'user_info.gender';
+                    $data['target'][] = 'gender';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "position")) {
@@ -1001,7 +1001,7 @@ class UsersInfoRepository extends BaseRepository
                 if (str_contains($column, "access_id")) {
                     $array=[];
                     $countresult=0;
-                    $data['target'][] = 'access_id';
+                    $data['target'][] = 'user_info.access_id';
                     unset($data['target'][$index]);
                     $results = $this->genericSearch($data, $result)->get()->all();
                     foreach ($results as $key => $value) {
@@ -1034,23 +1034,27 @@ class UsersInfoRepository extends BaseRepository
                   
                 }
                 if (str_contains($column, "p_email")) {
-                    $data['target'][] = 'user_info.p_email';
+                    $data['target'][] = 'p_email';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "email")) {
+                    $data['target'][] = 'user_info.email';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "status")) {
-                    $data['target'][] = 'user_info.status';
+                    $data['target'][] = 'status';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "type")) {
-                    $data['target'][] = 'user_info.type';
+                    $data['target'][] = 'type';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "address")) {
-                    $data['target'][] = 'user_info.address';
+                    $data['target'][] = 'address';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "birthdate")) {
-                    $data['target'][] = 'user_info.birthdate';
+                    $data['target'][] = 'birthdate';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "hired_date")) {
@@ -1064,7 +1068,7 @@ class UsersInfoRepository extends BaseRepository
                 foreach ($period as $dt) {
                    // array_push($date,$dt->format("Y-m-d"));
                     $data['query'] = $dt->format("Y-m-d");
-                    $data['target'][] = 'user_info.hired_date';
+                    $data['target'][] = 'hired_date';
                     unset($data['target'][$index]);
 
                    // $count_data = $data;
@@ -1114,7 +1118,7 @@ class UsersInfoRepository extends BaseRepository
                     foreach ($period as $dt) {
                        // array_push($date,$dt->format("Y-m-d"));
                         $data['query'] = $dt->format("Y-m-d");
-                        $data['target'][] = 'user_info.separation_date';
+                        $data['target'][] = 'separation_date';
                         unset($data['target'][$index]);
     
                        // $count_data = $data;
