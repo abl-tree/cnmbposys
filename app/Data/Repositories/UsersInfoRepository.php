@@ -5,6 +5,7 @@ use App\Data\Models\UserInfo;
 use App\User;
 use App\Data\Models\UsersData;
 use App\Data\Models\Users;
+use App\Data\Models\UsersUpdate;
 use App\Data\Models\UserCluster;
 use App\Data\Models\UpdateStatus;
 use App\Data\Models\AccessLevelHierarchy;
@@ -23,7 +24,7 @@ class UsersInfoRepository extends BaseRepository
 
     protected 
         $user_info,$user_datum,$user_status,$user_benefits,$user_infos,
-        $user,$access_level_hierarchy,$benefit_update,$hierarchy_update,$no_sort;
+        $user,$access_level_hierarchy,$benefit_update,$hierarchy_update,$no_sort,$user_data_update;
 
     public function __construct(
         UsersData $user_info,
@@ -32,6 +33,7 @@ class UsersInfoRepository extends BaseRepository
         UserInfo $user_infos,
         User $user,
         Users $user_datum,
+        UsersUpdate $user_data_update,
         UpdateStatus $user_status,
         UserCluster $select_users,
         UserBenefit $user_benefits,
@@ -43,6 +45,7 @@ class UsersInfoRepository extends BaseRepository
         $this->hierarchy_update = $hierarchy_update;
         $this->user = $user;
         $this->user_datum = $user_datum;
+        $this->user_data_update = $user_data_update;
         $this->user_status = $user_status;
         $this->select_users = $select_users;
         $this->user_benefits = $user_benefits;
@@ -72,7 +75,8 @@ class UsersInfoRepository extends BaseRepository
             $parameters['id'] = $data['id'];
 
         }
-
+        $data['single'] = false;
+       
         if (isset($data['target'])) {
             $result = $this->user_info;
             $data['relations'] = ["user_info","accesslevel","benefits"];     
@@ -276,6 +280,14 @@ class UsersInfoRepository extends BaseRepository
         }
         $count_data = $data;
         $data['relations'] = ["user_info", "accesslevel", "benefits"];
+        $data['where']  = [
+            [
+                "target"   => "excel_hash",
+                "operator" => "!=",
+                "value"    => "development",
+            ],
+        ];
+
         $result = $this->fetchGeneric($data, $this->user_info);
         $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
 
@@ -295,8 +307,8 @@ class UsersInfoRepository extends BaseRepository
             "description"=>"UserInfo",
             "meta"       => [
                 $meta_index => $result,
+                "count"     => $count,
             ],
-            "count"     => $count,
             "parameters" => $parameters,
             
         ]);
@@ -453,6 +465,16 @@ class UsersInfoRepository extends BaseRepository
                 $url= asset($file);
                 $user_information['image_url']= $url;
             }
+            if($error_count>0){
+                return $this->setResponse([
+                    "code"        => 500,
+                    "title"       => "Data Validation Error.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta"        => [
+                        "errors" => $error_array,
+                    ],
+                ]);
+            }   
             if(isset($data['firstname'],$data['middlename'],$data['lastname'])){
                 $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
                 $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
@@ -565,14 +587,26 @@ class UsersInfoRepository extends BaseRepository
             $benefits=[];
             $ben=[];
             $array=json_decode($data['benefits'], true );
-            foreach($array as $key => $value ){
+            if($array==[]){
+                for($i=1; $i<5;$i++ ){
+                    $ben['benefit_id'] = $i;
+                    $ben['id_number'] = NULL;
+                    $ben['user_info_id'] = $user_id;
+                    $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
+                    array_push($benefits,$user_ben);
+                    $user_ben->save();   
+            }   
+            }else{
+                foreach($array as $key => $value ){
                     $ben['benefit_id'] = $key+1;
                     $ben['id_number'] = $value;
                     $ben['user_info_id'] = $user_id;
                     $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
                     array_push($benefits,$user_ben);
                     $user_ben->save();   
-            }   
+            }       
+            }
+           
             
             if($error_count>0){
                 $user_info_delete = $this->user_infos->find($user_id);    
@@ -699,7 +733,7 @@ class UsersInfoRepository extends BaseRepository
                     }
                    
                 }
-                    $user_data =  $this->user_datum->find($data['id']);
+                    $user_data =  $this->user_data_update->find($data['id']);
                     if (isset($data['email'])) {
                         $user_data['email']= $data['email'];
                     }
@@ -774,12 +808,24 @@ class UsersInfoRepository extends BaseRepository
                     }
                     $user_ben =$this->fetchGeneric($data, $this->user_benefits);
                     $array=json_decode($data['benefits'], true );
-                    foreach($array as $key => $value ){
+                    if($array==[]){
+                        for($i=1; $i<5;$i++ ){
+                            $ben['benefit_id'] = $i;
+                            $ben['id_number'] = NULL;
+                            $ben['user_info_id'] = $user_id;
+                            $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
+                            array_push($benefits,$user_ben);
+                            $user_ben->save();   
+                    }   
+                    }else{
+                        foreach($array as $key => $value ){
                             $user_bene = $this->benefit_update->find($user_ben[$key]->id_number);
                             $user_bene['id_number'] = $value;
                             array_push($benefits,$user_bene);
                             $user_bene->save();   
                     }  
+                    }
+                    
                 }
                 $action="Updated";
                 return $this->setResponse([
