@@ -284,7 +284,7 @@ class UsersInfoRepository extends BaseRepository
             [
                 "target"   => "excel_hash",
                 "operator" => "!=",
-                "value"    => "deveeeelopment",
+                "value"    => "development",
             ],
         ];
 
