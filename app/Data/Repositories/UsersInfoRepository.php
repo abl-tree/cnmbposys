@@ -284,7 +284,7 @@ class UsersInfoRepository extends BaseRepository
             [
                 "target"   => "excel_hash",
                 "operator" => "!=",
-                "value"    => "development",
+                "value"    => "deveeeelopment",
             ],
         ];
 
@@ -307,7 +307,7 @@ class UsersInfoRepository extends BaseRepository
             "description"=>"UserInfo",
             "meta"       => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count"     => $count-1,
             ],
             "parameters" => $parameters,
             
@@ -366,7 +366,7 @@ class UsersInfoRepository extends BaseRepository
     }
 
     public function addUser($data = [])
-    {
+    {   
         // data validation
         $error_array = new ArrayObject();
         $error_count=0;
