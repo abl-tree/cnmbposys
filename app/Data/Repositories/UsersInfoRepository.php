@@ -635,6 +635,37 @@ class UsersInfoRepository extends BaseRepository
                 ]
             ]);
         }else if (isset($data['id'])) {
+            // $data['single'] = false;
+            // $data['where']  = [
+            //     [
+            //         "target"   => "user_info_id",
+            //         "operator" => "=",
+            //         "value"    => "66",
+            //     ],
+            // ];
+            // $user_ben =$this->fetchGeneric($data, $this->user_benefits);
+            // $array=json_decode($data['benefits'], true );
+            // $ben=[];
+            // foreach($user_ben as $key => $value ){
+            //     $user_bene = $this->benefit_update->find($value->id);
+            //     if($array[$key]==""){
+            //         $user_bene['id_number']=NULL;
+            //     }else{
+            //         $user_bene['id_number']=$array[$key];
+            //     }
+               
+            //     $user_bene->save();
+            //     array_push($ben,$user_bene); 
+            // }
+            // return $this->setResponse([
+            //     "code"        => 500,
+            //     "title"       => "Data Validation Error.",
+            //     "description" => "An error was detected on one of the inputted data.",
+            //     "meta"        => [
+            //         "errors" => $ben,
+            //     ],
+            // ]);
+
                 $user_information = $this->user_infos->find($data['id']);
                 if($user_information){
                 if (!isset($data['firstname'])) {
@@ -788,43 +819,28 @@ class UsersInfoRepository extends BaseRepository
                     }
                     if(isset($data['benefits'])){
                     
-                        $ben=[];
-                        $data['user_info_id']=$data['id'];
-                        if (isset($data['id']) &&
-                        is_numeric($data['id'])) {
-            
-                        $meta_index     = "metadata";
                         $data['single'] = false;
                         $data['where']  = [
                             [
                                 "target"   => "user_info_id",
                                 "operator" => "=",
-                                "value"    => $data['id'],
+                                "value"    => "66",
                             ],
                         ];
-            
-                        $parameters['id'] = $data['id'];
-            
-                    }
-                    $user_ben =$this->fetchGeneric($data, $this->user_benefits);
-                    $array=json_decode($data['benefits'], true );
-                    if($array==[]){
-                        for($i=1; $i<5;$i++ ){
-                            $ben['benefit_id'] = $i;
-                            $ben['id_number'] = NULL;
-                            $ben['user_info_id'] = $user_id;
-                            $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
-                            array_push($benefits,$user_ben);
-                            $user_ben->save();   
-                    }   
-                    }else{
-                        foreach($array as $key => $value ){
-                            $user_bene = $this->benefit_update->find($user_ben[$key]->id_number);
-                            $user_bene['id_number'] = $value;
-                            array_push($benefits,$user_bene);
-                            $user_bene->save();   
-                    }  
-                    }
+                        $user_ben =$this->fetchGeneric($data, $this->user_benefits);
+                        $array=json_decode($data['benefits'], true );
+                        $ben=[];
+                        foreach($user_ben as $key => $value ){
+                            $user_bene = $this->benefit_update->find($value->id);
+                            if($array[$key]==""){
+                                $user_bene['id_number']=NULL;
+                            }else{
+                                $user_bene['id_number']=$array[$key];
+                            }
+                           
+                            $user_bene->save();
+                            array_push($ben,$user_bene); 
+                        }
                     
                 }
                 $action="Updated";
@@ -834,7 +850,7 @@ class UsersInfoRepository extends BaseRepository
                     "meta"        => [
                         "user_information" => $user_information,
                         "user" => $user_data,
-                        "benefits" => $benefits,
+                        "benefits" => $ben,
                         "hierarchy"=>$hierarchy
                     ]
                 ]);
