@@ -76,7 +76,7 @@ class UsersData extends BaseModel
     }
 
     public function user_info() {
-        return $this->hasOne('\App\Data\Models\Users', 'uid', 'id');
+        return $this->hasOne('\App\Data\Models\Users', 'uid', 'id')->with('position');
     }
     public function benefits() {
         return $this->hasMany('\App\Data\Models\UserBenefit', 'user_info_id', 'id');
@@ -140,7 +140,7 @@ class UsersData extends BaseModel
     public function getPositionAttribute(){
         $name = null;
         if(isset($this->accesslevel)){
-            $name = $this->accesslevel->name;
+            $name = $this->user_info->position->name;
         }
         
         return $name;
