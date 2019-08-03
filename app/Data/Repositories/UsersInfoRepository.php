@@ -112,13 +112,13 @@ class UsersInfoRepository extends BaseRepository
                     }
                     return $this->setResponse([
                         "code"       => 200,
-                        "title"      => "Successfully retrieved users Informations NI",
+                        "title"      => "Successfully retrieved users Informations",
                         "description"=>"UserInfo",
                         "meta"       => [
                             $meta_index => $datani,
                             "count"     => $countni,
                         ],
-                        "parameters" => $parameters,
+                        "parameters" => $data['query'],
                         
                     ]);
                     $data['target'][] = 'accesslevel.name';
@@ -1090,7 +1090,29 @@ class UsersInfoRepository extends BaseRepository
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "position")) {
-                    $data['target'][] = 'user_info.position.name';
+                    $datani=[];
+                    $countni=0;
+                    $result = $this->genericSearch($data, $result)->get()->all();
+                    foreach ($result as $key => $value) {
+                        if (strpos(strtolower($value->position), strtolower($data['query'])) !== false) {
+                            array_push($datani,$value);
+                            $countni++;
+                        }
+                        
+                       
+                    }
+                    return $this->setResponse([
+                        "code"       => 200,
+                        "title"      => "Successfully retrieved users Informations",
+                        "description"=>"UserInfo",
+                        "meta"       => [
+                            $meta_index => $datani,
+                            "count"     => $countni,
+                        ],
+                        "parameters" => $data['query'],
+                        
+                    ]);
+                    $data['target'][] = 'accesslevel.name';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "access_id")) {
