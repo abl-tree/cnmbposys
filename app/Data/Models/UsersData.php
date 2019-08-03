@@ -83,7 +83,7 @@ class UsersData extends BaseModel
     }
     
     public function accesslevel(){
-       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', $this->user_info['access_id']);
     }
     public function accesslevelhierarchy(){
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
@@ -253,7 +253,7 @@ class UsersData extends BaseModel
     public function getFullNameAttribute(){
         $name = null;
       
-            $name = $this->firstname." ".$this->middlename." ".$this->lastname." ".$this->suffix;
+            $name = ucwords($this->firstname)." ".ucwords($this->middlename)." ".ucwords($this->lastname)." ".ucwords($this->suffix);
    
         
         return $name;

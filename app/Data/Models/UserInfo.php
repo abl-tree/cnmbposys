@@ -104,7 +104,7 @@ class UserInfo extends BaseModel
 
     public function getFullNameAttribute(){
         $name = null;
-        $name = $this->firstname . ' ' . $this->middlename . ' ' . $this->lastname. ' ' . $this->suffix;
+        $name = ucwords($this->firstname) . ' ' .ucwords($this->middlename) . ' ' . ucwords($this->lastname). ' ' . ucwords($this->suffix);
         return $name;
     }
 
