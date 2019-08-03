@@ -99,6 +99,28 @@ class UsersInfoRepository extends BaseRepository
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "position")) {
+                    $datani=[];
+                    $countni=0;
+                    $result = $this->genericSearch($data, $result)->get()->all();
+                    foreach ($result as $key => $value) {
+                        if (strpos(strtolower($value->position), strtolower($data['query'])) !== false) {
+                            array_push($datani,$value);
+                            $countni++;
+                        }
+                        
+                       
+                    }
+                    return $this->setResponse([
+                        "code"       => 200,
+                        "title"      => "Successfully retrieved users Informations NI",
+                        "description"=>"UserInfo",
+                        "meta"       => [
+                            $meta_index => $datani,
+                            "count"     => $countni,
+                        ],
+                        "parameters" => $parameters,
+                        
+                    ]);
                     $data['target'][] = 'accesslevel.name';
                     unset($data['target'][$index]);
                 }
@@ -139,6 +161,10 @@ class UsersInfoRepository extends BaseRepository
                 }
                 if (str_contains($column, "p_email")) {
                     $data['target'][] = 'p_email';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "email")) {
+                    $data['target'][] = 'user_info.email';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "status")) {
@@ -1064,7 +1090,7 @@ class UsersInfoRepository extends BaseRepository
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "position")) {
-                    $data['target'][] = 'accesslevel.name';
+                    $data['target'][] = 'user_info.position.name';
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "access_id")) {

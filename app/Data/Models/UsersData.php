@@ -83,7 +83,7 @@ class UsersData extends BaseModel
     }
     
     public function accesslevel(){
-       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', $this->user_info['access_id']);
+       return $this->hasOne('\App\Data\Models\AccessLevel','id','id');
     }
     public function accesslevelhierarchy(){
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
@@ -139,7 +139,7 @@ class UsersData extends BaseModel
     
     public function getPositionAttribute(){
         $name = null;
-        if(isset($this->accesslevel)){
+        if(isset($this->user_info)){
             $name = $this->user_info->position->name;
         }
         
