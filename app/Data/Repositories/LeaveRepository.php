@@ -36,9 +36,9 @@ class LeaveRepository extends BaseRepository
     public function setLeaveApproval($data = [])
     {
         //fetch leave
-        $leave = $this->leave
+        $leave = refresh_model($this->leave->getModel())
             ->where('id', $data['id'])
-            ->where('allowed_access', $data['user_access'])
+            // ->where('allowed_access', $data['user_access']) //to be reworked
             ->first();
 
         if (!$leave) {
@@ -72,7 +72,13 @@ class LeaveRepository extends BaseRepository
             //calculate total leave days
             $from = Carbon::createFromFormat('Y-m-d H:s:i', $leave->start_event);
             $to = Carbon::createFromFormat('Y-m-d H:s:i', $leave->end_event);
-            $total_days = $from->diffInDays($to);
+
+            //count total leave days according to schedule
+            $total_days = $this->agent_schedule
+                ->where('user_id', $leave->user_id)
+                ->where('start_event', '>=', $leave->start_event)
+                ->where('end_event', '<=', $leave->end_event)
+                ->count();
 
             if ($leave_credits->value < $total_days) {
                 return $this->setResponse([
@@ -92,8 +98,9 @@ class LeaveRepository extends BaseRepository
                 'value' => $leave_credits->value - $total_days,
             ]);
 
-            //fetchraw  agent schedules affected by the leave (query builder format)
+            //fetch raw  agent schedules affected by the leave (query builder format)
             $raw_schedules = $this->agent_schedule
+                ->where('user_id', $leave->user_id)
                 ->where('start_event', '>=', $leave->start_event)
                 ->where('end_event', '<=', $leave->end_event);
 
