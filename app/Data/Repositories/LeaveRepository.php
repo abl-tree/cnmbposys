@@ -413,6 +413,9 @@ class LeaveRepository extends BaseRepository
 
         }
 
+        //set relations
+        $data['relations'][] = 'user';
+
         /**
          * Set access level filter
          * (to be reworked)
@@ -497,6 +500,9 @@ class LeaveRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
+
+        //set relations
+        $data['relations'][] = 'user';
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
