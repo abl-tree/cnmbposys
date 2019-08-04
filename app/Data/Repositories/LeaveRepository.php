@@ -8,7 +8,6 @@ use App\Data\Models\Leave;
 use App\Data\Models\LeaveCredit;
 use App\Data\Repositories\BaseRepository;
 use App\User;
-use Carbon\Carbon;
 
 class LeaveRepository extends BaseRepository
 {
@@ -68,10 +67,6 @@ class LeaveRepository extends BaseRepository
                     'title' => "Employee does not have leave credits.",
                 ]);
             }
-
-            //calculate total leave days
-            $from = Carbon::createFromFormat('Y-m-d H:s:i', $leave->start_event);
-            $to = Carbon::createFromFormat('Y-m-d H:s:i', $leave->end_event);
 
             //count total leave days according to schedule
             $total_days = refresh_model($this->agent_schedule->getModel())
@@ -294,7 +289,10 @@ class LeaveRepository extends BaseRepository
 
         if ($leave->status == 'approved') {
             //raw schedules (query builder format)
-            $schedules = $this->agent_schedule->where('leave_id', $leave->id);
+            $schedules = $this->agent_schedule
+                ->where('leave_id', $leave->id)
+                ->where('start_event', '>=', $data['start_leave'])
+                ->where('end_event', '<=', $leave->end_event);
 
             //remove attendance
             foreach ($schedules->get()->all() as $schedule) {
@@ -317,10 +315,6 @@ class LeaveRepository extends BaseRepository
 
             //return leave_credits
             if ($leave_credits) {
-
-                //calculate total leave days
-                $from = Carbon::createFromFormat('Y-m-d H:s:i', $data['start_leave']);
-                $to = Carbon::createFromFormat('Y-m-d H:s:i', $leave->end_event);
 
                 //count total leave days according to schedule
                 $total_days = refresh_model($this->agent_schedule->getModel())
