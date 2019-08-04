@@ -131,12 +131,13 @@ Route::group([
     ], function () {
 
         Route::get("/", "LeaveController@all");
-        Route::post("{action}/{leave_id}", "LeaveController@approval")->where('action', 'approve|reject');
         Route::post("create", "LeaveController@create");
         Route::post('delete/{leave_id}', 'LeaveController@delete');
         Route::get("fetch/{leave_id}", "LeaveController@fetch");
         Route::post('update/{leave_id}', 'LeaveController@update');
         Route::get('search', 'LeaveController@search');
+        Route::post("{action}/{leave_id}", "LeaveController@approval")->where('action', 'approve|reject');
+        Route::post("cancel/{leave_id}", "LeaveController@cancel");
 
         Route::group([
             "prefix" => "credits",
