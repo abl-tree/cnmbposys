@@ -425,7 +425,25 @@ class AgentScheduleRepository extends BaseRepository
 
         $data['relations'] = ['info', 'schedule.title'];
 
-        $result = $this->fetchGeneric($data, $this->user);
+        if (isset($data['search']) || isset($data['target'])) {
+            if (!is_array($data['target'])) {
+                $data['target'] = (array) $data['target'];
+            }
+
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'info.firstname';
+                    $data['target'][] = 'info.middlename';
+                    $data['target'][] = 'info.lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+
+            $result = $this->genericSearch($data, $this->user)->get()->all();
+        } else {
+            $result = $this->fetchGeneric($data, $this->user);
+        }
+
         if (!$result) {
             return $this->setResponse([
                 'code' => 404,
