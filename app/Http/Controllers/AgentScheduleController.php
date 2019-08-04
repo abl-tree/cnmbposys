@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
 use App\Data\Repositories\AgentScheduleRepository;
+use App\Http\Controllers\BaseController;
+use Illuminate\Http\Request;
 
 class AgentScheduleController extends BaseController
 {
@@ -12,14 +12,19 @@ class AgentScheduleController extends BaseController
 
     public function __construct(
         AgentScheduleRepository $agentScheduleRepository
-    ){
+    ) {
         $this->agent_schedule_repo = $agentScheduleRepository;
     }
 
     public function all(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->agent_schedule_repo->fetchAgentSchedule($data))->json();
+
+        if (isset($data['search']) || isset($data['target'])) {
+            return $this->absorb($this->agent_schedule_repo->searchAgentSchedule($data))->json();
+        } else {
+            return $this->absorb($this->agent_schedule_repo->fetchAgentSchedule($data))->json();
+        }
     }
 
     public function excelData(Request $request)
@@ -42,21 +47,20 @@ class AgentScheduleController extends BaseController
 
     public function delete(Request $request, $id)
     {
-        $data       = $request->all();
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Schedule ID is not set.",
             ]);
         }
 
         return $this->absorb($this->agent_schedule_repo->deleteAgentSchedule($data))->json();
     }
-
 
     public function fetch(Request $request, $id)
     {
@@ -67,7 +71,7 @@ class AgentScheduleController extends BaseController
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Schedule ID is invalid.",
             ]);
         }
@@ -105,14 +109,14 @@ class AgentScheduleController extends BaseController
         return $this->absorb($this->agent_schedule_repo->searchAgentSchedule($data))->json();
     }
 
-    public function stats(Request $request) 
+    public function stats(Request $request)
     {
         $data = $request->all();
 
         return $this->absorb($this->agent_schedule_repo->agentScheduleStats($data))->json();
     }
 
-    public function workInfo(Request $request, $option) 
+    public function workInfo(Request $request, $option)
     {
         $data = $request->all();
 
