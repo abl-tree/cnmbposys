@@ -157,6 +157,21 @@ class User extends BaseAuthModel
         return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
     }
 
+    public function leaves()
+    {
+        return $this->hasMany('\App\Data\Models\Leave', 'user_id', 'id');
+    }
+
+    public function leave_credits()
+    {
+        return $this->hasMany('\App\Data\Models\LeaveCredit', 'user_id', 'id');
+    }
+
+    public function leave_slots()
+    {
+        return $this->hasMany('\App\Data\Models\LeaveSlot', 'user_id', 'id');
+    }
+
     public function getCalendarAttribute()
     {
         $events = [];

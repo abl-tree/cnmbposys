@@ -151,6 +151,19 @@ Route::group([
             Route::get('search', 'LeaveCreditController@search');
 
         });
+
+        Route::group([
+            "prefix" => "slots",
+        ], function () {
+
+            Route::get("/", "LeaveSlotController@all");
+            Route::post("create", "LeaveSlotController@create");
+            Route::post('delete/{leave_slot_id}', 'LeaveSlotController@delete');
+            Route::get("fetch/{leave_slot_id}", "LeaveSlotController@fetch");
+            Route::post('update/{leave_slot_id}', 'LeaveSlotController@update');
+            Route::get('search', 'LeaveSlotController@search');
+
+        });
     });
 
     Route::group([
@@ -238,11 +251,11 @@ Route::group([
     Route::group([
         "prefix" => "excel",
     ], function () {
-        Route::get('export_report','excelController@report');
-        Route::get('export_add_template','excelController@Addtemplate');
-        Route::get('reassign_template','excelController@Reassigntemplate');
-        Route::post('import_to_array','excelController@importToArray'); 
-        Route::post('import','excelController@importStoreAdd');
+        Route::get('export_report', 'excelController@report');
+        Route::get('export_add_template', 'excelController@Addtemplate');
+        Route::get('reassign_template', 'excelController@Reassigntemplate');
+        Route::post('import_to_array', 'excelController@importToArray');
+        Route::post('import', 'excelController@importStoreAdd');
     });
 });
 

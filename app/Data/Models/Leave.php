@@ -16,6 +16,7 @@ class Leave extends BaseModel
         'description',
         'status',
         'generated_by',
+        'approved_by',
         'allowed_access',
     ];
 
@@ -27,6 +28,7 @@ class Leave extends BaseModel
         'description',
         'status',
         'generated_by',
+        'approved_by',
         'allowed_access',
     ];
 
@@ -44,5 +46,21 @@ class Leave extends BaseModel
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
+    /**
+     * Relations
+     */
+    public function user()
+    {
+        return $this->hasOne('\App\User', 'id', 'user_id');
+    }
+    public function generated_by()
+    {
+        return $this->hasOne('\App\User', 'id', 'generated_by');
+    }
+    public function approved_by()
+    {
+        return $this->hasOne('\App\User', 'id', 'approved_by');
+    }
 
 }

@@ -28,6 +28,7 @@ class LeaveController extends BaseController
         $data = $request->all();
         $data['id'] = $id;
         $data['status'] = $action == "approve" ? 'approved' : 'rejected';
+        $data['approved_by'] = $request->user()->id;
         $data['user_access'] = $request->user()->access->id;
 
         if (!isset($data['id']) ||
@@ -63,10 +64,10 @@ class LeaveController extends BaseController
     {
         $data = $request->all();
         $data['generated_by'] = $request->user()->id;
-        $data['allowed_access'] = $request->user()->access->id;
         if (isset($data['status']) && strtolower($data['status']) == 'approved') {
             unset($data['status']);
             $data['isApproved'] = true;
+            $data['allowed_access'] = $request->user()->access->id;
         }
         return $this->absorb($this->leave_repo->defineLeave($data))->json();
     }
@@ -111,11 +112,11 @@ class LeaveController extends BaseController
     {
         $data = $request->all();
         $data['id'] = $id;
-        $data['generated_by'] = $request->user()->id;
         $data['user_access'] = $request->user()->access->id;
         if (isset($data['status']) && strtolower($data['status']) == 'approved') {
             unset($data['status']);
             $data['isApproved'] = true;
+            $data['allowed_access'] = $request->user()->access->id;
         }
 
         return $this->absorb($this->leave_repo->defineLeave($data))->json();

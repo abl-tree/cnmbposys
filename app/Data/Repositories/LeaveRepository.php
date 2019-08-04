@@ -54,6 +54,52 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
+        /**
+         * Check if user is OM
+         * &&
+         * Check if slots for leave approval are still available
+         */
+        if ($data['user_access'] == 15) {
+            //fetch user data
+            $operations_manager = refresh_model($this->user->getModel())->find($data['approved_by']);
+
+            //fetch all schedules
+            $schedule_slots = refresh_model($this->agent_schedule->getModel())
+                ->where('user_id', $leave->user_id)
+                ->where('start_event', '>=', $leave->start_event)
+                ->where('end_event', '<=', $leave->end_event)
+                ->get()->all();
+
+            //check if a leave slot is full
+            foreach ($schedule_slots as $slot) {
+                $leave_slot = $operations_manager->leave_slots
+                    ->where('leave_type', $leave->leave_type)
+                    ->where('date', '>=', $slot->start_event)
+                    ->where('date', '<=', $slot->end_event)
+                    ->first();
+
+                if (!isset($leave_slot) || $leave_slot->value <= 0) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Leave slots for {$slot->start_event} are already full.",
+                    ]);
+                }
+            }
+
+            //decrement leave slots
+            foreach ($schedule_slots as $slot) {
+                $leave_slot = $operations_manager->leave_slots
+                    ->where('leave_type', $leave->leave_type)
+                    ->where('date', '>=', $slot->start_event)
+                    ->where('date', '<=', $slot->end_event)
+                    ->first();
+
+                $leave_slot->update([
+                    'value' => --$leave_slot->value,
+                ]);
+            }
+        }
+
         if ($data['status'] == "approved") {
             //fetch available leave credits
             $leave_credits = $this->leave_credit
@@ -123,6 +169,7 @@ class LeaveRepository extends BaseRepository
         return $this->defineLeave([
             'id' => $data['id'],
             'status' => $data['status'],
+            'approved_by' => $data['approved_by'],
         ]);
     }
 
@@ -147,6 +194,13 @@ class LeaveRepository extends BaseRepository
                 return $this->setResponse([
                     'code' => 500,
                     'title' => "User ID is not set.",
+                ]);
+            }
+
+            if (!isset($data['allowed_access'])) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "Allowed access is not set.",
                 ]);
             }
 
@@ -225,6 +279,7 @@ class LeaveRepository extends BaseRepository
                 'id' => $leave->id,
                 'status' => 'approved',
                 'user_access' => $leave->allowed_access,
+                'approved_by' => $data['generated_by'],
             ]);
         }
 
@@ -268,7 +323,7 @@ class LeaveRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Leave deleted",
-            "description" => "An leave was deleted.",
+            "description" => "A leave was deleted.",
             "parameters" => $leave,
         ]);
 
@@ -358,6 +413,9 @@ class LeaveRepository extends BaseRepository
 
         }
 
+        //set relations
+        $data['relations'][] = 'user';
+
         /**
          * Set access level filter
          * (to be reworked)
@@ -366,23 +424,23 @@ class LeaveRepository extends BaseRepository
             $data['where'][] = [
                 "target" => "allowed_access",
                 "operator" => ">=",
-                "value" => 16,
+                "value" => 15,
             ];
             $data['where'][] = [
                 "target" => "allowed_access",
                 "operator" => "<=",
                 "value" => 17,
             ];
-        } else if ($data['user_access'] == 12 || $data['user_access'] == 13) {
+        } else if ($data['user_access'] >= 12 && $data['user_access'] <= 14) {
             $data['where'][] = [
                 "target" => "allowed_access",
-                "operator" => "<",
-                "value" => 15,
+                "operator" => ">=",
+                "value" => 12,
             ];
             $data['where'][] = [
                 "target" => "allowed_access",
-                "operator" => ">",
-                "value" => 17,
+                "operator" => "<=",
+                "value" => 14,
             ];
         } else if ($data['user_access'] <= 3) {
             $data['where'][] = [
@@ -394,7 +452,7 @@ class LeaveRepository extends BaseRepository
             $data['where'][] = [
                 "target" => "allowed_access",
                 "operator" => "=",
-                "value" => null,
+                "value" => $data['user_access'],
             ];
         }
 
@@ -442,6 +500,9 @@ class LeaveRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
+
+        //set relations
+        $data['relations'][] = 'user';
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();

@@ -2,25 +2,25 @@
 
 namespace App\Data\Repositories;
 
-use App\Data\Models\LeaveCredit;
+use App\Data\Models\LeaveSlot;
 use App\Data\Repositories\BaseRepository;
 use App\User;
 
-class LeaveCreditRepository extends BaseRepository
+class LeaveSlotRepository extends BaseRepository
 {
 
-    protected $leave_credit,
+    protected $leave_slot,
         $user;
 
     public function __construct(
-        LeaveCredit $leaveCredit,
+        LeaveSlot $leaveSlot,
         User $user
     ) {
-        $this->leave_credit = $leaveCredit;
+        $this->leave_slot = $leaveSlot;
         $this->user = $user;
     }
 
-    public function defineLeaveCredit($data = [])
+    public function defineLeaveSlot($data = [])
     {
         // data validation
         if (!isset($data['id'])) {
@@ -46,18 +46,25 @@ class LeaveCreditRepository extends BaseRepository
                 ]);
             }
 
+            if (!isset($data['date'])) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "Date is not set.",
+                ]);
+            }
+
         }
         // data validation
 
         // existence check
 
         if (isset($data['id'])) {
-            $does_exist = $this->leave_credit->find($data['id']);
+            $does_exist = $this->leave_slot->find($data['id']);
 
             if (!$does_exist) {
                 return $this->setResponse([
                     'code' => 500,
-                    'title' => 'Leave credit does not exist.',
+                    'title' => 'Leave slot does not exist.',
                 ]);
             }
         }
@@ -78,49 +85,49 @@ class LeaveCreditRepository extends BaseRepository
         // insertion
 
         if (isset($data['id'])) {
-            $leave_credit = $this->leave_credit->find($data['id']);
+            $leave_slot = $this->leave_slot->find($data['id']);
         } else {
-            $leave_credit = $this->leave_credit->init($this->leave_credit->pullFillable($data));
+            $leave_slot = $this->leave_slot->init($this->leave_slot->pullFillable($data));
         }
 
-        if (!$leave_credit->save($data)) {
+        if (!$leave_slot->save($data)) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
                 "meta" => [
-                    "errors" => $leave_credit->errors(),
+                    "errors" => $leave_slot->errors(),
                 ],
             ]);
         }
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Successfully defined a leave credit.",
-            "parameters" => $leave_credit,
+            "title" => "Successfully defined a leave slot.",
+            "parameters" => $leave_slot,
         ]);
 
         // insertion
 
     }
 
-    public function deleteLeaveCredit($data = [])
+    public function deleteLeaveSlot($data = [])
     {
-        $leave_credit = $this->leave_credit->find($data['id']);
+        $leave_slot = $this->leave_slot->find($data['id']);
 
-        if (!$leave_credit) {
+        if (!$leave_slot) {
             return $this->setResponse([
                 "code" => 404,
-                "title" => "Leave credit not found",
+                "title" => "Leave slot not found",
             ]);
         }
 
-        if (!$leave_credit->delete()) {
+        if (!$leave_slot->delete()) {
             return $this->setResponse([
                 "code" => 500,
-                "message" => "Deleting leave credit was not successful.",
+                "message" => "Deleting leave slot was not successful.",
                 "meta" => [
-                    "errors" => $leave_credit->errors(),
+                    "errors" => $leave_slot->errors(),
                 ],
                 "parameters" => [
                     'title_id' => $data['id'],
@@ -130,23 +137,23 @@ class LeaveCreditRepository extends BaseRepository
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Leave credit deleted",
-            "description" => "A leave credit was deleted.",
-            "parameters" => $leave_credit,
+            "title" => "Leave slot deleted",
+            "description" => "A leave slot was deleted.",
+            "parameters" => $leave_slot,
         ]);
 
     }
 
-    public function fetchLeaveCredit($data = [])
+    public function fetchLeaveSlot($data = [])
     {
-        $meta_index = "leave_credits";
+        $meta_index = "leave_slots";
         $parameters = [];
         $count = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index = "leave_credit";
+            $meta_index = "leave_slot";
             $data['single'] = true;
             $data['where'] = [
                 [
@@ -156,18 +163,18 @@ class LeaveCreditRepository extends BaseRepository
                 ],
             ];
 
-            $parameters['leave_credit_id'] = $data['id'];
+            $parameters['leave_slot_id'] = $data['id'];
 
         }
 
         $count_data = $data;
 
-        $result = $this->fetchGeneric($data, $this->leave_credit);
+        $result = $this->fetchGeneric($data, $this->leave_slot);
 
         if (!$result) {
             return $this->setResponse([
                 'code' => 404,
-                'title' => "No leave credits are found",
+                'title' => "No leave slots are found",
                 "meta" => [
                     $meta_index => $result,
                 ],
@@ -175,11 +182,11 @@ class LeaveCreditRepository extends BaseRepository
             ]);
         }
 
-        $count = $this->countData($count_data, refresh_model($this->leave_credit->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->leave_slot->getModel()));
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Successfully retrieved leave credits",
+            "title" => "Successfully retrieved leave slots",
             "meta" => [
                 $meta_index => $result,
                 "count" => $count,
@@ -188,7 +195,7 @@ class LeaveCreditRepository extends BaseRepository
         ]);
     }
 
-    public function searchLeaveCredit($data)
+    public function searchLeaveSlot($data)
     {
         if (!isset($data['query'])) {
             return $this->setResponse([
@@ -198,9 +205,9 @@ class LeaveCreditRepository extends BaseRepository
             ]);
         }
 
-        $result = $this->leave_credit;
+        $result = $this->leave_slot;
 
-        $meta_index = "leave_credits";
+        $meta_index = "leave_slots";
         $parameters = [
             "query" => $data['query'],
         ];
@@ -211,7 +218,7 @@ class LeaveCreditRepository extends BaseRepository
         if ($result == null) {
             return $this->setResponse([
                 'code' => 404,
-                'title' => "No leave credits are found",
+                'title' => "No leave slots are found",
                 "meta" => [
                     $meta_index => $result,
                 ],
@@ -220,11 +227,11 @@ class LeaveCreditRepository extends BaseRepository
         }
 
         $count_data['search'] = true;
-        $count = $this->countData($count_data, refresh_model($this->leave_credit->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->leave_slot->getModel()));
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Successfully searched leave credits",
+            "title" => "Successfully searched leave slots",
             "meta" => [
                 $meta_index => $result,
                 "count" => $count,
