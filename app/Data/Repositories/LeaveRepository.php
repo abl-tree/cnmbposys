@@ -307,12 +307,45 @@ class LeaveRepository extends BaseRepository
 
         }
 
-        //set access level filter
-        $data['where'][] = [
-            "target" => "allowed_access",
-            "operator" => "=",
-            "value" => $data['user_access'],
-        ];
+        /**
+         * Set access level filter
+         * (to be reworked)
+         */
+        if ($data['user_access'] == 15) {
+            $data['where'][] = [
+                "target" => "allowed_access",
+                "operator" => ">=",
+                "value" => 16,
+            ];
+            $data['where'][] = [
+                "target" => "allowed_access",
+                "operator" => "<=",
+                "value" => 17,
+            ];
+        } else if ($data['user_access'] == 12 || $data['user_access'] == 13) {
+            $data['where'][] = [
+                "target" => "allowed_access",
+                "operator" => "<",
+                "value" => 15,
+            ];
+            $data['where'][] = [
+                "target" => "allowed_access",
+                "operator" => ">",
+                "value" => 17,
+            ];
+        } else if ($data['user_access'] <= 3) {
+            $data['where'][] = [
+                "target" => "allowed_access",
+                "operator" => ">",
+                "value" => 0,
+            ];
+        } else {
+            $data['where'][] = [
+                "target" => "allowed_access",
+                "operator" => "=",
+                "value" => null,
+            ];
+        }
 
         $count_data = $data;
 
