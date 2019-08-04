@@ -217,6 +217,7 @@ Route::group([
         Route::post("bulk_change_status", "UserController@bulkUpdateStatus");
         Route::post("create", "UserController@addUser");
         Route::post("update/{id}", "UserController@updateUser");
+        Route::post("change_pass/{id}", "UserController@changePass");
         Route::get("search", "UserController@search");
 
     });

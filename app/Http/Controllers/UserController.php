@@ -113,6 +113,15 @@ class UserController extends BaseController
        
         return $this->absorb($this->user_info->addUser($data))->json();     
     }
+    public function changePass(Request $request,$id)
+    {
+        
+        $data = $request->all();
+        $data['password']= bcrypt($request['password']);
+        $data['id'] = $id;
+       
+        return $this->absorb($this->user_info->updateUser($data))->json();     
+    }
 
     public function updateStatus(Request $request)
     {       

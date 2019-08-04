@@ -46,7 +46,7 @@ class UsersUpdate extends BaseModel
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'hierarchy','user_info','accesslevel','accesslevelhierarchy'
+         'remember_token', 'hierarchy','user_info','accesslevel','accesslevelhierarchy'
     ];
 
   
