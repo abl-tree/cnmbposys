@@ -74,7 +74,7 @@ class LeaveRepository extends BaseRepository
             $to = Carbon::createFromFormat('Y-m-d H:s:i', $leave->end_event);
 
             //count total leave days according to schedule
-            $total_days = $this->agent_schedule
+            $total_days = refresh_model($this->agent_schedule->getModel())
                 ->where('user_id', $leave->user_id)
                 ->where('start_event', '>=', $leave->start_event)
                 ->where('end_event', '<=', $leave->end_event)
@@ -99,7 +99,7 @@ class LeaveRepository extends BaseRepository
             ]);
 
             //fetch raw  agent schedules affected by the leave (query builder format)
-            $raw_schedules = $this->agent_schedule
+            $raw_schedules = refresh_model($this->agent_schedule->getModel())
                 ->where('user_id', $leave->user_id)
                 ->where('start_event', '>=', $leave->start_event)
                 ->where('end_event', '<=', $leave->end_event);
@@ -123,11 +123,24 @@ class LeaveRepository extends BaseRepository
                     ]);
             }
 
-            return $this->defineLeave([
-                'id' => $data['id'],
-                'status' => $data['status'],
+        }
+
+        return $this->defineLeave([
+            'id' => $data['id'],
+            'status' => $data['status'],
+        ]);
+    }
+
+    public function cancelLeave($data = [])
+    {
+        if (!isset($data['cancel_event'])) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => "Cancel event is not set.",
             ]);
         }
+
+        return $this->revertLeave($data);
     }
 
     public function defineLeave($data = [])
@@ -241,42 +254,8 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
-        if ($leave->status == 'approved') {
-            //raw schedules (query builder format)
-            $schedules = $this->agent_schedule->where('leave_id', $leave->id);
-
-            //remove attendance
-            foreach ($schedules->get()->all() as $schedule) {
-                refresh_model($this->attendance->getModel())
-                    ->where('schedule_id', $schedule->id)
-                    ->where('is_leave', '!=', 0)
-                    ->delete();
-            }
-
-            //remove schedule-leave tie
-            $schedules->update([
-                'leave_id' => null,
-            ]);
-
-            //fetch leave credits
-            $leave_credits = $this->leave_credit->where('user_id', $leave->user_id)
-                ->where('leave_type', $leave->leave_type)
-                ->first();
-
-            //return leave_credits
-            if ($leave_credits) {
-
-                //calculate total leave days
-                $from = Carbon::createFromFormat('Y-m-d H:s:i', $leave->start_event);
-                $to = Carbon::createFromFormat('Y-m-d H:s:i', $leave->end_event);
-                $total_days = $from->diffInDays($to);
-
-                $leave_credits->update([
-                    'value' => $leave_credits->value + $total_days,
-                ]);
-            }
-
-        }
+        //revert leave data
+        $this->revertLeave($data);
 
         if (!$leave->delete()) {
             return $this->setResponse([
@@ -298,6 +277,68 @@ class LeaveRepository extends BaseRepository
             "parameters" => $leave,
         ]);
 
+    }
+
+    public function revertLeave($data = [])
+    {
+        $leave = $this->leave->find($data['id']);
+
+        if (!$leave) {
+            return $this->setResponse([
+                "code" => 404,
+                "title" => "Leave not found",
+            ]);
+        }
+
+        $data['start_leave'] = $data['cancel_event'] ?? $leave->start_event;
+
+        if ($leave->status == 'approved') {
+            //raw schedules (query builder format)
+            $schedules = $this->agent_schedule->where('leave_id', $leave->id);
+
+            //remove attendance
+            foreach ($schedules->get()->all() as $schedule) {
+                refresh_model($this->attendance->getModel())
+                    ->where('schedule_id', $schedule->id)
+                    ->where('is_leave', '!=', 0)
+                    ->delete();
+            }
+
+            //remove schedule-leave tie
+            $schedules->update([
+                'leave_id' => null,
+            ]);
+
+            //fetch leave credits
+            $leave_credits = $this->leave_credit
+                ->where('user_id', $leave->user_id)
+                ->where('leave_type', $leave->leave_type)
+                ->first();
+
+            //return leave_credits
+            if ($leave_credits) {
+
+                //calculate total leave days
+                $from = Carbon::createFromFormat('Y-m-d H:s:i', $data['start_leave']);
+                $to = Carbon::createFromFormat('Y-m-d H:s:i', $leave->end_event);
+
+                //count total leave days according to schedule
+                $total_days = refresh_model($this->agent_schedule->getModel())
+                    ->where('user_id', $leave->user_id)
+                    ->where('start_event', '>=', $data['start_leave'])
+                    ->where('end_event', '<=', $leave->end_event)
+                    ->count();
+
+                $leave_credits->update([
+                    'value' => $leave_credits->value + $total_days,
+                ]);
+            }
+        }
+
+        return $this->defineLeave([
+            'id' => $data['id'],
+            'status' => 'cancelled',
+        ]);
     }
 
     public function fetchLeave($data = [])

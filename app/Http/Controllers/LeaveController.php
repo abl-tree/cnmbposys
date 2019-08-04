@@ -42,6 +42,23 @@ class LeaveController extends BaseController
         return $this->absorb($this->leave_repo->setLeaveApproval($data))->json();
     }
 
+    public function cancel(Request $request, $id)
+    {
+        $data = $request->all();
+        $data['id'] = $id;
+
+        if (!isset($data['id']) ||
+            !is_numeric($data['id']) ||
+            $data['id'] <= 0) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => "Leave ID is invalid.",
+            ]);
+        }
+
+        return $this->absorb($this->leave_repo->cancelLeave($data))->json();
+    }
+
     public function create(Request $request)
     {
         $data = $request->all();

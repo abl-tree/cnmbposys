@@ -38,7 +38,7 @@ class Leave extends BaseModel
         'end_event' => 'sometimes|required|date',
         'leave_type' => 'sometimes|required|max:100',
         'description' => 'nullable|max:500',
-        'status' => 'in:pending,approved,rejected',
+        'status' => 'in:pending,approved,rejected,cancelled',
         'generated_by' => 'sometimes|required|numeric',
         'allowed_access' => 'sometimes|required|numeric',
     ];
