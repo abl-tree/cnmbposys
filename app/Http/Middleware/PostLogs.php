@@ -29,6 +29,11 @@ class PostLogs
      */
     public function handle($request, Closure $next)
     {
+        //add auth_id to request
+        $request->request->add([
+            'auth_id' => $request->user()->id,
+        ]);
+
         $response = $next($request);
 
         if ($response->getStatusCode() != 200) {
