@@ -457,8 +457,18 @@ class AgentScheduleRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
-
         $data['relations'] = ['user_info', 'title'];
+
+        if (isset($data['target'])) {
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'user_info.firstname';
+                    $data['target'][] = 'user_info.middlename';
+                    $data['target'][] = 'user_info.lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+        }
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
