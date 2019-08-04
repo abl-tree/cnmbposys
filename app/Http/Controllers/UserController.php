@@ -115,7 +115,12 @@ class UserController extends BaseController
     }
     public function changePass(Request $request,$id)
     {
-        
+        if (!isset($request['password'])) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "password is not set.",
+            ])->json();
+        }
         $data = $request->all();
         $data['password']= bcrypt($request['password']);
         $data['id'] = $id;

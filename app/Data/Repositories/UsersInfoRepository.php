@@ -904,6 +904,12 @@ class UsersInfoRepository extends BaseRepository
 
 
     public function updateUser($data = []){
+        if (!isset($data['password'])) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "password is not set.",
+            ]);
+        }
         
         $user_information = $this->user_data_update->find($data['id']);
         if($user_information){
