@@ -54,6 +54,52 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
+        /**
+         * Check if user is OM
+         * &&
+         * Check if slots for leave approval are still available
+         */
+        if ($data['user_access'] == 15) {
+            //fetch user data
+            $operations_manager = refresh_model($this->user->getModel())->find($data['approved_by']);
+
+            //fetch all schedules
+            $schedule_slots = refresh_model($this->agent_schedule->getModel())
+                ->where('user_id', $leave->user_id)
+                ->where('start_event', '>=', $leave->start_event)
+                ->where('end_event', '<=', $leave->end_event)
+                ->get()->all();
+
+            //check if a leave slot is full
+            foreach ($schedule_slots as $slot) {
+                $leave_slot = $operations_manager->leave_slots
+                    ->where('leave_type', $leave->leave_type)
+                    ->where('date', '>=', $slot->start_event)
+                    ->where('date', '<=', $slot->end_event)
+                    ->first();
+
+                if (!isset($leave_slot) || $leave_slot->value <= 0) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Leave slots for {$slot->start_event} are already full.",
+                    ]);
+                }
+            }
+
+            //decrement leave slots
+            foreach ($schedule_slots as $slot) {
+                $leave_slot = $operations_manager->leave_slots
+                    ->where('leave_type', $leave->leave_type)
+                    ->where('date', '>=', $slot->start_event)
+                    ->where('date', '<=', $slot->end_event)
+                    ->first();
+
+                $leave_slot->update([
+                    'value' => --$leave_slot->value,
+                ]);
+            }
+        }
+
         if ($data['status'] == "approved") {
             //fetch available leave credits
             $leave_credits = $this->leave_credit
@@ -123,6 +169,7 @@ class LeaveRepository extends BaseRepository
         return $this->defineLeave([
             'id' => $data['id'],
             'status' => $data['status'],
+            'approved_by' => $data['approved_by'],
         ]);
     }
 
@@ -232,6 +279,7 @@ class LeaveRepository extends BaseRepository
                 'id' => $leave->id,
                 'status' => 'approved',
                 'user_access' => $leave->allowed_access,
+                'approved_by' => $data['generated_by'],
             ]);
         }
 
@@ -275,7 +323,7 @@ class LeaveRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Leave deleted",
-            "description" => "An leave was deleted.",
+            "description" => "A leave was deleted.",
             "parameters" => $leave,
         ]);
 

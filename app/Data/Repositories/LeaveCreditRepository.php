@@ -131,7 +131,7 @@ class LeaveCreditRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Leave credit deleted",
-            "description" => "An leave credit was deleted.",
+            "description" => "A leave credit was deleted.",
             "parameters" => $leave_credit,
         ]);
 
