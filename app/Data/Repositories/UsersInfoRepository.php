@@ -631,8 +631,13 @@ class UsersInfoRepository extends BaseRepository
             }   
             }else{
                 foreach($array as $key => $value ){
+                   
                     $ben['benefit_id'] = $key+1;
-                    $ben['id_number'] = $value;
+                    if($array[$key]==""){
+                        $user_bene['id_number']=NULL;
+                    }else{
+                        $user_bene['id_number']=$value;
+                    }
                     $ben['user_info_id'] = $user_id;
                     $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
                     array_push($benefits,$user_ben);
@@ -857,7 +862,7 @@ class UsersInfoRepository extends BaseRepository
                             [
                                 "target"   => "user_info_id",
                                 "operator" => "=",
-                                "value"    => "66",
+                                "value"    => $data['id'],
                             ],
                         ];
                         $user_ben =$this->fetchGeneric($data, $this->user_benefits);
