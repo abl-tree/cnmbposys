@@ -150,6 +150,13 @@ class LeaveRepository extends BaseRepository
                 ]);
             }
 
+            if (!isset($data['allowed_access'])) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "Allowed access is not set.",
+                ]);
+            }
+
             if (!isset($data['start_event'])) {
                 return $this->setResponse([
                     'code' => 500,
@@ -366,23 +373,23 @@ class LeaveRepository extends BaseRepository
             $data['where'][] = [
                 "target" => "allowed_access",
                 "operator" => ">=",
-                "value" => 16,
+                "value" => 15,
             ];
             $data['where'][] = [
                 "target" => "allowed_access",
                 "operator" => "<=",
                 "value" => 17,
             ];
-        } else if ($data['user_access'] == 12 || $data['user_access'] == 13) {
+        } else if ($data['user_access'] >= 12 && $data['user_access'] <= 14) {
             $data['where'][] = [
                 "target" => "allowed_access",
-                "operator" => "<",
-                "value" => 15,
+                "operator" => ">=",
+                "value" => 12,
             ];
             $data['where'][] = [
                 "target" => "allowed_access",
-                "operator" => ">",
-                "value" => 17,
+                "operator" => "<=",
+                "value" => 14,
             ];
         } else if ($data['user_access'] <= 3) {
             $data['where'][] = [
@@ -394,7 +401,7 @@ class LeaveRepository extends BaseRepository
             $data['where'][] = [
                 "target" => "allowed_access",
                 "operator" => "=",
-                "value" => null,
+                "value" => $data['user_access'],
             ];
         }
 
