@@ -23,7 +23,7 @@ class NotificationController extends BaseController
      */
     public function __construct(
         NotificationRepository $notificationRepo
-    ){
+    ) {
         $this->notification_repo = $notificationRepo;
     }
 
@@ -36,7 +36,7 @@ class NotificationController extends BaseController
     public function fetchAll(Request $request)
     {
         $data = $request->all();
-        $data['id'] = $data['auth_id'];
+        $data['id'] = $request->user()->id;
         $data['all'] = true;
 
         if (!isset($data['id']) ||
@@ -62,7 +62,7 @@ class NotificationController extends BaseController
     {
         $data = $request->all();
         $data['notification_id'] = $id;
-        $data['id'] = $data['auth_id'];
+        $data['id'] = $request->user()->id;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
@@ -98,7 +98,7 @@ class NotificationController extends BaseController
          * $data['id'] = $this->token_ctrl->getUserEntity($request);
          */
         $data = $request->all();
-        $data['id'] = $data['auth_id'];
+        $data['id'] = $request->user()->id;
         $data['unread'] = true;
 
         if (!isset($data['id']) ||
