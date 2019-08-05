@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
 use App\Data\Repositories\ReportsRepository;
-use App\Data\Models\UserReport;
-
+use App\Http\Controllers\BaseController;
+use Illuminate\Http\Request;
 
 class ReportsController extends BaseController
 {
-     protected $user_reports;
+    protected $user_reports;
 
     public function __construct(
         ReportsRepository $ReportsRepository
-    ){
+    ) {
         $this->user_reports = $ReportsRepository;
     }
     public function index(Request $request)
@@ -23,7 +21,7 @@ class ReportsController extends BaseController
         return $this->absorb($this->user_reports->getAllReports($data))->json();
     }
 
-    /** 
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -34,72 +32,71 @@ class ReportsController extends BaseController
         $data = $request->all();
         //for notification
         $data['endpoint'] = $request->route()->uri;
-        return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();     
+        return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();
     }
 
-     public function addSanctionType(Request $request)
+    public function addSanctionType(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->addSanctionType($data))->json();     
+        return $this->absorb($this->user_reports->addSanctionType($data))->json();
     }
 
-     public function addSanctionLevel(Request $request)
+    public function addSanctionLevel(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->addSanctionLevel($data))->json();     
+        return $this->absorb($this->user_reports->addSanctionLevel($data))->json();
     }
-     public function userResponse(Request $request)
+    public function userResponse(Request $request)
     {
         $data = $request->all();
         //for notification
         $data['endpoint'] = $request->route()->uri;
-        return $this->absorb($this->user_reports->userResponse($data))->json();     
+        return $this->absorb($this->user_reports->userResponse($data))->json();
     }
 
-     public function getSanctionType(Request $request)
+    public function getSanctionType(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getSanctionType($data))->json();     
+        return $this->absorb($this->user_reports->getSanctionType($data))->json();
     }
-     public function getSanctionLevel(Request $request)
+    public function getSanctionLevel(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getSanctionLevel($data))->json();     
+        return $this->absorb($this->user_reports->getSanctionLevel($data))->json();
     }
-     public function getAllUser(Request $request)
+    public function getAllUser(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getAllUser($data))->json();     
+        return $this->absorb($this->user_reports->getAllUser($data))->json();
     }
     public function getSanctionTypes(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getSanctionTypes($data))->json();     
+        return $this->absorb($this->user_reports->getSanctionTypes($data))->json();
     }
     public function getSanctionTypesSearch(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getSanctionTypesSearch($data))->json();     
+        return $this->absorb($this->user_reports->getSanctionTypesSearch($data))->json();
     }
-     public function getSanctionLevels(Request $request)
+    public function getSanctionLevels(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getSanctionLevels($data))->json();     
+        return $this->absorb($this->user_reports->getSanctionLevels($data))->json();
     }
     public function getSanctionLevelsSearch(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getSanctionLevelsSearch($data))->json();     
+        return $this->absorb($this->user_reports->getSanctionLevelsSearch($data))->json();
     }
 
     public function getAll_Ir(Request $request)
-    {   
-         
+    {
+
         $data = $request->all();
-        return $this->absorb($this->user_reports->getAll_Ir($data))->json();     
+        return $this->absorb($this->user_reports->getAll_Ir($data))->json();
     }
-   
-   
+
     /**
      * Store a newly created resource in storage.
      *
@@ -109,12 +106,12 @@ class ReportsController extends BaseController
     public function report(Request $request, $id)
     {
         $data['id'] = $id;
-        
+
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "User ID is invalid.",
             ]);
         }
@@ -124,13 +121,14 @@ class ReportsController extends BaseController
 
     public function userFiledIR(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
-        
+
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "User ID is invalid.",
             ]);
         }
@@ -140,36 +138,34 @@ class ReportsController extends BaseController
     public function getAllUserUnder(Request $request, $id)
     {
         $data['id'] = $id;
-        
+
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "User ID is invalid.",
             ]);
         }
 
         return $this->absorb($this->user_reports->getAllUserUnder($data))->json();
-    } 
+    }
 
     public function getSelectAllUserUnder(Request $request, $id)
     {
         $data['id'] = $id;
-        
+
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "User ID is invalid.",
             ]);
         }
 
         return $this->absorb($this->user_reports->getSelectAllUserUnder($data))->json();
     }
-
-
 
     /**
      * Display the specified resource.
@@ -222,18 +218,18 @@ class ReportsController extends BaseController
     {
         $data = $request->all();
         $data['id'] = $id;
-        return $this->absorb($this->user_reports->addSanctionType($data))->json();     
+        return $this->absorb($this->user_reports->addSanctionType($data))->json();
     }
     public function update_slevel(Request $request, $id)
     {
         $data = $request->all();
         $data['id'] = $id;
 
-        return $this->absorb($this->user_reports->addSanctionLevel($data))->json();     
+        return $this->absorb($this->user_reports->addSanctionLevel($data))->json();
     }
     public function delete(Request $request, $id)
     {
-        $data       = $request->all();
+        $data = $request->all();
         $data['id'] = $id;
         //for notification
         $data['endpoint'] = $request->route()->uri;
@@ -242,40 +238,40 @@ class ReportsController extends BaseController
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "IR ID is not set.",
             ]);
         }
 
         return $this->absorb($this->user_reports->deleteReport($data))->json();
-    } 
+    }
     public function delete_response(Request $request, $id)
     {
-        $data       = $request->all();
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "IR ID is not set.",
             ]);
         }
 
         return $this->absorb($this->user_reports->deleteResponse($data))->json();
-    } 
+    }
 
     public function delete_stype(Request $request, $id)
     {
-        $data       = $request->all();
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Sanction Type ID is not set.",
             ]);
         }
@@ -284,24 +280,20 @@ class ReportsController extends BaseController
     }
     public function delete_slevel(Request $request, $id)
     {
-        $data       = $request->all();
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
             $data['id'] <= 0) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Sanction Level ID is not set.",
             ]);
         }
 
         return $this->absorb($this->user_reports->deleteSlevel($data))->json();
     }
-
-
-
-
 
     /**
      * Remove the specified resource from storage.
