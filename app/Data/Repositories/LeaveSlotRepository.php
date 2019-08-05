@@ -195,6 +195,50 @@ class LeaveSlotRepository extends BaseRepository
         ]);
     }
 
+    public function countLeaveSlots($data)
+    {
+        if (!isset($data['start_event'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Start event is not set",
+                "parameters" => $data,
+            ]);
+        }
+
+        if (!isset($data['end_event'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "End event is not set",
+                "parameters" => $data,
+            ]);
+        }
+
+        $count = $this->leave_slot
+            ->where('date', '>=', $data['start_event'])
+            ->where('date', '<=', $data['end_event'])
+            ->sum('value');
+
+        if (!$count || $count <= 0) {
+            return $this->setResponse([
+                "code" => 404,
+                "title" => "No leave slots were found",
+                "meta" => [
+                    "count" => 0,
+                ],
+                "parameters" => $data,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully retrieved leave slots count",
+            "meta" => [
+                "count" => $count,
+            ],
+            "parameters" => $data,
+        ]);
+    }
+
     public function searchLeaveSlot($data)
     {
         if (!isset($data['query'])) {

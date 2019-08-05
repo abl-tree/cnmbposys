@@ -22,6 +22,12 @@ class LeaveSlotController extends BaseController
         return $this->absorb($this->leave_slot_repo->fetchLeaveSlot($data))->json();
     }
 
+    public function count(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->leave_slot_repo->countLeaveSlots($data))->json();
+    }
+
     public function create(Request $request)
     {
         $data = $request->all();

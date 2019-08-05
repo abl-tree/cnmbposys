@@ -162,6 +162,7 @@ Route::group([
             Route::get("fetch/{leave_slot_id}", "LeaveSlotController@fetch");
             Route::post('update/{leave_slot_id}', 'LeaveSlotController@update');
             Route::get('search', 'LeaveSlotController@search');
+            Route::get('count', 'LeaveSlotController@count');
 
         });
     });
