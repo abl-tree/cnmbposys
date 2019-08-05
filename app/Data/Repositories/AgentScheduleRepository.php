@@ -423,7 +423,8 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = ['info', 'schedule.title'];
+        $data['relations'][] = 'info';
+        $data['relations'][] = 'schedule.title';
 
         if (isset($data['search']) || isset($data['target'])) {
             if (!is_array($data['target'])) {

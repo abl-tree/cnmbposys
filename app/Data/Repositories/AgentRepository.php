@@ -59,7 +59,7 @@ class AgentRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = 'info';
+        $data['relations'][] = 'info';
 
         $result = $this->fetchGeneric($data, $this->user);
 
@@ -104,7 +104,7 @@ class AgentRepository extends BaseRepository
             "query" => $data['query'],
         ];
 
-        $data['relations'] = ['info'];
+        $data['relations'][] = 'info';
 
         $data['where'] = [
             [
