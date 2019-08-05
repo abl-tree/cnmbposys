@@ -150,6 +150,7 @@ class UserController extends BaseController
     }
     public function userInfo(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
         
         if (!isset($data['id']) ||
@@ -165,6 +166,7 @@ class UserController extends BaseController
     }
     public function getCluster(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
         
         if (!isset($data['id']) ||

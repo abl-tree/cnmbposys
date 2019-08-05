@@ -418,9 +418,11 @@ class ReportsRepository extends BaseRepository
 
       public function fetchUserReport($data = [])
     {
+        
        $meta_index = "reports";
         $parameters = [];
         $count      = 0;
+        
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
@@ -439,7 +441,6 @@ class ReportsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = [];   
         $result = $this->fetchGeneric($data, $this->incident_report);
 
         if (!$result) {
@@ -463,7 +464,7 @@ class ReportsRepository extends BaseRepository
                 $meta_index => $result,
                 "count"     => $count,  
             ],
-           
+            "parameters" => $parameters,
         ]);
     }
 
@@ -930,7 +931,7 @@ class ReportsRepository extends BaseRepository
                 $meta_index => $result,
                 "count"     => $count
             ],
-            
+            "parameters" => $parameters,
             
         ]);
     }
