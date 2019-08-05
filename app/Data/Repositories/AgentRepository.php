@@ -61,6 +61,19 @@ class AgentRepository extends BaseRepository
 
         $data['relations'][] = 'info';
 
+        //filter by leave status
+        if (isset($data['leave_status'])) {
+            $this->user = $this->user->with(['leaves' => function ($query) use ($data) {
+                $query->where('status', $data['leave_status']);
+            }]);
+
+            $data['wherehas'][] = [
+                'relation' => 'leaves',
+                'target' => 'status',
+                'value' => $data['leave_status'],
+            ];
+        }
+
         $result = $this->fetchGeneric($data, $this->user);
 
         if (!$result) {
