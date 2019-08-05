@@ -423,7 +423,21 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = ['info', 'schedule.title'];
+        $data['relations'][] = 'info';
+        $data['relations'][] = 'schedule.title';
+
+        //filter by leave status
+        if (isset($data['leave_status'])) {
+            $this->user = $this->user->with(['leaves' => function ($query) use ($data) {
+                $query->where('status', $data['leave_status']);
+            }]);
+
+            $data['wherehas'][] = [
+                'relation' => 'leaves',
+                'target' => 'status',
+                'value' => $data['leave_status'],
+            ];
+        }
 
         if (isset($data['search']) || isset($data['target'])) {
             if (!is_array($data['target'])) {

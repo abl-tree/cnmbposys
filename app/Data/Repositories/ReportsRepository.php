@@ -909,6 +909,7 @@ class ReportsRepository extends BaseRepository
         }
         $count_data = $data;
         $data['relations'] = ['filedby','agentResponse'];   
+
         $result = $this->fetchGeneric($data, $this->user_reports);
         if (!$result) {
             return $this->setResponse([

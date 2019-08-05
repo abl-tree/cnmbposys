@@ -413,6 +413,15 @@ class LeaveRepository extends BaseRepository
 
         }
 
+        //filter leaves by status
+        if (isset($data['status'])) {
+            $data['where'][] = [
+                "target" => "status",
+                "operator" => "=",
+                "value" => $data['status'],
+            ];
+        }
+
         //set relations
         $data['relations'][] = 'user';
 
@@ -500,6 +509,15 @@ class LeaveRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
+
+        //filter leaves by status
+        if (isset($data['status'])) {
+            $data['where'][] = [
+                "target" => "status",
+                "operator" => "=",
+                "value" => $data['status'],
+            ];
+        }
 
         //set relations
         $data['relations'][] = 'user';
