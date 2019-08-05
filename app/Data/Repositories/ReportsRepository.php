@@ -942,7 +942,15 @@ class ReportsRepository extends BaseRepository
         $meta_index = "metadata";
         $parameters = [];
         $count      = 0;
-         
+        $data['single'] = false;
+        $data['where']  = [
+            [
+                "target"   => "excel_hash",
+                "operator" => "!=",
+                "value"    => "development",
+            ],
+        ];
+
 
         $count_data = $data;
         $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
@@ -959,18 +967,18 @@ class ReportsRepository extends BaseRepository
         //     "parameters" => $parameters,
         // ]);
         foreach ($result as $key => $value) {
-              if($value->accesslevelhierarchy->parent_id==$data['id']){
-                  $last_child=$value->accesslevelhierarchy->child_id;
+              if($value->parent_id==$data['id']){
+                  $last_child=$value->child_id;
                   array_push($results,$value);
                 foreach ($result as $key => $val) {
                     $last_child2=null;
-                    if($val->accesslevelhierarchy->parent_id==$last_child){
+                    if($val->parent_id==$last_child){
                         $keys++;
                         $count++;  
                         array_push($results,$val);
                         foreach ($result as $key => $vals) {
-                            $last_child2=$val->accesslevelhierarchy->child_id;
-                            if($vals->accesslevelhierarchy->parent_id==$last_child2){
+                            $last_child2=$val->child_id;
+                            if($vals->parent_id==$last_child2){
                                 $keys++;
                                 $count++;  
                                 array_push($results,$vals);
@@ -1020,7 +1028,15 @@ class ReportsRepository extends BaseRepository
         $meta_index = "options";
         $parameters = [];
         $count      = 0;
-         
+        $data['single'] = false;
+        $data['where']  = [
+            [
+                "target"   => "excel_hash",
+                "operator" => "!=",
+                "value"    => "development",
+            ],
+        ];
+
 
         $count_data = $data;
         $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
@@ -1029,18 +1045,18 @@ class ReportsRepository extends BaseRepository
         $keys=0;
         $last_child=null;
         foreach ($result as $key => $value) {
-              if($value->accesslevelhierarchy->parent_id==$data['id']){
-                  $last_child=$value->accesslevelhierarchy->child_id;
+              if($value->parent_id==$data['id']){
+                  $last_child=$value->value;
                   array_push($results,$value);
                 foreach ($result as $key => $val) {
                     $last_child2=null;
-                    if($val->accesslevelhierarchy->parent_id==$last_child){
+                    if($val->parent_id==$last_child){
                         $keys++;
                         $count++;  
                         array_push($results,$val);
                         foreach ($result as $key => $vals) {
-                            $last_child2=$val->accesslevelhierarchy->child_id;
-                            if($vals->accesslevelhierarchy->parent_id==$last_child2){
+                            $last_child2=$val->value;
+                            if($vals->parent_id==$last_child2){
                                 $keys++;
                                 $count++;  
                                 array_push($results,$vals);
@@ -1075,7 +1091,7 @@ class ReportsRepository extends BaseRepository
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved Users under this Parent",
-            "description"=>"Users under this Parent",
+            "description"=>"For Select Options Values",
             "meta"       => [
                 $meta_index => $results,
                 "count"     => $count
