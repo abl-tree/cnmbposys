@@ -105,6 +105,7 @@ class ReportsController extends BaseController
      */
     public function report(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
@@ -137,6 +138,7 @@ class ReportsController extends BaseController
     }
     public function getAllUserUnder(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
@@ -153,6 +155,7 @@ class ReportsController extends BaseController
 
     public function getSelectAllUserUnder(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
 
         if (!isset($data['id']) ||
