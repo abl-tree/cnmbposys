@@ -855,6 +855,7 @@ class UsersInfoRepository extends BaseRepository
                             ],
                         ]);
                     }
+                    $ben=[];
                     if(isset($data['benefits'])){
                     
                         $data['single'] = false;
@@ -867,7 +868,7 @@ class UsersInfoRepository extends BaseRepository
                         ];
                         $user_ben =$this->fetchGeneric($data, $this->user_benefits);
                         $array=json_decode($data['benefits'], true );
-                        $ben=[];
+                        
                         foreach($user_ben as $key => $value ){
                             $user_bene = $this->benefit_update->find($value->id);
                             if($array[$key]==""){
