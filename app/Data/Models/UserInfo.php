@@ -30,7 +30,7 @@ class UserInfo extends BaseModel
         'birthdate', 'gender', 'contact_number',
         'address', 'image', 'salary_rate','image_url',
         'status', 'hired_date', 'separation_date', 'excel_hash',
-        'p_email','created_at','updated_at'
+        'p_email','created_at','updated_at','full_name'
     ];
 
     protected $appends = [

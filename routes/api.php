@@ -38,8 +38,28 @@ Route::group([
     });
 
     Route::group([
+        "prefix" => "overtime",
+    ], function () {
+
+        Route::get("/", "OvertimeController@agents");
+        Route::post("create", "OvertimeController@store");
+
+    });
+
+    Route::group([
         "prefix" => "schedules",
     ], function () {
+        
+        Route::group([
+            "prefix" => "overtime",
+        ], function () {
+
+            Route::get("/", "OvertimeController@all");
+            Route::post("create", "OvertimeController@create");
+            Route::post("create/bulk", "OvertimeController@bulkScheduleInsertion");
+            Route::post('delete/{overtime_id}', 'OvertimeController@delete');
+
+        });
 
         Route::get("/", "AgentScheduleController@all");
         Route::get('agents', 'AgentScheduleController@fetchAllAgentsWithSchedule');
@@ -53,6 +73,8 @@ Route::group([
         Route::get('search', 'AgentScheduleController@search');
         Route::get('stats', 'AgentScheduleController@stats');
         Route::get('work/{option}', 'AgentScheduleController@workInfo');
+        Route::post('conformance/{id}', 'AgentScheduleController@conformance');
+        Route::post('remarks/{id}', 'AgentScheduleController@remarks');
 
     });
 
