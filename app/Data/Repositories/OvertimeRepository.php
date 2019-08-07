@@ -122,12 +122,44 @@ class OvertimeRepository extends BaseRepository
         if (isset($data['id'])) {
             $does_exist = $this->overtime_schedule->find($data['id']);
 
-             if (!$does_exist) {
+            if (!$does_exist) {
                 return $this->setResponse([
                     'code' => 500,
                     'title' => 'Overtime Schedule ID does not exist.',
                 ]);
             }
+        }
+
+        //Check for conflicts
+        
+        $isConflict = $this->overtime_schedule
+            ->where(function($q) use ($data) {
+                $q->where('start_event', '>', $data['start_event'])
+                ->where([['start_event', '<', $data['end_event']], ['end_event', '>', $data['end_event']]]);
+            })
+            ->orWhere(function($q) use ($data) {
+                $q->where('start_event', '>', $data['start_event'])
+                ->where('end_event', '<', $data['end_event']);
+            })
+            ->orWhere(function($q) use ($data) {
+                $q->where('start_event', '<', $data['start_event'])
+                ->where('end_event', '>', $data['end_event']);
+            })
+            ->orWhere(function($q) use ($data) {
+                $q->where([['start_event', '<', $data['start_event']], ['end_event', '>', $data['start_event']]])
+                ->where('end_event', '<', $data['end_event']);
+            })
+            ->first();
+            
+        if ($isConflict) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => 'Overtime schedule conflict.',
+                'meta' => [
+                    'overtime_schedule' => $isConflict
+                ],
+                'parameters' => $data
+            ]);
         }
 
         // check for duplicate schedules
@@ -186,7 +218,10 @@ class OvertimeRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined an overtime schedule.",
-            "parameters" => $overtime_schedule,
+            "meta" => [
+                'overtime_schedule' => $overtime_schedule
+            ],
+            "parameters" => $data,
         ]);
 
     }
