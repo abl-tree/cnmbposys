@@ -425,6 +425,15 @@ class LeaveRepository extends BaseRepository
         //set relations
         $data['relations'][] = 'user';
 
+        //fetch user if set
+        if (isset($data['user_id']) && is_numeric($data['user_id'])) {
+            $data['where'][] = [
+                "target" => "user_id",
+                "operator" => "=",
+                "value" => $data['user_id'],
+            ];
+        }
+
         /**
          * Set access level filter
          * (to be reworked)
