@@ -3,7 +3,6 @@
 namespace App\Data\Models;
 
 use App\Data\Models\BaseModel;
-use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
 class Attendance extends BaseModel
@@ -11,11 +10,12 @@ class Attendance extends BaseModel
     protected $fillable = [
         'schedule_id',
         'time_in',
-        'time_out'
+        'time_out',
+        'is_leave',
     ];
 
     protected $appends = [
-        'rendered_time'
+        'rendered_time',
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
@@ -36,7 +36,8 @@ class Attendance extends BaseModel
         return $difference;
     }
 
-    public function schedule(){
-        return $this->hasOne('App\Data\Models\AgentSchedule', 'id','schedule_id');
+    public function schedule()
+    {
+        return $this->hasOne('App\Data\Models\AgentSchedule', 'id', 'schedule_id');
     }
 }

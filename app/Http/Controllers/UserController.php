@@ -113,6 +113,20 @@ class UserController extends BaseController
        
         return $this->absorb($this->user_info->addUser($data))->json();     
     }
+    public function changePass(Request $request,$id)
+    {
+        if (!isset($request['password'])) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "password is not set.",
+            ])->json();
+        }
+        $data = $request->all();
+        $data['password']= bcrypt($request['password']);
+        $data['id'] = $id;
+       
+        return $this->absorb($this->user_info->updateUser($data))->json();     
+    }
 
     public function updateStatus(Request $request)
     {       
@@ -136,6 +150,7 @@ class UserController extends BaseController
     }
     public function userInfo(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
         
         if (!isset($data['id']) ||
@@ -151,6 +166,7 @@ class UserController extends BaseController
     }
     public function getCluster(Request $request, $id)
     {
+        $data = $request->all();
         $data['id'] = $id;
         
         if (!isset($data['id']) ||

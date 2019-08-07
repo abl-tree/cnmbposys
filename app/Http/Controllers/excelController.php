@@ -24,9 +24,17 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Http\Controllers\BaseController;
 
-
+ 
 class excelController extends BaseController
 {
+      /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */ 
+
+
     function Addtemplate(){
         $filename = "Add-Template-".now().".xlsx"; //filename
         $spreadsheet = new Spreadsheet();
@@ -236,6 +244,10 @@ class excelController extends BaseController
     }
 
     function report(){
+        return $this->setResponse([
+            'code'  => 500,
+            'title' => "Request schedule ID is not set.",
+        ]);
         // $name = "Export-Report-";
         // $name.= now();
         // return (new exportReportSheet)->download($name.'.xlsx');
@@ -314,7 +326,13 @@ class excelController extends BaseController
 
 
 
-    function importToArray(Request $request){
+   public function importToArray(Request $request){
+       if(!isset($request['excel_file'])){
+        return $this->setResponse([
+            'code'  => 500,
+            'title' => "excel_file is not set.",
+        ])->json();
+       }
         if($request->hasFile('excel_file')){
             $object=[];
             $path = $request->file('excel_file')->getRealPath();
@@ -324,7 +342,7 @@ class excelController extends BaseController
             $object['outdated'] = false;
             $sheets = $spreadsheet->getSheetNames();
             if(!in_array('config',$sheets)){
-                echo json_encode('Excel Not Recognized.');
+                
                 exit;
             }
             $handler = $spreadsheet->setActiveSheetIndexByName('config');
@@ -367,7 +385,15 @@ class excelController extends BaseController
                 echo json_encode('Template is outdated.');
                 exit;
             }
-            echo json_encode($object);
+          // echo json_encode($object);
+           return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully ",
+            "meta"        => [
+                "array" => $object,
+            ]
+        ])->json();
+
             exit;
         }else{
             echo json_encode('File not valid.');
@@ -481,6 +507,14 @@ class excelController extends BaseController
         }
         
         echo json_encode(['status'=>$insertstatus,'eid'=>$request->obj[14]]);
+        // return $this->setResponse([
+        //     "code"       => 200,
+        //     "title"      => "Successfully ",
+        //     "meta"        => [
+        //         "eid" => $request->obj[14],
+        //         "status"=> $insertstatus
+        //     ]
+        // ])->json();
     }
 
 }

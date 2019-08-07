@@ -15,6 +15,9 @@ class SanctionTypes extends BaseModel
         'type_number', 'type_description','created_at','updated_at'
     ];  
 
+    protected $searchable = [
+        'type_description'
+    ];
 
     public function report() {
        return $this->belongsTo('\App\Data\Models\UserReport','id','sanction_type_id');

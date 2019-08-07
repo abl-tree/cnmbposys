@@ -428,9 +428,41 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = ['info', 'schedule.title'];
+        $data['relations'][] = 'info';
+        $data['relations'][] = 'schedule.title';
 
-        $result = $this->fetchGeneric($data, $this->user);
+        //filter by leave status
+        if (isset($data['leave_status'])) {
+            $this->user = $this->user->with(['leaves' => function ($query) use ($data) {
+                $query->where('status', $data['leave_status']);
+            }]);
+
+            $data['wherehas'][] = [
+                'relation' => 'leaves',
+                'target' => 'status',
+                'value' => $data['leave_status'],
+            ];
+        }
+
+        if (isset($data['search']) || isset($data['target'])) {
+            if (!is_array($data['target'])) {
+                $data['target'] = (array) $data['target'];
+            }
+
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'info.firstname';
+                    $data['target'][] = 'info.middlename';
+                    $data['target'][] = 'info.lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+
+            $result = $this->genericSearch($data, $this->user)->get()->all();
+        } else {
+            $result = $this->fetchGeneric($data, $this->user);
+        }
+
         if (!$result) {
             return $this->setResponse([
                 'code' => 404,
@@ -443,6 +475,7 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully retrieved agent schedules",
@@ -462,8 +495,18 @@ class AgentScheduleRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
+        $data['relations'] = ['user_info.user', 'title'];
 
-        $data['relations'] = ['user_info', 'title'];
+        if (isset($data['target'])) {
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'user_info.firstname';
+                    $data['target'][] = 'user_info.middlename';
+                    $data['target'][] = 'user_info.lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+        }
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
@@ -480,6 +523,18 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
+
+        if (!is_array($result)) {
+            $result = [
+                $result,
+            ];
+        }
+
+        foreach ($result as $key => $value) {
+            $value->team_leader = $value->user_info->user->team_leader;
+            $value->operations_manager = $value->user_info->user->operations_manager;
+            unset($value->user_info->user);
+        }
 
         return $this->setResponse([
             "code" => 200,

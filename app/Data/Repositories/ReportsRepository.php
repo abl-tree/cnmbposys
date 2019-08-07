@@ -3,6 +3,7 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\UserInfo;
 use App\Data\Models\Users;
+use App\Data\Models\UsersData;
 use App\Data\Models\SelectUsers;
 use App\User;
 use App\Data\Repositories\LogsRepository;
@@ -22,6 +23,7 @@ class ReportsRepository extends BaseRepository
     protected 
         $user_info,
         $users,
+        $usersData,
         $select_users,
         $user,
         $incident_report,
@@ -37,6 +39,7 @@ class ReportsRepository extends BaseRepository
     public function __construct(
         UserInfo $user_info,
         Users $users,
+        UsersData $usersData,
         SelectUsers $select_users,
         User $user,
         SanctionType $sanction_type,
@@ -50,6 +53,7 @@ class ReportsRepository extends BaseRepository
         NotificationRepository $notificationRepository
     ) {
         $this->user_info = $user_info;
+        $this->usersData = $usersData;
         $this->users = $users;
         $this->select_users = $select_users;
         $this->user = $user;
@@ -414,9 +418,11 @@ class ReportsRepository extends BaseRepository
 
       public function fetchUserReport($data = [])
     {
+        
        $meta_index = "reports";
         $parameters = [];
         $count      = 0;
+        
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
@@ -435,7 +441,6 @@ class ReportsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = [];   
         $result = $this->fetchGeneric($data, $this->incident_report);
 
         if (!$result) {
@@ -457,10 +462,9 @@ class ReportsRepository extends BaseRepository
             "description"=>"Users With Incident Reports",
             "meta"       => [
                 $meta_index => $result,
-                "count"     => $count
+                "count"     => $count,  
             ],
-            
-            
+            "parameters" => $parameters,
         ]);
     }
 
@@ -476,14 +480,14 @@ class ReportsRepository extends BaseRepository
             if (!isset($data['type_number'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "type_number is not set.",
+                    'title' => "Type Number is not set.",
                 ]);
             }
 
             if (!isset($data['type_description'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "type description is not set.",
+                    'title' => "Type Description is not set.",
                 ]);
             }
         }else{
@@ -870,8 +874,8 @@ class ReportsRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully retrieved Sanction Type List",
-            "description"=>"Sanction Type",
+            "title"      => "Successfully retrieved All Users",
+            "description"=>"All Users",
             "meta"       => [
                 $meta_index => $result,
                 "count"     => $count
@@ -905,6 +909,7 @@ class ReportsRepository extends BaseRepository
         }
         $count_data = $data;
         $data['relations'] = ['filedby','agentResponse'];   
+
         $result = $this->fetchGeneric($data, $this->user_reports);
         if (!$result) {
             return $this->setResponse([
@@ -927,7 +932,7 @@ class ReportsRepository extends BaseRepository
                 $meta_index => $result,
                 "count"     => $count
             ],
-            
+            "parameters" => $parameters,
             
         ]);
     }
@@ -937,27 +942,43 @@ class ReportsRepository extends BaseRepository
         $meta_index = "metadata";
         $parameters = [];
         $count      = 0;
-         
+        $data['single'] = false;
+        $data['where']  = [
+            [
+                "target"   => "excel_hash",
+                "operator" => "!=",
+                "value"    => "development",
+            ],
+        ];
+
 
         $count_data = $data;
         $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
-        $result = $this->fetchGeneric($data, $this->users);
+        $result = $this->fetchGeneric($data, $this->usersData);
         $results=[];
         $keys=0;
         $last_child=null;
+        // return $this->setResponse([
+        //     'code'       => 404,
+        //     'title'      => "No users found",
+        //     "meta"       => [
+        //         $meta_index => $result,
+        //     ],
+        //     "parameters" => $parameters,
+        // ]);
         foreach ($result as $key => $value) {
-              if($value->accesslevelhierarchy->parent_id==$data['id']){
-                  $last_child=$value->accesslevelhierarchy->child_id;
+              if($value->parent_id==$data['id']){
+                  $last_child=$value->child_id;
                   array_push($results,$value);
                 foreach ($result as $key => $val) {
                     $last_child2=null;
-                    if($val->accesslevelhierarchy->parent_id==$last_child){
+                    if($val->parent_id==$last_child){
                         $keys++;
                         $count++;  
                         array_push($results,$val);
                         foreach ($result as $key => $vals) {
-                            $last_child2=$val->accesslevelhierarchy->child_id;
-                            if($vals->accesslevelhierarchy->parent_id==$last_child2){
+                            $last_child2=$val->child_id;
+                            if($vals->parent_id==$last_child2){
                                 $keys++;
                                 $count++;  
                                 array_push($results,$vals);
@@ -1007,7 +1028,15 @@ class ReportsRepository extends BaseRepository
         $meta_index = "options";
         $parameters = [];
         $count      = 0;
-         
+        $data['single'] = false;
+        $data['where']  = [
+            [
+                "target"   => "excel_hash",
+                "operator" => "!=",
+                "value"    => "development",
+            ],
+        ];
+
 
         $count_data = $data;
         $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
@@ -1016,18 +1045,18 @@ class ReportsRepository extends BaseRepository
         $keys=0;
         $last_child=null;
         foreach ($result as $key => $value) {
-              if($value->accesslevelhierarchy->parent_id==$data['id']){
-                  $last_child=$value->accesslevelhierarchy->child_id;
+              if($value->parent_id==$data['id']){
+                  $last_child=$value->value;
                   array_push($results,$value);
                 foreach ($result as $key => $val) {
                     $last_child2=null;
-                    if($val->accesslevelhierarchy->parent_id==$last_child){
+                    if($val->parent_id==$last_child){
                         $keys++;
                         $count++;  
                         array_push($results,$val);
                         foreach ($result as $key => $vals) {
-                            $last_child2=$val->accesslevelhierarchy->child_id;
-                            if($vals->accesslevelhierarchy->parent_id==$last_child2){
+                            $last_child2=$val->value;
+                            if($vals->parent_id==$last_child2){
                                 $keys++;
                                 $count++;  
                                 array_push($results,$vals);
@@ -1062,7 +1091,7 @@ class ReportsRepository extends BaseRepository
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved Users under this Parent",
-            "description"=>"Users under this Parent",
+            "description"=>"For Select Options Values",
             "meta"       => [
                 $meta_index => $results,
                 "count"     => $count
@@ -1108,6 +1137,66 @@ class ReportsRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_types->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Type List",
+            "description"=>"Sanction Type",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+    public function getSanctionTypesSearch($data = [])
+    {
+        $meta_index = "";
+        $parameters = [];
+        $count      = 0;
+
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+        $result = $this->sanction_types;
+
+        $meta_index = "sanction_types";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        // if (isset($data['target'])) {
+        //     foreach ((array) $data['target'] as $index => $column) {
+        //     if (str_contains($column, "type_description")) {
+        //         $data['target'][] = 'type_description';
+        //         unset($data['target'][$index]);
+        //     }
+        // }
+        // }
+       
+       
+        $count_data = $data;
+        $count_data['search'] = true;
+         $result = $this->genericSearch($data, $result)->get()->all();
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Types are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+        
        
         $count = $this->countData($count_data, refresh_model($this->sanction_types->getModel()));
 
@@ -1174,6 +1263,93 @@ class ReportsRepository extends BaseRepository
             
         ]);
     }
+    public function getSanctionLevelsSearch($data = [])
+    {
+        $meta_index = "";
+        $parameters = [];
+        $count      = 0;
+
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+        $result = $this->sanction_levels;
+
+        $meta_index = "sanction_levels";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+       
+        $count_data = $data;
+        $count_data['search'] = true;
+         $result = $this->genericSearch($data, $result)->get()->all();
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Sanction Level are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+        
+       
+        $count = $this->countData($count_data, refresh_model($this->sanction_levels->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Sanction Level List",
+            "description"=>"Sanction level",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
+    public function getAll_Ir($data = [])
+    {
+       $meta_index = "reports";
+        $parameters = [];
+        $count      = 0;
+
+        $count_data = $data;
+        $data['relations'] = [];   
+        $result = $this->fetchGeneric($data, $this->incident_report);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Reports are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->incident_report->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Users with Reports",
+            "description"=>"Users With Incident Reports",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
 
 
 

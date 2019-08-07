@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class BenefitUpdate extends BaseModel
 {   
-    protected $primaryKey = 'id_number';
+    protected $primaryKey = 'id';
     protected $table = 'user_benefits';
     // protected $appends = ['value','text'];
     // protected $fillable = [

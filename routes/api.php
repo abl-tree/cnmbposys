@@ -149,6 +149,47 @@ Route::group([
     });
 
     Route::group([
+        "prefix" => "leaves",
+    ], function () {
+
+        Route::get("/", "LeaveController@all");
+        Route::post("create", "LeaveController@create");
+        Route::post('delete/{leave_id}', 'LeaveController@delete');
+        Route::get("fetch/{leave_id}", "LeaveController@fetch");
+        Route::post('update/{leave_id}', 'LeaveController@update');
+        Route::get('search', 'LeaveController@search');
+        Route::post("{action}/{leave_id}", "LeaveController@approval")->where('action', 'approve|reject');
+        Route::post("cancel/{leave_id}", "LeaveController@cancel");
+
+        Route::group([
+            "prefix" => "credits",
+        ], function () {
+
+            Route::get("/", "LeaveCreditController@all");
+            Route::post("create", "LeaveCreditController@create");
+            Route::post('delete/{leave_credit_id}', 'LeaveCreditController@delete');
+            Route::get("fetch/{leave_credit_id}", "LeaveCreditController@fetch");
+            Route::post('update/{leave_credit_id}', 'LeaveCreditController@update');
+            Route::get('search', 'LeaveCreditController@search');
+
+        });
+
+        Route::group([
+            "prefix" => "slots",
+        ], function () {
+
+            Route::get("/", "LeaveSlotController@all");
+            Route::post("create", "LeaveSlotController@create");
+            Route::post('delete/{leave_slot_id}', 'LeaveSlotController@delete');
+            Route::get("fetch/{leave_slot_id}", "LeaveSlotController@fetch");
+            Route::post('update/{leave_slot_id}', 'LeaveSlotController@update');
+            Route::get('search', 'LeaveSlotController@search');
+            Route::get('count', 'LeaveSlotController@count');
+
+        });
+    });
+
+    Route::group([
         "prefix" => "logs",
     ], function () {
 
@@ -165,6 +206,7 @@ Route::group([
         Route::get("issued_to/{id}", "ReportsController@report");
         Route::get("issued_by/{id}", "ReportsController@userFiledIR");
         Route::get("select_all_users/{id}", "ReportsController@getSelectAllUserUnder");
+        Route::get("IR", "ReportsController@getAll_Ir");
         Route::get("all_users", "ReportsController@getAllUser");
         Route::get("all_users/{id}", "ReportsController@getAllUserUnder");
         Route::post("create", "ReportsController@create");
@@ -179,7 +221,8 @@ Route::group([
     ], function () {
 
         Route::get("select_sanction_types", "ReportsController@getSanctionType");
-        Route::get("sanction_types", "ReportsController@getSanctionTypes");
+        Route::get("/", "ReportsController@getSanctionTypes");
+        Route::get("search", "ReportsController@getSanctionTypesSearch");
         Route::post('delete/{id}', 'ReportsController@delete_stype');
         Route::post('update/{id}', 'ReportsController@update_stype');
         Route::post("create", "ReportsController@addSanctionType");
@@ -188,7 +231,8 @@ Route::group([
         "prefix" => "sanction_level",
     ], function () {
         Route::get("select_sanction_levels", "ReportsController@getSanctionLevel");
-        Route::get("sanction_levels", "ReportsController@getSanctionLevels");
+        Route::get("/", "ReportsController@getSanctionLevels");
+        Route::get("search", "ReportsController@getSanctionLevelsSearch");
         Route::post('delete/{id}', 'ReportsController@delete_slevel');
         Route::post('update/{id}', 'ReportsController@update_slevel');
         Route::post("create", "ReportsController@addSanctionLevel");
@@ -209,11 +253,10 @@ Route::group([
         Route::post("bulk_change_status", "UserController@bulkUpdateStatus");
         Route::post("create", "UserController@addUser");
         Route::post("update/{id}", "UserController@updateUser");
+        Route::post("change_pass/{id}", "UserController@changePass");
         Route::get("search", "UserController@search");
-       
 
     });
-    
 
     Route::group([
         "prefix" => "notifications",
@@ -228,6 +271,15 @@ Route::group([
         Route::get("scheduled", "NotificationController@scheduledNotifications");
     });
 
+    Route::group([
+        "prefix" => "excel",
+    ], function () {
+        Route::get('export_report', 'excelController@report');
+        Route::get('export_add_template', 'excelController@Addtemplate');
+        Route::get('reassign_template', 'excelController@Reassigntemplate');
+        Route::post('import_to_array', 'excelController@importToArray');
+        Route::post('import', 'excelController@importStoreAdd');
+    });
 });
 
 Route::get("/", function () { //test lang kung working
