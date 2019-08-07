@@ -191,7 +191,7 @@ class OvertimeRepository extends BaseRepository
             ]);
         }
 
-        $auth_id = 1; //Auth::id()
+        $auth_id = Auth::id();
 
         if (isset($auth_id) ||
             !is_numeric($auth_id) ||
@@ -242,11 +242,11 @@ class OvertimeRepository extends BaseRepository
 
         $data = array(
             'title_id' => 1,
-            'user_id' => 5, //Auth id
+            'user_id' => Auth::id(),
             'overtime_id' => $available_ot->id
         );
 
-        $auth_id = 5; //Auth::id()
+        $auth_id = Auth::id();
 
         // data validation
 
