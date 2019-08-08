@@ -491,6 +491,14 @@ class LeaveRepository extends BaseRepository
 
         $count = $this->countData($count_data, refresh_model($this->leave->getModel()));
 
+        if (!isset($data['single'])) {
+            foreach ($result as $key => $value) {
+                $result[$key]->append('recently_approved');
+            }
+        } else {
+            $result->append('recently_approved');
+        }
+
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully retrieved leaves",
