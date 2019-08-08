@@ -18,6 +18,8 @@ class LeaveRepository extends BaseRepository
     $attendance,
         $user;
 
+    public $no_sort;
+
     public function __construct(
         Leave $leave,
         LeaveCredit $leaveCredit,
@@ -30,6 +32,10 @@ class LeaveRepository extends BaseRepository
         $this->agent_schedule = $agentSchedule;
         $this->attendance = $attendance;
         $this->user = $user;
+
+        $this->no_sort = [
+            'recently_approved.updated_at',
+        ];
     }
 
     public function setLeaveApproval($data = [])
