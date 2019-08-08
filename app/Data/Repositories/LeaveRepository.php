@@ -18,6 +18,8 @@ class LeaveRepository extends BaseRepository
     $attendance,
         $user;
 
+    public $no_sort;
+
     public function __construct(
         Leave $leave,
         LeaveCredit $leaveCredit,
@@ -30,6 +32,10 @@ class LeaveRepository extends BaseRepository
         $this->agent_schedule = $agentSchedule;
         $this->attendance = $attendance;
         $this->user = $user;
+
+        $this->no_sort = [
+            'recently_approved.updated_at',
+        ];
     }
 
     public function setLeaveApproval($data = [])
@@ -425,6 +431,15 @@ class LeaveRepository extends BaseRepository
         //set relations
         $data['relations'][] = 'user';
 
+        //fetch user if set
+        if (isset($data['user_id']) && is_numeric($data['user_id'])) {
+            $data['where'][] = [
+                "target" => "user_id",
+                "operator" => "=",
+                "value" => $data['user_id'],
+            ];
+        }
+
         /**
          * Set access level filter
          * (to be reworked)
@@ -481,6 +496,14 @@ class LeaveRepository extends BaseRepository
         }
 
         $count = $this->countData($count_data, refresh_model($this->leave->getModel()));
+
+        if (!isset($data['single'])) {
+            foreach ($result as $key => $value) {
+                $result[$key]->append('recently_approved');
+            }
+        } else {
+            $result->append('recently_approved');
+        }
 
         return $this->setResponse([
             "code" => 200,

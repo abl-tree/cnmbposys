@@ -63,4 +63,14 @@ class Leave extends BaseModel
         return $this->belongsTo('\App\User', 'approved_by', 'id');
     }
 
+    /**
+     * Accessors
+     */
+    public function getRecentlyApprovedAttribute()
+    {
+        return $this->where('user_id', $this->user_id)
+            ->where('status', 'approved')
+            ->orderBy('updated_at', 'desc')
+            ->first();
+    }
 }

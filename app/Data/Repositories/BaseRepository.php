@@ -58,11 +58,31 @@ class BaseRepository
             }
         }
 
+        // Start WHERENOTNULL clauses
+        if (isset($data['where_not_null'])) {
+            foreach ((array) $data['where_not_null'] as $key => $conditions) {
+                $model = $model->whereNotNull($conditions);
+            }
+        }
+
         // Start WHEREHAS clauses
         if (isset($data['wherehas'])) {
             foreach ((array) $data['wherehas'] as $key => $conditions) {
                 $model = $model->whereHas($conditions['relation'], function($q) use ($conditions) {
-                    $q->where($conditions['target'], $conditions['value']);
+                    foreach ($conditions['target'] as $key => $value) {
+                        $q->where($value['column'], $value['value']);
+                    }
+                });
+            }
+        }
+
+        // Start ORWHEREHAS clauses
+        if (isset($data['orwherehas'])) {
+            foreach ((array) $data['orwherehas'] as $key => $conditions) {
+                $model = $model->orWhereHas($conditions['relation'], function($q) use ($conditions) {
+                    foreach ($conditions['target'] as $key => $value) {
+                        $q->where($value['column'], $value['value']);
+                    }
                 });
             }
         }
