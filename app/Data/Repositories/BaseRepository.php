@@ -210,12 +210,23 @@ class BaseRepository
                     if ($query->getModel()->isSearchable($column)) {
                    
                         if (strpos($key, 'firstname') !== false) {
-                            try { 
-                                $query = $query->whereRaw("CONCAT(firstname,' ',middlename,' ',lastname) like ?", ["%{$data['query']}%"])->orWhereRaw("CONCAT(firstname,' ',lastname) like ?", ["%{$data['query']}%"]);
-                              } catch(\Illuminate\Database\QueryException $ex){ 
-                                echo($ex->getMessage()); 
-                             
-                              }   
+                            if (str_contains($column, ".")) {
+                                $search_components = explode(".", $column);
+    
+                                $query = $query->with($search_components[0]);
+    
+                                $query = $query->orWhereHas($search_components[0], function ($q) use ($data, $column, $search_components) {
+                                    $q->whereRaw("CONCAT(firstname,' ',middlename,' ',lastname) like ?", ["%{$data['query']}%"])->orWhereRaw("CONCAT(firstname,' ',lastname) like ?", ["%{$data['query']}%"]);
+                                });
+                            }else{
+                                try { 
+                                    $query = $query->whereRaw("CONCAT(firstname,' ',middlename,' ',lastname) like ?", ["%{$data['query']}%"])->orWhereRaw("CONCAT(firstname,' ',lastname) like ?", ["%{$data['query']}%"]);
+                                  } catch(\Illuminate\Database\QueryException $ex){ 
+                                    echo($ex->getMessage()); 
+                                 
+                                  }   
+                            }
+                           
                             } else if (str_contains($column, ".")) {
                             $search_components = explode(".", $column);
 
