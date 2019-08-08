@@ -162,7 +162,7 @@ class UserController extends BaseController
             ]);
         }
 
-        return $this->absorb($this->user_info->usersInfo($data))->json();
+        return $this->absorb($this->user_info->fetchUser($data))->json();
     }
     public function getCluster(Request $request, $id)
     {
