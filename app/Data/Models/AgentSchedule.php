@@ -14,19 +14,21 @@ class AgentSchedule extends BaseModel
         'title_id',
         'start_event',
         'end_event',
-        'overtime',
+        'overtime_id',
+        'conformance',
+        'remarks'
     ];
 
     protected $appends = [
-        'regular_hours',
-        'date',
-        'rendered_hours',
+        'regular_hours', 
+        'date', 
+        'rendered_hours', 
+        'overtime',
         'time_in',
         'time_out',
         'log_status',
         'is_working',
-        'is_present',
-        'break',
+        'break'
     ];
 
     protected $searchable = [
@@ -36,7 +38,7 @@ class AgentSchedule extends BaseModel
         'user_id',
         'title_id',
         'start_event',
-        'end_event',
+        'end_event'
     ];
 
     public $timestamps = true;
@@ -50,8 +52,27 @@ class AgentSchedule extends BaseModel
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
-    public function getRegularHoursAttribute()
-    {
+    public function getStartEventAttribute($value) {
+        return Carbon::parse($this->overtime_schedule ? $this->overtime_schedule->start_event : $value);
+    }
+
+    public function getEndEventAttribute($value) {
+        return Carbon::parse($this->overtime_schedule ? $this->overtime_schedule->end_event : $value);
+    }
+
+    public function getConformanceAttribute($value) {
+        if($this->overtime_schedule) {
+            return $value;
+        } else {
+            return ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
+        }
+    }
+
+    public function getRegularHoursAttribute() { 
+        if($this->overtime_schedule) {
+            return;
+        }
+
         $sched_start = Carbon::parse($this->start_event);
         $sched_end = Carbon::parse($this->end_event);
         $sched_hours = $sched_end->diffInSeconds($sched_start);
@@ -75,30 +96,58 @@ class AgentSchedule extends BaseModel
         );
     }
 
-    public function getRenderedHoursAttribute()
-    {
+    public function getRenderedHoursAttribute() {
+        return !$this->overtime_schedule ? $this->rendered_time() : array(
+            'billable' => array(
+                'time' => '00:00:00', 
+                'second' => 0, 
+            ), 
+            'nonbillable' => array(
+                'time' => '00:00:00', 
+                'second' => 0, 
+            ),
+            'time' => '00:00:00', 
+            'second' => 0
+        );
+    }
+
+    public function getOvertimeAttribute() {
+        return $this->overtime_schedule ? $this->rendered_time() : array(
+            'billable' => array(
+                'time' => '00:00:00', 
+                'second' => 0, 
+            ), 
+            'nonbillable' => array(
+                'time' => '00:00:00', 
+                'second' => 0, 
+            ),
+            'time' => '00:00:00', 
+            'second' => 0
+        );
+    }
+
+    public function rendered_time() {
         $rendered_time = 0;
         $rendered_time_nonbillable = 0;
         $rendered_time_billable = 0;
-        $regular_hours = $this->regular_hours['second'];
-        $overtime_nonbillable = $this->overtime['nonbillable']['second'];
         $day = "";
         $day_billable = "";
         $day_nonbillable = "";
+        $start = $this->time_in;
+        $end = $this->time_out ? $this->time_out : Carbon::now();
 
-        if ($this->attendances->count()) {
-            foreach ($this->attendances as $key => $value) {
-                $rendered_time += $value->rendered_time;
-            }
+        if($this->attendances->count() && $start->lessThan($this->end_event)) {
+
+            $rendered_time = $end->diffInSeconds($start);
+
+            $start = $start->greaterThan($this->start_event) && $start->lessThan($this->end_event) ? $start : $this->start_event;
+            $end = $end->lessThan($this->end_event) ? $end : $this->end_event;
+            $rendered_time_billable = $end->diffInSeconds($start);
+
         }
 
-        if ($rendered_time === $regular_hours) {
-            $rendered_time_billable = $rendered_time;
-        } else if ($rendered_time > $regular_hours) {
-            $rendered_time_billable = $regular_hours;
-            $rendered_time_nonbillable = $rendered_time_billable - $regular_hours + $overtime_nonbillable;
-        } else {
-            $rendered_time_billable = $rendered_time;
+        if($rendered_time > $rendered_time_billable) {
+            $rendered_time_nonbillable = $rendered_time - $rendered_time_billable;
         }
 
         if ($rendered_time >= 86400) {
@@ -140,18 +189,16 @@ class AgentSchedule extends BaseModel
         return 0;
     }
 
-    public function getIsPresentAttribute()
-    {
-        if ($this->attendances->count()) {
-            return 1;
-            // foreach ($this->attendances as $key => $value) {
-            //     if(Carbon::parse($value->time_in)->isToday() || Carbon::parse($value->time_out)->isToday()) {
-            //         return 1;
-            //     }
-            // }
+    public function getRemarksAttribute($value) {
+        if($value != 0) {
+            return 'Absent';
         }
 
-        return 0;
+        if($this->attendances->count()) {
+            return 'Present';
+        }
+
+        return 'NCNS';
     }
 
     public function getTimeInAttribute()
@@ -159,8 +206,6 @@ class AgentSchedule extends BaseModel
         if ($this->attendances->count()) {
             return $this->attendances[0]->time_in;
         }
-
-        return null;
     }
 
     public function getTimeOutAttribute()
@@ -168,16 +213,16 @@ class AgentSchedule extends BaseModel
         if ($this->attendances->count()) {
             return $this->attendances[$this->attendances->count() - 1]->time_out;
         }
-
-        return null;
     }
 
     public function getLogStatusAttribute()
     {
         $remarks = array();
         $rendered_time = ($this->rendered_hours) ? $this->rendered_hours['second'] : null;
+        $rendered_ot = ($this->overtime) ? $this->overtime['second'] : null;
 
-        if ($rendered_time) {
+        if($rendered_time) {
+
             $sched_start = Carbon::parse($this->start_event);
             $time_in = Carbon::parse($this->time_in);
             $total_hrs = Carbon::parse($this->end_event)->diffInSeconds($sched_start);
@@ -185,7 +230,15 @@ class AgentSchedule extends BaseModel
             $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
             $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 'Overtime' : 'Undertime';
 
-            return $remarks;
+        } else if($rendered_ot) {
+
+            $sched_start = Carbon::parse($this->start_event);
+            $time_in = Carbon::parse($this->time_in);
+            $total_hrs  = Carbon::parse($this->end_event)->diffInSeconds($sched_start);
+
+            $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
+            $remarks[1] = 'Overtime';
+
         }
 
         return $remarks;
@@ -213,8 +266,8 @@ class AgentSchedule extends BaseModel
                     break;
                 }
 
-                if ($this->attendances->count() - 1 > $key) {
-                    $out = Carbon::parse($value->time_out);
+                if($this->attendances->count() - 1 > $key) {
+                    $out = $value->time_out;
                     $in = Carbon::parse($this->attendances[$key + 1]->time_in);
 
                     $break_duration += $in->diffInSeconds($out);
@@ -246,56 +299,7 @@ class AgentSchedule extends BaseModel
         return $data;
     }
 
-    public function getOvertimeAttribute($value)
-    {
-        $overtime = $value;
-
-        $regular_hours = $this->regular_hours['second'];
-
-        $rendered_hours = 0;
-
-        if ($this->attendances->count()) {
-            foreach ($this->attendances as $key => $value) {
-                $rendered_hours += $value->rendered_time;
-            }
-        }
-
-        $str_time = preg_replace("/^([\d]{1,2})\:([\d]{2})$/", "00:$1:$2", $overtime);
-
-        sscanf($overtime, "%d:%d:%d", $hours, $minutes, $seconds);
-
-        $overtime = $hours * 3600 + $minutes * 60 + $seconds;
-
-        $overtime_nb = $rendered_hours - ($regular_hours + $overtime);
-
-        $overtime_nb = ($overtime_nb > 0) ? $overtime_nb : 0;
-
-        $day = "";
-
-        $otDay = "";
-
-        if ($overtime_nb >= 86400) {
-            $day = (int) ($overtime_nb / 86400) . 'd ';
-        }
-
-        if ($overtime >= 86400) {
-            $otDay = (int) ($overtime / 86400) . 'd ';
-        }
-
-        return array(
-            'nonbillable' => array(
-                'time' => $day . gmdate('H:i:s', $overtime_nb),
-                'second' => $overtime_nb,
-            ),
-            'billable' => array(
-                'time' => $otDay . gmdate('H:i:s', $overtime),
-                'second' => $overtime,
-            ),
-        );
-    }
-
-    public function attendances()
-    {
+    public function attendances(){
         return $this->hasMany('App\Data\Models\Attendance', 'schedule_id');
     }
 
@@ -309,8 +313,11 @@ class AgentSchedule extends BaseModel
         return $this->hasOne('App\Data\Models\UserInfo', "id", "user_id");
     }
 
-    public function title()
-    {
-        return $this->hasOne('App\Data\Models\EventTitle', "id", "title_id");
+    public function overtime_schedule() {
+        return $this->belongsTo('App\Data\Models\OvertimeSchedule', "overtime_id" );
+    }
+
+    public function title(){
+        return $this->hasOne('App\Data\Models\EventTitle',"id", "title_id" );
     }
 }
