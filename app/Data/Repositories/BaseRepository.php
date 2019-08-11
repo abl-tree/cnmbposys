@@ -200,10 +200,34 @@ class BaseRepository
     {
 
         $model = $model->where(function ($query) use ($data, $model) {
+            $key=null;
             if (isset($data['target'])) {
                 foreach ((array) $data['target'] as $column) {
+                    if(array_key_exists(1, $data['target'])){
+                        $key=json_encode($data['target'][1]);
+                    }
+                   
                     if ($query->getModel()->isSearchable($column)) {
-                        if (str_contains($column, ".")) {
+                   
+                        if (strpos($key, 'firstname') !== false) {
+                            if (str_contains($column, ".")) {
+                                $search_components = explode(".", $column);
+    
+                                $query = $query->with($search_components[0]);
+    
+                                $query = $query->orWhereHas($search_components[0], function ($q) use ($data, $column, $search_components) {
+                                    $q->whereRaw("CONCAT(firstname,' ',middlename,' ',lastname) like ?", ["%{$data['query']}%"])->orWhereRaw("CONCAT(firstname,' ',lastname) like ?", ["%{$data['query']}%"]);
+                                });
+                            }else{
+                                try { 
+                                    $query = $query->whereRaw("CONCAT(firstname,' ',middlename,' ',lastname) like ?", ["%{$data['query']}%"])->orWhereRaw("CONCAT(firstname,' ',lastname) like ?", ["%{$data['query']}%"]);
+                                  } catch(\Illuminate\Database\QueryException $ex){ 
+                                    echo($ex->getMessage()); 
+                                 
+                                  }   
+                            }
+                           
+                            } else if (str_contains($column, ".")) {
                             $search_components = explode(".", $column);
 
                             $query = $query->with($search_components[0]);
@@ -212,9 +236,12 @@ class BaseRepository
                                 $q->where($search_components[1], "LIKE", $this->generateSearchTerm($data, $column));
                             });
                         } else {
+                           
+                                                    
                             $query = $query->orWhere($column, "LIKE", $this->generateSearchTerm($data, $column));
                         }
                     }
+                   
                 }
             }
 

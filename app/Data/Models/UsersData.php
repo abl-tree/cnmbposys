@@ -43,6 +43,7 @@ class UsersData extends BaseModel
         'firstname',
         'middlename',
         'lastname',
+        'fullname',
         'p_email',
         'id',
         'user_info.uid',

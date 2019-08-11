@@ -347,6 +347,67 @@ class UsersInfoRepository extends BaseRepository
         ]);
     }
 
+
+    public function fetchUser($data = [])
+    {
+        $meta_index = "metadata";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "metadata";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['id'] = $data['id'];
+
+        }
+            $count_data = $data;
+            $result = $this->fetchGeneric($data, $this->user_info);
+            $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+
+            if (!$result) {
+                return $this->setResponse([
+                    'code'       => 404,
+                    'title'      => "No Users are found",
+                    "meta"       => [
+                        $meta_index => $result,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+            if ($result[0]->excel_hash=="development") {
+                return $this->setResponse([
+                    'code'       => 404,
+                    'title'      => "No Users are found",
+                    "meta"       => [
+                        $meta_index => [],
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+            return $this->setResponse([
+                "code"       => 200,
+                "title"      => "Successfully retrieved users Informations",
+                "description"=>"UserInfo",
+                "meta"       => [
+                    $meta_index => $result,
+                    "count"     => $count,
+                ],
+                "parameters" => $parameters,
+                
+            ]);
+    }
+
+
     public function logsInputCheck($data = [])
     {
         // data validation
