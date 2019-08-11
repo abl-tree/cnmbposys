@@ -62,6 +62,10 @@ class Leave extends BaseModel
     {
         return $this->belongsTo('\App\User', 'approved_by', 'id');
     }
+    public function leave_credits()
+    {
+        return $this->hasMany('\App\Data\Models\LeaveCredit', 'user_id', 'user_id');
+    }
 
     /**
      * Accessors

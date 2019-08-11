@@ -430,6 +430,7 @@ class LeaveRepository extends BaseRepository
 
         //set relations
         $data['relations'][] = 'user';
+        $data['relations'][] = 'leave_credits';
 
         //fetch user if set
         if (isset($data['user_id']) && is_numeric($data['user_id'])) {
@@ -544,6 +545,7 @@ class LeaveRepository extends BaseRepository
 
         //set relations
         $data['relations'][] = 'user';
+        $data['relations'][] = 'leave_credits';
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
