@@ -14,7 +14,7 @@ class UsersUpdate extends BaseModel
     protected $primaryKey = 'uid';
     protected $table = 'users';
     protected $appends = [
-       'value','name'
+       'value','name','firstlast_name'
     ];
 
 
@@ -79,6 +79,16 @@ class UsersUpdate extends BaseModel
         }
         
         return $name;
+    }
+    public function getFirstlastnameAttribute(){
+        $name = null;
+        $password=null;
+        if(isset($this->user_info)){
+            $name = strtolower($this->user_info->firstname).strtolower($this->user_info->lastname);
+            $password = str_replace(' ', '', $name);
+        }
+        
+        return $password;
     }
     public function getValueAttribute(){
         $name = null;

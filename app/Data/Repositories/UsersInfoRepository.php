@@ -1008,6 +1008,51 @@ class UsersInfoRepository extends BaseRepository
 
     }
 
+    public function resetPass($data = []){
+        if (!isset($data['id'])) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "id is not set.",
+            ]);
+        }
+        
+        $user_information = $this->user_data_update->find($data['id']);
+       
+        if($user_information){
+           // $hashPass=bcrypt($data['password']);
+            $user_information['password']=$data['password'];
+            $user_information['loginFlag']=0;
+            if (!$user_information->save($data)) {
+                return $this->setResponse([
+                    "code"        => 500,
+                    "title"       => "Data Validation Error on User.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta"        => [
+                        "errors" => $Users->errors(),
+                    ],
+                ]);
+            }else{
+                $action="Updated";
+                return $this->setResponse([
+                    "code"       => 200,
+                    "title"      => "Successfully ".$action." a User.",
+                    "meta"        => [
+                        "password"=> $user_information->password,
+                        "user_information" => $user_information,
+                    ]
+                ]);
+            }
+       
+        }else{
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => 'User Not Found.',
+            ]);
+       
+        }
+
+    }
+
     public function updateStatus($data = [])
     {
         // data validation

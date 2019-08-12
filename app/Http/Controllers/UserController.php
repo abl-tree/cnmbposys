@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\Datatables\Datatables;
 use App\User;
 use App\Data\Models\UserReport;
+use App\Data\Models\UsersUpdate;
 use App\Data\Models\UserInfo;
 use Mail;
 use Auth;
@@ -126,6 +127,23 @@ class UserController extends BaseController
         $data['id'] = $id;
        
         return $this->absorb($this->user_info->updateUser($data))->json();     
+    }
+
+    public function resetPass(Request $request,$id)
+    {
+        if (!isset($id)) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "id is not set.",
+            ])->json();
+        }
+        $data = $request->all();
+        $userInfo =  UsersUpdate::where('id', '=',$request->id)->first(); 
+        $data['password']= bcrypt($userInfo->firstlast_name);
+        $data['id'] = $id;
+        
+       
+        return $this->absorb($this->user_info->resetPass($data))->json();     
     }
 
     public function updateStatus(Request $request)
