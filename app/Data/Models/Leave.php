@@ -45,7 +45,7 @@ class Leave extends BaseModel
         'allowed_access' => 'sometimes|required|numeric',
     ];
 
-    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+    protected $hidden = ['deleted_at'];
 
     /**
      * Relations
