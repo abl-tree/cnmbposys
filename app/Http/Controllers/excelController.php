@@ -45,6 +45,7 @@ class excelController extends BaseController
                 $spreadsheet = new Spreadsheet();
                 //add template sheet
                 $header = [
+                    'CompanyID',
                     'First Name',
                     'Middle Name',
                     'Last Name',
@@ -61,55 +62,53 @@ class excelController extends BaseController
                     'TIN',
                     'Position',
                     'Supervisor',
-                    'CompanyID',
-                    'Salary',
-                    'Hired Date',
                     'Status',
                     'Contract',
-                    'Status Reason',
+                    'Salary',
+                    'Hired Date',
                     'Separation Date',
                 ];
                 $worksheet = $spreadsheet->getActiveSheet(0);
                 $worksheet->fromArray($header,null,'A1');
                 $worksheet->setTitle("Add");
                 
-                //position sheet
-                $worksheet = new Worksheet($spreadsheet, 'Position');
-                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-                $spreadsheet->addSheet($worksheet);
-                $access_level = AccessLevel::all()->toArray();
-                $worksheet->fromArray($access_level,null,'A1');
+                // //position sheet
+                // $worksheet = new Worksheet($spreadsheet, 'Position');
+                // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                // $spreadsheet->addSheet($worksheet);
+                // $access_level = AccessLevel::all()->toArray();
+                // $worksheet->fromArray($access_level,null,'A1');
 
-                //Gender worksheet
-                $worksheet = new Worksheet($spreadsheet, 'Gender');
-                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-                $spreadsheet->addSheet($worksheet);
-                $tmp=['Male','Female'];
-                $worksheet->fromArray($tmp,null,'A1');
+                // //Gender worksheet
+                // $worksheet = new Worksheet($spreadsheet, 'Gender');
+                // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                // $spreadsheet->addSheet($worksheet);
+                // $tmp=['Male','Female'];
+                // $worksheet->fromArray($tmp,null,'A1');
 
-                //Status worksheet
-                $worksheet = new Worksheet($spreadsheet, 'Status');
-                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-                $spreadsheet->addSheet($worksheet);
-                $tmp = UserStatus::all()->pluck("type")->toArray();
-                $worksheet->fromArray($tmp,null,'A1');
+                // //Status worksheet
+                // $worksheet = new Worksheet($spreadsheet, 'Status');
+                // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                // $spreadsheet->addSheet($worksheet);
+                // $tmp = UserStatus::all()->pluck("type")->toArray();
+                // $worksheet->fromArray($tmp,null,'A1');
 
 
-                //config sheet
-                $token = DB::table('excel_template_validators')->where('template','Add')->pluck('token');
-                $config=[
-                    'Add',
-                    $token[0],
-                ];
-                $worksheet = new Worksheet($spreadsheet, 'config');
-                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-                $spreadsheet->addSheet($worksheet);
-                $worksheet->fromArray($config,null,'A1');
+                // //config sheet
+                // $token = DB::table('excel_template_validators')->where('template','Add')->pluck('token');
+                // $config=[
+                //     'Add',
+                //     $token[0],
+                // ];
+                // $worksheet = new Worksheet($spreadsheet, 'config');
+                // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                // $spreadsheet->addSheet($worksheet);
+                // $worksheet->fromArray($config,null,'A1');
 
-                // //defining named range
-                $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('gender',$spreadsheet->getSheetByName('Gender'),'1:1'));
-                $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('status',$spreadsheet->getSheetByName('Status'),'1:1'));
-                $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('position',$spreadsheet->getSheetByName('Position'),'C:C'));
+                // // //defining named range
+                // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('gender',$spreadsheet->getSheetByName('Gender'),'1:1'));
+                // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('status',$spreadsheet->getSheetByName('Status'),'1:1'));
+                // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('position',$spreadsheet->getSheetByName('Position'),'C:C'));
                 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
                 $writer->setPreCalculateFormulas(false);
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
