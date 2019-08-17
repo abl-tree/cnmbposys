@@ -13,20 +13,31 @@ class ActionLogs extends BaseModel
     protected $appends = [
         'firstname','lastname','email','full_name','image_url','position',
      ];
+     protected $searchable = [
+        'userinfo.firstname','userinfo.middlename','userinfo.lastname'
+    ];
     protected $fillable = [
         'user_id', 'action', 'affected_data','created_at','updated_at'
     ];
 
     protected $hidden = [
-        'user','accesslevelhierarchy','password','deleted_at','updated_at'
+        'userinfo','user','accesslevelhierarchy','password','deleted_at','updated_at'
          
-    ];   
-     public function user() {
-        return $this->hasOne('\App\User', 'uid', 'user_id');
+    ];  
+    
+   
+
+
+
+    public function userinfo() {
+        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'user_id');
     }
-   	public function accesslevel(){
-       return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+    public function user() {
+        return $this->hasOne('\App\Data\Models\Users', 'id', 'user_id')->with('position');
     }
+   	// public function accesslevel(){
+    //    return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
+    // }
     public function accesslevelhierarchy(){
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'id', 'user_id');
     }
@@ -42,16 +53,16 @@ class ActionLogs extends BaseModel
     }
     public function getFullnameAttribute(){
         $name = null;
-        if(isset($this->user)){
-            $name = $this->user->full_name;
+        if(isset($this->userinfo)){
+            $name = $this->userinfo->full_name;
         }
         
         return $name;
     }
     public function getImageurlAttribute(){
         $name = null;
-        if(isset($this->user)){
-            $name = $this->user->info->image_url;
+        if(isset($this->userinfo)){
+            $name = $this->userinfo->image_url;
         }
         
         return $name;
@@ -59,23 +70,23 @@ class ActionLogs extends BaseModel
     public function getPositionAttribute(){
         $name = null;
         if(isset($this->user)){
-            $name = $this->user->access->name;
+            $name = $this->user->position->name;
         }
         
         return $name;
     }
     public function getFirstnameAttribute(){
         $name = null;
-        if(isset($this->user)){
-            $name = $this->user->info->firstname;
+        if(isset($this->userinfo)){
+            $name = $this->userinfo->firstname;
         }
         
         return $name;
     }
     public function getLastnameAttribute(){
         $name = null;
-        if(isset($this->user)){
-            $name = $this->user->info->lastname;
+        if(isset($this->userinfo)){
+            $name = $this->userinfo->lastname;
         }
         
         return $name;
