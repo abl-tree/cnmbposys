@@ -113,7 +113,7 @@ class excelController extends BaseController
                 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
                 $writer->setPreCalculateFormulas(false);
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                header('Content-Disposition: attachment;filename="'. $filename); 
+                header('Content-Disposition: attachment;filename='. $filename); 
                 header('Cache-Control: max-age=0');
                 $writer->save('php://output');
         // });
