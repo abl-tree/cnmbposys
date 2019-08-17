@@ -120,7 +120,7 @@ class excelController extends BaseController
         // exit;
         $streamedResponse->setStatusCode(Response::HTTP_OK);
         $streamedResponse->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $streamedResponse->headers->set('Content-Disposition', 'attachment; filename="your_file.xlsx"');
+        $streamedResponse->headers->set('Content-Disposition', 'attachment; filename='.$filename);
         return $streamedResponse->send();
     }
 
