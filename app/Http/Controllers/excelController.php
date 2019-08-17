@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Http\Controllers\BaseController;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
  
 class excelController extends BaseController
@@ -37,86 +39,88 @@ class excelController extends BaseController
 
 
     function Addtemplate(){
-        $filename = "Add-Template-".now().".xlsx"; //filename
-        $spreadsheet = new Spreadsheet();
-        //add template sheet
-        $header = [
-            'First Name',
-            'Middle Name',
-            'Last Name',
-            'Name Ext',
-            'Gender',
-            'Birth Date',
-            'Address',
-            'PersonalEmail',
-            'CompanyEmail',
-            'Contact No.',
-            'SSS',
-            'PhilHealth',
-            'PagIbig',
-            'TIN',
-            'Position',
-            'Supervisor',
-            'CompanyID',
-            'Salary',
-            'Hired Date',
-            'Status',
-            'Contract',
-            'Status Reason',
-            'Separation Date',
-        ];
-        $worksheet = $spreadsheet->getActiveSheet(0);
-        $worksheet->fromArray($header,null,'A1');
-        $worksheet->setTitle("Add");
-        
-        //position sheet
-        $worksheet = new Worksheet($spreadsheet, 'Position');
-        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-        $spreadsheet->addSheet($worksheet);
-        $access_level = AccessLevel::all()->toArray();
-        $worksheet->fromArray($access_level,null,'A1');
+        $streamedResponse = new StreamedResponse();
+            $filename = "Add-Template-".now().".xlsx"; //filename
+                $spreadsheet = new Spreadsheet();
+                //add template sheet
+                $header = [
+                    'First Name',
+                    'Middle Name',
+                    'Last Name',
+                    'Name Ext',
+                    'Gender',
+                    'Birth Date',
+                    'Address',
+                    'PersonalEmail',
+                    'CompanyEmail',
+                    'Contact No.',
+                    'SSS',
+                    'PhilHealth',
+                    'PagIbig',
+                    'TIN',
+                    'Position',
+                    'Supervisor',
+                    'CompanyID',
+                    'Salary',
+                    'Hired Date',
+                    'Status',
+                    'Contract',
+                    'Status Reason',
+                    'Separation Date',
+                ];
+                $worksheet = $spreadsheet->getActiveSheet(0);
+                $worksheet->fromArray($header,null,'A1');
+                $worksheet->setTitle("Add");
+                
+                //position sheet
+                $worksheet = new Worksheet($spreadsheet, 'Position');
+                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                $spreadsheet->addSheet($worksheet);
+                $access_level = AccessLevel::all()->toArray();
+                $worksheet->fromArray($access_level,null,'A1');
 
-        //Gender worksheet
-        $worksheet = new Worksheet($spreadsheet, 'Gender');
-        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-        $spreadsheet->addSheet($worksheet);
-        $tmp=['Male','Female'];
-        $worksheet->fromArray($tmp,null,'A1');
+                //Gender worksheet
+                $worksheet = new Worksheet($spreadsheet, 'Gender');
+                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                $spreadsheet->addSheet($worksheet);
+                $tmp=['Male','Female'];
+                $worksheet->fromArray($tmp,null,'A1');
 
-        //Status worksheet
-        $worksheet = new Worksheet($spreadsheet, 'Status');
-        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-        $spreadsheet->addSheet($worksheet);
-        $tmp = UserStatus::all()->pluck("type")->toArray();
-        $worksheet->fromArray($tmp,null,'A1');
-
-
-        //config sheet
-        $token = DB::table('excel_template_validators')->where('template','Add')->pluck('token');
-        $config=[
-            'Add',
-            $token[0],
-        ];
-        $worksheet = new Worksheet($spreadsheet, 'config');
-        $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
-        $spreadsheet->addSheet($worksheet);
-        $worksheet->fromArray($config,null,'A1');
-
-        // //defining named range
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('gender',$spreadsheet->getSheetByName('Gender'),'1:1'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('status',$spreadsheet->getSheetByName('Status'),'1:1'));
-        $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('position',$spreadsheet->getSheetByName('Position'),'C:C'));
-        
+                //Status worksheet
+                $worksheet = new Worksheet($spreadsheet, 'Status');
+                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                $spreadsheet->addSheet($worksheet);
+                $tmp = UserStatus::all()->pluck("type")->toArray();
+                $worksheet->fromArray($tmp,null,'A1');
 
 
+                //config sheet
+                $token = DB::table('excel_template_validators')->where('template','Add')->pluck('token');
+                $config=[
+                    'Add',
+                    $token[0],
+                ];
+                $worksheet = new Worksheet($spreadsheet, 'config');
+                $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+                $spreadsheet->addSheet($worksheet);
+                $worksheet->fromArray($config,null,'A1');
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->setPreCalculateFormulas(false);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'. $filename); 
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-        exit;
+                // //defining named range
+                $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('gender',$spreadsheet->getSheetByName('Gender'),'1:1'));
+                $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('status',$spreadsheet->getSheetByName('Status'),'1:1'));
+                $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('position',$spreadsheet->getSheetByName('Position'),'C:C'));
+                $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+                $writer->setPreCalculateFormulas(false);
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="'. $filename); 
+                header('Cache-Control: max-age=0');
+                $writer->save('php://output');
+        });
+        // exit;
+        $streamedResponse->setStatusCode(Response::HTTP_OK);
+        $streamedResponse->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $streamedResponse->headers->set('Content-Disposition', 'attachment; filename="your_file.xlsx"');
+        return $streamedResponse->send();
     }
 
     function Reassigntemplate(){
