@@ -256,6 +256,7 @@ Route::group([
         Route::post("change_pass/{id}", "UserController@changePass");
         Route::post("reset_pass/{id}", "UserController@resetPass");
         Route::get("search", "UserController@search");
+        Route::post("import_user_excel", "UserController@excelImportuser");
 
     });
 

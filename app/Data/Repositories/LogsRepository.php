@@ -48,9 +48,9 @@ class LogsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = ["user_logs","accesslevelhierarchy"];        
+        $data['relations'] = ["user","accesslevelhierarchy"];        
         $count_data = $data;    
-        $result = $this->fetchGeneric($data, $this->user);
+        $result = $this->fetchGeneric($data, $this->action_logs);
 
         if (!$result) {
             return $this->setResponse([
@@ -63,12 +63,12 @@ class LogsRepository extends BaseRepository
             ]);
         }
        
-        $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
 
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved logs",
-            "description"=>"maoni",
+            "description"=>"Logs",
             "meta"       => [
                 $meta_index => $result,
                 "count"     => $count,
@@ -132,18 +132,18 @@ class LogsRepository extends BaseRepository
 
       public function fetchUserLog($data = [])
     {
-        $meta_index = "User";
+        $meta_index = "metadata";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "User";
+            $meta_index     = "metadata";
             $data['single'] = false;
             $data['where']  = [
                 [
-                    "target"   => "id",
+                    "target"   => "user_id",
                     "operator" => "=",
                     "value"    => $data['id'],
                 ],
@@ -155,9 +155,9 @@ class LogsRepository extends BaseRepository
 
         $count_data = $data;
 
-         $data['relations'] = ["user_info","user_logs","accesslevel"];     
+        $data['relations'] = ["user","accesslevelhierarchy"];       
 
-        $result = $this->fetchGeneric($data, $this->user);
+        $result = $this->fetchGeneric($data, $this->action_logs);
 
         if (!$result) {
             return $this->setResponse([
@@ -170,7 +170,7 @@ class LogsRepository extends BaseRepository
             ]);
         }
 
-        $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
 
         return $this->setResponse([
             "code"       => 200,

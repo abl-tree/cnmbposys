@@ -15,6 +15,7 @@ use Mail;
 use Auth;
 use App\Http\Controllers\BaseController;
 use App\Data\Repositories\UsersInfoRepository;
+use App\Data\Repositories\ImportUsersExcelRepository;
 use App\Data\Repositories\AccessLevelHierarchyRepository;
 use App\Data\Repositories\UserStatusRepository;
 
@@ -22,16 +23,18 @@ class UserController extends BaseController
 {
 
     protected $user_info;
-    protected $user_status,$access;
+    protected $user_status,$access,$import_user_repo;
 
     public function __construct(
         UsersInfoRepository $user_info,
         UserStatusRepository $user_status,
-        AccessLevelHierarchyRepository $access
+        AccessLevelHierarchyRepository $access,
+        ImportUsersExcelRepository $import_user_repo
     ){
         $this->user_info = $user_info;
         $this->user_status = $user_status;
         $this->access = $access;
+        $this->import_user_repo = $import_user_repo;
     }
 
     /**
@@ -198,6 +201,14 @@ class UserController extends BaseController
 
         return $this->absorb($this->user_info->getCluster($data))->json();
     }
+
+    public function excelImportUser(Request $request)
+    {
+        $data = $request->all();
+        
+        return $this->absorb($this->import_user_repo->excelImportUser($data))->json();
+    }
+
 
 
 
