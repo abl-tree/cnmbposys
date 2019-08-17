@@ -40,6 +40,7 @@ class excelController extends BaseController
 
     function Addtemplate(){
         $streamedResponse = new StreamedResponse();
+        $streamedResponse->setCallback(function () {
             $filename = "Add-Template-".now().".xlsx"; //filename
                 $spreadsheet = new Spreadsheet();
                 //add template sheet
