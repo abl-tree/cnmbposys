@@ -196,6 +196,7 @@ Route::group([
         Route::get("/", "LogsController@index");
         Route::get("/{id}", "LogsController@log");
         Route::post("create", "LogsController@create");
+       
     });
 
     Route::group([
@@ -214,6 +215,7 @@ Route::group([
         Route::post('delete/{ir_id}', 'ReportsController@delete');
         Route::post("user_response", "ReportsController@userResponse");
         Route::post('update_response/{id}', 'ReportsController@update_response');
+
     });
 
     Route::group([
@@ -257,7 +259,7 @@ Route::group([
         Route::post("reset_pass/{id}", "UserController@resetPass");
         Route::get("search", "UserController@search");
         Route::post("import_user_excel", "UserController@excelImportuser");
-
+        Route::get("searchlogs", "LogsController@search");
     });
 
     Route::group([

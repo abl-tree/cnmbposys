@@ -22,6 +22,12 @@ class LogsController extends BaseController
         return $this->absorb($this->action_logs->logs($data))->json();
     }
 
+    public function search(Request $request)
+    {
+       
+        $data = $request->all();
+        return $this->absorb($this->action_logs->search($data))->json();
+    }
     /** 
      * Show the form for creating a new resource.
      *
@@ -34,6 +40,7 @@ class LogsController extends BaseController
         return $this->absorb($this->action_logs->logsInputCheck($data))->json();     
     }
 
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -56,12 +63,15 @@ class LogsController extends BaseController
         return $this->absorb($this->action_logs->fetchUserLog($data))->json();
     }
 
+   
+
     /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+  
     public function show($id)
     {
         //

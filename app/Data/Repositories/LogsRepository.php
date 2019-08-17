@@ -184,4 +184,62 @@ class LogsRepository extends BaseRepository
     }
 
 
+
+    public function search($data)
+    {
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+
+        $result = $this->action_logs;
+        $data['relations'] = ["user","accesslevelhierarchy"];       
+
+        $meta_index = "logs";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        foreach ((array) $data['target'] as $index => $column) {
+            if (str_contains($column, "full_name")) {
+                
+                $data['target'][] = 'userinfo.firstname';
+                $data['target'][] = 'userinfo.middlename';
+                $data['target'][] = 'userinfo.lastname';
+                unset($data['target'][$index]);
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if ($result == null) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No logs are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count_data['search'] = true;
+        $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully searched logs",
+            "meta" => [
+                $meta_index => $result,
+                "count" => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+
 }
