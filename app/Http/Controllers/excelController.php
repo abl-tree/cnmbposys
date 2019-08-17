@@ -16,6 +16,7 @@ use App\Data\Models\UserInfo;
 use App\User;
 use App\Data\Models\UserBenefit;
 use App\Data\Models\AccessLevel;
+use App\Data\Models\UserStatus;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\ExcelTemplateValidator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -43,6 +44,7 @@ class excelController extends BaseController
             'First Name',
             'Middle Name',
             'Last Name',
+            'Name Ext',
             'Gender',
             'Birth Date',
             'Address',
@@ -54,6 +56,7 @@ class excelController extends BaseController
             'PagIbig',
             'TIN',
             'Position',
+            'Supervisor',
             'CompanyID',
             'Salary',
             'Hired Date',
@@ -80,11 +83,11 @@ class excelController extends BaseController
         $tmp=['Male','Female'];
         $worksheet->fromArray($tmp,null,'A1');
 
-        //Gender worksheet
+        //Status worksheet
         $worksheet = new Worksheet($spreadsheet, 'Status');
         $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
         $spreadsheet->addSheet($worksheet);
-        $tmp=['New_Hired','Active','Inactive'];
+        $tmp = UserStatus::all()->pluck("type")->toArray();
         $worksheet->fromArray($tmp,null,'A1');
 
 
@@ -104,6 +107,9 @@ class excelController extends BaseController
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('status',$spreadsheet->getSheetByName('Status'),'1:1'));
         $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('position',$spreadsheet->getSheetByName('Position'),'C:C'));
         
+
+
+
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->setPreCalculateFormulas(false);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
