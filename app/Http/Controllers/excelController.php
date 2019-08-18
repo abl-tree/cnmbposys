@@ -315,7 +315,7 @@ class excelController extends BaseController
                 // $drawing->setDescription($datum->lastname);
                 $tmp = explode("/", $datum->image_url);
                 $tmp = $tmp[count($tmp)-1];
-                $drawing->setPath('./images/'.$tmp);
+                $drawing->setPath(public_path('storage/images/'.$tmp));
                 $drawing->setHeight(36);
                 $worksheet->setCellValue('A'.($k+2),$drawing);
             }else{
