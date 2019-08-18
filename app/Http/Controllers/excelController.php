@@ -313,10 +313,10 @@ class excelController extends BaseController
             $worksheet->setCellValue('N'.($k+2),$datum->address);
             $worksheet->setCellValue('O'.($k+2),$datum->hired_date);
             $worksheet->setCellValue('P'.($k+2),$datum->separation_date);
-            $worksheet->setCellValue('Q'.($k+2),$datum->benefits[0]->id_number);
-            $worksheet->setCellValue('R'.($k+2),$datum->benefits[1]->id_number);
-            $worksheet->setCellValue('S'.($k+2),$datum->benefits[2]->id_number);
-            $worksheet->setCellValue('T'.($k+2),$datum->benefits[3]->id_number);
+            $worksheet->setCellValue('Q'.($k+2),"'".$datum->benefits[0]->id_number);
+            $worksheet->setCellValue('R'.($k+2),"'".$datum->benefits[1]->id_number);
+            $worksheet->setCellValue('S'.($k+2),"'".$datum->benefits[2]->id_number);
+            $worksheet->setCellValue('T'.($k+2),"'".$datum->benefits[3]->id_number);
         }
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->setPreCalculateFormulas(false);
