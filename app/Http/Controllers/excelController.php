@@ -321,6 +321,7 @@ class excelController extends BaseController
                 $drawing->setCoordinates('A'.($k+2));
                 // $worksheet->setCellValue('A'.($k+2),$drawing);
                 $drawing->setWorksheet($spreadsheet->getActiveSheet());
+                $spreadsheet->getActiveSheet()->getRowDimension('10')->setRowHeight($drawing->getHeight());
             }else{
                 $worksheet->setCellValue('A'.($k+2),"");
             }
