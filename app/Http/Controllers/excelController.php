@@ -302,7 +302,7 @@ class excelController extends BaseController
             $worksheet->setCellValue('E'.($k+2),$datum->lastname);
             $worksheet->setCellValue('F'.($k+2),$datum->suffix);
             $worksheet->setCellValue('G'.($k+2),$datum->user->access->name);
-            if($datum->accesslevelhierarchy->parent_id!=null){
+            if($datum->accesslevelhierarchy->parent_info!=null){
                 $worksheet->setCellValue('H'.($k+2),$datum->accesslevelhierarchy->parent_info->full_name);
             }
             $worksheet->setCellValue('I'.($k+2),$datum->user->email);
