@@ -259,28 +259,28 @@ class excelController extends BaseController
         // $filename = "Report-Template-".now().".xlsx"; //filename
         $spreadsheet = new Spreadsheet();
         // //add template sheet
-        // $header = [
-        //     'CID',
-        //     'First Name',
-        //     'Middle Name',
-        //     'Last Name',
-        //     'Status',
-        //     'Gender',
-        //     'Birth Date',
-        //     'Address',
-        //     'PersonalEmail',
-        //     'CompanyEmail',
-        //     'Contact No.',
-        //     'SSS',
-        //     'Philhealth',
-        //     'PagIbig',
-        //     'TIN',
-        //     'Position',
-        //     'Hired Date',
-        //     'Status',
-        //     'Separation Reason',
-        //     'Separation Date',
-        // ];
+        $header = [
+            'CID',
+            'First Name',
+            'Middle Name',
+            'Last Name',
+            'Status',
+            'Gender',
+            'Birth Date',
+            'Address',
+            'PersonalEmail',
+            'CompanyEmail',
+            'Contact No.',
+            'SSS',
+            'Philhealth',
+            'PagIbig',
+            'TIN',
+            'Position',
+            'Hired Date',
+            'Status',
+            'Separation Reason',
+            'Separation Date',
+        ];
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
         $userInfo = UserInfo::with(["user","benefits"])->get();
