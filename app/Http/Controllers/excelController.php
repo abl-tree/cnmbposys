@@ -310,6 +310,7 @@ class excelController extends BaseController
             // $worksheet->setCellValue('S'.($k+2),$datum->type);
             // $worksheet->setCellValue('T'.($k+2),$datum->separation_date);
             if(!empty($datum->image_url)){
+                $worksheet->getRowDimension('10')->setRowHeight(50);
                 $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
                 $drawing->setName($datum->lastname);
                 // $drawing->setDescription($datum->lastname);
@@ -317,10 +318,9 @@ class excelController extends BaseController
                 $tmp = $tmp[count($tmp)-1];
                 $drawing->setPath('./storage/images/'.$tmp);
                 // $drawing->setPath($datum->image_url);
-                $drawing->setHeight(36);
+                $drawing->setHeight(50);
                 $drawing->setCoordinates('A'.($k+2));
                 // $worksheet->setCellValue('A'.($k+2),$drawing);
-                $worksheet->getRowDimension('10')->setRowHeight($drawing->getHeight());
                 $drawing->setWorksheet($worksheet);
             }else{
                 $worksheet->setCellValue('A'.($k+2),"");
