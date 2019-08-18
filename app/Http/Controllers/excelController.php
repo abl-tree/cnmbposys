@@ -311,8 +311,8 @@ class excelController extends BaseController
             // $worksheet->setCellValue('T'.($k+2),$datum->separation_date);
             if(!empty($datum->image_url)){
                 $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                $drawing->setName();
-                $drawing->setDescription($datum->lastname);
+                $drawing->setName($datum->lastname);
+                // $drawing->setDescription($datum->lastname);
                 $drawing->setPath($datum->image_url);
                 $drawing->setHeight(36);
                 $worksheet->setCellValue('A'.($k+2),$drawing);
