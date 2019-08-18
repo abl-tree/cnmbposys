@@ -166,6 +166,32 @@ class LeaveSlotRepository extends BaseRepository
             $parameters['leave_slot_id'] = $data['id'];
 
         }
+        
+        //fetch user if set
+        if (isset($data['user_id']) && is_numeric($data['user_id'])) {
+            $data['where'][] = [
+                "target" => "user_id",
+                "operator" => "=",
+                "value" => $data['user_id'],
+            ];
+        }
+        
+        //fetch per date range
+        if (isset($data['start_event'])) {
+            $data['where'][] = [
+                "target" => "start_event",
+                "operator" => ">=",
+                "value" => $data['start_event'],
+            ];
+        }
+
+        if (isset($data['end_event'])) {
+            $data['where'][] = [
+                "target" => "end_event",
+                "operator" => "<=",
+                "value" => $data['end_event'],
+            ];
+        }
 
         $count_data = $data;
 

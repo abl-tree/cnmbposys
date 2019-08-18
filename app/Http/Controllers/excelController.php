@@ -115,12 +115,7 @@ class excelController extends BaseController
                 header('Content-Disposition: attachment;filename='. $filename); 
                 header('Cache-Control: max-age=0');
                 $writer->save('php://output');
-        // });
         exit;
-        // $streamedResponse->setStatusCode(Response::HTTP_OK);
-        // $streamedResponse->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        // $streamedResponse->headers->set('Content-Disposition', 'attachment; filename='.$filename);
-        // return $streamedResponse->send();
     }
 
     function Reassigntemplate(){

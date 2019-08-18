@@ -72,44 +72,43 @@ class ImportUsersExcelRepository extends BaseRepository
             if (isset($firstPage[$x + 3])) {
                 if ($firstPage[$x + 3][1] != null) {
                      
-                        
-                        $user[]= array(
-                            "email"=> $firstPage[$x + 1][7],
-                            "password"=> bcrypt($firstPage[$x + 1][0]. $firstPage[$x + 1][2]),
-                            "company_id"=> $firstPage[$x + 1][14],
-                            "contract"=> $firstPage[$x + 1][18],
-                            "login_flag"=> 0,
-                            "access_id"=> $firstPage[$x + 1][13],
-                        );
+                       
                          
                            
-                            array_push($benefits,strval($firstPage[$x + 1][9]));
-                            array_push($benefits,strval($firstPage[$x + 1][10]));
-                            array_push($benefits,strval($firstPage[$x + 1][11]));  
-                            array_push($benefits,strval($firstPage[$x + 1][12]));      
+                            array_push($benefits,strval($firstPage[$x + 1][11]));
+                            array_push($benefits,strval($firstPage[$x + 1][12]));
+                            array_push($benefits,strval($firstPage[$x + 1][13]));  
+                            array_push($benefits,strval($firstPage[$x + 1][14]));      
                       
                         $userInfo[] = array(
-                            "firstname" => $firstPage[$x + 1][0],
-                            "middlename" => $firstPage[$x + 1][1],
-                            "lastname" => $firstPage[$x + 1][2],
-                            "gender" => $firstPage[$x + 1][3],
-                            "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][4]),
-                            "address" => $firstPage[$x+1][5],
-                            "p_email" => $firstPage[$x + 1][6],
-                            "contact_number" => $firstPage[$x + 1][8],
+                            "firstname" => $firstPage[$x + 1][1],
+                            "middlename" => $firstPage[$x + 1][2],
+                            "lastname" => $firstPage[$x + 1][3],
+                            "suffix" => $firstPage[$x + 1][4],
+                            "gender" => $firstPage[$x + 1][5],
+                            "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][6]),
+                            "address" => $firstPage[$x+1][7],
+                            "salary" => $firstPage[$x+1][19],
+                            "p_email" => $firstPage[$x + 1][8],
+                            "contact_number" => $firstPage[$x + 1][10],
                             "status" => $firstPage[$x + 1][17],
-                            "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][16]),
-                            "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][20]),
+                            "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][20]),
+                            "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][21]),
                             "status_reason" => $firstPage[$x + 1][19],
                             "excel_hash" =>  strtolower($firstPage[$x + 1][0]. $firstPage[$x + 1][1]. $firstPage[$x + 1][2]),
-                            "user" => $user,
+                            "email"=> $firstPage[$x + 1][9],
+                            "password"=> bcrypt($firstPage[$x + 1][0]. $firstPage[$x + 1][2]),
+                            "company_id"=> $firstPage[$x + 1][1],
+                            "contract"=> $firstPage[$x + 1][18],
+                            "login_flag"=> 0,
+                            "access_id"=> $firstPage[$x + 1][15],
+                            "parent_id" =>$firstPage[$x + 1][16],
                             "benefits" => $benefits
                         );
                      
                 }
             }
             $benefits = [];
-            $user=[];
         };
         $userInfo['auth_id'] = auth::id();
         return $this->setResponse([
