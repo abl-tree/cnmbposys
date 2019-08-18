@@ -283,7 +283,7 @@ class excelController extends BaseController
         // ];
         // $worksheet = $spreadsheet->getActiveSheet(0);
         // $worksheet->fromArray($header,null,'A1');
-        $userInfo = new UserInfo;
+        $userInfo = UserInfo::with(["user","benefits"])->get();
         echo json_encode($userInfo);
         // $employee = $userInfo->getAllEmployee();
         // $worksheet->setTitle("All employee");
