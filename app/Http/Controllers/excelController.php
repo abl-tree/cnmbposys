@@ -256,7 +256,7 @@ class excelController extends BaseController
         // $name = "Export-Report-";
         // $name.= now();
         // return (new exportReportSheet)->download($name.'.xlsx');
-        // $filename = "Report-Template-".now().".xlsx"; //filename
+        $filename = "Report-Template-".now().".xlsx"; //filename
         $spreadsheet = new Spreadsheet();
         // //add template sheet
         $header = [
