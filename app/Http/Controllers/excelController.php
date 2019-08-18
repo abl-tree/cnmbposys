@@ -275,61 +275,56 @@ class excelController extends BaseController
             'TIN #'
 
         ];
-        $data = [
-            ["same","","same"],
-            ["same","","same"],
-        ];
-        $this->createExcelFile($header,$data);
-        // $worksheet = $spreadsheet->getActiveSheet(0);
-        // $worksheet->fromArray($header,null,'A1');
-        // $userInfo = UserInfo::with(["user","benefits","accesslevelhierarchy.parentInfo"])->get();
-        // // header('Content-type: application/json');
-        // // echo json_encode($userInfo);
-        // // $worksheet->setTitle("All employee");
-        // foreach($userInfo as $k => $datum){
+        $worksheet = $spreadsheet->getActiveSheet(0);
+        $worksheet->fromArray($header,null,'A1');
+        $userInfo = UserInfo::with(["user","benefits","accesslevelhierarchy.parentInfo"])->get();
+        // header('Content-type: application/json');
+        // echo json_encode($userInfo);
+        // $worksheet->setTitle("All employee");
+        foreach($userInfo as $k => $datum){
             
-        //     if(!empty($datum->image_url)){
-        //         $worksheet->getRowDimension($k+2)->setRowHeight(50);
-        //         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-        //         $drawing->setName($datum->lastname);
-        //         $tmp = explode("/", $datum->image_url);
-        //         $tmp = $tmp[count($tmp)-1];
-        //         $drawing->setPath('./storage/images/'.$tmp);
-        //         $drawing->setHeight(50);
-        //         $drawing->setCoordinates('A'.($k+2));
-        //         $drawing->setWorksheet($worksheet);
-        //     }else{
-        //         $worksheet->setCellValue('A'.($k+2),"");
-        //     }
-        //     $worksheet->setCellValue('B'.($k+2),$datum->user->company_id);
-        //     $worksheet->setCellValue('C'.($k+2),$datum->firstname);
-        //     $worksheet->setCellValue('D'.($k+2),$datum->middlename);
-        //     $worksheet->setCellValue('E'.($k+2),$datum->lastname);
-        //     $worksheet->setCellValue('F'.($k+2),$datum->suffix);
-        //     $worksheet->setCellValue('G'.($k+2),$datum->user->access->name);
-        //     if($datum->accesslevelhierarchy->parent_info!=null){
-        //         $worksheet->setCellValue('H'.($k+2),$datum->accesslevelhierarchy->parent_info->full_name);
-        //     }
-        //     $worksheet->setCellValue('I'.($k+2),$datum->user->email);
-        //     $worksheet->setCellValue('J'.($k+2),$datum->type);
-        //     $worksheet->setCellValue('K'.($k+2),$datum->user->contract);
-        //     $worksheet->setCellValue('L'.($k+2),$datum->gender);
-        //     $worksheet->setCellValue('M'.($k+2),$datum->birthdate);
-        //     $worksheet->setCellValue('N'.($k+2),$datum->address);
-        //     $worksheet->setCellValue('O'.($k+2),$datum->hired_date);
-        //     $worksheet->setCellValue('P'.($k+2),$datum->separation_date);
-        //     $worksheet->setCellValue('Q'.($k+2),"'".$datum->benefits[0]->id_number);
-        //     $worksheet->setCellValue('R'.($k+2),"'".$datum->benefits[1]->id_number);
-        //     $worksheet->setCellValue('S'.($k+2),"'".$datum->benefits[2]->id_number);
-        //     $worksheet->setCellValue('T'.($k+2),"'".$datum->benefits[3]->id_number);
-        // }
-        // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-        // $writer->setPreCalculateFormulas(false);
-        // header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        // header('Content-Disposition: attachment;filename="'. $filename); 
-        // header('Cache-Control: max-age=0');
-        // $writer->save('php://output');
-        // exit;
+            if(!empty($datum->image_url)){
+                $worksheet->getRowDimension($k+2)->setRowHeight(50);
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName($datum->lastname);
+                $tmp = explode("/", $datum->image_url);
+                $tmp = $tmp[count($tmp)-1];
+                $drawing->setPath('./storage/images/'.$tmp);
+                $drawing->setHeight(50);
+                $drawing->setCoordinates('A'.($k+2));
+                $drawing->setWorksheet($worksheet);
+            }else{
+                $worksheet->setCellValue('A'.($k+2),"");
+            }
+            $worksheet->setCellValue('B'.($k+2),$datum->user->company_id);
+            $worksheet->setCellValue('C'.($k+2),$datum->firstname);
+            $worksheet->setCellValue('D'.($k+2),$datum->middlename);
+            $worksheet->setCellValue('E'.($k+2),$datum->lastname);
+            $worksheet->setCellValue('F'.($k+2),$datum->suffix);
+            $worksheet->setCellValue('G'.($k+2),$datum->user->access->name);
+            if($datum->accesslevelhierarchy->parent_info!=null){
+                $worksheet->setCellValue('H'.($k+2),$datum->accesslevelhierarchy->parent_info->full_name);
+            }
+            $worksheet->setCellValue('I'.($k+2),$datum->user->email);
+            $worksheet->setCellValue('J'.($k+2),$datum->type);
+            $worksheet->setCellValue('K'.($k+2),$datum->user->contract);
+            $worksheet->setCellValue('L'.($k+2),$datum->gender);
+            $worksheet->setCellValue('M'.($k+2),$datum->birthdate);
+            $worksheet->setCellValue('N'.($k+2),$datum->address);
+            $worksheet->setCellValue('O'.($k+2),$datum->hired_date);
+            $worksheet->setCellValue('P'.($k+2),$datum->separation_date);
+            $worksheet->setCellValue('Q'.($k+2),"'".$datum->benefits[0]->id_number);
+            $worksheet->setCellValue('R'.($k+2),"'".$datum->benefits[1]->id_number);
+            $worksheet->setCellValue('S'.($k+2),"'".$datum->benefits[2]->id_number);
+            $worksheet->setCellValue('T'.($k+2),"'".$datum->benefits[3]->id_number);
+        }
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->setPreCalculateFormulas(false);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
     }
 
 
@@ -526,6 +521,27 @@ class excelController extends BaseController
     }
 
     public function createExcelFile($header,$data){
+        
+    /**
+     * creates an excel file
+     * 
+     * for array of strings only
+     *  
+     * @param header, @param data
+     * 
+     * Sample usage 
+     * 
+     *   $header = [
+     *      "First name",
+     *      "Middle name",
+     *      "Last name",
+     *   ];
+     *   $data = [
+     *       ["John","","Doe"],
+     *       ["Brad","","Pitt"],
+     *   ];
+     *   $this->createExcelFile($header,$data);
+    */
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
