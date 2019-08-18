@@ -313,7 +313,9 @@ class excelController extends BaseController
                 $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
                 $drawing->setName($datum->lastname);
                 // $drawing->setDescription($datum->lastname);
-                $drawing->setPath($datum->image_url);
+                $tmp = explode("/", $datum->image_url);
+                $tmp = $tmp[count($tmp)-1];
+                $drawing->setPath(storage_path('images/'.$tmp));
                 $drawing->setHeight(36);
                 $worksheet->setCellValue('A'.($k+2),$drawing);
             }else{
