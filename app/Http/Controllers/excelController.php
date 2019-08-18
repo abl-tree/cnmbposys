@@ -256,35 +256,35 @@ class excelController extends BaseController
         // $name = "Export-Report-";
         // $name.= now();
         // return (new exportReportSheet)->download($name.'.xlsx');
-        $filename = "Report-Template-".now().".xlsx"; //filename
-        $spreadsheet = new Spreadsheet();
-        //add template sheet
-        $header = [
-            'CID',
-            'First Name',
-            'Middle Name',
-            'Last Name',
-            'Status',
-            'Gender',
-            'Birth Date',
-            'Address',
-            'PersonalEmail',
-            'CompanyEmail',
-            'Contact No.',
-            'SSS',
-            'Philhealth',
-            'PagIbig',
-            'TIN',
-            'Position',
-            'Hired Date',
-            'Status',
-            'Separation Reason',
-            'Separation Date',
-        ];
-        $worksheet = $spreadsheet->getActiveSheet(0);
-        $worksheet->fromArray($header,null,'A1');
+        // $filename = "Report-Template-".now().".xlsx"; //filename
+        // $spreadsheet = new Spreadsheet();
+        // //add template sheet
+        // $header = [
+        //     'CID',
+        //     'First Name',
+        //     'Middle Name',
+        //     'Last Name',
+        //     'Status',
+        //     'Gender',
+        //     'Birth Date',
+        //     'Address',
+        //     'PersonalEmail',
+        //     'CompanyEmail',
+        //     'Contact No.',
+        //     'SSS',
+        //     'Philhealth',
+        //     'PagIbig',
+        //     'TIN',
+        //     'Position',
+        //     'Hired Date',
+        //     'Status',
+        //     'Separation Reason',
+        //     'Separation Date',
+        // ];
+        // $worksheet = $spreadsheet->getActiveSheet(0);
+        // $worksheet->fromArray($header,null,'A1');
         $userInfo = new UserInfo;
-        return json_encode($userInfo);
+        echo json_encode($userInfo);
         // $employee = $userInfo->getAllEmployee();
         // $worksheet->setTitle("All employee");
         // foreach($employee as $k => $datum){
