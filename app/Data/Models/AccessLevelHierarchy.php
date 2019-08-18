@@ -16,6 +16,8 @@ class AccessLevelHierarchy extends BaseModel
         'parent_id', 'child_id','created_at','updated_at'
     ];
 
+    protected $append = ['parentInfo'];
+
     public function childInfo() {
         return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'child_id');
     }
@@ -23,4 +25,5 @@ class AccessLevelHierarchy extends BaseModel
     public function parentInfo() {
         return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'parent_id');
     }
+
 }
