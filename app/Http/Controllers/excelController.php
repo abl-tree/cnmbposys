@@ -310,7 +310,7 @@ class excelController extends BaseController
             // $worksheet->setCellValue('S'.($k+2),$datum->type);
             // $worksheet->setCellValue('T'.($k+2),$datum->separation_date);
             if(!empty($datum->image_url)){
-                $worksheet->getRowDimension('10')->setRowHeight(50);
+                $worksheet->getRowDimension($k+2)->setRowHeight(50);
                 $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
                 $drawing->setName($datum->lastname);
                 // $drawing->setDescription($datum->lastname);
