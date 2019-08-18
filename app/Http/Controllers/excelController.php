@@ -56,15 +56,15 @@ class excelController extends BaseController
                     'PersonalEmail',
                     'CompanyEmail',
                     'Contact No.',
-                    'SSS',
-                    'PhilHealth',
-                    'PagIbig',
-                    'TIN',
                     'Position',
                     'Supervisor',
                     'Status',
                     'Contract',
                     'Salary',
+                    'SSS',
+                    'PhilHealth',
+                    'PagIbig',
+                    'TIN',
                     'Hired Date',
                     'Separation Date',
                 ];
@@ -254,10 +254,10 @@ class excelController extends BaseController
     }
 
     function report(){
-        return $this->setResponse([
-            'code'  => 500,
-            'title' => "Request schedule ID is not set.",
-        ]);
+        // return $this->setResponse([
+        //     'code'  => 500,
+        //     'title' => "Request schedule ID is not set.",
+        // ]);
         // $name = "Export-Report-";
         // $name.= now();
         // return (new exportReportSheet)->download($name.'.xlsx');
@@ -289,49 +289,46 @@ class excelController extends BaseController
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
         $userInfo = new UserInfo;
-        $employee = $userInfo->getAllEmployee();
-        $worksheet->setTitle("Report");
-        foreach($employee as $k => $datum){
-            $worksheet->setCellValue('A'.($k+2),$datum->company_id);
-            $worksheet->setCellValue('B'.($k+2),$datum->firstname);
-            $worksheet->setCellValue('C'.($k+2),$datum->middlename);
-            $worksheet->setCellValue('D'.($k+2),$datum->lastname);
-            $worksheet->setCellValue('E'.($k+2),$datum->status);
-            $worksheet->setCellValue('F'.($k+2),$datum->gender);
-            $worksheet->setCellValue('G'.($k+2),$datum->birthdate);
-            $worksheet->setCellValue('H'.($k+2),$datum->address);
-            $worksheet->setCellValue('I'.($k+2),$datum->p_email);
-            $worksheet->setCellValue('J'.($k+2),$datum->email);
-            $worksheet->setCellValue('K'.($k+2),$datum->contact_number);
-            $worksheet->setCellValue('L'.($k+2),$datum->col1);
-            $worksheet->setCellValue('M'.($k+2),$datum->col2);
-            $worksheet->setCellValue('N'.($k+2),$datum->col3);
-            $worksheet->setCellValue('O'.($k+2),$datum->col4);
-            $worksheet->setCellValue('P'.($k+2),$datum->name);
-            $worksheet->setCellValue('Q'.($k+2),$datum->hired_date);
-            $worksheet->setCellValue('R'.($k+2),$datum->status);
-            $worksheet->setCellValue('S'.($k+2),$datum->status_reason);
-            $worksheet->setCellValue('T'.($k+2),$datum->separation_date);
-            // if(!empty($datum->image)){
-            //     $drawing = new \PHPExcel_Worksheet_MemoryDrawing();
-            //     $drawing->setName('PhpSpreadsheet logo');
-            //     $drawing->setImageResource($datum->image);
-            //     $drawing->setRenderingFunction(\PHPExcel_Worksheet_MemoryDrawing::RENDERING_JPEG);
-            //     $drawing->setMimeType(\PHPExcel_Worksheet_MemoryDrawing::MIMETYPE_DEFAULT);
-            //     $drawing->setHeight(36);
-            //     $drawing->setCoordinates('U'.($k+2));
-            //     $drawing->setWorksheet($worksheet);
-            //     $objWriter = \PHPExcel_IOFactory::createWriter($worksheet, 'Excel2007');
-            //     $objWriter->save(str_replace('.php', '.xlsx', __FILE__));
-            // }
-        }
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->setPreCalculateFormulas(false);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'. $filename); 
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-        exit;
+        return json_encode($userInfo);
+        // $employee = $userInfo->getAllEmployee();
+        // $worksheet->setTitle("All employee");
+        // foreach($employee as $k => $datum){
+        //     $worksheet->setCellValue('A'.($k+2),$datum->company_id);
+        //     $worksheet->setCellValue('B'.($k+2),$datum->firstname);
+        //     $worksheet->setCellValue('C'.($k+2),$datum->middlename);
+        //     $worksheet->setCellValue('D'.($k+2),$datum->lastname);
+        //     $worksheet->setCellValue('E'.($k+2),$datum->status);
+        //     $worksheet->setCellValue('F'.($k+2),$datum->gender);
+        //     $worksheet->setCellValue('G'.($k+2),$datum->birthdate);
+        //     $worksheet->setCellValue('H'.($k+2),$datum->address);
+        //     $worksheet->setCellValue('I'.($k+2),$datum->p_email);
+        //     $worksheet->setCellValue('J'.($k+2),$datum->email);
+        //     $worksheet->setCellValue('K'.($k+2),$datum->contact_number);
+        //     $worksheet->setCellValue('L'.($k+2),$datum->col1);
+        //     $worksheet->setCellValue('M'.($k+2),$datum->col2);
+        //     $worksheet->setCellValue('N'.($k+2),$datum->col3);
+        //     $worksheet->setCellValue('O'.($k+2),$datum->col4);
+        //     $worksheet->setCellValue('P'.($k+2),$datum->name);
+        //     $worksheet->setCellValue('Q'.($k+2),$datum->hired_date);
+        //     $worksheet->setCellValue('R'.($k+2),$datum->status);
+        //     $worksheet->setCellValue('S'.($k+2),$datum->type);
+        //     $worksheet->setCellValue('T'.($k+2),$datum->separation_date);
+        //     if(!empty($datum->image)){
+        //         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        //         $drawing->setName();
+        //         $drawing->setDescription($datum->lastname);
+        //         $drawing->setPath($datum->image_url);
+        //         $drawing->setHeight(36);
+        //         $worksheet->setCellValue('T'.($k+2),$drawing);
+        //     }
+        // }
+        // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        // $writer->setPreCalculateFormulas(false);
+        // header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="'. $filename); 
+        // header('Cache-Control: max-age=0');
+        // $writer->save('php://output');
+        // exit;
     }
 
 
