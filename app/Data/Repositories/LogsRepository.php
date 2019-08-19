@@ -211,6 +211,52 @@ class LogsRepository extends BaseRepository
                 $data['target'][] = 'userinfo.lastname';
                 unset($data['target'][$index]);
             }
+            if (str_contains($column, "date")) {
+                $data['target'][] = 'created_at';
+                unset($data['target'][$index]);
+            }
+            if(str_contains($column, "position")){
+                $meta_index = "metadata";
+                $parameters = [];
+                $count      = 0;
+                $results=[];
+
+                
+                
+                $count_data = $data;
+        
+                $data['relations'] = ["user","accesslevelhierarchy"];       
+        
+                $result = $this->fetchGeneric($data, $this->action_logs);
+                foreach ($result as $key => $value) {
+                    if(strtolower($value->position)==strtolower($data['query'])){
+                        array_push($results,$value);     
+                    }
+                }
+        
+                if (!$results) {
+                    return $this->setResponse([
+                        'code'       => 404,
+                        'title'      => "No agent logs are found",
+                        "meta"       => [
+                            $meta_index => $results,
+                        ],
+                        "parameters" => $parameters,
+                    ]);
+                }
+        
+                $count = count($results);
+        
+                return $this->setResponse([
+                    "code"       => 200,
+                    "title"      => "Successfully retrieved  agent logs",
+                    "meta"       => [
+                        $meta_index => $results,
+                        "count"     => $count,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
         }
 
         $count_data = $data;
@@ -232,13 +278,15 @@ class LogsRepository extends BaseRepository
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Successfully searched logs",
+            "title" => "Successfully retrieved agent logs",
             "meta" => [
                 $meta_index => $result,
                 "count" => $count,
             ],
             "parameters" => $parameters,
         ]);
+
+       
     }
 
 
