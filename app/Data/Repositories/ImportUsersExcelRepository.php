@@ -14,6 +14,7 @@ use App\Data\Models\UsersData;
 use App\Data\Models\Users;
 use App\Data\Models\UserBenefit;
 use App\Data\Models\UpdateStatus;
+use App\Data\Models\UserStatus;
 use App\Data\Models\OvertimeSchedule;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\ClusterRepository;
@@ -34,7 +35,7 @@ class ImportUsersExcelRepository extends BaseRepository
     protected $user_benefit,
     $excel_date,
     $user,$user_datum,$user_benefits,
-    $user_info,$access_level,$access_level_hierarchy,$user_status,$user_infos;
+    $user_info,$access_level,$access_level_hierarchy,$user_status,$user_infos,$status_list;
 
     public function __construct(
         UserBenefit $user_benefit,
@@ -42,6 +43,7 @@ class ImportUsersExcelRepository extends BaseRepository
         Users $user_datum,
         ExcelDateService $excelDate,
         UsersData $user_info,
+        UserStatus $status_list,
         UserInfo $user_infos,
         AccessLevel $access_level,
         AccessLevelHierarchy $access_level_hierarchy,
@@ -58,6 +60,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $this->access_level_hierarchy = $access_level_hierarchy;
         $this->user_status = $user_status;
         $this->user_benefits = $user_benefits;
+        $this->status_list = $status_list;
     }
 
     public function excelImportUser($data)
@@ -68,11 +71,12 @@ class ImportUsersExcelRepository extends BaseRepository
         $benefits = [];
         
         $position = $this->genericSearch($data, $this->access_level)->get()->all();
+        $stat = $this->genericSearch($data, $this->status_list)->get()->all();
         
-
         $firstPage = $excel[0];
         for ($x = 0; $x < count($firstPage); $x++) {
             $access_id="invalid position";
+            $status = "Invalid Status";
             if (isset($firstPage[$x + 1])) {
                 if ($firstPage[$x + 1][1] != null) {
                      
@@ -82,6 +86,11 @@ class ImportUsersExcelRepository extends BaseRepository
                                 $access_id=$value->id;
                              }
                          }
+                         foreach ($stat as $key => $value) {
+                            if(strtolower($firstPage[$x + 1][13])==strtolower($value->type)){
+                               $status=$value->status;
+                            }
+                        }
                            
                             array_push($benefits,strval($firstPage[$x + 1][16]));
                             array_push($benefits,strval($firstPage[$x + 1][17]));
@@ -100,13 +109,14 @@ class ImportUsersExcelRepository extends BaseRepository
                             "p_email" => $firstPage[$x + 1][8],
                             "contact_number" => $firstPage[$x + 1][10],
                             "status" => $firstPage[$x + 1][13],
+                            "type" => $status,
                             "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20]),
                             "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21]),
-                            "status_reason" => $firstPage[$x + 1][19],
+                            //"status_reason" => $firstPage[$x + 1][19],
                             "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]),
                             "email"=> $firstPage[$x + 1][9],
-                            "password"=> bcrypt($firstPage[$x + 1][0]. $firstPage[$x + 1][2]),
-                            "company_id"=> $firstPage[$x + 1][1],
+                            "password"=> bcrypt($firstPage[$x + 1][1]. $firstPage[$x + 1][3]),
+                            "company_id"=> $firstPage[$x + 1][0],
                             "contract"=> $firstPage[$x + 1][14],
                             "login_flag"=> 0,
                             "access_id"=> $access_id,
