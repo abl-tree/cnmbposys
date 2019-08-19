@@ -135,7 +135,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $benefits=[];
         $result = $this->access_level;
         $access = $this->genericSearch($data, $result)->get()->all();
-        foreach ($data as $key => $value) { 
+
             $user_information['firstname']= $data['firstname'];
             $user_information['middlename']= $data['middlename']; 
             $user_information['lastname']= $data['lastname'];
@@ -154,13 +154,13 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
                 if (!$user_informations->save($data)) {
                     if (strpos($user_informations->errors(), 'user_infos_excel_hash_unique') !== false) {
-                        $error_array->offsetSet($key, "Full Name is already in Use. Please use another Name.");
+                        $error_array->offsetSet(1, "Full Name is already in Use. Please use another Name.");
                         $error_count++;
-                        continue;
+                        
                     }else{
-                        $error_array->offsetSet($key,  $user_informations->errors());
+                        $error_array->offsetSet(2,  $user_informations->errors());
                         $error_count++;
-                        continue;
+                        
                     }
                 }      
             $user_id = $user_informations->id;
@@ -177,13 +177,13 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_data['access_id']= $access[$keys]['id'];
                 }
             }    
-            $user_data['company_id']= $data[$key]['user'][0]['company_id'];
-            $user_data['contract']= $data[$key]['user'][0]['contract'];
-            $user_data['login_flag']= $data[$key]['user'][0]['login_flag'];
-            $user_data['password'] = $data[$key]['user'][0]['password'];
+            $user_data['company_id']= $data['company_id'];
+            $user_data['contract']= $data['contract'];
+            $user_data['login_flag']= $data['login_flag'];
+            $user_data['password'] = $data['password'];
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
             $status_logs['user_id']=$user_id;
-            $status_logs['status']=$data[$key]['status'];
+            $status_logs['status']=$data['status'];
             $status_logs['type']="New Hired";
             $status_logs['hired_date']=$data[$key]['hired_date'];
             $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
@@ -215,10 +215,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 }
                
             }  
-            $benefits=[];
-            $ben=[];
-           // $array=json_decode($data['benefits'], true );
-            if($data[$key]['benefits']==[]){
+            if($data['benefits']==[]){
                 for($i=1; $i<5;$i++ ){
                     $ben['benefit_id'] = $i;
                     $ben['id_number'] = NULL;
@@ -228,7 +225,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_ben->save();   
             }   
             }else{
-                foreach($data[$key]['benefits'] as $keyss => $valuess ){
+                foreach($data['benefits'] as $keyss => $valuess ){
                    
                     $ben['benefit_id'] = $keyss+1;
                     $user_bene['id_number']=$valuess;
@@ -248,7 +245,7 @@ class ImportUsersExcelRepository extends BaseRepository
             
            
             
-        }
+      
          return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully Uploaded Users",

@@ -448,7 +448,75 @@ class ReportsRepository extends BaseRepository
        $meta_index = "reports";
         $parameters = [];
         $count      = 0;
-        
+
+        if(isset($data['target'])||isset($data['query'])){
+            if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+            }
+            if (!isset($data['target'])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "target is not set",
+                    "parameters" => $data,
+                ]);
+                }
+
+        $result = $this->user_reports;
+        //$data['relations'] = ['filedby','user'];   
+
+        $meta_index = "reports";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+        $data['where']  = [
+            [
+                "target"   => "user_reports_id",
+                "operator" => "=",
+                "value"    => $data['id'],
+            ],
+        ];
+
+        foreach ((array) $data['target'] as $index => $column) {
+            if (str_contains($column, "full_name")) {
+                
+                $data['target'][] = 'filedby.firstname';
+                $data['target'][] = 'filedby.middlename';
+                $data['target'][] = 'filedby.lastname';
+                unset($data['target'][$index]);
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No IR are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = count($result);
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Filed IR by this User",
+            "description"=>"Filed Incident Reports",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            "parameters" => $parameters,
+            
+        ]);
+        }
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
@@ -916,6 +984,77 @@ class ReportsRepository extends BaseRepository
        $meta_index = "reports";
         $parameters = [];
         $count      = 0;
+
+
+
+        if(isset($data['target'])||isset($data['query'])){
+            if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+            }
+            if (!isset($data['target'])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "target is not set",
+                    "parameters" => $data,
+                ]);
+                }
+
+        $result = $this->user_reports;
+        $data['relations'] = ['filedby','user'];   
+
+        $meta_index = "reports";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+        $data['where']  = [
+            [
+                "target"   => "filed_by",
+                "operator" => "=",
+                "value"    => $data['id'],
+            ],
+        ];
+
+        foreach ((array) $data['target'] as $index => $column) {
+            if (str_contains($column, "full_name")) {
+                
+                $data['target'][] = 'user.firstname';
+                $data['target'][] = 'user.middlename';
+                $data['target'][] = 'user.lastname';
+                unset($data['target'][$index]);
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No IR are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = count($result);
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Filed IR by this User",
+            "description"=>"Filed Incident Reports",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            "parameters" => $parameters,
+            
+        ]);
+        }
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
