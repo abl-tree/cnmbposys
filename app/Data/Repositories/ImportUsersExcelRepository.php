@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use App\User;
 use Auth;
 use ArrayObject;
+use DB;
 
 class ImportUsersExcelRepository extends BaseRepository
 {
@@ -75,12 +76,20 @@ class ImportUsersExcelRepository extends BaseRepository
         
         $firstPage = $excel[0];
         for ($x = 0; $x < count($firstPage); $x++) {
-            $access_id="invalid position";
+            $access_id = "invalid position";
             $status = "Invalid Status";
+            $parent_id = "No Parent Found";
             if (isset($firstPage[$x + 1])) {
                 if ($firstPage[$x + 1][1] != null) {
                      
-                       
+                     
+                    $parent = UserInfo::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
+                    
+                    
+                    if($parent!='[]'){
+                        $parent_id=$parent[0]->id;
+                    }
+                   
                          foreach ($position as $key => $value) {
                              if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
                                 $access_id=$value->id;
@@ -120,7 +129,7 @@ class ImportUsersExcelRepository extends BaseRepository
                             "contract"=> $firstPage[$x + 1][14],
                             "login_flag"=> 0,
                             "access_id"=> $access_id,
-                            "parent_id" =>$firstPage[$x + 1][12],
+                            "parent_id" =>$parent_id,
                             "benefits" => $benefits
                         );
                      
