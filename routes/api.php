@@ -215,6 +215,8 @@ Route::group([
         Route::post('delete/{ir_id}', 'ReportsController@delete');
         Route::post("user_response", "ReportsController@userResponse");
         Route::post('update_response/{id}', 'ReportsController@update_response');
+        Route::get("issuedto/search", "ReportsController@reportSearch");
+        Route::get("issuedby/search", "ReportsController@userFiledIRSearch");
 
     });
 

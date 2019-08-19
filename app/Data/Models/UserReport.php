@@ -12,7 +12,7 @@ class UserReport extends BaseModel
  	protected $table = 'user_reports';
     protected $primaryKey = 'id';
  	protected $fillable = [
-       'user_reports_id', 'description','filed_by','sanction_type_id','sanction_level_id'
+       'user_reports_id', 'description','filed_by','sanction_type_id','sanction_level_id','status'
     ];
 
     protected $hidden = [
@@ -25,9 +25,14 @@ class UserReport extends BaseModel
         'issued_to','issued_by','report_details'
     ];
 
+    protected $searchable = [
+        'user.firstname','user.middlename', 'user.lastname',
+        'filedby.firstname','filedby.middlename', 'filedby.lastname',
+    ];
+
  
     public function user() {
-        return $this->hasOne('\App\Data\Models\Users', 'uid', 'user_reports_id')->with('position','userdata');
+        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'user_reports_id')->with('accesslevelhierarchy','user');
     }
     public function SanctionType(){
         return $this->belongsTo('\App\Data\Models\SanctionTypes','sanction_type_id','id');
@@ -36,7 +41,7 @@ class UserReport extends BaseModel
         return $this->belongsTo('\App\Data\Models\SanctionLevels','sanction_level_id','id');
     }
     public function filedby() {
-        return $this->hasOne('\App\Data\Models\Users', 'uid', 'filed_by')->with('position','userdata');
+        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'filed_by')->with('accesslevel','user');
     }
      public function agentResponse(){
         return $this->belongsTo('\App\Data\Models\ReportResponse','id','user_response_id');
@@ -54,23 +59,23 @@ class UserReport extends BaseModel
     }
     public function getIssuedtoAttribute(){
         $obj = (object) array('id' => $this->user->id,
-        'image' => $this->user->userdata->image_url, 
-        'fname'=> $this->user->userdata->firstname,
-        'lname'=> $this->user->userdata->lastname,
-        'full_name' => $this->user->name, 
-        'position' => $this->user->position->name, 
-        'email' => $this->user->email);
+        'image' => $this->user->image_url, 
+        'fname'=> $this->user->firstname,
+        'lname'=> $this->user->lastname,
+        'full_name' => $this->user->full_name, 
+        'position' => $this->user->user->access->name, 
+        'email' => $this->user->user->email);
         return $obj;
     }
 
     public function getIssuedbyAttribute(){
         $obj = (object) array('id' => $this->filedby->id,
-        'image' => $this->filedby->userdata->image_url, 
-        'fname'=> $this->filedby->userdata->firstname,
-        'lname'=> $this->filedby->userdata->lastname,
-        'full_name' => $this->filedby->name, 
-        'position' => $this->filedby->position->name, 
-        'email' => $this->filedby->email);
+        'image' => $this->filedby->image_url, 
+        'fname'=> $this->filedby->firstname,
+        'lname'=> $this->filedby->lastname,
+        'full_name' => $this->filedby->full_name, 
+        'position' => $this->filedby->user->access->name, 
+        'email' => $this->filedby->user->email);
         return $obj;
     }
     public function getReportdetailsAttribute(){

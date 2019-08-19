@@ -69,8 +69,8 @@ class ImportUsersExcelRepository extends BaseRepository
 
         $firstPage = $excel[0];
         for ($x = 0; $x < 1; $x++) {
-            if (isset($firstPage[$x + 3])) {
-                if ($firstPage[$x + 3][1] != null) {
+            if (isset($firstPage[$x + 1])) {
+                if ($firstPage[$x + 1][1] != null) {
                      
                        
                          
@@ -86,14 +86,14 @@ class ImportUsersExcelRepository extends BaseRepository
                             "lastname" => $firstPage[$x + 1][3],
                             "suffix" => $firstPage[$x + 1][4],
                             "gender" => $firstPage[$x + 1][5],
-                            "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][6]),
+                            "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]),
                             "address" => $firstPage[$x+1][7],
                             "salary" => $firstPage[$x+1][19],
                             "p_email" => $firstPage[$x + 1][8],
                             "contact_number" => $firstPage[$x + 1][10],
                             "status" => $firstPage[$x + 1][17],
-                            "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][20]),
-                            "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][21]),
+                            "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20]),
+                            "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21]),
                             "status_reason" => $firstPage[$x + 1][19],
                             "excel_hash" =>  strtolower($firstPage[$x + 1][0]. $firstPage[$x + 1][1]. $firstPage[$x + 1][2]),
                             "email"=> $firstPage[$x + 1][9],
@@ -115,11 +115,7 @@ class ImportUsersExcelRepository extends BaseRepository
             "code"       => 200,
             "title"      => "Successfully Uploaded Users",
             "description" => "Import User Success!",
-            "meta"        => [
-                "failed"        => $userInfo,
-            ],
-           
-           
+            "meta"        => $userInfo,
         ]);
         $result = $this->addUser($userInfo);
         return $result;
@@ -140,19 +136,20 @@ class ImportUsersExcelRepository extends BaseRepository
         $result = $this->access_level;
         $access = $this->genericSearch($data, $result)->get()->all();
         foreach ($data as $key => $value) { 
-            $user_information['firstname']= $data[$key]['firstname'];
-            $user_information['middlename']= $data[$key]['middlename']; 
-            $user_information['lastname']= $data[$key]['lastname'];
-            $user_information['birthdate']= $data[$key]['birthdate'];
-            $user_information['gender']= $data[$key]['gender'];   
-            $user_information['contact_number']= $data[$key]['contact_number'];
-            $user_information['address']= $data[$key]['address'];
-            $user_information['status']= $data[$key]['status'];
-            $user_information['hired_date']= $data[$key]['hired_date'];
-            $user_information['separation_date']= $data[$key]['separation_date'];
-            $user_information['excel_hash']= $data[$key]['excel_hash'];
-            $user_information['p_email']= $data[$key]['p_email'];
-            $user_information['status_reason']= $data[$key]['status_reason'];
+            $user_information['firstname']= $data['firstname'];
+            $user_information['middlename']= $data['middlename']; 
+            $user_information['lastname']= $data['lastname'];
+            $user_information['birthdate']= $data['birthdate'];
+            $user_information['gender']= $data['gender'];   
+            $user_information['contact_number']= $data['contact_number'];
+            $user_information['address']= $data['address'];
+            $user_information['status']= $data['status'];
+            $user_information['hired_date']= $data['hired_date'];
+            $user_information['separation_date']= $data['separation_date'];
+            $user_information['excel_hash']= $data['excel_hash'];
+            $user_information['p_email']= $data['p_email'];
+            $user_information['salary']= $data['salary'];
+            $user_information['status_reason']= $data['status_reason'];
           
             $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
                 if (!$user_informations->save($data)) {
