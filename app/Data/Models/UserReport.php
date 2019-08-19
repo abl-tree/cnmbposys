@@ -28,6 +28,7 @@ class UserReport extends BaseModel
     protected $searchable = [
         'user.firstname','user.middlename', 'user.lastname',
         'filedby.firstname','filedby.middlename', 'filedby.lastname',
+        
     ];
 
  

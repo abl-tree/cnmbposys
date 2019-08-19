@@ -1487,6 +1487,63 @@ class ReportsRepository extends BaseRepository
         ]);
     }
 
+    public function getAll_IrSearch($data = [])
+    {
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+
+        $result = $this->incident_report;
+        //$data['relations'] = [];       
+
+        $meta_index = "reports";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        foreach ((array) $data['target'] as $index => $column) {
+            if (str_contains($column, "full_name")) {
+                
+                $data['target'][] = 'userinfo.firstname';
+                $data['target'][] = 'userinfo.middlename';
+                $data['target'][] = 'userinfo.lastname';
+                unset($data['target'][$index]);
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Reports are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->incident_report->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved Users with Reports",
+            "description"=>"Users With Incident Reports",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count
+            ],
+            
+            
+        ]);
+    }
+
 
 
 

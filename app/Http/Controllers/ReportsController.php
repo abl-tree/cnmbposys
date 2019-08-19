@@ -97,6 +97,13 @@ class ReportsController extends BaseController
         return $this->absorb($this->user_reports->getAll_Ir($data))->json();
     }
 
+    public function getAll_IrSearch(Request $request)
+    {
+
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getAll_IrSearch($data))->json();
+    }
+
     /**
      * Store a newly created resource in storage.
      *
