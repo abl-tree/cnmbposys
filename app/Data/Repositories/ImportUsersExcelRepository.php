@@ -66,19 +66,27 @@ class ImportUsersExcelRepository extends BaseRepository
         $userInfo = [];
         $user = [];
         $benefits = [];
+        
+        $position = $this->genericSearch($data, $this->access_level)->get()->all();
+        
 
         $firstPage = $excel[0];
-        for ($x = 0; $x < 1; $x++) {
+        for ($x = 0; $x < count($firstPage); $x++) {
+            $access_id="invalid position";
             if (isset($firstPage[$x + 1])) {
                 if ($firstPage[$x + 1][1] != null) {
                      
                        
-                         
+                         foreach ($position as $key => $value) {
+                             if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
+                                $access_id=$value->id;
+                             }
+                         }
                            
-                            array_push($benefits,strval($firstPage[$x + 1][11]));
-                            array_push($benefits,strval($firstPage[$x + 1][12]));
-                            array_push($benefits,strval($firstPage[$x + 1][13]));  
-                            array_push($benefits,strval($firstPage[$x + 1][14]));      
+                            array_push($benefits,strval($firstPage[$x + 1][16]));
+                            array_push($benefits,strval($firstPage[$x + 1][17]));
+                            array_push($benefits,strval($firstPage[$x + 1][18]));  
+                            array_push($benefits,strval($firstPage[$x + 1][19]));      
                       
                         $userInfo[] = array(
                             "firstname" => $firstPage[$x + 1][1],
@@ -88,27 +96,28 @@ class ImportUsersExcelRepository extends BaseRepository
                             "gender" => $firstPage[$x + 1][5],
                             "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]),
                             "address" => $firstPage[$x+1][7],
-                            "salary" => $firstPage[$x+1][19],
+                            "salary" => $firstPage[$x+1][15],
                             "p_email" => $firstPage[$x + 1][8],
                             "contact_number" => $firstPage[$x + 1][10],
-                            "status" => $firstPage[$x + 1][17],
+                            "status" => $firstPage[$x + 1][13],
                             "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20]),
                             "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21]),
                             "status_reason" => $firstPage[$x + 1][19],
-                            "excel_hash" =>  strtolower($firstPage[$x + 1][0]. $firstPage[$x + 1][1]. $firstPage[$x + 1][2]),
+                            "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]),
                             "email"=> $firstPage[$x + 1][9],
                             "password"=> bcrypt($firstPage[$x + 1][0]. $firstPage[$x + 1][2]),
                             "company_id"=> $firstPage[$x + 1][1],
-                            "contract"=> $firstPage[$x + 1][18],
+                            "contract"=> $firstPage[$x + 1][14],
                             "login_flag"=> 0,
-                            "access_id"=> $firstPage[$x + 1][15],
-                            "parent_id" =>$firstPage[$x + 1][16],
+                            "access_id"=> $access_id,
+                            "parent_id" =>$firstPage[$x + 1][12],
                             "benefits" => $benefits
                         );
                      
                 }
             }
             $benefits = [];
+            
         };
         $userInfo['auth_id'] = auth::id();
         return $this->setResponse([

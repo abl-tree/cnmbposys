@@ -198,7 +198,7 @@ class LogsRepository extends BaseRepository
         $result = $this->action_logs;
         $data['relations'] = ["user","accesslevelhierarchy"];       
 
-        $meta_index = "logs";
+        $meta_index = "metadata";
         $parameters = [
             "query" => $data['query'],
         ];
