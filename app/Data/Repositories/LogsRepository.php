@@ -220,8 +220,9 @@ class LogsRepository extends BaseRepository
                 $parameters = [];
                 $count      = 0;
                 $results=[];
+                $limit=$data['limit'];
 
-                
+                $data['limit']="";
                 
                 $count_data = $data;
         
@@ -230,7 +231,11 @@ class LogsRepository extends BaseRepository
                 $result = $this->fetchGeneric($data, $this->action_logs);
                 foreach ($result as $key => $value) {
                     if(strtolower($value->position)==strtolower($data['query'])){
-                        array_push($results,$value);     
+                        if(count($results)<$limit){
+                            array_push($results,$value);     
+                        }
+                        $count++;
+                       
                     }
                 }
         
@@ -245,7 +250,7 @@ class LogsRepository extends BaseRepository
                     ]);
                 }
         
-                $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
+               // $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
         
                 return $this->setResponse([
                     "code"       => 200,

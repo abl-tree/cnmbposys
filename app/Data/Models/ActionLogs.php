@@ -14,7 +14,7 @@ class ActionLogs extends BaseModel
         'firstname','lastname','email','full_name','image_url','position',
      ];
      protected $searchable = [
-        'userinfo.firstname','userinfo.middlename','userinfo.lastname','created_at',
+        'userinfo.firstname','userinfo.middlename','userinfo.lastname','created_at'
     ];
     protected $fillable = [
         'user_id', 'action', 'affected_data','created_at','updated_at'
