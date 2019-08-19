@@ -245,7 +245,7 @@ class LogsRepository extends BaseRepository
                     ]);
                 }
         
-                $count = count($results);
+                $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
         
                 return $this->setResponse([
                     "code"       => 200,
