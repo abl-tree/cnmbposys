@@ -70,7 +70,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $userInfo = [];
         $user = [];
         $benefits = [];
-        
+        $parameters = [];
         $position = $this->genericSearch($data, $this->access_level)->get()->all();
         $stat = $this->genericSearch($data, $this->status_list)->get()->all();
         
@@ -138,7 +138,10 @@ class ImportUsersExcelRepository extends BaseRepository
             "code"       => 200,
             "title"      => "Successfully Uploaded Users",
             "description" => "Import User Success!",
-            "meta"        => $userInfo,
+            "meta"        => [
+                "user"=>$userInfo
+            ],
+            'parameter' =>$parameters
         ]);
         // $result = $this->addUser($userInfo);
         // return $result;
