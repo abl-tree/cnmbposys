@@ -133,15 +133,19 @@ class ImportUsersExcelRepository extends BaseRepository
             $benefits = [];
             
         };
-        $userInfo['auth_id'] = auth::id();
+        //$userInfo['auth_id'] = auth::id();
+         
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully Uploaded Users",
             "description" => "Import User Success!",
             "meta"        => [
-                "user"=>$userInfo
+                "user" =>$userInfo,
+                'auth_id' => auth::id(),
             ],
+            
             'parameter' =>$parameters
+            
         ]);
         // $result = $this->addUser($userInfo);
         // return $result;
