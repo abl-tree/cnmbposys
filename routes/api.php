@@ -263,6 +263,8 @@ Route::group([
         Route::post("reset_pass/{id}", "UserController@resetPass");
         Route::get("search", "UserController@search");
         Route::post("excel_to_array", "UserController@excelImportuser");
+        Route::post("import_user", "UserController@addUserImport");
+
         
     });
 

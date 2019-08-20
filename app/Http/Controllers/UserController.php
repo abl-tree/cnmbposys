@@ -208,10 +208,12 @@ class UserController extends BaseController
         
         return $this->absorb($this->import_user_repo->excelImportUser($data))->json();
     }
-
-
-
-
+    public function addUserImport(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->import_user_repo->addUser($data))->json();
+    }
+    
     /**
      * Store a newly created resource in storage.
      *

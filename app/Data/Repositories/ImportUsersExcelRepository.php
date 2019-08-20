@@ -80,59 +80,54 @@ class ImportUsersExcelRepository extends BaseRepository
             $status = "Invalid Status";
             $parent_id = "No Parent Found";
             if (isset($firstPage[$x + 1])) {
-                if ($firstPage[$x + 1][1] != null) {
-                     
-                     
+                if ($firstPage[$x + 1][1] != null) {  
                     $parent = UserInfo::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
-                    
-                    
                     if($parent!='[]'){
                         $parent_id=$parent[0]->id;
                     }
-                   
-                         foreach ($position as $key => $value) {
-                             if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
-                                $access_id=$value->id;
-                             }
-                         }
-                         foreach ($stat as $key => $value) {
-                            if(strtolower($firstPage[$x + 1][13])==strtolower($value->type)){
-                               $status=$value->status;
+                
+                        foreach ($position as $key => $value) {
+                            if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
+                            $access_id=$value->id;
                             }
                         }
-                           
-                            array_push($benefits,strval($firstPage[$x + 1][16]));
-                            array_push($benefits,strval($firstPage[$x + 1][17]));
-                            array_push($benefits,strval($firstPage[$x + 1][18]));  
-                            array_push($benefits,strval($firstPage[$x + 1][19]));      
-                      
-                        $userInfo[] = array(
-                            "firstname" => $firstPage[$x + 1][1],
-                            "middlename" => $firstPage[$x + 1][2],
-                            "lastname" => $firstPage[$x + 1][3],
-                            "suffix" => $firstPage[$x + 1][4],
-                            "gender" => $firstPage[$x + 1][5],
-                            "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]),
-                            "address" => $firstPage[$x+1][7],
-                            "salary" => $firstPage[$x+1][15],
-                            "p_email" => $firstPage[$x + 1][8],
-                            "contact_number" => $firstPage[$x + 1][10],
-                            "status" => $firstPage[$x + 1][13],
-                            "type" => $status,
-                            "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20]),
-                            "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21]),
-                            //"status_reason" => $firstPage[$x + 1][19],
-                            "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]),
-                            "email"=> $firstPage[$x + 1][9],
-                            "password"=> bcrypt($firstPage[$x + 1][1]. $firstPage[$x + 1][3]),
-                            "company_id"=> $firstPage[$x + 1][0],
-                            "contract"=> $firstPage[$x + 1][14],
-                            "login_flag"=> 0,
-                            "access_id"=> $access_id,
-                            "parent_id" =>$parent_id,
-                            "benefits" => $benefits
-                        );
-                     
+                        foreach ($stat as $key => $value) {
+                        if(strtolower($firstPage[$x + 1][13])==strtolower($value->type)){
+                            $status=$value->status;
+                        }
+                    }
+                        
+                        array_push($benefits,strval($firstPage[$x + 1][16]));
+                        array_push($benefits,strval($firstPage[$x + 1][17]));
+                        array_push($benefits,strval($firstPage[$x + 1][18]));  
+                        array_push($benefits,strval($firstPage[$x + 1][19]));      
+                    
+                    $userInfo[] = array(
+                        "firstname" => $firstPage[$x + 1][1],
+                        "middlename" => $firstPage[$x + 1][2],
+                        "lastname" => $firstPage[$x + 1][3],
+                        "suffix" => $firstPage[$x + 1][4],
+                        "gender" => $firstPage[$x + 1][5],
+                        "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]),
+                        "address" => $firstPage[$x+1][7],
+                        "salary" => $firstPage[$x+1][15],
+                        "p_email" => $firstPage[$x + 1][8],
+                        "contact_number" => $firstPage[$x + 1][10],
+                        "status" => $firstPage[$x + 1][13],
+                        "type" => $status,
+                        "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20]),
+                        "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21]),
+                        //"status_reason" => $firstPage[$x + 1][19],
+                        "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]),
+                        "email"=> $firstPage[$x + 1][9],
+                        "password"=> bcrypt($firstPage[$x + 1][1]. $firstPage[$x + 1][3]),
+                        "company_id"=> $firstPage[$x + 1][0],
+                        "contract"=> $firstPage[$x + 1][14],
+                        "login_flag"=> 0,
+                        "access_id"=> $access_id,
+                        "parent_id" =>$parent_id,
+                        "benefits" => $benefits
+                    );   
                 }
             }
             $benefits = [];
@@ -145,8 +140,8 @@ class ImportUsersExcelRepository extends BaseRepository
             "description" => "Import User Success!",
             "meta"        => $userInfo,
         ]);
-        $result = $this->addUser($userInfo);
-        return $result;
+        // $result = $this->addUser($userInfo);
+        // return $result;
 
     }
     public function addUser($data = [])
@@ -161,8 +156,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $cluster=[];
         $user_benefits=[];
         $benefits=[];
-        $result = $this->access_level;
-        $access = $this->genericSearch($data, $result)->get()->all();
+
 
             $user_information['firstname']= $data['firstname'];
             $user_information['middlename']= $data['middlename']; 
@@ -194,17 +188,13 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_id = $user_informations->id;
           
             $hierarchy['child_id']= $user_id;
-            $hierarchy['parent_id']= null;
+            $hierarchy['parent_id']= $data['parent_id'];
         
             $user_hierarchy= $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($hierarchy));
             
             $user_data['uid']= $user_id;
-            $user_data['email']= $data[$key]['user'][0]['email'];
-            foreach ($access as $keys => $val) {
-                if ($access[$keys]['name']==$data[$key]['user'][0]['access_id']) {
-                    $user_data['access_id']= $access[$keys]['id'];
-                }
-            }    
+            $user_data['email']= $data['email'];
+            $user_data['access_id']= $data['access_id'];
             $user_data['company_id']= $data['company_id'];
             $user_data['contract']= $data['contract'];
             $user_data['login_flag']= $data['login_flag'];
@@ -213,7 +203,7 @@ class ImportUsersExcelRepository extends BaseRepository
             $status_logs['user_id']=$user_id;
             $status_logs['status']=$data['status'];
             $status_logs['type']="New Hired";
-            $status_logs['hired_date']=$data[$key]['hired_date'];
+            $status_logs['hired_date']=$data['hired_date'];
             $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
             $action="Created";  
             if (!$status->save($data)) {
@@ -238,7 +228,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_info_delete->forceDelete();
                 }   
                 if (strpos($users_data->errors(), 'users_email_unique') !== false) {
-                    $error_array->offsetSet($key, "Email is already in use. Please use another valid email.");
+                    $error_array->offsetSet("users_email_unique", "Email is already in use. Please use another valid email.");
                     $error_count++;  
                 }
                
@@ -253,10 +243,10 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_ben->save();   
             }   
             }else{
-                foreach($data['benefits'] as $keyss => $valuess ){
+                foreach($data['benefits'] as $key => $value ){
                    
-                    $ben['benefit_id'] = $keyss+1;
-                    $user_bene['id_number']=$valuess;
+                    $ben['benefit_id'] = $key+1;
+                    $user_bene['id_number']=$value;
                     $ben['user_info_id'] = $user_id;
                     $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
                     array_push($benefits,$user_ben);
@@ -269,6 +259,16 @@ class ImportUsersExcelRepository extends BaseRepository
                 if($user_info_delete){
                  $user_info_delete->forceDelete();
                 }
+                return $this->setResponse([
+                    "code"       => 404,
+                    "title"      => "Failed adding  a User",
+                    "description" => "Add Failed",
+                    "meta"        => [
+                        "error"        => $error_array,
+                    ],
+                   
+                   
+                ]);
              }
             
            
@@ -276,10 +276,10 @@ class ImportUsersExcelRepository extends BaseRepository
       
          return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Uploaded Users",
+            "title"      => "Successfully Uploaded  a User",
             "description" => "Import User Success!",
             "meta"        => [
-                "failed"        => $error_array,
+                "data"        => $data,
             ],
            
            
