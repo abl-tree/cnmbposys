@@ -7,33 +7,32 @@ ini_set('memory_limit', '-1');
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\EventTitle;
-use App\Data\Models\UserInfo;
 use App\Data\Models\OvertimeSchedule;
+use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\ClusterRepository;
 use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
 use App\Services\ExcelDateService;
-use Maatwebsite\Excel\Facades\Excel;
-use Carbon\CarbonPeriod;
-use Carbon\Carbon;
 use App\User;
-use Auth;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AgentScheduleRepository extends BaseRepository
 {
 
     protected $agent_schedule,
-    $user,
-    $user_info,
-    $event_title,
-    $excel_date,
-    $logs,
-    $access_level_repo,
-    $clusters,
-    $notification_repo,
-    $overtime_schedule;
+        $user,
+        $user_info,
+        $event_title,
+        $excel_date,
+        $logs,
+        $access_level_repo,
+        $clusters,
+        $notification_repo,
+        $overtime_schedule;
 
     public function __construct(
         AgentSchedule $agentSchedule,
@@ -964,7 +963,7 @@ class AgentScheduleRepository extends BaseRepository
 
             $title = "Today's Activity";
 
-            $data['relations'] = array('schedule' => function ($query){
+            $data['relations'] = array('schedule' => function ($query) {
                 $query->where('start_event', '<=', Carbon::now());
                 $query->where('end_event', '>=', Carbon::now());
             });
@@ -1011,7 +1010,7 @@ class AgentScheduleRepository extends BaseRepository
 
                     $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['end_event', '<', $end]]);
                     // $query->where();
-                    $query->orWhereHas('overtime_schedule', function($ot_query) use ($parameters){
+                    $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters) {
                         $end = Carbon::parse($parameters['end']);
                         $end = $end->addDays(1);
 
@@ -1041,8 +1040,8 @@ class AgentScheduleRepository extends BaseRepository
             'relation' => 'access',
             'target' => array([
                 'column' => 'code',
-                'value' => 'representative_op'
-            ])
+                'value' => 'representative_op',
+            ]),
         ]);
 
         if (isset($data['target'])) {
@@ -1093,31 +1092,31 @@ class AgentScheduleRepository extends BaseRepository
 
         $schedule = $this->agent_schedule->find($id);
 
-        if(!isset($data['conformance'])) {
+        if (!isset($data['conformance'])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Parameter 'conformance' is required.",
                 "meta" => [
-                    $meta_index => $schedule
+                    $meta_index => $schedule,
                 ],
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         } else {
-            if(!is_numeric($data['conformance'])) {
+            if (!is_numeric($data['conformance'])) {
                 return $this->setResponse([
                     "code" => 500,
                     "title" => "Parameter 'conformance' should be a digit.",
                     "meta" => [
-                        $meta_index => $schedule
+                        $meta_index => $schedule,
                     ],
-                    "parameters" => $data
-                ]); 
+                    "parameters" => $data,
+                ]);
             }
         }
 
-        if($schedule) {
-            if(!$schedule->save([
-                'conformance' => $data['conformance']
+        if ($schedule) {
+            if (!$schedule->save([
+                'conformance' => $data['conformance'],
             ])) {
                 return $this->setResponse([
                     "code" => 500,
@@ -1133,9 +1132,9 @@ class AgentScheduleRepository extends BaseRepository
                 "code" => 200,
                 "title" => "Successfully defined a conformance.",
                 "meta" => [
-                    $meta_index => $this->agent_schedule->find($schedule->id)
+                    $meta_index => $this->agent_schedule->find($schedule->id),
                 ],
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
@@ -1143,9 +1142,9 @@ class AgentScheduleRepository extends BaseRepository
             "code" => 500,
             "title" => "Schedule ID does not exists.",
             "meta" => [
-                $meta_index => $schedule
+                $meta_index => $schedule,
             ],
-            "parameters" => $data
+            "parameters" => $data,
         ]);
     }
 
@@ -1155,31 +1154,31 @@ class AgentScheduleRepository extends BaseRepository
 
         $schedule = $this->agent_schedule->find($id);
 
-        if(!isset($data['remarks'])) {
+        if (!isset($data['remarks'])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Parameter 'remarks' is required.",
                 "meta" => [
-                    $meta_index => $schedule
+                    $meta_index => $schedule,
                 ],
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         } else {
-            if(!is_numeric($data['remarks']) || ( $data['remarks'] >= 0 && $data['remarks'] > 1)) {
+            if (!is_numeric($data['remarks']) || ($data['remarks'] >= 0 && $data['remarks'] > 1)) {
                 return $this->setResponse([
                     "code" => 500,
                     "title" => "Parameter 'remarks' should be 0 or 1.",
                     "meta" => [
-                        $meta_index => $schedule
+                        $meta_index => $schedule,
                     ],
-                    "parameters" => $data
-                ]); 
+                    "parameters" => $data,
+                ]);
             }
         }
 
-        if($schedule) {
-            if(!$schedule->save([
-                'remarks' => $data['remarks']
+        if ($schedule) {
+            if (!$schedule->save([
+                'remarks' => $data['remarks'],
             ])) {
                 return $this->setResponse([
                     "code" => 500,
@@ -1195,9 +1194,9 @@ class AgentScheduleRepository extends BaseRepository
                 "code" => 200,
                 "title" => "Successfully defined a remarks.",
                 "meta" => [
-                    $meta_index => $schedule
+                    $meta_index => $schedule,
                 ],
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
@@ -1205,9 +1204,9 @@ class AgentScheduleRepository extends BaseRepository
             "code" => 500,
             "title" => "Schedule ID does not exists.",
             "meta" => [
-                $meta_index => $schedule
+                $meta_index => $schedule,
             ],
-            "parameters" => $data
+            "parameters" => $data,
         ]);
     }
 }
