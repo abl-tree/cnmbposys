@@ -178,7 +178,7 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_information['excel_hash']= $data['excel_hash'];
             $user_information['p_email']= $data['p_email'];
             $user_information['salary']= $data['salary'];
-            $user_information['status_reason']= $data['status_reason'];
+           // $user_information['status_reason']= $data['status_reason'];
           
             $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
                 if (!$user_informations->save($data)) {
