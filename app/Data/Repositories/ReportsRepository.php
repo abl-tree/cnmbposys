@@ -159,6 +159,12 @@ class ReportsRepository extends BaseRepository
                     'title' => "sanction level is not set.",
                 ]);
             }
+            if (!isset($data['incident_date'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Incident Date is not set.",
+                ]);
+            }
             if (isset($data['sanction_type_id'])) {
                 $sanctiont = $this->sanction_type->find($data['sanction_type_id']);
     
@@ -179,6 +185,8 @@ class ReportsRepository extends BaseRepository
                     ]);
                 }
             }
+
+            
             
         }   else{
             if (isset($data['id'])) {
