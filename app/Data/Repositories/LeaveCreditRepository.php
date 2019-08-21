@@ -160,6 +160,9 @@ class LeaveCreditRepository extends BaseRepository
 
         }
 
+        //relations
+        $data['relations'][] = 'user';
+
         $count_data = $data;
 
         $result = $this->fetchGeneric($data, $this->leave_credit);
