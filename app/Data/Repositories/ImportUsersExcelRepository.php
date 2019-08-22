@@ -164,7 +164,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $user_benefits=[];
         $benefits=[];
 
-
+        if($data['access_id']!='invalid position'&&$data['parent_id']!='No Parent Found'&&$data['status']!='Invalid Status'){
             $user_information['firstname']= $data['firstname'];
             $user_information['middlename']= $data['middlename']; 
             $user_information['lastname']= $data['lastname'];
@@ -311,6 +311,43 @@ class ImportUsersExcelRepository extends BaseRepository
            
            
         ]);
+    }else{
+        if($data['access_id']!='invalid position'){
+            return $this->setResponse([
+                "code"       => 404,
+                "title"      => "Failed adding  a User",
+                "description" => "Add Failed",
+                "meta"        => [
+                    "error"        =>"Invalid Position",
+                ],
+               
+               
+            ]);
+        }else if($data['parent_id']!='No Parent Found'){
+            return $this->setResponse([
+                "code"       => 404,
+                "title"      => "Failed adding  a User",
+                "description" => "Add Failed",
+                "meta"        => [
+                    "error"        => "No Parent Found",
+                ],
+               
+               
+            ]);
+        }else if($data['status']!='Invalid Status'){
+            return $this->setResponse([
+                "code"       => 404,
+                "title"      => "Failed adding  a User",
+                "description" => "Add Failed",
+                "meta"        => [
+                    "error"        => "Invalid Status",
+                ],
+               
+               
+            ]);
+        }
+       
+    }
     }
     
 }
