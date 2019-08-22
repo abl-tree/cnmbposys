@@ -19,7 +19,7 @@ class UserReport extends BaseModel
         'filedby','user','id','user_reports_id',
         'filed_by','description','deleted_at',
         'created_at','updated_at','sanction_type_id',
-        'sanction_level_id','status','SanctionLevel','SanctionType','agentResponse'
+        'sanction_level_id','status','SanctionLevel','SanctionType','agentResponse','incident_date'
     ];
     protected $appends = [
         'issued_to','issued_by','report_details'
@@ -84,6 +84,7 @@ class UserReport extends BaseModel
         'description' => $this->description, 
         'created_at' => $this->created_at,
         'updated_at' => $this->updated_at, 
+        'incident_date'=> $this->incident_date,
         'status' => $this->status, 
         'sanction_type' => $this->SanctionType, 
         'sanction_level' => $this->SanctionLevel,
