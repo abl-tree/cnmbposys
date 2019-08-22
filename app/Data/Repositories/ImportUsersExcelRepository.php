@@ -258,9 +258,9 @@ class ImportUsersExcelRepository extends BaseRepository
                 }
                
             } 
-            $bene= json_decode($data['benefits'],true) ;
+        
 
-            if($bene==[]){
+            if($data['benefits']==[]){
                 for($i=1; $i<5;$i++ ){
                     $ben['benefit_id'] = $i;
                     $ben['id_number'] = NULL;
@@ -270,7 +270,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_ben->save();   
             }   
             }else{
-                foreach($bene as $key => $value ){
+                foreach($data['benefits'] as $key => $value ){
                    
                     $ben['benefit_id'] = $key+1;
                     $user_bene['id_number']=$value;
