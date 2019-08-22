@@ -205,6 +205,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     "title"      => "Failed adding  a User",
                     "description" => "Add Failed",
                     "meta"        => [
+                        "data"        => $data,
                         "error"        => $error_array,
                     ],
                    
@@ -291,6 +292,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     "title"      => "Failed adding  a User",
                     "description" => "Add Failed",
                     "meta"        => [
+                        "data"        => $data,
                         "error"        => $error_array,
                     ],
                    
