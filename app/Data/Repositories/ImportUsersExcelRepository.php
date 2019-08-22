@@ -125,8 +125,8 @@ class ImportUsersExcelRepository extends BaseRepository
                         "salary" => $firstPage[$x+1][15],
                         "p_email" => $firstPage[$x + 1][8],
                         "contact_number" => $firstPage[$x + 1][10],
-                        "status" => $firstPage[$x + 1][13],
-                        "type" => $status,
+                        "type" => $firstPage[$x + 1][13],
+                        "status" => $status,
                         "hired_date" => $hired_date,
                         "separation_date" =>  $separation_date,
                         //"status_reason" => $firstPage[$x + 1][19],
@@ -184,8 +184,7 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_information['gender']= $data['gender'];   
             $user_information['contact_number']= $data['contact_number'];
             $user_information['address']= $data['address'];
-            $user_information['status']= $data['type'];
-            $user_information['type']= $data['status'];
+            $user_information['status']= $data['status'];
             $user_information['hired_date']= $data['hired_date'];
             $user_information['separation_date']= $data['separation_date'];
             $user_information['excel_hash']= $data['excel_hash'];
@@ -240,8 +239,8 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_data['password'] = $data['password'];
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
             $status_logs['user_id']=$user_id;
-            $status_logs['status']=$data['type'];
-            $status_logs['type']=$data['status'];
+            $status_logs['status']=$data['status'];
+            $status_logs['type']=$data['type'];
             $status_logs['hired_date']=$data['hired_date'];
             $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
             $action="Created";  
