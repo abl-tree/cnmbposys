@@ -12,7 +12,7 @@ class UserReport extends BaseModel
  	protected $table = 'user_reports';
     protected $primaryKey = 'id';
  	protected $fillable = [
-       'user_reports_id', 'description','filed_by','sanction_type_id','sanction_level_id','status'
+       'user_reports_id', 'description','filed_by','sanction_type_id','sanction_level_id','status','incident_date'
     ];
 
     protected $hidden = [
