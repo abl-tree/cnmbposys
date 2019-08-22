@@ -184,7 +184,8 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_information['gender']= $data['gender'];   
             $user_information['contact_number']= $data['contact_number'];
             $user_information['address']= $data['address'];
-            $user_information['status']= $data['status'];
+            $user_information['status']= $data['type'];
+            $user_information['type']= $data['status'];
             $user_information['hired_date']= $data['hired_date'];
             $user_information['separation_date']= $data['separation_date'];
             $user_information['excel_hash']= $data['excel_hash'];
