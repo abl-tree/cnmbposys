@@ -227,7 +227,7 @@ class ImportUsersExcelRepository extends BaseRepository
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
             $status_logs['user_id']=$user_id;
             $status_logs['status']=$data['status'];
-            $status_logs['type']="New Hired";
+            $status_logs['type']=$data['type'];
             $status_logs['hired_date']=$data['hired_date'];
             $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
             $action="Created";  
@@ -244,7 +244,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 if($user_info_delete){
                     $user_info_delete->forceDelete();
                 }   
-                $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
+                $error_array->offsetSet('user_hierarchy_error', $user_hierarchy->errors());
                 $error_count++;  
             }   
             if (!$users_data->save($data)) {
