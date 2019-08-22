@@ -79,6 +79,9 @@ class ImportUsersExcelRepository extends BaseRepository
             $access_id = "invalid position";
             $status = "Invalid Status";
             $parent_id = "No Parent Found";
+            $separation_date = null;
+            $hired_date=null;
+            $birthdate=null;
             if (isset($firstPage[$x + 1])) {
                 if ($firstPage[$x + 1][1] != null) {  
                     $parent = UserInfo::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
@@ -100,7 +103,16 @@ class ImportUsersExcelRepository extends BaseRepository
                         array_push($benefits,strval($firstPage[$x + 1][16]));
                         array_push($benefits,strval($firstPage[$x + 1][17]));
                         array_push($benefits,strval($firstPage[$x + 1][18]));  
-                        array_push($benefits,strval($firstPage[$x + 1][19]));      
+                        array_push($benefits,strval($firstPage[$x + 1][19]));    
+                    if($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21])!=null){
+                        $separation_date=date("m/d/Y", strtotime($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21])));
+                    }
+                    if($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20])!=null){
+                        $hired_date=date("m/d/Y", strtotime($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20])));
+                    }
+                    if($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6])!=null){
+                        $birthdate=date("m/d/Y", strtotime($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6])));
+                    }
                     
                     $userInfo[] = array(
                         "firstname" => $firstPage[$x + 1][1],
@@ -108,15 +120,15 @@ class ImportUsersExcelRepository extends BaseRepository
                         "lastname" => $firstPage[$x + 1][3],
                         "suffix" => $firstPage[$x + 1][4],
                         "gender" => $firstPage[$x + 1][5],
-                        "birthdate" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]),
+                        "birthdate" => date("m/d/Y", strtotime($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]))),
                         "address" => $firstPage[$x+1][7],
                         "salary" => $firstPage[$x+1][15],
                         "p_email" => $firstPage[$x + 1][8],
                         "contact_number" => $firstPage[$x + 1][10],
                         "status" => $firstPage[$x + 1][13],
                         "type" => $status,
-                        "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20]),
-                        "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21]),
+                        "hired_date" => $hired_date,
+                        "separation_date" =>  $separation_date,
                         //"status_reason" => $firstPage[$x + 1][19],
                         "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]. $firstPage[$x + 1][4]),
                         "email"=> $firstPage[$x + 1][9],
@@ -227,8 +239,8 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_data['password'] = $data['password'];
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
             $status_logs['user_id']=$user_id;
-            $status_logs['status']=$data['status'];
-            $status_logs['type']=$data['type'];
+            $status_logs['status']=$data['type'];
+            $status_logs['type']=$data['status'];
             $status_logs['hired_date']=$data['hired_date'];
             $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
             $action="Created";  
