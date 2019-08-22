@@ -118,7 +118,7 @@ class ImportUsersExcelRepository extends BaseRepository
                         "hired_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][20]),
                         "separation_date" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][21]),
                         //"status_reason" => $firstPage[$x + 1][19],
-                        "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]),
+                        "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]. $firstPage[$x + 1][4]),
                         "email"=> $firstPage[$x + 1][9],
                         "password"=> bcrypt($firstPage[$x + 1][1]. $firstPage[$x + 1][3]),
                         "company_id"=> $firstPage[$x + 1][0],
@@ -157,7 +157,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $error_array =  new ArrayObject();
         $error_count=0;
         $action=null;
-        $user_datani=[];
+        $user_data=[];
         $user_information = [];
         $hierarchy = [];
         $cluster=[];
@@ -191,8 +191,26 @@ class ImportUsersExcelRepository extends BaseRepository
                         $error_count++;
                         
                     }
-                }      
+                } 
+                
             $user_id = $user_informations->id;
+
+            if($error_count>0){
+                $user_info_delete = $this->user_infos->find($user_id);    
+                if($user_info_delete){
+                 $user_info_delete->forceDelete();
+                }
+                return $this->setResponse([
+                    "code"       => 404,
+                    "title"      => "Failed adding  a User",
+                    "description" => "Add Failed",
+                    "meta"        => [
+                        "error"        => $error_array,
+                    ],
+                   
+                   
+                ]);
+             }     
           
             $hierarchy['child_id']= $user_id;
             $hierarchy['parent_id']= $data['parent_id'];
@@ -239,8 +257,10 @@ class ImportUsersExcelRepository extends BaseRepository
                     $error_count++;  
                 }
                
-            }  
-            if($data['benefits']==[]){
+            } 
+            $bene= json_decode($data['benefits'],true) ;
+
+            if($bene==[]){
                 for($i=1; $i<5;$i++ ){
                     $ben['benefit_id'] = $i;
                     $ben['id_number'] = NULL;
@@ -250,7 +270,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_ben->save();   
             }   
             }else{
-                foreach($data['benefits'] as $key => $value ){
+                foreach($bene as $key => $value ){
                    
                     $ben['benefit_id'] = $key+1;
                     $user_bene['id_number']=$value;
