@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterUserReports extends Migration
+class AlterUserReportsIrDate extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class AlterUserReports extends Migration
         Schema::table('user_reports', function (Blueprint $table) {
             $table->string('incident_date')->nullable();
         });
-        
+
     }
 
     /**
