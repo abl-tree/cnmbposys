@@ -228,7 +228,7 @@ class ReportsController extends BaseController
     public function update_response(Request $request, $id)
     {
         $data = $request->all();
-        $data['user_response_id'] = $id;
+        // $data['user_response_id'] = $id;
         //for notification
         $data['endpoint'] = $request->route()->uri;
 
