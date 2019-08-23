@@ -195,7 +195,7 @@ class ImportUsersExcelRepository extends BaseRepository
             $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
                 if (!$user_informations->save($data)) {
                     if (strpos($user_informations->errors(), 'user_infos_excel_hash_unique') !== false) {
-                        $error_array->offsetSet(1, "Full Name is already in Use. Please use another Name.");
+                        $error_array->offsetSet(1, "Full Name is already in Use.");
                         $error_count++;
                         
                     }else{
@@ -214,7 +214,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 }
                 return $this->setResponse([
                     "code"       => 404,
-                    "title"      => "Failed adding  a User",
+                    "title"      => $error_array[1],
                     "description" => "Add Failed",
                     "meta"        => [
                         "data"        => $data,
@@ -249,7 +249,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 if($user_info_delete){
                     $user_info_delete->forceDelete();
                 }   
-                $error_array->offsetSet('status_save', "Saving Error on Status");
+                $error_array->offsetSet('status_save', "Saving Error Status");
                 $error_count++;       
             }
             if (!$user_hierarchy->save($data)) {
@@ -257,7 +257,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 if($user_info_delete){
                     $user_info_delete->forceDelete();
                 }   
-                $error_array->offsetSet('user_hierarchy_error', $user_hierarchy->errors());
+                $error_array->offsetSet('user_hierarchy_error', "Saving Error Hierarchy");
                 $error_count++;  
             }   
             if (!$users_data->save($data)) {
@@ -266,7 +266,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_info_delete->forceDelete();
                 }   
                 if (strpos($users_data->errors(), 'users_email_unique') !== false) {
-                    $error_array->offsetSet("users_email_unique", "Email is already in use. Please use another valid email.");
+                    $error_array->offsetSet("users_email_unique", "Email is Already In Use.");
                     $error_count++;  
                 }
                
@@ -301,7 +301,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 }
                 return $this->setResponse([
                     "code"       => 404,
-                    "title"      => "Failed adding  a User",
+                    "title"      => $error_array[1],
                     "description" => "Add Failed",
                     "meta"        => [
                         "data"        => $data,
