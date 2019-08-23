@@ -97,6 +97,13 @@ class ReportsController extends BaseController
         return $this->absorb($this->user_reports->getAll_Ir($data))->json();
     }
 
+    public function getAll_IrSearch(Request $request)
+    {
+
+        $data = $request->all();
+        return $this->absorb($this->user_reports->getAll_IrSearch($data))->json();
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -119,6 +126,11 @@ class ReportsController extends BaseController
 
         return $this->absorb($this->user_reports->fetchUserReport($data))->json();
     }
+    public function reportSearch(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->fetchUserReportSearch($data))->json();
+    }
 
     public function userFiledIR(Request $request, $id)
     {
@@ -135,6 +147,11 @@ class ReportsController extends BaseController
         }
 
         return $this->absorb($this->user_reports->userFiledIR($data))->json();
+    }
+    public function userFiledIRSearch(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_reports->userFiledIRSearch($data))->json();
     }
     public function getAllUserUnder(Request $request, $id)
     {
@@ -211,7 +228,7 @@ class ReportsController extends BaseController
     public function update_response(Request $request, $id)
     {
         $data = $request->all();
-        $data['user_response_id'] = $id;
+        // $data['user_response_id'] = $id;
         //for notification
         $data['endpoint'] = $request->route()->uri;
 

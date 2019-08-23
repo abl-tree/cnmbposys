@@ -48,9 +48,9 @@ class LogsRepository extends BaseRepository
 
         }
         $count_data = $data;
-        $data['relations'] = ["user_logs","accesslevelhierarchy"];        
+        $data['relations'] = ["user","accesslevelhierarchy"];        
         $count_data = $data;    
-        $result = $this->fetchGeneric($data, $this->user);
+        $result = $this->fetchGeneric($data, $this->action_logs);
 
         if (!$result) {
             return $this->setResponse([
@@ -63,12 +63,12 @@ class LogsRepository extends BaseRepository
             ]);
         }
        
-        $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
 
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved logs",
-            "description"=>"maoni",
+            "description"=>"Logs",
             "meta"       => [
                 $meta_index => $result,
                 "count"     => $count,
@@ -132,18 +132,18 @@ class LogsRepository extends BaseRepository
 
       public function fetchUserLog($data = [])
     {
-        $meta_index = "User";
+        $meta_index = "metadata";
         $parameters = [];
         $count      = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "User";
+            $meta_index     = "metadata";
             $data['single'] = false;
             $data['where']  = [
                 [
-                    "target"   => "id",
+                    "target"   => "user_id",
                     "operator" => "=",
                     "value"    => $data['id'],
                 ],
@@ -155,9 +155,9 @@ class LogsRepository extends BaseRepository
 
         $count_data = $data;
 
-         $data['relations'] = ["user_info","user_logs","accesslevel"];     
+        $data['relations'] = ["user","accesslevelhierarchy"];       
 
-        $result = $this->fetchGeneric($data, $this->user);
+        $result = $this->fetchGeneric($data, $this->action_logs);
 
         if (!$result) {
             return $this->setResponse([
@@ -170,7 +170,7 @@ class LogsRepository extends BaseRepository
             ]);
         }
 
-        $count = $this->countData($count_data, refresh_model($this->user->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
 
         return $this->setResponse([
             "code"       => 200,
@@ -181,6 +181,117 @@ class LogsRepository extends BaseRepository
             ],
             "parameters" => $parameters,
         ]);
+    }
+
+
+
+    public function search($data)
+    {
+        if (!isset($data['query'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Query is not set",
+                "parameters" => $data,
+            ]);
+        }
+
+        $result = $this->action_logs;
+        $data['relations'] = ["user","accesslevelhierarchy"];       
+
+        $meta_index = "metadata";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+
+        foreach ((array) $data['target'] as $index => $column) {
+            if (str_contains($column, "full_name")) {
+                
+                $data['target'][] = 'userinfo.firstname';
+                $data['target'][] = 'userinfo.middlename';
+                $data['target'][] = 'userinfo.lastname';
+                unset($data['target'][$index]);
+            }
+            if (str_contains($column, "date")) {
+                $data['target'][] = 'created_at';
+                unset($data['target'][$index]);
+            }
+            if(str_contains($column, "position")){
+                $meta_index = "metadata";
+                $parameters = [];
+                $count      = 0;
+                $results=[];
+                $limit=$data['limit'];
+
+                $data['limit']="";
+                
+                $count_data = $data;
+        
+                $data['relations'] = ["user","accesslevelhierarchy"];       
+        
+                $result = $this->fetchGeneric($data, $this->action_logs);
+                foreach ($result as $key => $value) {
+                    if(strtolower($value->position)==strtolower($data['query'])){
+                        if(count($results)<$limit){
+                            array_push($results,$value);     
+                        }
+                        $count++;
+                       
+                    }
+                }
+        
+                if (!$results) {
+                    return $this->setResponse([
+                        'code'       => 404,
+                        'title'      => "No agent logs are found",
+                        "meta"       => [
+                            $meta_index => $results,
+                        ],
+                        "parameters" => $parameters,
+                    ]);
+                }
+        
+               // $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
+        
+                return $this->setResponse([
+                    "code"       => 200,
+                    "title"      => "Successfully retrieved  agent logs",
+                    "meta"       => [
+                        $meta_index => $results,
+                        "count"     => $count,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if ($result == null) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No logs are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count_data['search'] = true;
+        $count = $this->countData($count_data, refresh_model($this->action_logs->getModel()));
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully retrieved agent logs",
+            "meta" => [
+                $meta_index => $result,
+                "count" => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+
+       
     }
 
 

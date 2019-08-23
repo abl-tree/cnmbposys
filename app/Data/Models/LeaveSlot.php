@@ -34,4 +34,11 @@ class LeaveSlot extends BaseModel
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
+    /**
+     * Relations
+     */
+    public function user()
+    {
+        return $this->belongsTo('\App\User', 'user_id', 'id');
+    }
 }

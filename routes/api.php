@@ -196,8 +196,10 @@ Route::group([
     ], function () {
 
         Route::get("/", "LogsController@index");
-        Route::get("/{id}", "LogsController@log");
+        Route::get("fetch/{id}", "LogsController@log");
         Route::post("create", "LogsController@create");
+        Route::get("search", "LogsController@search");
+       
     });
 
     Route::group([
@@ -216,6 +218,10 @@ Route::group([
         Route::post('delete/{ir_id}', 'ReportsController@delete');
         Route::post("user_response", "ReportsController@userResponse");
         Route::post('update_response/{id}', 'ReportsController@update_response');
+        Route::get("issuedto/search", "ReportsController@reportSearch");
+        Route::get("issuedby/search", "ReportsController@userFiledIRSearch");
+        //Route::get("ir/search", "ReportsController@getAll_IrSearch");
+
     });
 
     Route::group([
@@ -258,7 +264,12 @@ Route::group([
         Route::post("change_pass/{id}", "UserController@changePass");
         Route::post("reset_pass/{id}", "UserController@resetPass");
         Route::get("search", "UserController@search");
+        Route::post("excel_to_array", "UserController@excelImportuser");
+        Route::post("import_user", "UserController@addUserImport");
+        Route::post("update_user_status/{id}", "UserController@updateUserStatus");
+        Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
 
+        
     });
 
     Route::group([
