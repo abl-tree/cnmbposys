@@ -272,8 +272,8 @@ class ImportUsersExcelRepository extends BaseRepository
                
             } 
         
-
-            if($data['benefits']==[]){
+            $benee=json_decode($data['benefits'],true);
+            if($benee==[]){
                 for($i=1; $i<5;$i++ ){
                     $ben['benefit_id'] = $i;
                     $ben['id_number'] = NULL;
@@ -283,7 +283,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_ben->save();   
             }   
             }else{
-                foreach($data['benefits'] as $key => $value ){
+                foreach($benee as $key => $value ){
                    
                     $ben['benefit_id'] = $key+1;
                     $user_bene['id_number']=$value;
@@ -326,7 +326,7 @@ class ImportUsersExcelRepository extends BaseRepository
            
         ]);
     }else{
-        if($data['access_id']!='invalid position'){
+        if($data['access_id']=='invalid position'){
             return $this->setResponse([
                 "code"       => 404,
                 "title"      => "Invalid Position",
@@ -338,7 +338,7 @@ class ImportUsersExcelRepository extends BaseRepository
                
                
             ]);
-        }else if($data['parent_id']!='No Parent Found'){
+        }else if($data['parent_id']=='No Parent Found'){
             return $this->setResponse([
                 "code"       => 404,
                 "title"      => "No Parent Found",
@@ -351,7 +351,7 @@ class ImportUsersExcelRepository extends BaseRepository
                
                
             ]);
-        }else if($data['status']!='Invalid Status'){
+        }else if($data['status']=='Invalid Status'){
             return $this->setResponse([
                 "code"       => 404,
                 "title"      => "Invalid Status",
