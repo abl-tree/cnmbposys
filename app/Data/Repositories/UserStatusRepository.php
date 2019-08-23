@@ -117,6 +117,77 @@ class UserStatusRepository extends BaseRepository
         ]);
         
     }
+    public function updateUserStatus($data = [])
+    {
+        // data validation
+
+            if (!isset($data['status'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "status is not set.",
+                ]);
+            }
+
+            if (!isset($data['type'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Type  is not set.",
+                ]);
+            }
+
+       
+                $stat = $this->user_status->find($data['id']);
+                // $stat->type=$data['status'];
+                // $stat->status=$data['type'];
+                $stat->save($data);
+
+        if (!$stat->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $stat->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully updated a Status.",
+            "meta"        => [
+                "status" => $stat,
+            ]
+        ]);
+            
+        
+    }
+
+    public function deleteUserStatus($data = [])
+    {
+        $stat = $this->user_status->find($data['id']);
+
+        if (!$stat->delete()) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $stat->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully deleted a Status.",
+            "meta"        => [
+                "status" => $stat,
+            ]
+        ]);
+            
+        
+    }
 
       public function fetchUserLog($data = [])
     {

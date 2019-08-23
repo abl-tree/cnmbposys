@@ -169,6 +169,20 @@ class UserController extends BaseController
         $data = $request->all();
         return $this->absorb($this->user_info->bulkUpdateStatus($data))->json();
     }
+    public function updateUserStatus(Request $request, $id)
+    {
+        //$data = $request->all();
+        $data['id'] = $id;
+        $data['type']= $request->status;
+        $data['status']= $request->type;
+        return $this->absorb($this->user_status->updateUserStatus($data))->json();
+    }
+    public function deleteUserStatus(Request $request, $id)
+    {
+        $data = $request->all();
+        $data['id'] = $id;
+        return $this->absorb($this->user_status->deleteUserStatus($data))->json();
+    }
     public function userInfo(Request $request, $id)
     {
         $data = $request->all();
