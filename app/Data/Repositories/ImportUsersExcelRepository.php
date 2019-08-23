@@ -329,7 +329,7 @@ class ImportUsersExcelRepository extends BaseRepository
         if($data['access_id']!='invalid position'){
             return $this->setResponse([
                 "code"       => 404,
-                "title"      => "Failed adding  a User",
+                "title"      => "Invalid Position",
                 "description" => "Add Failed",
                 "meta"        => [
                     "error"        =>"Invalid Position",
@@ -340,7 +340,7 @@ class ImportUsersExcelRepository extends BaseRepository
         }else if($data['parent_id']!='No Parent Found'){
             return $this->setResponse([
                 "code"       => 404,
-                "title"      => "Failed adding  a User",
+                "title"      => "No Parent Found",
                 "description" => "Add Failed",
                 "meta"        => [
                     "error"        => "No Parent Found",
@@ -351,7 +351,7 @@ class ImportUsersExcelRepository extends BaseRepository
         }else if($data['status']!='Invalid Status'){
             return $this->setResponse([
                 "code"       => 404,
-                "title"      => "Failed adding  a User",
+                "title"      => "Invalid Status",
                 "description" => "Add Failed",
                 "meta"        => [
                     "error"        => "Invalid Status",
