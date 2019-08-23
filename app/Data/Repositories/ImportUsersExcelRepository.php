@@ -332,6 +332,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 "title"      => "Invalid Position",
                 "description" => "Add Failed",
                 "meta"        => [
+                    "data"        => $data,
                     "error"        =>"Invalid Position",
                 ],
                
@@ -343,7 +344,9 @@ class ImportUsersExcelRepository extends BaseRepository
                 "title"      => "No Parent Found",
                 "description" => "Add Failed",
                 "meta"        => [
+                    "data"        => $data,
                     "error"        => "No Parent Found",
+
                 ],
                
                
@@ -354,6 +357,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 "title"      => "Invalid Status",
                 "description" => "Add Failed",
                 "meta"        => [
+                    "data"        => $data,
                     "error"        => "Invalid Status",
                 ],
                
