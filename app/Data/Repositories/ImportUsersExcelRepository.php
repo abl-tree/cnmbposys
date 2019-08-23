@@ -249,7 +249,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 if($user_info_delete){
                     $user_info_delete->forceDelete();
                 }   
-                $error_array->offsetSet('status_save', "Saving Error Status");
+                $error_array->offsetSet(1, "Saving Error Status");
                 $error_count++;       
             }
             if (!$user_hierarchy->save($data)) {
@@ -257,7 +257,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 if($user_info_delete){
                     $user_info_delete->forceDelete();
                 }   
-                $error_array->offsetSet('user_hierarchy_error', "Saving Error Hierarchy");
+                $error_array->offsetSet(1, "Saving Error Hierarchy");
                 $error_count++;  
             }   
             if (!$users_data->save($data)) {
@@ -266,7 +266,7 @@ class ImportUsersExcelRepository extends BaseRepository
                     $user_info_delete->forceDelete();
                 }   
                 if (strpos($users_data->errors(), 'users_email_unique') !== false) {
-                    $error_array->offsetSet("users_email_unique", "Email is Already In Use.");
+                    $error_array->offsetSet(1, "Email is Already In Use.");
                     $error_count++;  
                 }
                
