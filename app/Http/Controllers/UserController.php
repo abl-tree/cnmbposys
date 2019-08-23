@@ -171,10 +171,9 @@ class UserController extends BaseController
     }
     public function updateUserStatus(Request $request, $id)
     {
-        //$data = $request->all();
+        $data = $request->all();
         $data['id'] = $id;
-        $data['type']= $request->status;
-        $data['status']= $request->type;
+        
         return $this->absorb($this->user_status->updateUserStatus($data))->json();
     }
     public function deleteUserStatus(Request $request, $id)
