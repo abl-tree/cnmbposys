@@ -58,6 +58,8 @@ Route::group([
             Route::post("create", "OvertimeController@create");
             Route::post("create/bulk", "OvertimeController@bulkScheduleInsertion");
             Route::post('delete/{overtime_id}', 'OvertimeController@delete');
+            Route::post('approve/{overtime_id}', 'OvertimeController@approve');
+            Route::get('search', 'OvertimeController@search');
 
         });
 

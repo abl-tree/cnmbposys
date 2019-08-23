@@ -15,6 +15,7 @@ class AgentSchedule extends BaseModel
         'start_event',
         'end_event',
         'overtime_id',
+        'approved_by',
         'conformance',
         'remarks'
     ];
@@ -297,6 +298,10 @@ class AgentSchedule extends BaseModel
         }
 
         return $data;
+    }
+
+    public function approved_by() {
+        return $this->hasOne('App\Users', 'id', 'approved_by');
     }
 
     public function attendances(){
