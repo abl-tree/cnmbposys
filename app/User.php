@@ -23,7 +23,7 @@ class User extends BaseAuthModel
         'is_agent',
         'has_schedule',
         'calendar',
-        'summary'
+        'summary',
     ];
 
     /**
@@ -135,7 +135,7 @@ class User extends BaseAuthModel
 
     public function schedule()
     {
-        return $this->hasMany('\App\Data\Models\AgentSchedule', 'user_id', 'uid');
+        return $this->hasMany('\App\Data\Models\AgentSchedule', 'user_id', 'id');
     }
 
     public function hierarchy()
@@ -269,31 +269,32 @@ class User extends BaseAuthModel
         return $operations_manager;
     }
 
-    public function getSummaryAttribute() {
+    public function getSummaryAttribute()
+    {
         $ncns_count = 0;
         $leave_count = 0;
         $present_count = 0;
         $absent_count = 0;
 
         foreach ($this->schedule as $key => $value) {
-            if($value->remarks === "NCNS") {
+            if ($value->remarks === "NCNS") {
                 $ncns_count++;
-            } else if($value->remarks === "Present") {
+            } else if ($value->remarks === "Present") {
                 $present_count++;
             } else {
                 $absent_count++;
             }
 
-            if($value->leave_id) {
+            if ($value->leave_id) {
                 $ncns_count++;
             }
         }
 
         return array(
-            'ncns' => $ncns_count, 
-            'leave' => $leave_count, 
-            'present' => $present_count, 
-            'absent' => $absent_count, 
+            'ncns' => $ncns_count,
+            'leave' => $leave_count,
+            'present' => $present_count,
+            'absent' => $absent_count,
         );
     }
 }
