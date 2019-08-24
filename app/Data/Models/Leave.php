@@ -52,15 +52,15 @@ class Leave extends BaseModel
      */
     public function user()
     {
-        return $this->belongsTo('\App\User', 'user_id', 'id');
+        return $this->belongsTo('\App\Data\Models\UserInfo', 'user_id', 'id');
     }
     public function generated_by()
     {
-        return $this->belongsTo('\App\User', 'generated_by', 'id');
+        return $this->belongsTo('\App\Data\Models\UserInfo', 'generated_by', 'id');
     }
     public function approved_by()
     {
-        return $this->belongsTo('\App\User', 'approved_by', 'id');
+        return $this->belongsTo('\App\Data\Models\UserInfo', 'approved_by', 'id');
     }
     public function leave_credits()
     {

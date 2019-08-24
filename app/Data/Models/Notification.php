@@ -50,7 +50,7 @@ class Notification extends BaseModel
      */
     public function sender()
     {
-        return $this->hasOne('\App\User', 'id', 'sender_id');
+        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'sender_id');
     }
 
     /**
@@ -60,7 +60,7 @@ class Notification extends BaseModel
      */
     public function recipient()
     {
-        return $this->hasOne('\App\User', 'id', 'recipient_id');
+        return $this->hasOne('\App\Data\Models\UserInfo', 'id', 'recipient_id');
     }
 
 }

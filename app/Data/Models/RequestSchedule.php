@@ -51,19 +51,23 @@ class RequestSchedule extends BaseModel
 
     protected $hidden = ['deleted_at', 'title_id'];
 
-    public function applicant(){
-        return $this->hasOne('App\User', "id", "applicant" );
+    public function applicant()
+    {
+        return $this->hasOne('App\Data\Models\UserInfo', "id", "applicant");
     }
 
-    public function requested_by(){
-        return $this->hasOne('App\User', "id", "requested_by" );
+    public function requested_by()
+    {
+        return $this->hasOne('App\Data\Models\UserInfo', "id", "requested_by");
     }
 
-    public function managed_by(){
-        return $this->hasOne('App\User', "id", "managed_by" );
+    public function managed_by()
+    {
+        return $this->hasOne('App\Data\Models\UserInfo', "id", "managed_by");
     }
 
-    public function title(){
+    public function title()
+    {
         return $this->hasOne('App\Data\Models\EventTitle', 'id', 'title_id');
     }
 }

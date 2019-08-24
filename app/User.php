@@ -135,7 +135,7 @@ class User extends BaseAuthModel
 
     public function schedule()
     {
-        return $this->hasMany('\App\Data\Models\AgentSchedule', 'user_id', 'id');
+        return $this->hasMany('\App\Data\Models\AgentSchedule', 'user_id', 'uid');
     }
 
     public function hierarchy()
@@ -160,17 +160,17 @@ class User extends BaseAuthModel
 
     public function leaves()
     {
-        return $this->hasMany('\App\Data\Models\Leave', 'user_id', 'id');
+        return $this->hasMany('\App\Data\Models\Leave', 'user_id', 'uid');
     }
 
     public function leave_credits()
     {
-        return $this->hasMany('\App\Data\Models\LeaveCredit', 'user_id', 'id');
+        return $this->hasMany('\App\Data\Models\LeaveCredit', 'user_id', 'uid');
     }
 
     public function leave_slots()
     {
-        return $this->hasMany('\App\Data\Models\LeaveSlot', 'user_id', 'id');
+        return $this->hasMany('\App\Data\Models\LeaveSlot', 'user_id', 'uid');
     }
 
     public function getCalendarAttribute()
