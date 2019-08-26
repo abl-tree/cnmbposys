@@ -97,7 +97,7 @@ class OvertimeRepository extends BaseRepository
         return $result;
     }
 
-    public function defineOvertimeSchedule($data = []) 
+    public function defineOvertimeSchedule($data = [])
     {
         // data validation
 
@@ -114,7 +114,7 @@ class OvertimeRepository extends BaseRepository
                 'title' => "End date is not set.",
             ]);
         }
-            
+
         // data validation
 
         // existence check
@@ -131,7 +131,7 @@ class OvertimeRepository extends BaseRepository
         }
 
         //Check for conflicts
-        
+
         $isConflict = $this->overtime_schedule
             ->where(function($q) use ($data) {
                 $q->where('start_event', '>', $data['start_event'])
@@ -150,7 +150,7 @@ class OvertimeRepository extends BaseRepository
                 ->where('end_event', '<', $data['end_event']);
             })
             ->first();
-            
+
         if ($isConflict) {
             return $this->setResponse([
                 'code' => 500,
@@ -163,7 +163,7 @@ class OvertimeRepository extends BaseRepository
         }
 
         // check for duplicate schedules
-        
+
         $does_exist = $this->overtime_schedule
             ->where('start_event', $data['start_event'])
             ->where('end_event', $data['end_event'])
@@ -197,7 +197,7 @@ class OvertimeRepository extends BaseRepository
             !is_numeric($auth_id) ||
             $auth_id <= 0) {
             $logged_in_user = $this->user->find($auth_id);
-            
+
             if (!$logged_in_user) {
                 return $this->setResponse([
                     'code' => 500,
@@ -309,7 +309,7 @@ class OvertimeRepository extends BaseRepository
                 // $query->where('end_event', '>=', Carbon::now());
             })
             ->first();
-        
+
         // return $this->setResponse([
         //     'code' => 500,
         //     'title' => '$does_exist',
@@ -339,7 +339,7 @@ class OvertimeRepository extends BaseRepository
         // Start Create Attendance
         return $this->defineAgentOvertimeAttendance($agent_schedule);
         //End Create Attendance
-        
+
     }
 
     public function defineAgentOvertimeAttendance($data = [])
@@ -399,7 +399,7 @@ class OvertimeRepository extends BaseRepository
             ],
             "parameters" => $data,
         ]);
-        
+
         return $response;
     }
 
@@ -569,7 +569,7 @@ class OvertimeRepository extends BaseRepository
             ]);
         }
 
-        $count = $this->countData($count_data, refresh_model($overtime->getModel()));
+        // $count = $this->countData($count_data, refresh_model($overtime->getModel()));
 
         return $this->setResponse([
             "code" => 200,
