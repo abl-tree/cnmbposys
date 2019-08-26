@@ -1132,7 +1132,7 @@ class UsersInfoRepository extends BaseRepository
     {
         // data validation
         $action=null;
-        $array=json_decode($data['user_id'], true );
+        $array=$data['user_id'];
        $all_users=[];
         foreach ($array as $key => $value) {
             $data['user_id']=$value;          
