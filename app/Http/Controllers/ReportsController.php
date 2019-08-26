@@ -33,6 +33,16 @@ class ReportsController extends BaseController
         //for notification
         $data['endpoint'] = $request->route()->uri;
         return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully retrieved agents overtime",
+            // "meta" => [
+            //     $meta_index => $data,
+            //     "count" => $count,
+            // ],
+            // "parameters" => $parameters,
+        ]);
     }
 
     public function addSanctionType(Request $request)

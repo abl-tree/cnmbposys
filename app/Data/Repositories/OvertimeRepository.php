@@ -533,26 +533,26 @@ class OvertimeRepository extends BaseRepository
         $parameters = [];
         $count = 0;
 
-        if (isset($data['id']) &&
-            is_numeric($data['id'])) {
+        // if (isset($data['id']) &&
+        //     is_numeric($data['id'])) {
 
-            $meta_index = "overtimes";
-            $data['single'] = true;
-            $data['where'] = [
-                [
-                    "target" => "id",
-                    "operator" => "=",
-                    "value" => $data['id'],
-                ],
-            ];
+        //     $meta_index = "overtimes";
+        //     $data['single'] = true;
+        //     $data['where'] = [
+        //         [
+        //             "target" => "id",
+        //             "operator" => "=",
+        //             "value" => $data['id'],
+        //         ],
+        //     ];
 
-            $parameters['schedule_id'] = $data['id'];
+        //     $parameters['schedule_id'] = $data['id'];
 
-        }
+        // }
 
-        $count_data = $data;
+        // $count_data = $data;
 
-        $overtime = $this->overtime_schedule;
+        // $overtime = $this->overtime_schedule;
 
         // $data['relations'] = ["user_info.user", 'title', 'attendances'];
 
