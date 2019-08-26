@@ -69,9 +69,9 @@ class AgentSchedule extends BaseModel
         if ($this->overtime_schedule) {
             return number_format($value, 1);
         } else {
-            $avg = ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
+            $value = ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
 
-            return number_format($avg ? $avg : 0, 1);
+            return number_format($value ? $value : 0, 1);
         }
     }
 
