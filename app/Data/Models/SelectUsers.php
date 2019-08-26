@@ -18,12 +18,12 @@ class SelectUsers extends BaseModel
        'value','text','parent_id','report_count'
     ];
 
-    public $status_color = [
-        'active' => 'bg-primary',
-        'new_hired' => 'bg-success',
-        'inactive' => 'bg-danger',
-        'terminated' => 'bg-danger'
-    ];
+    // public $status_color = [
+    //     'active' => 'bg-primary',
+    //     'new_hired' => 'bg-success',
+    //     'inactive' => 'bg-danger',
+    //     'terminated' => 'bg-danger'
+    // ];
 
 
     /**
@@ -240,16 +240,16 @@ class SelectUsers extends BaseModel
         
     //     return $name;
     // }
-    public function getStatusColorAttribute(){
-        $name = null;   
-            if($this->status!=null){
-                $name = $this->status_color[strtolower($this->status)];
-            }
+    // public function getStatusColorAttribute(){
+    //     $name = null;   
+    //         if($this->status!=null){
+    //             $name = $this->status_color[strtolower($this->status)];
+    //         }
            
         
         
-        return $name;
-    }
+    //     return $name;
+    // }
 
     // // public function getBirthdateAttribute(){
     // //     $name = null;

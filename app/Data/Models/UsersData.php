@@ -15,15 +15,15 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'user_infos';
     protected $appends = [
-       'full_name','email','company_id','contract','contact','access_id','position','parent_id','child_id','crypted_id','head_name','status_color',
+       'full_name','email','company_id','contract','contact','access_id','position','parent_id','child_id','crypted_id','head_name',
     ];
 
-    public $status_color = [
-        'active' => 'bg-primary',
-        'new_hired' => 'bg-success',
-        'inactive' => 'bg-danger',
-        'terminated' => 'bg-danger'
-    ];
+    // public $status_color = [
+    //     'active' => 'bg-success',
+    //     //'new_hired' => 'bg-success',
+    //     'inactive' => 'bg-danger',
+    //     //'terminated' => 'bg-danger'
+    // ];
 
 
     /**
@@ -226,16 +226,16 @@ class UsersData extends BaseModel
         
     //     return $name;
     // }
-    public function getStatusColorAttribute(){
-        $name = null;   
-            if($this->status!=null){
-                $name = $this->status_color[strtolower($this->status)];
-            }
+    // public function getStatusColorAttribute(){
+    //     $name = null;   
+    //         if($this->status!=null){
+    //             $name = $this->status_color[strtolower($this->status)];
+    //         }
            
         
         
-        return $name;
-    }
+    //     return $name;
+    // }
 
     // // public function getBirthdateAttribute(){
     // //     $name = null;
