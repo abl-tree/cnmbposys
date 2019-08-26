@@ -556,18 +556,18 @@ class OvertimeRepository extends BaseRepository
 
         // $data['relations'] = ["user_info.user", 'title', 'attendances'];
 
-        $result = $this->fetchGeneric($data, $overtime);
+        // $result = $this->fetchGeneric($data, $overtime);
 
-        if (!$result) {
-            return $this->setResponse([
-                'code' => 404,
-                'title' => "No overtime is found",
-                "meta" => [
-                    $meta_index => $result,
-                ],
-                "parameters" => $parameters,
-            ]);
-        }
+        // if (!$result) {
+        //     return $this->setResponse([
+        //         'code' => 404,
+        //         'title' => "No overtime is found",
+        //         "meta" => [
+        //             $meta_index => $result,
+        //         ],
+        //         "parameters" => $parameters,
+        //     ]);
+        // }
 
         // $count = $this->countData($count_data, refresh_model($overtime->getModel()));
 
@@ -575,7 +575,7 @@ class OvertimeRepository extends BaseRepository
             "code" => 200,
             "title" => "Successfully retrieved agents overtime",
             "meta" => [
-                $meta_index => $result,
+                $meta_index => $data,
                 "count" => $count,
             ],
             "parameters" => $parameters,
