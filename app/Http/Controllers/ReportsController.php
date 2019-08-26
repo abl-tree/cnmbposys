@@ -18,7 +18,17 @@ class ReportsController extends BaseController
     public function index(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_reports->getAllReports($data))->json();
+        // return $this->absorb($this->user_reports->getAllReports($data))->json();
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => $data,
+            // "meta" => [
+            //     $meta_index => $data,
+            //     "count" => $count,
+            // ],
+            // "parameters" => $parameters,
+        ]);
     }
 
     /**
@@ -34,15 +44,6 @@ class ReportsController extends BaseController
         $data['endpoint'] = $request->route()->uri;
         return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();
 
-        return $this->setResponse([
-            "code" => 200,
-            "title" => "Successfully retrieved agents overtime",
-            // "meta" => [
-            //     $meta_index => $data,
-            //     "count" => $count,
-            // ],
-            // "parameters" => $parameters,
-        ]);
     }
 
     public function addSanctionType(Request $request)
