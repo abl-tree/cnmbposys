@@ -582,6 +582,66 @@ class OvertimeRepository extends BaseRepository
         ]);
     }
 
+    public function searchOvertimeSchedule($data)
+    {
+        $result = $this->overtime_schedule->whereNotNull('overtime_id');
+
+        $meta_index = "overtime";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+        // $data['relations'] = ['user_info.user', 'title'];
+
+        if (isset($data['target'])) {
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'user_info.firstname';
+                    $data['target'][] = 'user_info.middlename';
+                    $data['target'][] = 'user_info.lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+        }
+
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if ($result == null) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No agent's overtime schedules are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
+
+        if (!is_array($result)) {
+            $result = [
+                $result,
+            ];
+        }
+
+        foreach ($result as $key => $value) {
+            $value->team_leader = $value->user_info->user->team_leader;
+            $value->operations_manager = $value->user_info->user->operations_manager;
+            unset($value->user_info->user);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully searched agent's overtime schedules",
+            "meta" => [
+                $meta_index => $result,
+                "count" => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
     public function searchAgentOvertimeSchedule($data)
     {
         $result = $this->agent_schedule->whereNotNull('overtime_id');

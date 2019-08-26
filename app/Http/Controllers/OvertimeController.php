@@ -38,6 +38,16 @@ class OvertimeController extends BaseController
         $data = $request->all();
         return $this->absorb($this->overtime_repo->fetchOvertime($data))->json();
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->overtime_repo->searchOvertime($data))->json();
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -125,7 +135,7 @@ class OvertimeController extends BaseController
         return $this->absorb($this->overtime_repo->approveOvertime($data))->json();
     }
 
-    public function search(Request $request)
+    public function searchAgent(Request $request)
     {
         $data = $request->all();
 

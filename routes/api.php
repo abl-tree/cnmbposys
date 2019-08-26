@@ -43,6 +43,7 @@ Route::group([
 
         Route::get("/", "OvertimeController@index");
         Route::get("/search", "OvertimeController@search");
+        Route::get("/searchAgent", "OvertimeController@searchAgent");
         Route::get("agents", "OvertimeController@agents");
         Route::post("create", "OvertimeController@store");
 
