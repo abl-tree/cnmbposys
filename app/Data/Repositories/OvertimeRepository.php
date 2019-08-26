@@ -584,7 +584,7 @@ class OvertimeRepository extends BaseRepository
 
     public function searchOvertimeSchedule($data)
     {
-        $result = $this->overtime_schedule->whereNotNull('overtime_id');
+        $result = $this->overtime_schedule;
 
         $meta_index = "overtime";
         $parameters = [
@@ -592,16 +592,16 @@ class OvertimeRepository extends BaseRepository
         ];
         // $data['relations'] = ['user_info.user', 'title'];
 
-        if (isset($data['target'])) {
-            foreach ((array) $data['target'] as $index => $column) {
-                if (str_contains($column, "full_name")) {
-                    $data['target'][] = 'user_info.firstname';
-                    $data['target'][] = 'user_info.middlename';
-                    $data['target'][] = 'user_info.lastname';
-                    unset($data['target'][$index]);
-                }
-            }
-        }
+        // if (isset($data['target'])) {
+        //     foreach ((array) $data['target'] as $index => $column) {
+        //         if (str_contains($column, "full_name")) {
+        //             $data['target'][] = 'user_info.firstname';
+        //             $data['target'][] = 'user_info.middlename';
+        //             $data['target'][] = 'user_info.lastname';
+        //             unset($data['target'][$index]);
+        //         }
+        //     }
+        // }
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
@@ -625,11 +625,11 @@ class OvertimeRepository extends BaseRepository
             ];
         }
 
-        foreach ($result as $key => $value) {
-            $value->team_leader = $value->user_info->user->team_leader;
-            $value->operations_manager = $value->user_info->user->operations_manager;
-            unset($value->user_info->user);
-        }
+        // foreach ($result as $key => $value) {
+        //     $value->team_leader = $value->user_info->user->team_leader;
+        //     $value->operations_manager = $value->user_info->user->operations_manager;
+        //     unset($value->user_info->user);
+        // }
 
         return $this->setResponse([
             "code" => 200,
