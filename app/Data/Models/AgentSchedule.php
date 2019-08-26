@@ -67,9 +67,11 @@ class AgentSchedule extends BaseModel
     public function getConformanceAttribute($value)
     {
         if ($this->overtime_schedule) {
-            return $value;
+            return number_format($value, 1);
         } else {
-            return ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
+            $avg = ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
+
+            return number_format($avg ? $avg : 0, 1);
         }
     }
 
