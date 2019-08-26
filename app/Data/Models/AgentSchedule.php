@@ -30,6 +30,7 @@ class AgentSchedule extends BaseModel
         'log_status',
         'is_working',
         'break',
+        'remaining_time'
     ];
 
     protected $searchable = [
@@ -66,16 +67,21 @@ class AgentSchedule extends BaseModel
     public function getConformanceAttribute($value)
     {
         if ($this->overtime_schedule) {
-            return $value;
+            return number_format($value, 1);
         } else {
-            return ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
+            $value = ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
+
+            return number_format($value ? $value : 0, 1);
         }
     }
 
     public function getRegularHoursAttribute()
     {
         if ($this->overtime_schedule) {
-            return;
+            return array(
+                'time' => gmdate('H:i:s', 0),
+                'second' => 0
+            );
         }
 
         $sched_start = Carbon::parse($this->start_event);
@@ -130,6 +136,22 @@ class AgentSchedule extends BaseModel
             ),
             'time' => '00:00:00',
             'second' => 0,
+        );
+    }
+
+    public function getRemainingTimeAttribute() {
+        $total = $this->regular_hours['second'];
+        $rendered = $this->rendered_hours['second'];
+        $remaining = $total - $rendered;
+        $days = '';
+        
+        if ($remaining >= 86400) {
+            $days = (int) ($remaining / 86400) . 'd ';
+        }
+
+        return array(
+            'time' => $days . gmdate("H:i:s", $remaining), 
+            'second' => $remaining
         );
     }
 
