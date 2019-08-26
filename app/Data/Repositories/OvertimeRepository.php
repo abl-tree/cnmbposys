@@ -605,8 +605,8 @@ class OvertimeRepository extends BaseRepository
             }
         }
 
-        $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
+        $count_data = $result;
 
         if ($result == null) {
             return $this->setResponse([
