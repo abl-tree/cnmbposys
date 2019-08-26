@@ -33,9 +33,10 @@ class OvertimeController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $data = $request->all();
+        return $this->absorb($this->overtime_repo->fetchOvertime($data))->json();
     }
 
     /**

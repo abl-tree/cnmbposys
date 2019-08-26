@@ -18,17 +18,7 @@ class ReportsController extends BaseController
     public function index(Request $request)
     {
         $data = $request->all();
-        // return $this->absorb($this->user_reports->getAllReports($data))->json();
-
-        return $this->setResponse([
-            "code" => 200,
-            "title" => $data,
-            // "meta" => [
-            //     $meta_index => $data,
-            //     "count" => $count,
-            // ],
-            // "parameters" => $parameters,
-        ]);
+        return $this->absorb($this->user_reports->getAllReports($data))->json();
     }
 
     /**
@@ -43,7 +33,6 @@ class ReportsController extends BaseController
         //for notification
         $data['endpoint'] = $request->route()->uri;
         return $this->absorb($this->user_reports->ReportsInputCheck($data))->json();
-
     }
 
     public function addSanctionType(Request $request)

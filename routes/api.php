@@ -41,7 +41,8 @@ Route::group([
         "prefix" => "overtime",
     ], function () {
 
-        Route::get("/", "OvertimeController@agents");
+        Route::get("/", "OvertimeController@index");
+        Route::get("agents", "OvertimeController@agents");
         Route::post("create", "OvertimeController@store");
 
     });
@@ -49,7 +50,7 @@ Route::group([
     Route::group([
         "prefix" => "schedules",
     ], function () {
-        
+
         Route::group([
             "prefix" => "overtime",
         ], function () {
@@ -199,7 +200,7 @@ Route::group([
         Route::get("fetch/{id}", "LogsController@log");
         Route::post("create", "LogsController@create");
         Route::get("search", "LogsController@search");
-       
+
     });
 
     Route::group([
@@ -269,7 +270,7 @@ Route::group([
         Route::post("update_user_status/{id}", "UserController@updateUserStatus");
         Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
 
-        
+
     });
 
     Route::group([
