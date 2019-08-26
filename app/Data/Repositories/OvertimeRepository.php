@@ -592,24 +592,26 @@ class OvertimeRepository extends BaseRepository
         ];
         // $data['relations'] = ['user_info.user', 'title'];
 
-        // if (isset($data['target'])) {
-        //     foreach ((array) $data['target'] as $index => $column) {
-        //         if (str_contains($column, "full_name")) {
-        //             $data['target'][] = 'user_info.firstname';
-        //             $data['target'][] = 'user_info.middlename';
-        //             $data['target'][] = 'user_info.lastname';
-        //             unset($data['target'][$index]);
-        //         }
-        //     }
-        // }
+        if (isset($data['target'])) {
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "start_event")) {
+                    $data['target'][] = 'start_event';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "end_event")) {
+                    $data['target'][] = 'end_event';
+                    unset($data['target'][$index]);
+                }
+            }
+        }
 
         $count_data = $data;
-        $result = $this->genericSearch($data, $result)->get();
+        $result = $this->genericSearch($data, $result)->get()->all();
 
         if ($result == null) {
             return $this->setResponse([
                 'code' => 404,
-                'title' => "No agent's overtime schedules are found",
+                'title' => "No overtime schedules are found",
                 "meta" => [
                     $meta_index => $result,
                 ],
