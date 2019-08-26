@@ -5,6 +5,7 @@ namespace App;
 use App\BaseAuthModel;
 use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\UserInfo;
+use App\Data\Models\AgentSchedule;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
@@ -23,7 +24,7 @@ class User extends BaseAuthModel
         'is_agent',
         'has_schedule',
         'calendar',
-        'summary',
+        'summary'
     ];
 
     /**
@@ -295,6 +296,64 @@ class User extends BaseAuthModel
             'leave' => $leave_count,
             'present' => $present_count,
             'absent' => $absent_count,
+            'time' => $this->remainingTimeSummary(),
+            'conformance' => [
+                'overall' => $this->conformance('overall'),
+                'month' => $this->conformance('month'),
+                'year' => $this->conformance('year')
+            ]
         );
+    }
+
+    public function remainingTimeSummary() {
+        $total = 0;
+        $seconds = 0;
+
+        foreach ($this->schedule as $key => $value) {
+            $seconds += $value->remaining_time['second'];
+            $total += $value->regular_hours['second'];
+        }
+
+        return array(
+            'total' => ( $total > 86400 ? (int) ($total / 86400) . 'd ' : '') . gmdate("H:i:s", $total), 
+            'time' => ( $seconds > 86400 ? (int) ($seconds / 86400) . 'd ' : '') . gmdate("H:i:s", $seconds), 
+            'second' => $seconds
+        );
+    }
+
+    public function conformance($option) {
+        if($option === 'overall') {
+            return AgentSchedule::where('user_id', $this->id)->get()->avg('conformance');
+        } else if($option === 'month') {
+            $data = [];
+            $unique = $this->schedule->unique(function ($item) {
+                return Carbon::parse($item['start_event'])->format('m');
+            })->values()->all();
+
+            foreach ($unique as $key => $value) {
+                $monthNumber = $value->start_event->format('m');
+                $monthText = $value->start_event->format('F');
+                $average = AgentSchedule::where('user_id', $this->id)->whereMonth('start_event', $monthNumber)->avg('conformance');
+
+                $data[$monthText] = $average ? $average : 0;
+            }
+
+            return $data;
+        } else if($option === 'year') {
+            $data = [];
+            $unique = $this->schedule->unique(function ($item) {
+                return Carbon::parse($item['start_event'])->format('Y');
+            })->values()->all();
+
+            foreach ($unique as $key => $value) {
+                $monthNumber = $value->start_event->format('Y');
+                $average = AgentSchedule::where('user_id', $this->id)->whereYear('start_event', $monthNumber)->avg('conformance');
+                
+                $data[$monthNumber] = $average ? $average : 0;
+            }
+
+            return $data;
+        }
+        
     }
 }

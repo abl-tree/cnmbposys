@@ -21,6 +21,8 @@ class OvertimeSchedule extends BaseModel
         'overtime_hours',
     ];
 
+    protected $cascadeDeletes = ['schedules'];
+
     public function getOvertimeHoursAttribute() {
         $sched_start = Carbon::parse($this->start_event);
         $sched_end = Carbon::parse($this->end_event);
