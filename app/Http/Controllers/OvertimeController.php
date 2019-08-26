@@ -105,7 +105,7 @@ class OvertimeController extends BaseController
     {
         $data = $request->all();
         $data["id"] = $id;
-        return $this->absorb($this->overtime_repo->defineAgentOvertime($data))->json();
+        return $this->absorb($this->overtime_repo->defineOvertimeSchedule($data))->json();
     }
 
     /**
