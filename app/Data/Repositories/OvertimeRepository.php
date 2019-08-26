@@ -575,7 +575,7 @@ class OvertimeRepository extends BaseRepository
             "code" => 200,
             "title" => "Successfully retrieved agents overtime",
             "meta" => [
-                $meta_index => $data,
+                $meta_index => $result,
                 "count" => $count,
             ],
             "parameters" => $parameters,
