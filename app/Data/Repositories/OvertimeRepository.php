@@ -97,7 +97,7 @@ class OvertimeRepository extends BaseRepository
         return $result;
     }
 
-    public function defineOvertimeSchedule($data = []) 
+    public function defineOvertimeSchedule($data = [])
     {
         // data validation
 
@@ -114,7 +114,7 @@ class OvertimeRepository extends BaseRepository
                 'title' => "End date is not set.",
             ]);
         }
-            
+
         // data validation
 
         // existence check
@@ -131,7 +131,7 @@ class OvertimeRepository extends BaseRepository
         }
 
         //Check for conflicts
-        
+
         $isConflict = $this->overtime_schedule
             ->where(function($q) use ($data) {
                 $q->where('start_event', '>', $data['start_event'])
@@ -150,7 +150,7 @@ class OvertimeRepository extends BaseRepository
                 ->where('end_event', '<', $data['end_event']);
             })
             ->first();
-            
+
         if ($isConflict) {
             return $this->setResponse([
                 'code' => 500,
@@ -163,7 +163,7 @@ class OvertimeRepository extends BaseRepository
         }
 
         // check for duplicate schedules
-        
+
         $does_exist = $this->overtime_schedule
             ->where('start_event', $data['start_event'])
             ->where('end_event', $data['end_event'])
@@ -197,7 +197,7 @@ class OvertimeRepository extends BaseRepository
             !is_numeric($auth_id) ||
             $auth_id <= 0) {
             $logged_in_user = $this->user->find($auth_id);
-            
+
             if (!$logged_in_user) {
                 return $this->setResponse([
                     'code' => 500,
@@ -309,7 +309,7 @@ class OvertimeRepository extends BaseRepository
                 // $query->where('end_event', '>=', Carbon::now());
             })
             ->first();
-        
+
         // return $this->setResponse([
         //     'code' => 500,
         //     'title' => '$does_exist',
@@ -339,7 +339,7 @@ class OvertimeRepository extends BaseRepository
         // Start Create Attendance
         return $this->defineAgentOvertimeAttendance($agent_schedule);
         //End Create Attendance
-        
+
     }
 
     public function defineAgentOvertimeAttendance($data = [])
@@ -399,7 +399,7 @@ class OvertimeRepository extends BaseRepository
             ],
             "parameters" => $data,
         ]);
-        
+
         return $response;
     }
 
@@ -574,6 +574,61 @@ class OvertimeRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully retrieved agents overtime",
+            "meta" => [
+                $meta_index => $result,
+                "count" => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+    public function searchOvertimeSchedule($data)
+    {
+        $result = $this->overtime_schedule;
+
+        $meta_index = "overtime";
+        $parameters = [
+            "query" => $data['query'],
+        ];
+        // $data['relations'] = ['user_info.user', 'title'];
+
+        if (isset($data['target'])) {
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "start_event")) {
+                    $data['target'][] = 'start_event';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "end_event")) {
+                    $data['target'][] = 'end_event';
+                    unset($data['target'][$index]);
+                }
+            }
+        }
+        $count_data = $data;
+        $result = $this->genericSearch($data, $result)->get()->all();
+
+        if ($result == null) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No overtime schedules are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+        $count_data['search'] = true;
+        $count = $this->countData($count_data, refresh_model($this->overtime_schedule->getModel()));
+
+        if (!is_array($result)) {
+            $result = [
+                $result,
+            ];
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully searched overtime schedules",
             "meta" => [
                 $meta_index => $result,
                 "count" => $count,

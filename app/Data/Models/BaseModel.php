@@ -3,12 +3,13 @@
 namespace App\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Iatstuti\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Validator;
 
 class BaseModel extends Model
 {
-    use SoftDeletes; //use softdelete traits
+    use SoftDeletes, CascadeSoftDeletes; //use softdelete traits
 
     protected $rules       = [];
     protected $searchable  = [];
