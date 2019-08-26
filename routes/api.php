@@ -41,11 +41,13 @@ Route::group([
         "prefix" => "overtime",
     ], function () {
 
-        Route::get("/", "OvertimeController@index");
-        Route::get("/search", "OvertimeController@search");
-        Route::get("/searchAgent", "OvertimeController@searchAgent");
-        Route::get("agents", "OvertimeController@agents");
-        Route::post("create", "OvertimeController@store");
+        Route::get("/", "OvertimeController@index"); // primary table function index
+        Route::get("search", "OvertimeController@search"); // primary table function search
+        Route::post("create", "OvertimeController@create"); // primary table function create
+
+        // secondary functions
+        // Route::get("/searchAgent", "OvertimeController@searchAgent");
+        // Route::get("agents", "OvertimeController@agents");
 
     });
 
