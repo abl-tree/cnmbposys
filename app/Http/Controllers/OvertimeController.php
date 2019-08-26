@@ -46,7 +46,7 @@ class OvertimeController extends BaseController
     public function search(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->overtime_repo->searchOvertime($data))->json();
+        return $this->absorb($this->overtime_repo->searchOvertimeSchedule($data))->json();
     }
 
     /**
