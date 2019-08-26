@@ -619,7 +619,7 @@ class OvertimeRepository extends BaseRepository
             ]);
         }
 
-        $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
+        $count = $this->countData($count_data, refresh_model($this->overtime_schedule->getModel()));
 
         if (!is_array($result)) {
             $result = [
