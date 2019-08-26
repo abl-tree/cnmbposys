@@ -625,15 +625,9 @@ class OvertimeRepository extends BaseRepository
             ];
         }
 
-        // foreach ($result as $key => $value) {
-        //     $value->team_leader = $value->user_info->user->team_leader;
-        //     $value->operations_manager = $value->user_info->user->operations_manager;
-        //     unset($value->user_info->user);
-        // }
-
         return $this->setResponse([
             "code" => 200,
-            "title" => "Successfully searched agent's overtime schedules",
+            "title" => "Successfully searched overtime schedules",
             "meta" => [
                 $meta_index => $result,
                 "count" => $count,

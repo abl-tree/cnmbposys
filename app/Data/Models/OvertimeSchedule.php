@@ -12,6 +12,11 @@ class OvertimeSchedule extends BaseModel
         'end_event'
     ];
 
+    protected $searchable = [
+        'start_event',
+        'end_event'
+    ];
+
     protected $appends = [
         'overtime_hours',
     ];
@@ -27,11 +32,11 @@ class OvertimeSchedule extends BaseModel
         }
 
         return array(
-            'time' => $day.gmdate('H:i:s', $sched_hours), 
+            'time' => $day.gmdate('H:i:s', $sched_hours),
             'second' => $sched_hours
         );
     }
-    
+
     public function schedules() {
         return $this->hasMany('App\Data\Models\AgentSchedule', 'overtime_id', 'id');
     }
