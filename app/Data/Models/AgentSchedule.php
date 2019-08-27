@@ -34,6 +34,7 @@ class AgentSchedule extends BaseModel
     ];
 
     protected $searchable = [
+        'id',
         'user_info.firstname',
         'user_info.middlename',
         'user_info.lastname',
@@ -144,13 +145,13 @@ class AgentSchedule extends BaseModel
         $rendered = $this->rendered_hours['second'];
         $remaining = $total - $rendered;
         $days = '';
-        
+
         if ($remaining >= 86400) {
             $days = (int) ($remaining / 86400) . 'd ';
         }
 
         return array(
-            'time' => $days . gmdate("H:i:s", $remaining), 
+            'time' => $days . gmdate("H:i:s", $remaining),
             'second' => $remaining
         );
     }

@@ -504,6 +504,10 @@ class AgentScheduleRepository extends BaseRepository
                     $data['target'][] = 'user_info.lastname';
                     unset($data['target'][$index]);
                 }
+                if (str_contains($column, "ot_id")) {
+                    $data['target'][] = 'overtime_schedule.id';
+                    unset($data['target'][$index]);
+                }
             }
         }
 
