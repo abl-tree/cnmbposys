@@ -533,48 +533,48 @@ class OvertimeRepository extends BaseRepository
         $parameters = [];
         $count = 0;
 
-        if (isset($data['id']) &&
-            is_numeric($data['id'])) {
+        // if (isset($data['id']) &&
+        //     is_numeric($data['id'])) {
 
-            $meta_index = "overtime";
-            $data['single'] = true;
-            $data['where'] = [
-                [
-                    "target" => "id",
-                    "operator" => "=",
-                    "value" => $data['id'],
-                ],
-            ];
-            $data['relations']=['schedules','schedules.user_info'];
-            $parameters['schedule_id'] = $data['id'];
-        }
+        //     $meta_index = "overtime";
+        //     $data['single'] = true;
+        //     $data['where'] = [
+        //         [
+        //             "target" => "id",
+        //             "operator" => "=",
+        //             "value" => $data['id'],
+        //         ],
+        //     ];
+        //     $data['relations']=['schedules','schedules.user_info'];
+        //     $parameters['schedule_id'] = $data['id'];
+        // }
 
-        $count_data = $data;
+        // $count_data = $data;
 
-        $overtime = $this->overtime_schedule;
+        // $overtime = $this->overtime_schedule;
 
-        // $data['relations'] = ["user_info.user", 'title', 'attendances'];
+        // // $data['relations'] = ["user_info.user", 'title', 'attendances'];
 
-        $result = $this->fetchGeneric($data, $overtime);
+        // $result = $this->fetchGeneric($data, $overtime);
 
-        if (!$result) {
-            return $this->setResponse([
-                'code' => 404,
-                'title' => "No overtime is found",
-                "meta" => [
-                    $meta_index => $result,
-                ],
-                "parameters" => $parameters,
-            ]);
-        }
+        // if (!$result) {
+        //     return $this->setResponse([
+        //         'code' => 404,
+        //         'title' => "No overtime is found",
+        //         "meta" => [
+        //             $meta_index => $result,
+        //         ],
+        //         "parameters" => $parameters,
+        //     ]);
+        // }
 
-        $count = $this->countData($count_data, refresh_model($overtime->getModel()));
+        // $count = $this->countData($count_data, refresh_model($overtime->getModel()));
 
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully retrieved agents overtime",
             "meta" => [
-                $meta_index => $result,
+                $meta_index => $data,
                 "count" => $count,
             ],
             "parameters" => $parameters,
