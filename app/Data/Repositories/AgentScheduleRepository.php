@@ -524,7 +524,7 @@ class AgentScheduleRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-
+        $count_data["search"] = true;
         $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
 
         if (!is_array($result)) {
