@@ -241,7 +241,7 @@ class OvertimeRepository extends BaseRepository
         }
 
         $data = array(
-            'title_id' => 1,
+            'title_id' => 2,
             'user_id' => Auth::id(),
             'overtime_id' => $available_ot->id
         );
@@ -338,7 +338,7 @@ class OvertimeRepository extends BaseRepository
 
         // Start Create Attendance
         return $this->defineAgentOvertimeAttendance($agent_schedule);
-        //End Create Attendance
+        // End Create Attendance
 
     }
 
@@ -545,7 +545,7 @@ class OvertimeRepository extends BaseRepository
                     "value" => $data['id'],
                 ],
             ];
-            $data['relations']=['schedules'];
+            $data['relations']=['schedules','schedules.user'];
             $parameters['schedule_id'] = $data['id'];
         }
 
