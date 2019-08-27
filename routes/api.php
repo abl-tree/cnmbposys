@@ -41,15 +41,22 @@ Route::group([
         "prefix" => "overtime",
     ], function () {
 
-        Route::get("/", "OvertimeController@agents");
-        Route::post("create", "OvertimeController@store");
+        Route::get("/", "OvertimeController@index"); // primary table function index
+        Route::get("search", "OvertimeController@search"); // primary table function search
+        Route::post("create", "OvertimeController@create"); // primary table function create
+        Route::post("update/{id}", "OvertimeController@update"); // primary table function update
+        Route::post("delete/{id}", "OvertimeController@delete"); // primary table function delete
+
+        // secondary functions
+        // Route::get("/searchAgent", "OvertimeController@searchAgent");
+        // Route::get("agents", "OvertimeController@agents");
 
     });
 
     Route::group([
         "prefix" => "schedules",
     ], function () {
-        
+
         Route::group([
             "prefix" => "overtime",
         ], function () {
@@ -60,6 +67,7 @@ Route::group([
             Route::post('delete/{overtime_id}', 'OvertimeController@delete');
             Route::post('approve/{overtime_id}', 'OvertimeController@approve');
             Route::get('search', 'OvertimeController@search');
+            Route::get('join', 'OvertimeController@join');
 
         });
 
@@ -199,7 +207,7 @@ Route::group([
         Route::get("fetch/{id}", "LogsController@log");
         Route::post("create", "LogsController@create");
         Route::get("search", "LogsController@search");
-       
+
     });
 
     Route::group([
@@ -269,7 +277,7 @@ Route::group([
         Route::post("update_user_status/{id}", "UserController@updateUserStatus");
         Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
 
-        
+
     });
 
     Route::group([

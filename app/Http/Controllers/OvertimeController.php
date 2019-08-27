@@ -33,9 +33,20 @@ class OvertimeController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $data = $request->all();
+        return $this->absorb($this->overtime_repo->fetchOvertime($data))->json();
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->overtime_repo->searchOvertimeSchedule($data))->json();
     }
 
     /**
@@ -92,7 +103,9 @@ class OvertimeController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        $data["id"] = $id;
+        return $this->absorb($this->overtime_repo->defineOvertimeSchedule($data))->json();
     }
 
     /**
@@ -124,7 +137,7 @@ class OvertimeController extends BaseController
         return $this->absorb($this->overtime_repo->approveOvertime($data))->json();
     }
 
-    public function search(Request $request)
+    public function searchAgent(Request $request)
     {
         $data = $request->all();
 

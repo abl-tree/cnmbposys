@@ -504,6 +504,10 @@ class AgentScheduleRepository extends BaseRepository
                     $data['target'][] = 'user_info.lastname';
                     unset($data['target'][$index]);
                 }
+                if (str_contains($column, "ot_id")) {
+                    $data['target'][] = 'overtime_schedule.id';
+                    unset($data['target'][$index]);
+                }
             }
         }
 
@@ -520,7 +524,7 @@ class AgentScheduleRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-
+        $count_data["search"] = true;
         $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
 
         if (!is_array($result)) {
