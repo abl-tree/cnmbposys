@@ -545,7 +545,7 @@ class OvertimeRepository extends BaseRepository
                     "value" => $data['id'],
                 ],
             ];
-            $data['relations']=['schedules','schedules.user'];
+            $data['relations']=['schedules','schedules.user_info'];
             $parameters['schedule_id'] = $data['id'];
         }
 
