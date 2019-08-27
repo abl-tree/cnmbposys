@@ -529,14 +529,14 @@ class OvertimeRepository extends BaseRepository
 
     public function fetchOvertime($data = [])
     {
-        $meta_index = "overtime";
+        $meta_index = "overtimes";
         $parameters = [];
         $count = 0;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index = "overtimes";
+            $meta_index = "overtime";
             $data['single'] = true;
             $data['where'] = [
                 [
@@ -545,9 +545,8 @@ class OvertimeRepository extends BaseRepository
                     "value" => $data['id'],
                 ],
             ];
-
+            $data['relations']=['schedules'];
             $parameters['schedule_id'] = $data['id'];
-
         }
 
         $count_data = $data;
