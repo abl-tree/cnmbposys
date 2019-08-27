@@ -34,7 +34,7 @@ class AgentSchedule extends BaseModel
     ];
 
     protected $searchable = [
-        'id',
+        'overtime_schedule.id',
         'user_info.firstname',
         'user_info.middlename',
         'user_info.lastname',
