@@ -18,6 +18,7 @@ class AgentSchedule extends BaseModel
         'approved_by',
         'conformance',
         'remarks',
+        'leave_id',
     ];
 
     protected $appends = [
@@ -30,7 +31,7 @@ class AgentSchedule extends BaseModel
         'log_status',
         'is_working',
         'break',
-        'remaining_time'
+        'remaining_time',
     ];
 
     protected $searchable = [
@@ -43,6 +44,7 @@ class AgentSchedule extends BaseModel
         'start_event',
         'end_event',
         'overtime_id',
+        'leave_id',
     ];
 
     public $timestamps = true;
@@ -82,7 +84,7 @@ class AgentSchedule extends BaseModel
         if ($this->overtime_schedule) {
             return array(
                 'time' => gmdate('H:i:s', 0),
-                'second' => 0
+                'second' => 0,
             );
         }
 
@@ -141,7 +143,8 @@ class AgentSchedule extends BaseModel
         );
     }
 
-    public function getRemainingTimeAttribute() {
+    public function getRemainingTimeAttribute()
+    {
         $total = $this->regular_hours['second'];
         $rendered = $this->rendered_hours['second'];
         $remaining = $total - $rendered;
@@ -153,7 +156,7 @@ class AgentSchedule extends BaseModel
 
         return array(
             'time' => $days . gmdate("H:i:s", $remaining),
-            'second' => $remaining
+            'second' => $remaining,
         );
     }
 
