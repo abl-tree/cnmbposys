@@ -277,7 +277,6 @@ Route::group([
         Route::post("update_user_status/{id}", "UserController@updateUserStatus");
         Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
 
-
     });
 
     Route::group([
