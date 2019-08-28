@@ -1033,7 +1033,7 @@ class AgentScheduleRepository extends BaseRepository
                     });
                 });
 
-                array_push($data['relations'],)
+                array_push($data['relations'],'leave')
 
             } else {
                 return $this->setResponse([
