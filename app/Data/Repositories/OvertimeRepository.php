@@ -229,13 +229,13 @@ class OvertimeRepository extends BaseRepository
             ]);
         }
 
+        $auth_id = Auth::id();
+
         $data = array(
             'title_id' => 2,
-            'user_id' => Auth::id(),
+            'user_id' => $auth_id,
             'overtime_id' => $available_ot->id
         );
-
-        $auth_id = Auth::id();
 
         // data validation
 
@@ -298,12 +298,6 @@ class OvertimeRepository extends BaseRepository
                 // $query->where('end_event', '>=', Carbon::now());
             })
             ->first();
-
-        // return $this->setResponse([
-        //     'code' => 500,
-        //     'title' => '$does_exist',
-        //     'parameters' => $does_exist
-        // ]);
 
         // existence check
 

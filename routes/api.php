@@ -72,7 +72,7 @@ Route::group([
         ], function () {
 
             Route::get("/", "OvertimeController@all");
-            Route::post("create", "OvertimeController@create");
+            Route::post("create", "OvertimeController@store");
             Route::post("create/bulk", "OvertimeController@bulkScheduleInsertion");
             Route::post('delete/{overtime_id}', 'OvertimeController@delete');
             Route::post('approve/{overtime_id}', 'OvertimeController@approve');
