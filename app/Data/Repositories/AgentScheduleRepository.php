@@ -1033,6 +1033,8 @@ class AgentScheduleRepository extends BaseRepository
                     });
                 });
 
+                array_push($data['relations'],)
+
             } else {
                 return $this->setResponse([
                     "code" => 500,

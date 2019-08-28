@@ -361,4 +361,9 @@ class AgentSchedule extends BaseModel
     {
         return $this->hasOne('App\Data\Models\EventTitle', "id", "title_id");
     }
+
+    public function leave()
+    {
+        return $this->hasOne('App\Data\Models\Leave', "id", "leave_id");
+    }
 }
