@@ -11,13 +11,8 @@ use App\Data\Models\UserInfo;
 use App\Data\Models\OvertimeSchedule;
 use App\Data\Models\Attendance;
 use App\Data\Repositories\BaseRepository;
-use App\Data\Repositories\ClusterRepository;
-use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
-use App\Services\ExcelDateService;
-use Maatwebsite\Excel\Facades\Excel;
-use Carbon\CarbonPeriod;
 use Carbon\Carbon;
 use App\User;
 use Auth;
@@ -29,10 +24,8 @@ class OvertimeRepository extends BaseRepository
     $user,
     $user_info,
     $event_title,
-    $excel_date,
     $logs,
     $access_level_repo,
-    $clusters,
     $notification_repo,
     $overtime_schedule,
     $attendance;
@@ -42,8 +35,6 @@ class OvertimeRepository extends BaseRepository
         User $user,
         UserInfo $userInfo,
         EventTitle $eventTitle,
-        ExcelDateService $excelDate,
-        ClusterRepository $cluster,
         LogsRepository $logs_repo,
         NotificationRepository $notificationRepository,
         OvertimeSchedule $overtimeSchedule,
@@ -53,9 +44,7 @@ class OvertimeRepository extends BaseRepository
         $this->user = $user;
         $this->user_info = $userInfo;
         $this->event_title = $eventTitle;
-        $this->excel_date = $excelDate;
         $this->logs = $logs_repo;
-        $this->clusters = $cluster;
         $this->notification_repo = $notificationRepository;
         $this->overtime_schedule = $overtimeSchedule;
         $this->attendance = $attendance;

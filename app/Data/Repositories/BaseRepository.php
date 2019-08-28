@@ -265,6 +265,13 @@ class BaseRepository
             }
         }
 
+        // Start WHERENOTNULL clauses
+        if (isset($data['where_not_null'])) {
+            foreach ((array) $data['where_not_null'] as $key => $conditions) {
+                $model = $model->whereNotNull($conditions);
+            }
+        }
+
         if (isset($data['limit']) && $data['limit'] && is_numeric($data['limit'])) {
             $model = $model->take($data['limit']);
         }
