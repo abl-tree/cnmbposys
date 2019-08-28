@@ -17,13 +17,15 @@ class AgentSchedule extends BaseModel
         'overtime_id',
         'approved_by',
         'conformance',
-        'remarks',
+        'vto_at',
+        'remarks'
     ];
 
     protected $appends = [
-        'regular_hours',
         'date',
+        'regular_hours',
         'rendered_hours',
+        'vto_hours',
         'overtime',
         'time_in',
         'time_out',
@@ -64,15 +66,41 @@ class AgentSchedule extends BaseModel
         return Carbon::parse($this->overtime_schedule ? $this->overtime_schedule->end_event : $value);
     }
 
+    public function getVtoAtAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
     public function getConformanceAttribute($value)
     {
         if ($this->overtime_schedule) {
             return number_format($value, 1);
         } else {
-            $value = ($this->rendered_hours['billable']['second'] / $this->regular_hours['second']) * 100;
+            $billableSeconds = $this->rendered_hours['billable']['second'];
+            $regularSeconds = $this->vto_at ? $this->vto_at->diffInSeconds($this->start_event) : $this->regular_hours['second'];
+
+            $value = ($billableSeconds / $regularSeconds) * 100;
 
             return number_format($value ? $value : 0, 1);
         }
+    }
+
+    public function getVtoHoursAttribute() {
+        $vto_start = Carbon::parse($this->vto_at);
+        $vto_end = Carbon::parse($this->end_event);
+        $sched_hours = $vto_end->diffInSeconds($vto_start);
+        $day = "";
+
+        if ($sched_hours >= 86400) {
+            $day = (int) ($sched_hours / 86400) . 'd ';
+        }
+
+        return array(
+            'start' => $vto_start,
+            'end' => $vto_end,
+            'time' => $day . gmdate('H:i:s', $sched_hours),
+            'second' => $sched_hours
+        );
     }
 
     public function getRegularHoursAttribute()
@@ -164,7 +192,7 @@ class AgentSchedule extends BaseModel
         $day_billable = "";
         $day_nonbillable = "";
         $start = $this->time_in;
-        $end = $this->time_out ? $this->time_out : Carbon::now();
+        $end = $this->vto_at ? $this->vto_at : ($this->time_out ? $this->time_out : Carbon::now());
 
         if ($this->attendances->count() && $start->lessThan($this->end_event)) {
 

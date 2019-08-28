@@ -56,6 +56,16 @@ Route::group([
     ], function () {
 
         Route::group([
+            "prefix" => "vto",
+        ], function () {
+
+            Route::get("/", "VoluntaryTimeOutController@all");
+            Route::post("create/{id}", "VoluntaryTimeOutController@create");
+            Route::get('search', 'VoluntaryTimeOutController@search');
+
+        });
+
+        Route::group([
             "prefix" => "overtime",
         ], function () {
 
