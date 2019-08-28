@@ -348,7 +348,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = ["user_info.user", 'title'];
+        $data['relations'] = ['user_info.user', 'title', 'leave'];
 
         $result = $this->fetchGeneric($data, $this->agent_schedule);
 
@@ -429,6 +429,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $data['relations'][] = 'info';
         $data['relations'][] = 'schedule.title';
+        $data['relations'][] = 'leave';
 
         //filter by leave status
         if (isset($data['leave_status'])) {
@@ -494,7 +495,7 @@ class AgentScheduleRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
-        $data['relations'] = ['user_info.user', 'title'];
+        $data['relations'] = ['user_info.user', 'title', 'leave'];
 
         if (isset($data['target'])) {
             foreach ((array) $data['target'] as $index => $column) {
