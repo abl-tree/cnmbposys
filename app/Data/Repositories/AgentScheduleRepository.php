@@ -995,6 +995,14 @@ class AgentScheduleRepository extends BaseRepository
                         'operator' => '=',
                         'value' => $data['userid'],
                     ]);
+                }else{
+                    $data['where'] = [
+                        [
+                            "target" => "access_id",
+                            "operator" => "=",
+                            "value" => '17',
+                        ],
+                    ];
                 }
 
                 // $data['wherehas'] = array(
@@ -1007,6 +1015,8 @@ class AgentScheduleRepository extends BaseRepository
                 //         'value' => $parameters['start']
                 //     ])
                 // );
+
+
 
                 $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);
