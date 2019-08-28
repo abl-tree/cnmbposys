@@ -44,6 +44,8 @@ Route::group([
         Route::get("/", "OvertimeController@index"); // primary table function index
         Route::get("search", "OvertimeController@search"); // primary table function search
         Route::post("create", "OvertimeController@create"); // primary table function create
+        Route::post("update/{id}", "OvertimeController@update"); // primary table function update
+        Route::post("delete/{id}", "OvertimeController@delete"); // primary table function delete
 
         // secondary functions
         // Route::get("/searchAgent", "OvertimeController@searchAgent");
@@ -75,6 +77,7 @@ Route::group([
             Route::post('delete/{overtime_id}', 'OvertimeController@delete');
             Route::post('approve/{overtime_id}', 'OvertimeController@approve');
             Route::get('search', 'OvertimeController@search');
+            Route::get('join', 'OvertimeController@join');
 
         });
 
@@ -283,7 +286,6 @@ Route::group([
         Route::post("import_user", "UserController@addUserImport");
         Route::post("update_user_status/{id}", "UserController@updateUserStatus");
         Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
-
 
     });
 

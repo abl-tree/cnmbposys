@@ -103,7 +103,9 @@ class OvertimeController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        $data["id"] = $id;
+        return $this->absorb($this->overtime_repo->defineOvertimeSchedule($data))->json();
     }
 
     /**

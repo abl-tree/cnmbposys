@@ -504,6 +504,10 @@ class AgentScheduleRepository extends BaseRepository
                     $data['target'][] = 'user_info.lastname';
                     unset($data['target'][$index]);
                 }
+                if (str_contains($column, "ot_id")) {
+                    $data['target'][] = 'overtime_schedule.id';
+                    unset($data['target'][$index]);
+                }
             }
         }
 
@@ -520,7 +524,7 @@ class AgentScheduleRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-
+        $count_data["search"] = true;
         $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
 
         if (!is_array($result)) {
@@ -991,6 +995,15 @@ class AgentScheduleRepository extends BaseRepository
                         'operator' => '=',
                         'value' => $data['userid'],
                     ]);
+                }else{
+                    $data['where'] = [
+                        [
+                            "target" => "access_id",
+                            "operator" => "=",
+                            "value" => '17',
+                        ],
+                    ];
+
                 }
 
                 // $data['wherehas'] = array(
@@ -1003,6 +1016,8 @@ class AgentScheduleRepository extends BaseRepository
                 //         'value' => $parameters['start']
                 //     ])
                 // );
+
+
 
                 $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);

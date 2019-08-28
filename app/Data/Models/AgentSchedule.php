@@ -36,6 +36,7 @@ class AgentSchedule extends BaseModel
     ];
 
     protected $searchable = [
+        'overtime_schedule.id',
         'user_info.firstname',
         'user_info.middlename',
         'user_info.lastname',
@@ -43,6 +44,7 @@ class AgentSchedule extends BaseModel
         'title_id',
         'start_event',
         'end_event',
+        'overtime_id',
     ];
 
     public $timestamps = true;
@@ -172,13 +174,13 @@ class AgentSchedule extends BaseModel
         $rendered = $this->rendered_hours['second'];
         $remaining = $total - $rendered;
         $days = '';
-        
+
         if ($remaining >= 86400) {
             $days = (int) ($remaining / 86400) . 'd ';
         }
 
         return array(
-            'time' => $days . gmdate("H:i:s", $remaining), 
+            'time' => $days . gmdate("H:i:s", $remaining),
             'second' => $remaining
         );
     }
@@ -386,5 +388,10 @@ class AgentSchedule extends BaseModel
     public function title()
     {
         return $this->hasOne('App\Data\Models\EventTitle', "id", "title_id");
+    }
+
+    public function leave()
+    {
+        return $this->hasOne('App\Data\Models\Leave', "id", "leave_id");
     }
 }
