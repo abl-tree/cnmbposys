@@ -24,14 +24,14 @@ class AgentScheduleRepository extends BaseRepository
 {
 
     protected $agent_schedule,
-        $user,
-        $user_info,
-        $event_title,
-        $excel_date,
-        $logs,
-        $access_level_repo,
-        $clusters,
-        $notification_repo,
+    $user,
+    $user_info,
+    $event_title,
+    $excel_date,
+    $logs,
+    $access_level_repo,
+    $clusters,
+    $notification_repo,
         $overtime_schedule;
 
     public function __construct(
@@ -344,6 +344,14 @@ class AgentScheduleRepository extends BaseRepository
 
             $parameters['agent_schedule_id'] = $data['id'];
 
+        }
+
+        if (isset($data['overtime_id'])) {
+            $data['where'][] = [
+                "target" => "overtime_id",
+                "operator" => "=",
+                "value" => $data['overtime_id'],
+            ];
         }
 
         $count_data = $data;
@@ -995,7 +1003,7 @@ class AgentScheduleRepository extends BaseRepository
                         'operator' => '=',
                         'value' => $data['userid'],
                     ]);
-                }else{
+                } else {
                     $data['where'] = [
                         [
                             "target" => "access_id",
@@ -1015,8 +1023,6 @@ class AgentScheduleRepository extends BaseRepository
                 //         'value' => $parameters['start']
                 //     ])
                 // );
-
-
 
                 $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);
