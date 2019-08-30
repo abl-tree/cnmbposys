@@ -1147,12 +1147,6 @@ class UsersInfoRepository extends BaseRepository
                     'title' => "user id is not set.",
                 ]);
             }
-            if (!isset($data['reason'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "reason is not set.",
-                ]);
-            }   
             if (!isset($data['type'])) {
                 return $this->setResponse([
                     'code'  => 500,
