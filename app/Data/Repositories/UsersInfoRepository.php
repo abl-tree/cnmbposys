@@ -1017,7 +1017,6 @@ class UsersInfoRepository extends BaseRepository
         }
         
         $user_information = $this->user_data_update->find($data['id']);
-       
         if($user_information){
            // $hashPass=bcrypt($data['password']);
             $user_information['password']=$data['password'];
