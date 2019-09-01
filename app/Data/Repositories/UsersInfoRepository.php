@@ -1077,6 +1077,8 @@ class UsersInfoRepository extends BaseRepository
     {
         // data validation
         $action=null;
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
        
             if (!isset($data['status'])) {
                 return $this->setResponse([
@@ -1135,6 +1137,12 @@ class UsersInfoRepository extends BaseRepository
                         ],
                     ]);
                 }
+                $logged_data = [
+                    "user_id" => $auth->id,
+                    "action" => "Update",
+                    "affected_data" => $auth->full_name."[".$auth->access->name."] Update a User [".$user_informations->full_name."] Status."
+                ];
+                $this->logs->logsInputCheck($logged_data);
                 return $this->setResponse([
                     "code"       => 200,
                     "title"      => "Successfully ".$action." a User Status.",
@@ -1153,6 +1161,8 @@ class UsersInfoRepository extends BaseRepository
         // data validation
         $action=null;
         $array=$data['user_id'];
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
        $all_users=[];
         foreach ($array as $key => $value) {
             $data['user_id']=$value;          
@@ -1208,6 +1218,12 @@ class UsersInfoRepository extends BaseRepository
                 }
                 array_push($all_users,$Users);
             }
+                $logged_data = [
+                    "user_id" => $auth->id,
+                    "action" => "Update",
+                    "affected_data" => $auth->full_name."[".$auth->access->name."]  Updated a Users Status."
+                ];
+                $this->logs->logsInputCheck($logged_data);
                 return $this->setResponse([
                     "code"       => 200,
                     "title"      => "Successfully ".$action." a Users Status.",
