@@ -962,7 +962,7 @@ class UsersInfoRepository extends BaseRepository
                 $logged_data = [
                     "user_id" => $auth->id,
                     "action" => "Create",
-                    "affected_data" => $auth->full_name."[".$auth->access->name."] Updated a User [".$user_informations->full_name."]"
+                    "affected_data" => $auth->full_name."[".$auth->access->name."] Updated a User [".$user_information->full_name."]"
                 ];
                 $this->logs->logsInputCheck($logged_data);
                 return $this->setResponse([
@@ -972,7 +972,8 @@ class UsersInfoRepository extends BaseRepository
                         "user_information" => $user_information,
                         "user" => $user_data,
                         "benefits" => $ben,
-                        "hierarchy"=>$hierarchy
+                        "hierarchy"=>$hierarchy,
+                        "logs"=>$logged_data
                     ]
                 ]);
                 }else{
@@ -1148,7 +1149,8 @@ class UsersInfoRepository extends BaseRepository
                     "title"      => "Successfully ".$action." a User Status.",
                     "meta"        => [
                         "Users" => $Users,
-                        "Status Log" => $status
+                        "Status Log" => $status,
+                        "logs"=>$logged_data
                     ]
                 ]);
                     
@@ -1228,7 +1230,8 @@ class UsersInfoRepository extends BaseRepository
                     "code"       => 200,
                     "title"      => "Successfully ".$action." a Users Status.",
                     "meta"        => [
-                        "Users" => $all_users
+                        "Users" => $all_users,
+                        "logs"=>$logged_data
                     ]
                 ]);
                     
