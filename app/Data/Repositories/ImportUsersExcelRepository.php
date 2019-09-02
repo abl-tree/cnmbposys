@@ -35,7 +35,7 @@ class ImportUsersExcelRepository extends BaseRepository
 
     protected $user_benefit,
     $excel_date,
-    $user,$user_datum,$user_benefits,
+    $user,$user_datum,$user_benefits,$logs,
     $user_info,$access_level,$access_level_hierarchy,$user_status,$user_infos,$status_list;
 
     public function __construct(
@@ -49,6 +49,7 @@ class ImportUsersExcelRepository extends BaseRepository
         AccessLevel $access_level,
         AccessLevelHierarchy $access_level_hierarchy,
         UpdateStatus $user_status,
+        LogsRepository $logs_repo,
         UserBenefit $user_benefits
     ) {
         $this->user_benefit = $user_benefit;
@@ -62,6 +63,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $this->user_status = $user_status;
         $this->user_benefits = $user_benefits;
         $this->status_list = $status_list;
+        $this->logs = $logs_repo;
     }
 
     public function excelImportUser($data)
@@ -71,6 +73,8 @@ class ImportUsersExcelRepository extends BaseRepository
         $user = [];
         $benefits = [];
         $parameters = [];
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         $position = $this->genericSearch($data, $this->access_level)->get()->all();
         $stat = $this->genericSearch($data, $this->status_list)->get()->all();
         
@@ -146,7 +150,13 @@ class ImportUsersExcelRepository extends BaseRepository
             
         };
         //$userInfo['auth_id'] = auth::id();
-         
+        $logged_data = [
+            "user_id" => $auth->id,
+            "action" => "Create",
+            "affected_data" => $auth->full_name."[".$auth->access->name."] Uploaded An Excel File to Import Users."
+        ];
+        $this->logs->logsInputCheck($logged_data);
+
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully Uploaded Users",
@@ -175,6 +185,8 @@ class ImportUsersExcelRepository extends BaseRepository
         $cluster=[];
         $user_benefits=[];
         $benefits=[];
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
 
         if($data['access_id']!='invalid position'&&$data['parent_id']!='No Parent Found'&&$data['status']!='Invalid Status'){
             $user_information['firstname']= $data['firstname'];
@@ -314,7 +326,12 @@ class ImportUsersExcelRepository extends BaseRepository
             
            
             
-      
+        $logged_data = [
+        "user_id" => $auth->id,
+        "action" => "Create",
+        "affected_data" => $auth->full_name."[".$auth->access->name."] Added a User [".$user_informations->full_name."] via Excel Upload."
+        ];
+        $this->logs->logsInputCheck($logged_data);
          return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully Uploaded  a User",
