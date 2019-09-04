@@ -46,6 +46,10 @@ class LeaveSlotRepository extends BaseRepository
                 ]);
             }
 
+            if (!isset($data['original_value'])) {
+                $data['original_value'] = $data['value'];
+            }
+
             if (!isset($data['date'])) {
                 return $this->setResponse([
                     'code' => 500,

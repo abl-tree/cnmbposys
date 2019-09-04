@@ -13,6 +13,7 @@ class LeaveSlot extends BaseModel
         'user_id',
         'leave_type',
         'value',
+        'original_value',
         'date',
     ];
 
@@ -20,6 +21,7 @@ class LeaveSlot extends BaseModel
         'user_id',
         'leave_type',
         'value',
+        'original_value',
         'date',
     ];
 
@@ -29,6 +31,7 @@ class LeaveSlot extends BaseModel
         'user_id' => 'sometimes|required|numeric',
         'leave_type' => 'sometimes|required|max:100',
         'value' => 'sometimes|required|numeric',
+        'original_value' => 'sometimes|required|numeric',
         'date' => 'sometimes|required|date',
     ];
 
