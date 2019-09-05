@@ -282,7 +282,7 @@ class User extends BaseAuthModel
                 $ncns_count++;
             } else if ($value->remarks === "Present") {
                 $present_count++;
-            } else {
+            } else if ($value->remarks === "Absent") {
                 $absent_count++;
             }
 

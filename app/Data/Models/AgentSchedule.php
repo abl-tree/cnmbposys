@@ -255,6 +255,14 @@ class AgentSchedule extends BaseModel
 
     public function getRemarksAttribute($value)
     {
+        if($this->start_event->isFuture()) {
+            return null;
+        }
+
+        if($this->leave_id) {
+            return "On-Leave";
+        }
+
         if ($value != 0) {
             return 'Absent';
         }
