@@ -65,12 +65,20 @@ class BaseRepository
             }
         }
 
+        if(isset($data['wherehas_by_relations'])) {
+            $model = $model->whereHas( $data['wherehas_by_relations']['target'], $data['wherehas_by_relations']['query'] );
+        }
+
         // Start WHEREHAS clauses
         if (isset($data['wherehas'])) {
             foreach ((array) $data['wherehas'] as $key => $conditions) {
                 $model = $model->whereHas($conditions['relation'], function($q) use ($conditions) {
                     foreach ($conditions['target'] as $key => $value) {
-                        $q->where($value['column'], $value['value']);
+                        if(isset($value['operator'])) {
+                            $q->where($value['column'], $value['operator'], $value['value']);
+                        }else {
+                            $q->where($value['column'], $value['value']);
+                        }
                     }
                 });
             }
