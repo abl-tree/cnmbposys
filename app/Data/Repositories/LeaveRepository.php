@@ -65,7 +65,12 @@ class LeaveRepository extends BaseRepository
          * &&
          * Check if slots for leave approval are still available
          */
-        if ($data['user_access'] == 15) {
+        if (
+            $data['user_access'] == 15 &&
+            strtolower($data['status']) == "approved" &&
+            (strtolower($leave->leave_type) == "sick_leave" || strtolower($leave->leave_type) == "vacation_leave")
+        ) {
+
             //fetch user data
             $operations_manager = refresh_model($this->user->getModel())->find($data['approved_by']);
 
@@ -106,7 +111,10 @@ class LeaveRepository extends BaseRepository
             }
         }
 
-        if ($data['status'] == "approved") {
+        if (
+            strtolower($data['status']) == "approved" &&
+            strtolower($leave->leave_type) != "suspended"
+        ) {
             //fetch available leave credits
             $leave_credits = $this->leave_credit
                 ->where('user_id', $leave->user_id)
@@ -119,13 +127,6 @@ class LeaveRepository extends BaseRepository
                     'title' => "Employee does not have leave credits.",
                 ]);
             }
-
-            //count total leave days according to schedule
-            // $total_days = refresh_model($this->agent_schedule->getModel())
-            //     ->where('user_id', $leave->user_id)
-            //     ->where('start_event', '>=', $leave->start_event)
-            //     ->where('end_event', '<=', $leave->end_event)
-            //     ->count();
 
             //initialize credits needed
             $credits_needed = 0;
@@ -398,13 +399,6 @@ class LeaveRepository extends BaseRepository
 
             //return leave_credits
             if ($leave_credits) {
-
-                //count total leave days according to schedule
-                // $total_days = refresh_model($this->agent_schedule->getModel())
-                //     ->where('user_id', $leave->user_id)
-                //     ->where('start_event', '>=', $data['start_leave'])
-                //     ->where('end_event', '<=', $leave->end_event)
-                //     ->count();
 
                 //initialize credits needed
                 $credits_needed = 0;
