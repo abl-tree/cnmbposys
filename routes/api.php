@@ -94,6 +94,7 @@ Route::group([
         Route::get('stats', 'AgentScheduleController@stats');
         Route::get('work/{option}', 'AgentScheduleController@workInfo');
         Route::post('conformance/{id}', 'AgentScheduleController@conformance');
+        Route::post('conformance/bulk/update', 'AgentScheduleController@conformanceBulkUpdate');
         Route::post('remarks/{id}', 'AgentScheduleController@remarks');
 
     });

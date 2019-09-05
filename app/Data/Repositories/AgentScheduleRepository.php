@@ -958,7 +958,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $result = $this->user;
 
-        $meta_index = "agent_schedules";
+        $meta_index = "agents";
 
         $sparkline = array();
 
@@ -1006,19 +1006,6 @@ class AgentScheduleRepository extends BaseRepository
                     ];
 
                 }
-
-                // $data['wherehas'] = array(
-                //     'relation' => 'schedule',
-                //     'target' =>array([
-                //         'column' => 'start_event',
-                //         'value' => (Carbon::parse($parameters['end'])->isToday()) ? Carbon::now() : Carbon::parse($parameters['end'])->addDays(1)
-                //     ], [
-                //         'column' => 'end_event',
-                //         'value' => $parameters['start']
-                //     ])
-                // );
-
-
 
                 $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);
@@ -1127,6 +1114,19 @@ class AgentScheduleRepository extends BaseRepository
                     ],
                     "parameters" => $data,
                 ]);
+            } else {
+                if(is_numeric($data['conformance'])) {
+                    if($data['conformance'] > 100) {
+                        return $this->setResponse([
+                            "code" => 500,
+                            "title" => "Conformance value must not be greater than 100.",
+                            "meta" => [
+                                $meta_index => $schedule,
+                            ],
+                            "parameters" => $data,
+                        ]);     
+                    }
+                }
             }
         }
 
@@ -1159,6 +1159,98 @@ class AgentScheduleRepository extends BaseRepository
             "title" => "Schedule ID does not exists.",
             "meta" => [
                 $meta_index => $schedule,
+            ],
+            "parameters" => $data,
+        ]);
+    }
+
+    public function conformanceBulkUpdate($data = [])
+    {
+        $meta_index = "agent_schedules";
+
+        if(!isset($data['schedules'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Parameter schedules is required.",
+                "parameters" => $data,
+            ]);
+        }
+
+        if(!is_array($data['schedules'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Parameter schedules must be an array of schedule ID.",
+                "parameters" => $data,
+            ]);
+        }
+
+        $tempScheds = $data['schedules'];
+
+        foreach ($tempScheds as $key => $schedule) {
+            if($sched = $this->agent_schedule->find($schedule)) {
+                if($sched->overtime_id) unset($tempScheds[$key]);
+            }
+        }
+
+        if(!empty($tempScheds)) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Schedule ID ".implode(',', $tempScheds)." not found or not an overtime schedule.",
+                "meta" => [
+                    $meta_index => $tempScheds,
+                ],
+                "parameters" => $data,
+            ]);
+        }
+
+        if (!isset($data['conformance'])) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Parameter 'conformance' is required.",
+                "parameters" => $data,
+            ]);
+        } else {
+            if (!is_numeric($data['conformance'])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Parameter 'conformance' should be a digit.",
+                    "parameters" => $data,
+                ]);
+            } else {
+                if(is_numeric($data['conformance'])) {
+                    if($data['conformance'] > 100) {
+                        return $this->setResponse([
+                            "code" => 500,
+                            "title" => "Conformance value must not be greater than 100.",
+                            "parameters" => $data,
+                        ]);     
+                    }
+                }
+            }
+        }
+
+        foreach ($data['schedules'] as $key => $schedule) {
+            $schedule = $this->agent_schedule->find($schedule);
+
+            if (!$schedule->save([
+                'conformance' => $data['conformance'],
+            ])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Data Validation Error.",
+                    "description" => "An error was detected on one of the inputted data.",
+                    "meta" => [
+                        "errors" => $schedule->errors(),
+                    ],
+                ]);
+            }
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully updated a conformance.",
+            "meta" => [
+                $meta_index => $this->agent_schedule->whereIn('id', $data['schedules'])->get(),
             ],
             "parameters" => $data,
         ]);
