@@ -65,7 +65,12 @@ class LeaveRepository extends BaseRepository
          * &&
          * Check if slots for leave approval are still available
          */
-        if ($data['user_access'] == 15) {
+        if (
+            $data['user_access'] == 15 &&
+            strtolower($data['status']) == "approved" &&
+            (strtolower($leave->leave_type) == "sick_leave" || strtolower($leave->leave_type) == "vacation_leave")
+        ) {
+
             //fetch user data
             $operations_manager = refresh_model($this->user->getModel())->find($data['approved_by']);
 
@@ -106,7 +111,10 @@ class LeaveRepository extends BaseRepository
             }
         }
 
-        if ($data['status'] == "approved") {
+        if (
+            strtolower($data['status']) == "approved" &&
+            strtolower($leave->leave_type) != "suspended"
+        ) {
             //fetch available leave credits
             $leave_credits = $this->leave_credit
                 ->where('user_id', $leave->user_id)
@@ -120,21 +128,36 @@ class LeaveRepository extends BaseRepository
                 ]);
             }
 
-            //count total leave days according to schedule
-            $total_days = refresh_model($this->agent_schedule->getModel())
+            //initialize credits needed
+            $credits_needed = 0;
+
+            //fetch all schedules hit by leave
+            $schedules_hit = refresh_model($this->agent_schedule->getModel())
                 ->where('user_id', $leave->user_id)
                 ->where('start_event', '>=', $leave->start_event)
                 ->where('end_event', '<=', $leave->end_event)
-                ->count();
+                ->get()->all();
 
-            if ($leave_credits->value < $total_days) {
+            /**
+             * loop through all schedules hit
+             * to calculate total of hours needed
+             */
+            foreach ($schedules_hit as $schedule) {
+                $diff = strtotime($schedule->end_event) - strtotime($schedule->start_event);
+                $hours = $diff / (3600);
+
+                //total hours summation
+                $credits_needed += $hours;
+            }
+
+            if ($leave_credits->value < $credits_needed) {
                 return $this->setResponse([
                     'code' => 500,
                     'title' => "Employee does not have enough leave credits.",
                     'parameters' => [
                         'credits' => [
                             'available' => $leave_credits->value,
-                            'needed' => $total_days,
+                            'needed' => $credits_needed,
                         ],
                     ],
                 ]);
@@ -142,7 +165,7 @@ class LeaveRepository extends BaseRepository
 
             //update leave credits
             $leave_credits->update([
-                'value' => $leave_credits->value - $total_days,
+                'value' => $leave_credits->value - $credits_needed,
             ]);
 
             //fetch raw  agent schedules affected by the leave (query builder format)
@@ -377,15 +400,30 @@ class LeaveRepository extends BaseRepository
             //return leave_credits
             if ($leave_credits) {
 
-                //count total leave days according to schedule
-                $total_days = refresh_model($this->agent_schedule->getModel())
+                //initialize credits needed
+                $credits_needed = 0;
+
+                /**
+                 * loop through all schedules hit
+                 * to calculate total of hours needed
+                 */
+                $schedules_hit = refresh_model($this->agent_schedule->getModel())
                     ->where('user_id', $leave->user_id)
                     ->where('start_event', '>=', $data['start_leave'])
                     ->where('end_event', '<=', $leave->end_event)
-                    ->count();
+                    ->get()->all();
 
+                foreach ($schedules_hit as $schedule) {
+                    $diff = strtotime($schedule->end_event) - strtotime($schedule->start_event);
+                    $hours = $diff / (3600);
+
+                    //total hours summation
+                    $credits_needed += $hours;
+                }
+
+                //update leave credits
                 $leave_credits->update([
-                    'value' => $leave_credits->value + $total_days,
+                    'value' => $leave_credits->value + $credits_needed,
                 ]);
             }
         }

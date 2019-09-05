@@ -2,8 +2,8 @@
 
 namespace App\Data\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Iatstuti\Database\Support\CascadeSoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,8 +11,8 @@ class BaseModel extends Model
 {
     use SoftDeletes, CascadeSoftDeletes; //use softdelete traits
 
-    protected $rules       = [];
-    protected $searchable  = [];
+    protected $rules = [];
+    protected $searchable = [];
     protected $conversions = [];
     private $errors;
 
@@ -30,7 +30,7 @@ class BaseModel extends Model
     {
         $model = $model == null ? $this : $model;
 
-        $class     = $model->getClass();
+        $class = $model->getClass();
         $new_model = new $class($data);
 
         if (!$new_model instanceof BaseModel) {
@@ -69,7 +69,7 @@ class BaseModel extends Model
         $sql = $builder->toSql();
         foreach ($builder->getBindings() as $binding) {
             $value = is_numeric($binding) ? $binding : "'" . $binding . "'";
-            $sql   = preg_replace('/\?/', $value, $sql, 1);
+            $sql = preg_replace('/\?/', $value, $sql, 1);
         }
         return $sql;
     }
@@ -137,16 +137,15 @@ class BaseModel extends Model
         }
     }
 
-
-
     /**
      * @param \App\Data\Models\BaseModel $model
      * @param array $data
      * @return mixed
      */
-    public function refreshModel( $model=null, $data=[] ){
+    public function refreshModel($model = null, $data = [])
+    {
         $model = $model === null ? $this : $model;
 
-        return refresh_model( $model, $data );
+        return refresh_model($model, $data);
     }
 }

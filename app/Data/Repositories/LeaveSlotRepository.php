@@ -46,6 +46,10 @@ class LeaveSlotRepository extends BaseRepository
                 ]);
             }
 
+            if (!isset($data['original_value'])) {
+                $data['original_value'] = $data['value'];
+            }
+
             if (!isset($data['date'])) {
                 return $this->setResponse([
                     'code' => 500,
@@ -195,6 +199,15 @@ class LeaveSlotRepository extends BaseRepository
 
         //relations
         $data['relations'][] = 'user';
+
+        //fetch user if set
+        if (isset($data['user_id']) && is_numeric($data['user_id'])) {
+            $data['where'][] = [
+                "target" => "user_id",
+                "operator" => "=",
+                "value" => $data['user_id'],
+            ];
+        }
 
         $count_data = $data;
 

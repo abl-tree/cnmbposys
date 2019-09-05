@@ -24,14 +24,14 @@ class AgentScheduleRepository extends BaseRepository
 {
 
     protected $agent_schedule,
-        $user,
-        $user_info,
-        $event_title,
-        $excel_date,
-        $logs,
-        $access_level_repo,
-        $clusters,
-        $notification_repo,
+    $user,
+    $user_info,
+    $event_title,
+    $excel_date,
+    $logs,
+    $access_level_repo,
+    $clusters,
+    $notification_repo,
         $overtime_schedule;
 
     public function __construct(
@@ -429,7 +429,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $data['relations'][] = 'info';
         $data['relations'][] = 'schedule.title';
-        $data['relations'][] = 'leave';
+        $data['relations'][] = 'leaves';
 
         //filter by leave status
         if (isset($data['leave_status'])) {
@@ -996,7 +996,7 @@ class AgentScheduleRepository extends BaseRepository
                         'operator' => '=',
                         'value' => $data['userid'],
                     ]);
-                }else{
+                } else {
                     $data['where'] = [
                         [
                             "target" => "access_id",

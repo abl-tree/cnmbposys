@@ -12,6 +12,7 @@ use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\UserBenefit;
 use App\Data\Models\BenefitUpdate;
 use App\Data\Models\HierarchyUpdate;
+use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\BaseRepository;
 use DateTime;
 use DateInterval;
@@ -23,7 +24,7 @@ class UsersInfoRepository extends BaseRepository
 {
 
     protected 
-        $user_info,$user_datum,$user_status,$user_benefits,$user_infos,
+        $user_info,$user_datum,$user_status,$user_benefits,$user_infos,$logs,
         $user,$access_level_hierarchy,$benefit_update,$hierarchy_update,$no_sort,$user_data_update;
 
     public function __construct(
@@ -37,6 +38,7 @@ class UsersInfoRepository extends BaseRepository
         UpdateStatus $user_status,
         UserCluster $select_users,
         UserBenefit $user_benefits,
+        LogsRepository $logs_repo,
         AccessLevelHierarchy $access_level_hierarchy
     ) {
         $this->user_info = $user_info;
@@ -49,6 +51,7 @@ class UsersInfoRepository extends BaseRepository
         $this->user_status = $user_status;
         $this->select_users = $select_users;
         $this->user_benefits = $user_benefits;
+        $this->logs = $logs_repo;
         $this->access_level_hierarchy = $access_level_hierarchy;
         
     } 
@@ -471,6 +474,8 @@ class UsersInfoRepository extends BaseRepository
         $cluster=[];
         $user_benefits=[];
         $benefits=[];
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
         if (!isset($data['id'])) {
             if (!isset($data['firstname'])) {
                $error_array->offsetSet('firstname', "The username field is required.");
@@ -692,18 +697,20 @@ class UsersInfoRepository extends BaseRepository
             }   
             }else{
                 foreach($array as $key => $value ){
+                  
                    
                     $ben['benefit_id'] = $key+1;
                     if($array[$key]==""){
-                        $user_bene['id_number']=NULL;
+                        $ben['id_number']=NULL;
                     }else{
-                        $user_bene['id_number']=$value;
+                        $ben['id_number']=$array[$key];
                     }
                     $ben['user_info_id'] = $user_id;
                     $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
                     array_push($benefits,$user_ben);
                     $user_ben->save();   
             }       
+           
             }
            
             
@@ -724,13 +731,21 @@ class UsersInfoRepository extends BaseRepository
                     ],
                 ]);
             }
+            $logged_data = [
+                "user_id" => $auth->id,
+                "action" => "Create",
+                "affected_data" => $auth->full_name."[".$auth->access->name."] Added a User [".$user_informations->full_name."]"
+            ];
+            $this->logs->logsInputCheck($logged_data);
+    
             return $this->setResponse([
                 "code"       => 200,
                 "title"      => "Successfully ".$action." a User.",
                 "meta"        => [
                     "user_information" => $user_informations,
                     "user" => $users_data,
-                    "benefits" => $benefits
+                    "benefits" => $benefits,
+                    "logs"=>$logged_data
                 ]
             ]);
         }else if (isset($data['id'])) {
@@ -944,6 +959,12 @@ class UsersInfoRepository extends BaseRepository
                     
                 }
                 $action="Updated";
+                $logged_data = [
+                    "user_id" => $auth->id,
+                    "action" => "Create",
+                    "affected_data" => $auth->full_name."[".$auth->access->name."] Updated a User [".$user_information->full_name."]"
+                ];
+                $this->logs->logsInputCheck($logged_data);
                 return $this->setResponse([
                     "code"       => 200,
                     "title"      => "Successfully ".$action." a User.",
@@ -951,7 +972,8 @@ class UsersInfoRepository extends BaseRepository
                         "user_information" => $user_information,
                         "user" => $user_data,
                         "benefits" => $ben,
-                        "hierarchy"=>$hierarchy
+                        "hierarchy"=>$hierarchy,
+                        "logs"=>$logged_data
                     ]
                 ]);
                 }else{
@@ -1017,7 +1039,6 @@ class UsersInfoRepository extends BaseRepository
         }
         
         $user_information = $this->user_data_update->find($data['id']);
-       
         if($user_information){
            // $hashPass=bcrypt($data['password']);
             $user_information['password']=$data['password'];
@@ -1057,6 +1078,8 @@ class UsersInfoRepository extends BaseRepository
     {
         // data validation
         $action=null;
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
        
             if (!isset($data['status'])) {
                 return $this->setResponse([
@@ -1115,12 +1138,19 @@ class UsersInfoRepository extends BaseRepository
                         ],
                     ]);
                 }
+                $logged_data = [
+                    "user_id" => $auth->id,
+                    "action" => "Update",
+                    "affected_data" => $auth->full_name."[".$auth->access->name."] Update a User [".$user_informations->full_name."] Status."
+                ];
+                $this->logs->logsInputCheck($logged_data);
                 return $this->setResponse([
                     "code"       => 200,
                     "title"      => "Successfully ".$action." a User Status.",
                     "meta"        => [
                         "Users" => $Users,
-                        "Status Log" => $status
+                        "Status Log" => $status,
+                        "logs"=>$logged_data
                     ]
                 ]);
                     
@@ -1133,6 +1163,8 @@ class UsersInfoRepository extends BaseRepository
         // data validation
         $action=null;
         $array=$data['user_id'];
+        $auth_id=auth()->user()->id;  
+        $auth = $this->user->find($auth_id);
        $all_users=[];
         foreach ($array as $key => $value) {
             $data['user_id']=$value;          
@@ -1148,12 +1180,6 @@ class UsersInfoRepository extends BaseRepository
                     'title' => "user id is not set.",
                 ]);
             }
-            if (!isset($data['reason'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "reason is not set.",
-                ]);
-            }   
             if (!isset($data['type'])) {
                 return $this->setResponse([
                     'code'  => 500,
@@ -1194,11 +1220,18 @@ class UsersInfoRepository extends BaseRepository
                 }
                 array_push($all_users,$Users);
             }
+                $logged_data = [
+                    "user_id" => $auth->id,
+                    "action" => "Update",
+                    "affected_data" => $auth->full_name."[".$auth->access->name."]  Updated a Users Status."
+                ];
+                $this->logs->logsInputCheck($logged_data);
                 return $this->setResponse([
                     "code"       => 200,
                     "title"      => "Successfully ".$action." a Users Status.",
                     "meta"        => [
-                        "Users" => $all_users
+                        "Users" => $all_users,
+                        "logs"=>$logged_data
                     ]
                 ]);
                     
