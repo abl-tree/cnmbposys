@@ -972,12 +972,12 @@ class AgentScheduleRepository extends BaseRepository
             $end = Carbon::now()->endOfDay();
 
             $data['relations'] = array('schedule' => function ($query) use ($start, $end) {
-                    $query->where([['start_event', '>=', $start], ['end_event', '<=', $end]]);
-                    $query->orWhereHas('overtime_schedule', function ($ot_query) use ($start, $end) {
-                        $ot_query->where('start_event', '>=', $start);
-                        $ot_query->where('end_event', '<=', $end);
-                    });
-                }
+                $query->where([['start_event', '>=', $start], ['end_event', '<=', $end]]);
+                $query->orWhereHas('overtime_schedule', function ($ot_query) use ($start, $end) {
+                    $ot_query->where('start_event', '>=', $start);
+                    $ot_query->where('end_event', '<=', $end);
+                });
+            },
             );
 
             $data['wherehas_by_relations'] = array(
@@ -988,7 +988,7 @@ class AgentScheduleRepository extends BaseRepository
                         $ot_query->where('start_event', '>=', $start);
                         $ot_query->where('end_event', '<', $end);
                     });
-                }
+                },
             );
 
         } else if ($option === 'report') {
@@ -1029,33 +1029,34 @@ class AgentScheduleRepository extends BaseRepository
                     $end = Carbon::parse($parameters['end']);
                     $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
 
-                    $query->where(function($query) use ($parameters, $end){
+                    $query->where(function ($query) use ($parameters, $end) {
                         $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['end_event', '<', $end]]);
-                        $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters, $end) {    
+                        $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters, $end) {
                             $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
                             $ot_query->where('end_event', '<', $end);
                         });
                     });
                 });
-                
-                if(!isset($parameters['userid']))
-                $data['wherehas_by_relations'] = array(
-                    'target' => 'schedule',
-                    'query' => function ($query) use ($parameters) {
-                    $end = Carbon::parse($parameters['end']);
-                    $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
 
-                    $query->where(function($query) use ($parameters, $end){
-                        $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['end_event', '<', $end]]);
-                        $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters) {
+                if (!isset($parameters['userid'])) {
+                    $data['wherehas_by_relations'] = array(
+                        'target' => 'schedule',
+                        'query' => function ($query) use ($parameters) {
                             $end = Carbon::parse($parameters['end']);
-                            $end = $end->addDays(1);
-    
-                            $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
-                            $ot_query->where('end_event', '<', $end);
+                            $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
+
+                            $query->where(function ($query) use ($parameters, $end) {
+                                $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['end_event', '<', $end]]);
+                                $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters) {
+                                    $end = Carbon::parse($parameters['end']);
+                                    $end = $end->addDays(1);
+
+                                    $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
+                                    $ot_query->where('end_event', '<', $end);
+                                });
+                            });
                         });
-                    });
-                });
+                }
 
             } else {
                 return $this->setResponse([
@@ -1070,7 +1071,7 @@ class AgentScheduleRepository extends BaseRepository
             }
 
         }
-
+        $data['relations'][] = 'leaves';
         $data['columns'] = ['users.*'];
         $data['no_all_method'] = true;
 
@@ -1150,8 +1151,8 @@ class AgentScheduleRepository extends BaseRepository
                     "parameters" => $data,
                 ]);
             } else {
-                if(is_numeric($data['conformance'])) {
-                    if($data['conformance'] > 100) {
+                if (is_numeric($data['conformance'])) {
+                    if ($data['conformance'] > 100) {
                         return $this->setResponse([
                             "code" => 500,
                             "title" => "Conformance value must not be greater than 100.",
@@ -1159,7 +1160,7 @@ class AgentScheduleRepository extends BaseRepository
                                 $meta_index => $schedule,
                             ],
                             "parameters" => $data,
-                        ]);     
+                        ]);
                     }
                 }
             }
@@ -1203,7 +1204,7 @@ class AgentScheduleRepository extends BaseRepository
     {
         $meta_index = "agent_schedules";
 
-        if(!isset($data['schedules'])) {
+        if (!isset($data['schedules'])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Parameter schedules is required.",
@@ -1211,7 +1212,7 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
-        if(!is_array($data['schedules'])) {
+        if (!is_array($data['schedules'])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Parameter schedules must be an array of schedule ID.",
@@ -1222,15 +1223,18 @@ class AgentScheduleRepository extends BaseRepository
         $tempScheds = $data['schedules'];
 
         foreach ($tempScheds as $key => $schedule) {
-            if($sched = $this->agent_schedule->find($schedule)) {
-                if($sched->overtime_id) unset($tempScheds[$key]);
+            if ($sched = $this->agent_schedule->find($schedule)) {
+                if ($sched->overtime_id) {
+                    unset($tempScheds[$key]);
+                }
+
             }
         }
 
-        if(!empty($tempScheds)) {
+        if (!empty($tempScheds)) {
             return $this->setResponse([
                 "code" => 500,
-                "title" => "Schedule ID ".implode(',', $tempScheds)." not found or not an overtime schedule.",
+                "title" => "Schedule ID " . implode(',', $tempScheds) . " not found or not an overtime schedule.",
                 "meta" => [
                     $meta_index => $tempScheds,
                 ],
@@ -1252,13 +1256,13 @@ class AgentScheduleRepository extends BaseRepository
                     "parameters" => $data,
                 ]);
             } else {
-                if(is_numeric($data['conformance'])) {
-                    if($data['conformance'] > 100) {
+                if (is_numeric($data['conformance'])) {
+                    if ($data['conformance'] > 100) {
                         return $this->setResponse([
                             "code" => 500,
                             "title" => "Conformance value must not be greater than 100.",
                             "parameters" => $data,
-                        ]);     
+                        ]);
                     }
                 }
             }
