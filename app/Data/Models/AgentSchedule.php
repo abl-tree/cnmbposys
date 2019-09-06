@@ -34,6 +34,7 @@ class AgentSchedule extends BaseModel
         'is_working',
         'break',
         'remaining_time',
+        'leave'
     ];
 
     protected $searchable = [
@@ -272,6 +273,15 @@ class AgentSchedule extends BaseModel
         }
 
         return 'NCNS';
+    }
+
+    public function getLeaveAttribute(){
+        if($this->leave_id){
+            return Leave::find($this->leave_id);
+        }else{
+            return null;
+        }
+
     }
 
     public function getTimeInAttribute()
