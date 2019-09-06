@@ -34,7 +34,7 @@ class AgentSchedule extends BaseModel
         'is_working',
         'break',
         'remaining_time',
-        'leave'
+        'leave',
     ];
 
     protected $searchable = [
@@ -256,11 +256,11 @@ class AgentSchedule extends BaseModel
 
     public function getRemarksAttribute($value)
     {
-        if($this->start_event->isFuture()) {
+        if ($this->start_event->isFuture()) {
             return null;
         }
 
-        if($this->leave_id) {
+        if ($this->leave_id) {
             return "On-Leave";
         }
 
@@ -275,12 +275,9 @@ class AgentSchedule extends BaseModel
         return 'NCNS';
     }
 
-    public function getLeaveAttribute(){
-        if($this->leave_id){
-            return Leave::find($this->leave_id);
-        }else{
-            return null;
-        }
+    public function getLeaveAttribute()
+    {
+        return $this->leave()->find($this->leave_id);
 
     }
 

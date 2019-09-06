@@ -1071,7 +1071,7 @@ class AgentScheduleRepository extends BaseRepository
             }
 
         }
-        $data['relations'][] = 'leaves';
+        // $data['relations'][] = 'leaves';
         $data['columns'] = ['users.*'];
         $data['no_all_method'] = true;
 
