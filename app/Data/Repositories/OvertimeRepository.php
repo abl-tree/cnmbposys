@@ -386,53 +386,71 @@ class OvertimeRepository extends BaseRepository
         return $response;
     }
 
-    public function approveOvertime($data = [])
+    public function approveOvertime($data = [], $option)
     {
-        if (!isset($data['id']) ||
-            !is_numeric($data['id']) ||
-            $data['id'] <= 0) {
+        $meta_index = 'overtime';
+
+        if (!isset($data['schedules'])) {
             return $this->setResponse([
                 'code' => 500,
                 'title' => "Overtime Schedule ID is not set.",
             ]);
         }
 
-        $overtime = $this->agent_schedule->whereHas('overtime_schedule')->where('id', $data['id'])->first();
+        $tempScheds = $data['schedules'];
 
-        if (!$overtime) {
+        foreach ($tempScheds as $key => $schedule) {
+            if ($sched = $this->agent_schedule->find($schedule)) {
+                if ($sched->overtime_id) {
+                    unset($tempScheds[$key]);
+                }
+            }
+        }
+
+        if (!empty($tempScheds)) {
             return $this->setResponse([
-                "code" => 404,
-                "title" => "Overtime schedule not found",
+                "code" => 500,
+                "title" => "Schedule ID " . implode(',', $tempScheds) . " not found or not an overtime schedule.",
+                "meta" => [
+                    $meta_index => $tempScheds,
+                ],
+                "parameters" => $data,
             ]);
         }
 
-        if($overtime->approved_by) {
-            $overtime->approved_by = null;
-        } else $overtime->approved_by = Auth::id();
+        $overtime_sched = [];
 
-        if (!$overtime->save()) {
-            return $this->setResponse([
-                "code" => 500,
-                "message" => "Updating overtime schedule was not successful.",
-                "meta" => [
-                    "errors" => $overtime->errors(),
-                ],
-                "parameters" => [
-                    'schedule_id' => $data['id'],
-                ],
-            ]);
+        foreach ($data['schedules'] as $key => $schedule) {
+            $overtime = $this->agent_schedule->find($schedule);
+
+            if($option === 'delete') {
+                $overtime->approved_by = null;
+            } else $overtime->approved_by = Auth::id();
+    
+            if (!$overtime->save()) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "message" => "Updating overtime schedule was not successful.",
+                    "meta" => [
+                        "errors" => $overtime->errors(),
+                    ],
+                    "parameters" => [
+                        'schedule_id' => $data['id'],
+                    ],
+                ]);
+            }
+
+            $overtime_schedule[] = $overtime;
         }
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Overtime schedule update",
-            "description" => "An overtime schedule was updated.",
+            "title" => "Overtime schedule/s ".($option === 'delete' ? 'disapproved' : 'approved'),
+            "description" => "An overtime schedule/s is/are ".($option === 'delete' ? 'disapproved' : 'approved'),
             "meta" => [
-                "overtime" => $overtime
+                $meta_index => $overtime_schedule
             ],
-            "parameters" => [
-                "schedule_id" => $data['id'],
-            ],
+            "parameters" => $data
         ]);
 
     }

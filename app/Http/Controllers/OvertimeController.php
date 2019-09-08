@@ -130,11 +130,11 @@ class OvertimeController extends BaseController
         return $this->absorb($this->overtime_repo->deleteOvertime($data))->json();
     }
 
-    public function approve($id)
+    public function approve(Request $request, $option = null)
     {
-        $data['id'] = $id;
+        $data = $request->all();
 
-        return $this->absorb($this->overtime_repo->approveOvertime($data))->json();
+        return $this->absorb($this->overtime_repo->approveOvertime($data, $option))->json();
     }
 
     public function searchAgent(Request $request)
