@@ -479,7 +479,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
         }
 
         $count_data = $data;
-        $result = $this->genericSearch($data, $result)->get()->all();
+        $result = $this->genericSearch($data, $result)->get();
+        $count = $result->count();
+        $result = $result->all();
 
         if ($result == null) {
             return $this->setResponse([
@@ -491,8 +493,6 @@ class VoluntaryTimeOutRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-
-        $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
 
         if (!is_array($result)) {
             $result = [
