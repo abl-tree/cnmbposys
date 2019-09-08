@@ -423,7 +423,7 @@ class OvertimeRepository extends BaseRepository
         foreach ($data['schedules'] as $key => $schedule) {
             $overtime = $this->agent_schedule->find($schedule);
 
-            if($option === 'delete') {
+            if($option === 'revert') {
                 $overtime->approved_by = null;
             } else $overtime->approved_by = Auth::id();
     
@@ -445,8 +445,8 @@ class OvertimeRepository extends BaseRepository
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Overtime schedule/s ".($option === 'delete' ? 'disapproved' : 'approved'),
-            "description" => "An overtime schedule/s is/are ".($option === 'delete' ? 'disapproved' : 'approved'),
+            "title" => "Overtime schedule/s ".($option === 'revert' ? 'disapproved' : 'approved'),
+            "description" => "An overtime schedule/s is/are ".($option === 'revert' ? 'disapproved' : 'approved'),
             "meta" => [
                 $meta_index => $overtime_schedule
             ],
