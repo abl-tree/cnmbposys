@@ -355,7 +355,7 @@ class AgentScheduleRepository extends BaseRepository
             ];
         }
 
-        //filter by tl_id id
+        //filter by tl id
         if (isset($data['tl_id'])) {
             $data['wherehas'][] = [
                 'relation' => 'user_info.user.hierarchy',
@@ -366,6 +366,15 @@ class AgentScheduleRepository extends BaseRepository
                     ],
                 ],
             ];
+        }
+
+        //filter by approved_by
+        if (isset($data['approved'])) {
+            if ($data['approved'] == "true") {
+                $data['where_not_null'] = ['approved_by'];
+            } else {
+                $data['where_null'] = ['approved_by'];
+            }
         }
 
         $count_data = $data;
@@ -558,6 +567,15 @@ class AgentScheduleRepository extends BaseRepository
                     ],
                 ],
             ];
+        }
+
+        //filter by approved_by
+        if (isset($data['approved'])) {
+            if ($data['approved'] == "true") {
+                $data['where_not_null'] = ['approved_by'];
+            } else {
+                $data['where_null'] = ['approved_by'];
+            }
         }
 
         if (isset($data['target'])) {
@@ -1197,7 +1215,7 @@ class AgentScheduleRepository extends BaseRepository
             "meta" => [
                 $meta_index => $result,
                 "count" => $result->count(),
-                "summary" => $summary
+                "summary" => $summary,
             ],
             "parameters" => $parameters,
         ]);
