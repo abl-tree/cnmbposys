@@ -5,7 +5,6 @@ namespace App\Data\Repositories;
 use App\Data\Models\BaseModel;
 use Common\Traits\Response;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class BaseRepository
 {
@@ -35,11 +34,11 @@ class BaseRepository
         // Start WHERE clauses
         if (isset($data['where'])) {
             foreach ((array) $data['where'] as $key => $conditions) {
-                if(is_array($conditions['value']) && $conditions['operator'] == '='){
+                if (is_array($conditions['value']) && $conditions['operator'] == '=') {
                     $model = $model->whereIn($conditions['target'], $conditions['value']);
-                }else if(is_array($conditions['value']) && $conditions['operator'] == '!='){
+                } else if (is_array($conditions['value']) && $conditions['operator'] == '!=') {
                     $model = $model->whereNotIn($conditions['target'], $conditions['value']);
-                }else{
+                } else {
                     $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
                 }
             }
@@ -48,11 +47,11 @@ class BaseRepository
         // Start ORWHERE clauses
         if (isset($data['orwhere'])) {
             foreach ((array) $data['orwhere'] as $key => $conditions) {
-                if(is_array($conditions['value']) && $conditions['operator'] == '='){
+                if (is_array($conditions['value']) && $conditions['operator'] == '=') {
                     $model = $model->orWhereIn($conditions['target'], $conditions['value']);
-                }else if(is_array($conditions['value']) && $conditions['operator'] == '!='){
+                } else if (is_array($conditions['value']) && $conditions['operator'] == '!=') {
                     $model = $model->orWhereNotIn($conditions['target'], $conditions['value']);
-                }else{
+                } else {
                     $model = $model->orWhere($conditions['target'], $conditions['operator'], $conditions['value']);
                 }
             }
@@ -65,18 +64,18 @@ class BaseRepository
             }
         }
 
-        if(isset($data['wherehas_by_relations'])) {
-            $model = $model->whereHas( $data['wherehas_by_relations']['target'], $data['wherehas_by_relations']['query'] );
+        if (isset($data['wherehas_by_relations'])) {
+            $model = $model->whereHas($data['wherehas_by_relations']['target'], $data['wherehas_by_relations']['query']);
         }
 
         // Start WHEREHAS clauses
         if (isset($data['wherehas'])) {
             foreach ((array) $data['wherehas'] as $key => $conditions) {
-                $model = $model->whereHas($conditions['relation'], function($q) use ($conditions) {
-                    foreach ($conditions['target'] as $key => $value) {
-                        if(isset($value['operator'])) {
+                $model = $model->whereHas($conditions['relation'], function ($q) use ($conditions) {
+                    foreach ((array) $conditions['target'] as $key => $value) {
+                        if (isset($value['operator'])) {
                             $q->where($value['column'], $value['operator'], $value['value']);
-                        }else {
+                        } else {
                             $q->where($value['column'], $value['value']);
                         }
                     }
@@ -87,7 +86,7 @@ class BaseRepository
         // Start ORWHEREHAS clauses
         if (isset($data['orwherehas'])) {
             foreach ((array) $data['orwherehas'] as $key => $conditions) {
-                $model = $model->orWhereHas($conditions['relation'], function($q) use ($conditions) {
+                $model = $model->orWhereHas($conditions['relation'], function ($q) use ($conditions) {
                     foreach ($conditions['target'] as $key => $value) {
                         $q->where($value['column'], $value['value']);
                     }
@@ -117,16 +116,16 @@ class BaseRepository
             $model = $model->offset($data['offset']);
         }
 
-        if (isset($data['sort']) && !in_array( $data['sort'], $this->no_sort )) {
+        if (isset($data['sort']) && !in_array($data['sort'], $this->no_sort)) {
             $model = $model->orderBy($data["sort"], $data['order']);
         }
 
-        if( isset( $data['with_count'] ) ){
-            $model = $model->withCount( $data['with_count'] );
+        if (isset($data['with_count'])) {
+            $model = $model->withCount($data['with_count']);
         }
 
-        if( isset( $data['relations'] ) ){
-            $model = $model->with( $data['relations'] );
+        if (isset($data['relations'])) {
+            $model = $model->with($data['relations']);
         }
 
         if (isset($data['groupby'])) {
@@ -145,13 +144,13 @@ class BaseRepository
             $result = $model->get()->first();
         } else if (isset($data['no_all_method']) && $data['no_all_method'] === true) {
             $result = $model->get();
-        } else if (isset($data['sort']) && in_array( $data['sort'], $this->no_sort )){
+        } else if (isset($data['sort']) && in_array($data['sort'], $this->no_sort)) {
             $result = $model->get();
 
-            if(in_array( $data['sort'], $this->no_sort )){
-                if(isset($data['order']) && $data['order'] == 'desc'){
+            if (in_array($data['sort'], $this->no_sort)) {
+                if (isset($data['order']) && $data['order'] == 'desc') {
                     $result = $result->sortByDesc($data['sort'])->values()->all();
-                }else{
+                } else {
                     $result = $result->sortBy($data['sort'])->values()->all();
                 }
             }
@@ -185,7 +184,7 @@ class BaseRepository
 
         $data['count'] = true;
 
-        if(isset($data['search']) && $data['search'] == true){
+        if (isset($data['search']) && $data['search'] == true) {
             return $this->genericSearch($data, $model);
         } else {
             return $this->fetchGeneric($data, $model);
@@ -208,34 +207,34 @@ class BaseRepository
     {
 
         $model = $model->where(function ($query) use ($data, $model) {
-            $key=null;
+            $key = null;
             if (isset($data['target'])) {
                 foreach ((array) $data['target'] as $column) {
-                    if(array_key_exists(1, $data['target'])){
-                        $key=json_encode($data['target'][1]);
+                    if (array_key_exists(1, $data['target'])) {
+                        $key = json_encode($data['target'][1]);
                     }
-                   
+
                     if ($query->getModel()->isSearchable($column)) {
-                   
+
                         if (strpos($key, 'firstname') !== false) {
                             if (str_contains($column, ".")) {
                                 $search_components = explode(".", $column);
-    
+
                                 $query = $query->with($search_components[0]);
-    
+
                                 $query = $query->orWhereHas($search_components[0], function ($q) use ($data, $column, $search_components) {
                                     $q->whereRaw("CONCAT(firstname,' ',middlename,' ',lastname) like ?", ["%{$data['query']}%"])->orWhereRaw("CONCAT(firstname,' ',lastname) like ?", ["%{$data['query']}%"]);
                                 });
-                            }else{
-                                try { 
+                            } else {
+                                try {
                                     $query = $query->whereRaw("CONCAT(firstname,' ',middlename,' ',lastname) like ?", ["%{$data['query']}%"])->orWhereRaw("CONCAT(firstname,' ',lastname) like ?", ["%{$data['query']}%"]);
-                                  } catch(\Illuminate\Database\QueryException $ex){ 
-                                    echo($ex->getMessage()); 
-                                 
-                                  }   
+                                } catch (\Illuminate\Database\QueryException $ex) {
+                                    echo ($ex->getMessage());
+
+                                }
                             }
-                           
-                            } else if (str_contains($column, ".")) {
+
+                        } else if (str_contains($column, ".")) {
                             $search_components = explode(".", $column);
 
                             $query = $query->with($search_components[0]);
@@ -244,12 +243,11 @@ class BaseRepository
                                 $q->where($search_components[1], "LIKE", $this->generateSearchTerm($data, $column));
                             });
                         } else {
-                           
-                                                    
+
                             $query = $query->orWhere($column, "LIKE", $this->generateSearchTerm($data, $column));
                         }
                     }
-                   
+
                 }
             }
 
@@ -260,16 +258,31 @@ class BaseRepository
             }
 
         });
-        
+
         if (isset($data['where'])) {
             foreach ((array) $data['where'] as $key => $conditions) {
-                if(is_array($conditions['value']) && $conditions['operator'] == '='){
+                if (is_array($conditions['value']) && $conditions['operator'] == '=') {
                     $model = $model->whereIn($conditions['target'], $conditions['value']);
-                }else if(is_array($conditions['value']) && $conditions['operator'] == '!='){
+                } else if (is_array($conditions['value']) && $conditions['operator'] == '!=') {
                     $model = $model->whereNotIn($conditions['target'], $conditions['value']);
-                }else{
+                } else {
                     $model = $model->where($conditions['target'], $conditions['operator'], $conditions['value']);
                 }
+            }
+        }
+
+        // Start WHEREHAS clauses
+        if (isset($data['wherehas'])) {
+            foreach ((array) $data['wherehas'] as $key => $conditions) {
+                $model = $model->whereHas($conditions['relation'], function ($q) use ($conditions) {
+                    foreach ((array) $conditions['target'] as $key => $value) {
+                        if (isset($value['operator'])) {
+                            $q->where($value['column'], $value['operator'], $value['value']);
+                        } else {
+                            $q->where($value['column'], $value['value']);
+                        }
+                    }
+                });
             }
         }
 
@@ -288,12 +301,12 @@ class BaseRepository
             $model = $model->offset($data['offset']);
         }
 
-        if (isset($data['sort']) && !in_array( $data['sort'], $this->no_sort )) {
+        if (isset($data['sort']) && !in_array($data['sort'], $this->no_sort)) {
             $model = $model->orderBy($data["sort"], $data['order']);
         }
 
-        if( isset( $data['relations'] ) ){
-            $model = $model->with( $data['relations'] );
+        if (isset($data['relations'])) {
+            $model = $model->with($data['relations']);
         }
 
         // dd( dump_query ( $model) );
