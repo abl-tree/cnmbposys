@@ -61,7 +61,7 @@ Route::group([
         ], function () {
 
             Route::get("/", "VoluntaryTimeOutController@all");
-            Route::post("create/{id}", "VoluntaryTimeOutController@create");
+            Route::post("create/{option?}", "VoluntaryTimeOutController@create");
             Route::get('search', 'VoluntaryTimeOutController@search');
 
         });
@@ -75,7 +75,7 @@ Route::group([
             Route::post('join', 'OvertimeController@store');
             Route::post("create/bulk", "OvertimeController@bulkScheduleInsertion");
             Route::post('delete/{overtime_id}', 'OvertimeController@delete');
-            Route::post('approve/{overtime_id}', 'OvertimeController@approve');
+            Route::post('approve/{option?}', 'OvertimeController@approve');
             Route::get('search', 'OvertimeController@search');
 
         });

@@ -42,10 +42,9 @@ class VoluntaryTimeOutController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request, $id)
+    public function create(Request $request, $option = null)
     {
-
-        return $this->absorb($this->vto_repo->defineVto($id, $request->all()))->json();
+        return $this->absorb($this->vto_repo->defineVto($request->all(), $option))->json();
     }
 
     /**

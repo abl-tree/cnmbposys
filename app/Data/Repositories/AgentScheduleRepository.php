@@ -1021,7 +1021,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $result = $this->user;
 
-        $meta_index = "agents";
+        $meta_index = "agent_schedules";
 
         $sparkline = array();
 
@@ -1177,12 +1177,27 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
+        $summary = [
+            'ncns' => 0,
+            'leave' => 0,
+            'present' => 0,
+            'absent' => 0,
+        ];
+
+        foreach ($result as $key => $value) {
+            $summary['ncns'] += $value->summary['ncns'];
+            $summary['leave'] += $value->summary['leave'];
+            $summary['present'] += $value->summary['present'];
+            $summary['absent'] += $value->summary['absent'];
+        }
+
         return $this->setResponse([
             "code" => 200,
             "title" => $title,
             "meta" => [
                 $meta_index => $result,
                 "count" => $result->count(),
+                "summary" => $summary
             ],
             "parameters" => $parameters,
         ]);
