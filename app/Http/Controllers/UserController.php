@@ -152,6 +152,11 @@ class UserController extends BaseController
         $data = $request->all();
         return $this->absorb($this->user_info->updateStatus($data))->json();
     }
+    public function statuslogs(Request $request)
+    {       
+        $data = $request->all();
+        return $this->absorb($this->user_status->statuslogs($data))->json();
+    }
     public function addStatus(Request $request)
     {       
         $data = $request->all();

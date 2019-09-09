@@ -4,6 +4,7 @@ namespace App\Data\Repositories;
 use App\Data\Models\UserInfo;
 use App\User;
 use App\Data\Models\UserStatus;
+use App\Data\Models\UpdateStatus;
 use App\Data\Repositories\BaseRepository;
 
 class UserStatusRepository extends BaseRepository
@@ -12,14 +13,17 @@ class UserStatusRepository extends BaseRepository
     protected 
         $user_info,
         $user,
+        $update_status,
         $user_status;
 
     public function __construct(
         UserInfo $user_info,
-        UserStatus $user_status
+        UserStatus $user_status,
+        UpdateStatus $update_status
     ) {
         $this->user_info = $user_info;
         $this->user_status = $user_status;
+        $this->update_status = $update_status;
     } 
 
     public function getStatus($data = [])
@@ -74,6 +78,57 @@ class UserStatusRepository extends BaseRepository
         ]);
     }
 
+    public function statuslogs($data = [])
+    {
+        $meta_index = "metadata";
+        $parameters = [];
+        $count      = 0;
+        if (isset($data['user_id'])) {
+
+            $meta_index     = "metadata";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "user_id",
+                    "operator" => "=",
+                    "value"    => $data['user_id'],
+                ],
+            ];
+
+            //$parameters['user_id'] = $data['id'];
+
+        }
+        $count_data = $data;
+        //$data['relations'] = ["user_logs","accesslevelhierarchy"];        
+        $count_data = $data;    
+        $result = $this->fetchGeneric($data, $this->update_status);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No status are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+       
+        $count = $this->countData($count_data, refresh_model($this->update_status->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved status logs",
+            "description"=>"maoni",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "count"     => $count,
+            //"parameters" => $data['user_id'],
+            
+        ]);
+    }
     public function addStatus($data = [])
     {
         // data validation

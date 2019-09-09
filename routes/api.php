@@ -274,6 +274,7 @@ Route::group([
         Route::get("access_levels", "UserController@accessLevel");
         Route::get("status_list", "UserController@statusList");
         Route::get("cluster/{id}", "UserController@getCluster");
+        Route::get("status_logs", "UserController@statuslogs");
         Route::post("change_status", "UserController@updateStatus");
         Route::post("add_user_status", "UserController@addStatus");
         Route::post("bulk_change_status", "UserController@bulkUpdateStatus");
