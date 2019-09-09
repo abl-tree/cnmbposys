@@ -346,6 +346,28 @@ class AgentScheduleRepository extends BaseRepository
 
         }
 
+        //filter by overtime id
+        if (isset($data['overtime_id'])) {
+            $data['where'][] = [
+                "target" => "overtime_id",
+                "operator" => "=",
+                "value" => $data['overtime_id'],
+            ];
+        }
+
+        //filter by tl_id id
+        if (isset($data['tl_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'user_info.user.hierarchy',
+                'target' => [
+                    [
+                        'column' => 'parent_id',
+                        'value' => $data['tl_id'],
+                    ],
+                ],
+            ];
+        }
+
         $count_data = $data;
 
         $data['relations'] = ['user_info.user', 'title', 'leave'];
@@ -375,6 +397,21 @@ class AgentScheduleRepository extends BaseRepository
             $value->team_leader = $value->user_info->user->team_leader;
             $value->operations_manager = $value->user_info->user->operations_manager;
             unset($value->user_info->user);
+
+            /**
+             * TO BE REWORKED (BINISAYA)
+             */
+
+            //filter by om_id
+            if (isset($data['om_id'])) {
+                if (
+                    !isset($value->operations_manager['id']) ||
+                    $data['om_id'] != $value->operations_manager['id']
+                ) {
+                    unset($result[$key]);
+                    $count--;
+                };
+            }
         }
 
         return $this->setResponse([
@@ -439,8 +476,12 @@ class AgentScheduleRepository extends BaseRepository
 
             $data['wherehas'][] = [
                 'relation' => 'leaves',
-                'target' => 'status',
-                'value' => $data['leave_status'],
+                'target' => [
+                    [
+                        'column' => 'status',
+                        'value' => $data['leave_status'],
+                    ],
+                ],
             ];
         }
 
@@ -496,6 +537,28 @@ class AgentScheduleRepository extends BaseRepository
             "query" => $data['query'],
         ];
         $data['relations'] = ['user_info.user', 'title', 'leave'];
+
+        //filter by overtime id
+        if (isset($data['overtime_id'])) {
+            $data['where'][] = [
+                "target" => "overtime_id",
+                "operator" => "=",
+                "value" => $data['overtime_id'],
+            ];
+        }
+
+        //filter by tl_id
+        if (isset($data['tl_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'user_info.user.hierarchy',
+                'target' => [
+                    [
+                        'column' => 'parent_id',
+                        'value' => $data['tl_id'],
+                    ],
+                ],
+            ];
+        }
 
         if (isset($data['target'])) {
             foreach ((array) $data['target'] as $index => $column) {

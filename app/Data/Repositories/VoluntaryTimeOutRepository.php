@@ -433,12 +433,39 @@ class VoluntaryTimeOutRepository extends BaseRepository
         $meta_index = "agent_schedules";
 
         $parameters = [
-            "query" => $data['query'],
+            "query" => (isset($data['query'])) ? $data['query'] : null,
         ];
 
         $data['relations'] = ['user_info.user', 'title'];
 
         $data['where_not_null'] = ['vto_at'];
+
+        if(isset($data['timestamp'])) {
+            // data validation
+    
+            $validator = Validator::make($data,[
+                'timestamp' => 'required|date|date_format:Y-m-d'
+            ], [
+                'timestamp.date_format' => "The timestamp does not match the format YYYY-MM-DD."
+            ]);
+            
+            if($validator->fails()) {
+                $errors = $validator->errors();
+                $errorText = "";
+
+                foreach ($errors->all() as $message) {
+                    $errorText .= $message;
+                }
+
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => $errorText,
+                    'parameters' => $data
+                ]);
+            }
+
+            $result = $result->whereDate('vto_at', $data['timestamp']);
+        }
 
         if (isset($data['target'])) {
             foreach ((array) $data['target'] as $index => $column) {
@@ -452,7 +479,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
         }
 
         $count_data = $data;
-        $result = $this->genericSearch($data, $result)->get()->all();
+        $result = $this->genericSearch($data, $result)->get();
+        $count = $result->count();
+        $result = $result->all();
 
         if ($result == null) {
             return $this->setResponse([
@@ -464,8 +493,6 @@ class VoluntaryTimeOutRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-
-        $count = $this->countData($count_data, refresh_model($this->agent_schedule->getModel()));
 
         if (!is_array($result)) {
             $result = [
