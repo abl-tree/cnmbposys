@@ -397,6 +397,21 @@ class AgentScheduleRepository extends BaseRepository
             $value->team_leader = $value->user_info->user->team_leader;
             $value->operations_manager = $value->user_info->user->operations_manager;
             unset($value->user_info->user);
+
+            /**
+             * TO BE REWORKED (BINISAYA)
+             */
+
+            //filter by om_id
+            if (isset($data['om_id'])) {
+                if (
+                    !isset($value->operations_manager['id']) ||
+                    $data['om_id'] != $value->operations_manager['id']
+                ) {
+                    unset($result[$key]);
+                    $count--;
+                };
+            }
         }
 
         return $this->setResponse([
