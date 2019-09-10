@@ -57,6 +57,13 @@ class BaseRepository
             }
         }
 
+        // Start WHERENULL clauses
+        if (isset($data['where_null'])) {
+            foreach ((array) $data['where_null'] as $key => $conditions) {
+                $model = $model->whereNull($conditions);
+            }
+        }
+
         // Start WHERENOTNULL clauses
         if (isset($data['where_not_null'])) {
             foreach ((array) $data['where_not_null'] as $key => $conditions) {
@@ -283,6 +290,13 @@ class BaseRepository
                         }
                     }
                 });
+            }
+        }
+
+        // Start WHERENULL clauses
+        if (isset($data['where_null'])) {
+            foreach ((array) $data['where_null'] as $key => $conditions) {
+                $model = $model->whereNull($conditions);
             }
         }
 

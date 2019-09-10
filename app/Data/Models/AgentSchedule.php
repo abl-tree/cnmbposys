@@ -24,6 +24,7 @@ class AgentSchedule extends BaseModel
 
     protected $appends = [
         'date',
+        'user_status',
         'regular_hours',
         'rendered_hours',
         'vto_hours',
@@ -35,6 +36,7 @@ class AgentSchedule extends BaseModel
         'break',
         'remaining_time',
         'leave',
+        
     ];
 
     protected $searchable = [
@@ -59,8 +61,8 @@ class AgentSchedule extends BaseModel
         'end_event' => 'sometimes|required|date',
     ];
 
-    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
-
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at','user'];
+   
     public function getStartEventAttribute($value)
     {
         return Carbon::parse($this->overtime_schedule ? $this->overtime_schedule->start_event : $value);
@@ -75,6 +77,50 @@ class AgentSchedule extends BaseModel
     {
         return $value ? Carbon::parse($value) : null;
     }
+
+    public function getUserstatusAttribute()
+    {
+            $data=null;
+            $dates=[];
+            foreach ($this->user as $key => $value) {
+                if($value->hired_date!=null){
+                    array_push($dates,date("Y-m-d", strtotime($value->hired_date)));
+                }else{
+                    array_push($dates,date("Y-m-d", strtotime($value->separation_date)));
+                }
+            }
+   
+                foreach($dates as $day)
+                {
+                    if( strtotime($this->date['ymd']) >= strtotime($day) ) {
+                    //$interval[$count] = abs(strtotime($date) - strtotime($day));
+                    $interval[] = abs(strtotime( $this->date['ymd']) - strtotime($day));
+                    //$count++;
+                    }
+                }
+
+                asort($interval);
+                $closest = key($interval);
+                foreach ($this->user as $key => $value) {
+                    if(date("Y-m-d", strtotime($value->hired_date))==$dates[$closest]){
+                       return array(
+                        'hired_date' => $value->hired_date,
+                        'status' => $value->status,
+                        'type' => $value->type,
+                    );
+                    }else if(date("Y-m-d", strtotime($value->separation_date))==$dates[$closest]){
+                        return array(
+                            'hired_date' => $value->separation_date,
+                            'status' => $value->status,
+                            'type' => $value->type,
+                        );
+                    }
+                }
+              //  return $dates[$closest];
+         //  return  $this->date['ymd'];
+       
+    }
+
 
     public function getConformanceAttribute($value)
     {
@@ -403,6 +449,8 @@ class AgentSchedule extends BaseModel
         return $this->belongsTo('App\Data\Models\OvertimeSchedule', "overtime_id");
     }
 
+   
+
     public function title()
     {
         return $this->hasOne('App\Data\Models\EventTitle', "id", "title_id");
@@ -411,5 +459,8 @@ class AgentSchedule extends BaseModel
     public function leave()
     {
         return $this->hasOne('App\Data\Models\Leave', "id", "leave_id");
+    }
+     public function user() {
+        return $this->hasMany('App\Data\Models\UpdateStatus', 'user_id','user_id');
     }
 }
