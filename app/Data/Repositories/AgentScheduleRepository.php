@@ -1106,6 +1106,38 @@ class AgentScheduleRepository extends BaseRepository
 
                 }
 
+                if(isset($data['tl_id']) && isset($data['om_id'])) {
+                    $result = $result->where(function($q) use ($data) {
+                        $q->whereHas('hierarchy', function($q) use ($data) {
+                            $q->where('parent_id', $data['tl_id']);
+                        });
+                        $q->whereHas('hierarchy', function($q) use ($data) {
+                            $q->where('parent_id', $data['tl_id']);
+                            $q->whereHas('parentInfo', function($q) use ($data) {
+                                $q->whereHas('accesslevelhierarchy', function($q) use ($data) {
+                                    $q->where('parent_id', $data['om_id']);
+                                });
+                            });
+                        });
+                    });
+                } else if(isset($data['tl_id'])) {
+                    $result = $result->where(function($q) use ($data) {
+                        $q->whereHas('hierarchy', function($q) use ($data) {
+                            $q->where('parent_id', $data['tl_id']);
+                        });
+                    });
+                } else if(isset($data['om_id'])) {
+                    $result = $result->where(function($q) use ($data) {
+                        $q->whereHas('hierarchy', function($q) use ($data) {
+                            $q->whereHas('parentInfo', function($q) use ($data) {
+                                $q->whereHas('accesslevelhierarchy', function($q) use ($data) {
+                                    $q->where('parent_id', $data['om_id']);
+                                });
+                            });
+                        });
+                    });
+                }
+
                 $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);
                     $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
