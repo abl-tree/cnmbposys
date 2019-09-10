@@ -25,6 +25,7 @@ class User extends BaseAuthModel
         'has_schedule',
         'calendar',
         'summary',
+        'access_hierarchy'
     ];
 
     /**
@@ -303,6 +304,15 @@ class User extends BaseAuthModel
                 'year' => $this->conformance('year'),
             ],
         );
+    }
+
+    public function getAccessHierarchyAttribute(){
+        $result = AccessLevelHierarchy::where("child_id",$this->id)->get()->first();
+        if($result){
+            return $result;
+        }else{
+            return [];
+        }
     }
 
     public function remainingTimeSummary()
