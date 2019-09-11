@@ -99,9 +99,7 @@ class AgentSchedule extends BaseModel
                     //$count++;
                     }
                 }
-               // return $interval;  
-                if(isset($interval)){
-                    return "Not Yet Hired ";  
+                if(count($interval) != 0){
                 asort($interval);
                 $closest = key($interval);
                 foreach ($this->user as $key => $value) {
@@ -120,7 +118,7 @@ class AgentSchedule extends BaseModel
                     }
                 }
                 }else{
-                    return "Not Yet Hired sa ubos ";  
+                    return "Not Yet Hired ";  
                 }
                 
               //  return $dates[$closest];
