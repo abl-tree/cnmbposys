@@ -99,6 +99,7 @@ class AgentSchedule extends BaseModel
                     //$count++;
                     }
                 }
+                return $interval;  
                 if($interval!=""||$interval!=null||$interval!='[]'){
                     return "Not Yet Hired ";  
                 asort($interval);
