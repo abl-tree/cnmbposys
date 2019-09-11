@@ -99,19 +99,19 @@ class AgentSchedule extends BaseModel
                     //$count++;
                     }
                 }
-                if($interval!=[]||$interval!=null||$interval!='[]'){
-                    asort($interval);
+                if($interval!=""||$interval!=null||$interval!='[]'){
+                asort($interval);
                 $closest = key($interval);
                 foreach ($this->user as $key => $value) {
                     if(date("Y-m-d", strtotime($value->hired_date))==$dates[$closest]){
                        return array(
-                        'hired_date' => $value->hired_date,
+                        'hired_date' => date("Y-m-d", strtotime($value->hired_date)),
                         'status' => $value->status,
                         'type' => $value->type,
                     );
                     }else if(date("Y-m-d", strtotime($value->separation_date))==$dates[$closest]){
                         return array(
-                            'hired_date' => $value->separation_date,
+                            'hired_date' => date("Y-m-d", strtotime($value->separation_date)),
                             'status' => $value->status,
                             'type' => $value->type,
                         );
