@@ -99,8 +99,8 @@ class AgentSchedule extends BaseModel
                     //$count++;
                     }
                 }
-                return $interval;  
-                if($interval!=""||$interval!=null||$interval!='[]'){
+               // return $interval;  
+                if(isset($interval)){
                     return "Not Yet Hired ";  
                 asort($interval);
                 $closest = key($interval);
@@ -120,7 +120,7 @@ class AgentSchedule extends BaseModel
                     }
                 }
                 }else{
-                    return "Not Yet Hired ";  
+                    return "Not Yet Hired sa ubos ";  
                 }
                 
               //  return $dates[$closest];
