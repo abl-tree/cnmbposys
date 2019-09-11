@@ -82,6 +82,7 @@ class AgentSchedule extends BaseModel
     {
             $data=null;
             $dates=[];
+            $interval=[];
             foreach ($this->user as $key => $value) {
                 if($value->hired_date!=null){
                     array_push($dates,date("Y-m-d", strtotime($value->hired_date)));
@@ -94,11 +95,13 @@ class AgentSchedule extends BaseModel
                 {
                     if( strtotime($this->date['ymd']) >= strtotime($day) ) {
                     //$interval[$count] = abs(strtotime($date) - strtotime($day));
-                    $interval[] = abs(strtotime( $this->date['ymd']) - strtotime($day));
+                     array_push($interval,abs(strtotime( $this->date['ymd']) - strtotime($day)));
                     //$count++;
                     }
                 }
-
+                return array(
+                    'hired_date' => $interval
+                );
                 asort($interval);
                 $closest = key($interval);
                 foreach ($this->user as $key => $value) {
