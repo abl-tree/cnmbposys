@@ -100,6 +100,7 @@ class AgentSchedule extends BaseModel
                     }
                 }
                 if($interval!=""||$interval!=null||$interval!='[]'){
+                    return "Not Yet Hired ";  
                 asort($interval);
                 $closest = key($interval);
                 foreach ($this->user as $key => $value) {
