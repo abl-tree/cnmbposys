@@ -357,14 +357,19 @@ class AgentScheduleRepository extends BaseRepository
 
         //filter by tl id
         if (isset($data['tl_id'])) {
-            $data['wherehas'][] = [
-                'relation' => 'user_info.user.hierarchy',
-                'target' => [
-                    [
-                        'column' => 'parent_id',
-                        'value' => $data['tl_id'],
-                    ],
-                ],
+            $data['where'][] = [
+                "target" => "tl_id",
+                "operator" => "=",
+                "value" => $data['tl_id'],
+            ];
+        }
+
+        //filter by om id
+        if (isset($data['om_id'])) {
+            $data['where'][] = [
+                "target" => "om_id",
+                "operator" => "=",
+                "value" => $data['om_id'],
             ];
         }
 
@@ -379,7 +384,7 @@ class AgentScheduleRepository extends BaseRepository
 
         $count_data = $data;
 
-        $data['relations'] = ['user_info.user', 'title', 'leave'];
+        $data['relations'] = ['user_info.user', 'tl_info.user', 'om_info.user', 'title', 'leave'];
 
         $result = $this->fetchGeneric($data, $this->agent_schedule);
 
@@ -402,26 +407,11 @@ class AgentScheduleRepository extends BaseRepository
             ];
         }
 
-        foreach ($result as $key => $value) {
-            $value->team_leader = $value->user_info->user->team_leader;
-            $value->operations_manager = $value->user_info->user->operations_manager;
-            unset($value->user_info->user);
-
-            /**
-             * TO BE REWORKED (BINISAYA)
-             */
-
-            //filter by om_id
-            if (isset($data['om_id'])) {
-                if (
-                    !isset($value->operations_manager['id']) ||
-                    $data['om_id'] != $value->operations_manager['id']
-                ) {
-                    unset($result[$key]);
-                    $count--;
-                };
-            }
-        }
+        // foreach ($result as $key => $value) {
+        //     $value->team_leader = $value->user_info->user->team_leader;
+        //     $value->operations_manager = $value->user_info->user->operations_manager;
+        //     unset($value->user_info->user);
+        // }
 
         return $this->setResponse([
             "code" => 200,
@@ -545,7 +535,7 @@ class AgentScheduleRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
-        $data['relations'] = ['user_info.user', 'title', 'leave'];
+        $data['relations'] = ['user_info.user', 'tl_info.user', 'om_info.user', 'title', 'leave'];
 
         //filter by overtime id
         if (isset($data['overtime_id'])) {
@@ -556,16 +546,21 @@ class AgentScheduleRepository extends BaseRepository
             ];
         }
 
-        //filter by tl_id
+        //filter by tl id
         if (isset($data['tl_id'])) {
-            $data['wherehas'][] = [
-                'relation' => 'user_info.user.hierarchy',
-                'target' => [
-                    [
-                        'column' => 'parent_id',
-                        'value' => $data['tl_id'],
-                    ],
-                ],
+            $data['where'][] = [
+                "target" => "tl_id",
+                "operator" => "=",
+                "value" => $data['tl_id'],
+            ];
+        }
+
+        //filter by om id
+        if (isset($data['om_id'])) {
+            $data['where'][] = [
+                "target" => "om_id",
+                "operator" => "=",
+                "value" => $data['om_id'],
             ];
         }
 
@@ -615,11 +610,11 @@ class AgentScheduleRepository extends BaseRepository
             ];
         }
 
-        foreach ($result as $key => $value) {
-            $value->team_leader = $value->user_info->user->team_leader;
-            $value->operations_manager = $value->user_info->user->operations_manager;
-            unset($value->user_info->user);
-        }
+        // foreach ($result as $key => $value) {
+        //     $value->team_leader = $value->user_info->user->team_leader;
+        //     $value->operations_manager = $value->user_info->user->operations_manager;
+        //     unset($value->user_info->user);
+        // }
 
         return $this->setResponse([
             "code" => 200,
