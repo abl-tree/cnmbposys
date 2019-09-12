@@ -66,6 +66,10 @@ class Leave extends BaseModel
     {
         return $this->hasMany('\App\Data\Models\LeaveCredit', 'user_id', 'user_id');
     }
+    public function schedule()
+    {
+        return $this->belongsTo('\App\Data\Models\AgentSchedule', 'id', 'leave_id');
+    }
 
     /**
      * Accessors

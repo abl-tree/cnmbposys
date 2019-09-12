@@ -311,6 +311,17 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
+        //fetch raw  agent schedules affected by the leave (query builder format)
+        $raw_schedules = refresh_model($this->agent_schedule->getModel())
+            ->where('user_id', $leave->user_id)
+            ->where('start_event', '>=', $leave->start_event)
+            ->where('end_event', '<=', $leave->end_event);
+
+        //update agent schedules
+        $raw_schedules->update([
+            'leave_id' => $leave->id,
+        ]);
+
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined a leave.",
@@ -478,6 +489,48 @@ class LeaveRepository extends BaseRepository
             ];
         }
 
+        //filter by date range
+        if (isset($data['start_date'])) {
+            $data['where'][] = [
+                "target" => "start_event",
+                "operator" => ">=",
+                "value" => $data['start_date'],
+            ];
+        }
+
+        if (isset($data['end_date'])) {
+            $data['where'][] = [
+                "target" => "start_event",
+                "operator" => "<=",
+                "value" => $data['end_date'],
+            ];
+        }
+
+        //filter by tl id
+        if (isset($data['tl_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'schedule',
+                'target' => [
+                    [
+                        'column' => 'tl_id',
+                        'value' => $data['tl_id'],
+                    ],
+                ],
+            ];
+        }
+
+        //filter by om id
+        if (isset($data['om_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'schedule',
+                'target' => [
+                    [
+                        'column' => 'om_id',
+                        'value' => $data['om_id'],
+                    ],
+                ],
+            ];
+        }
         /**
          * Set access level filter
          * (to be reworked)
@@ -583,6 +636,49 @@ class LeaveRepository extends BaseRepository
         //set relations
         $data['relations'][] = 'user';
         $data['relations'][] = 'leave_credits';
+
+        //filter by date range
+        if (isset($data['start_date'])) {
+            $data['where'][] = [
+                "target" => "start_event",
+                "operator" => ">=",
+                "value" => $data['start_date'],
+            ];
+        }
+
+        if (isset($data['end_date'])) {
+            $data['where'][] = [
+                "target" => "start_event",
+                "operator" => "<=",
+                "value" => $data['end_date'],
+            ];
+        }
+
+        //filter by tl id
+        if (isset($data['tl_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'schedule',
+                'target' => [
+                    [
+                        'column' => 'tl_id',
+                        'value' => $data['tl_id'],
+                    ],
+                ],
+            ];
+        }
+
+        //filter by om id
+        if (isset($data['om_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'schedule',
+                'target' => [
+                    [
+                        'column' => 'om_id',
+                        'value' => $data['om_id'],
+                    ],
+                ],
+            ];
+        }
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
