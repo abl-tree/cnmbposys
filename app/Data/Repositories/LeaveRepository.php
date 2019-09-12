@@ -66,7 +66,6 @@ class LeaveRepository extends BaseRepository
          * Check if slots for leave approval are still available
          */
         if (
-            $data['user_access'] == 15 &&
             strtolower($data['status']) == "approved" &&
             (strtolower($leave->leave_type) == "sick_leave" || strtolower($leave->leave_type) == "vacation_leave")
         ) {
@@ -483,41 +482,41 @@ class LeaveRepository extends BaseRepository
          * Set access level filter
          * (to be reworked)
          */
-        if ($data['user_access'] == 15) {
-            $data['where'][] = [
-                "target" => "allowed_access",
-                "operator" => ">=",
-                "value" => 15,
-            ];
-            $data['where'][] = [
-                "target" => "allowed_access",
-                "operator" => "<=",
-                "value" => 17,
-            ];
-        } else if ($data['user_access'] >= 12 && $data['user_access'] <= 14) {
-            $data['where'][] = [
-                "target" => "allowed_access",
-                "operator" => ">=",
-                "value" => 12,
-            ];
-            $data['where'][] = [
-                "target" => "allowed_access",
-                "operator" => "<=",
-                "value" => 14,
-            ];
-        } else if ($data['user_access'] <= 3) {
-            $data['where'][] = [
-                "target" => "allowed_access",
-                "operator" => ">",
-                "value" => 0,
-            ];
-        } else {
-            $data['where'][] = [
-                "target" => "allowed_access",
-                "operator" => "=",
-                "value" => $data['user_access'],
-            ];
-        }
+        // if ($data['user_access'] == 15) {
+        //     $data['where'][] = [
+        //         "target" => "allowed_access",
+        //         "operator" => ">=",
+        //         "value" => 15,
+        //     ];
+        //     $data['where'][] = [
+        //         "target" => "allowed_access",
+        //         "operator" => "<=",
+        //         "value" => 17,
+        //     ];
+        // } else if ($data['user_access'] >= 12 && $data['user_access'] <= 14) {
+        //     $data['where'][] = [
+        //         "target" => "allowed_access",
+        //         "operator" => ">=",
+        //         "value" => 12,
+        //     ];
+        //     $data['where'][] = [
+        //         "target" => "allowed_access",
+        //         "operator" => "<=",
+        //         "value" => 14,
+        //     ];
+        // } else if ($data['user_access'] <= 3) {
+        //     $data['where'][] = [
+        //         "target" => "allowed_access",
+        //         "operator" => ">",
+        //         "value" => 0,
+        //     ];
+        // } else {
+        //     $data['where'][] = [
+        //         "target" => "allowed_access",
+        //         "operator" => "=",
+        //         "value" => $data['user_access'],
+        //     ];
+        // }
 
         $count_data = $data;
 
