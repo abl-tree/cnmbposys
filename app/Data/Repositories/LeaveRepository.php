@@ -167,6 +167,9 @@ class LeaveRepository extends BaseRepository
                 'value' => $leave_credits->value - $credits_needed,
             ]);
 
+        }
+
+        if (strtolower($data['status']) == "approved") {
             //fetch raw  agent schedules affected by the leave (query builder format)
             $raw_schedules = refresh_model($this->agent_schedule->getModel())
                 ->where('user_id', $leave->user_id)
@@ -191,7 +194,6 @@ class LeaveRepository extends BaseRepository
                         'is_leave' => 1,
                     ]);
             }
-
         }
 
         return $this->defineLeave([

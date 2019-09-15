@@ -7,6 +7,7 @@ ini_set('memory_limit', '-1');
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\EventTitle;
+use App\Data\Models\Leave;
 use App\Data\Models\OvertimeSchedule;
 use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
@@ -28,6 +29,7 @@ class AgentScheduleRepository extends BaseRepository
     $user_info,
     $event_title,
     $excel_date,
+    $leave,
     $logs,
     $access_level_repo,
     $clusters,
@@ -43,7 +45,8 @@ class AgentScheduleRepository extends BaseRepository
         ClusterRepository $cluster,
         LogsRepository $logs_repo,
         NotificationRepository $notificationRepository,
-        OvertimeSchedule $overtimeSchedule
+        OvertimeSchedule $overtimeSchedule,
+        Leave $leave
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
@@ -54,6 +57,7 @@ class AgentScheduleRepository extends BaseRepository
         $this->clusters = $cluster;
         $this->notification_repo = $notificationRepository;
         $this->overtime_schedule = $overtimeSchedule;
+        $this->leave = $leave;
     }
 
     public function excelData($data)
@@ -278,6 +282,18 @@ class AgentScheduleRepository extends BaseRepository
             ];
             $this->clusters->defineCluster($arr);
 
+        }
+
+        //leave checker
+        $leave = $this->leave->where('user_id', $agent_schedule->user_id)
+            ->where('start_event', '>=', $agent_schedule->start_event)
+            ->where('end_event', '<=', $agent_schedule->end_event)
+            ->first();
+
+        if ($leave) {
+            $agent_schedule->update([
+                'leave_id' => $leave->id,
+            ]);
         }
 
         return $this->setResponse([
@@ -1101,41 +1117,41 @@ class AgentScheduleRepository extends BaseRepository
 
                 }
 
-                if(isset($data['tl_id']) && isset($data['om_id'])) {
-                    $result = $result->where(function($q) use ($data) {
-                        if(isset($data['operator']) && $data['operator'] === 'or') {
-                            $q->whereHas('hierarchy', function($q) use ($data) {
+                if (isset($data['tl_id']) && isset($data['om_id'])) {
+                    $result = $result->where(function ($q) use ($data) {
+                        if (isset($data['operator']) && $data['operator'] === 'or') {
+                            $q->whereHas('hierarchy', function ($q) use ($data) {
                                 $q->where('parent_id', $data['tl_id']);
                             });
-                            $q->orWhereHas('hierarchy', function($q) use ($data) {
-                                $q->whereHas('parentInfo', function($q) use ($data) {
-                                    $q->whereHas('accesslevelhierarchy', function($q) use ($data) {
+                            $q->orWhereHas('hierarchy', function ($q) use ($data) {
+                                $q->whereHas('parentInfo', function ($q) use ($data) {
+                                    $q->whereHas('accesslevelhierarchy', function ($q) use ($data) {
                                         $q->where('parent_id', $data['om_id']);
                                     });
                                 });
                             });
                         } else {
-                            $q->whereHas('hierarchy', function($q) use ($data) {
+                            $q->whereHas('hierarchy', function ($q) use ($data) {
                                 $q->where('parent_id', $data['tl_id']);
-                                $q->whereHas('parentInfo', function($q) use ($data) {
-                                    $q->whereHas('accesslevelhierarchy', function($q) use ($data) {
+                                $q->whereHas('parentInfo', function ($q) use ($data) {
+                                    $q->whereHas('accesslevelhierarchy', function ($q) use ($data) {
                                         $q->where('parent_id', $data['om_id']);
                                     });
                                 });
                             });
                         }
                     });
-                } else if(isset($data['tl_id'])) {
-                    $result = $result->where(function($q) use ($data) {
-                        $q->whereHas('hierarchy', function($q) use ($data) {
+                } else if (isset($data['tl_id'])) {
+                    $result = $result->where(function ($q) use ($data) {
+                        $q->whereHas('hierarchy', function ($q) use ($data) {
                             $q->where('parent_id', $data['tl_id']);
                         });
                     });
-                } else if(isset($data['om_id'])) {
-                    $result = $result->where(function($q) use ($data) {
-                        $q->whereHas('hierarchy', function($q) use ($data) {
-                            $q->whereHas('parentInfo', function($q) use ($data) {
-                                $q->whereHas('accesslevelhierarchy', function($q) use ($data) {
+                } else if (isset($data['om_id'])) {
+                    $result = $result->where(function ($q) use ($data) {
+                        $q->whereHas('hierarchy', function ($q) use ($data) {
+                            $q->whereHas('parentInfo', function ($q) use ($data) {
+                                $q->whereHas('accesslevelhierarchy', function ($q) use ($data) {
                                     $q->where('parent_id', $data['om_id']);
                                 });
                             });
