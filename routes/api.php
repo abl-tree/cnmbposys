@@ -200,6 +200,7 @@ Route::group([
 
             Route::get("/", "LeaveSlotController@all");
             Route::post("create", "LeaveSlotController@create");
+            Route::post("create/bulk", "LeaveSlotController@bulk");
             Route::post('delete/{leave_slot_id}', 'LeaveSlotController@delete');
             Route::get("fetch/{leave_slot_id}", "LeaveSlotController@fetch");
             Route::post('update/{leave_slot_id}', 'LeaveSlotController@update');

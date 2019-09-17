@@ -84,12 +84,19 @@ class LeaveSlotRepository extends BaseRepository
             }
         }
 
+        $does_exist = $this->leave_slot
+            ->where('user_id', $data['user_id'])
+            ->where('date', $data['date'])
+            ->first();
+
         // existence check
 
         // insertion
 
         if (isset($data['id'])) {
             $leave_slot = $this->leave_slot->find($data['id']);
+        } else if ($does_exist) {
+            $leave_slot = $does_exist;
         } else {
             $leave_slot = $this->leave_slot->init($this->leave_slot->pullFillable($data));
         }

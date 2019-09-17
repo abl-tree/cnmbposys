@@ -34,6 +34,44 @@ class LeaveSlotController extends BaseController
         return $this->absorb($this->leave_slot_repo->defineLeaveSlot($data))->json();
     }
 
+    public function bulk(Request $request)
+    {
+        $data = $request->all();
+        $success = [];
+        $error = [];
+
+        if (!isset($data['leave_slots'])) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => 'Leave slots are not set.',
+                'parameters' => $data,
+            ])->json();
+        }
+
+        foreach ((array) $data['leave_slots'] as $leave_slot_data) {
+            $leave_slot = $this->absorb($this->leave_slot_repo->defineLeaveSlot($leave_slot_data))->json();
+
+            if ($leave_slot->getStatusCode() == 200) {
+                $success[] = $leave_slot->getData();
+            } else {
+                $error[] = $leave_slot->getData();
+            };
+        }
+
+        return $this->setResponse([
+            'code' => 200,
+            'title' => 'Successfully defined leave slots',
+            'meta' => [
+                'success' => $success,
+                'success_count' => count($success),
+                'error' => $error,
+                'error_count' => count($error),
+            ],
+            'parameters' => $data,
+        ])->json();
+
+    }
+
     public function delete(Request $request, $id)
     {
         $data = $request->all();
