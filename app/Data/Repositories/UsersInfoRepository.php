@@ -470,13 +470,22 @@ class UsersInfoRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
+
+        if (
+            !isset($data['leaves']) &&
+            !isset($data['leave_credits']) &&
+            !isset($data['leave_slots']) 
+        ) {
+            $count--;
+        }
+
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved users Informations",
             "description"=>"UserInfo",
             "meta"       => [
                 $meta_index => $result,
-                "count"     => $count-1,
+                "count"     => $count,
             ],
             "parameters" => $parameters,
             
