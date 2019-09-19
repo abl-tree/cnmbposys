@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Auth;
 use Validator;
+use DB;
 
 class VoluntaryTimeOutRepository extends BaseRepository
 {
@@ -367,6 +368,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
         $meta_index = "agent_schedules_vto";
         $parameters = [];
         $count = 0;
+        $schedules = $this->agent_schedule;
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
@@ -386,11 +388,13 @@ class VoluntaryTimeOutRepository extends BaseRepository
 
         $count_data = $data;
 
+        $schedules = $schedules->whereIn(DB::raw('DAYNAME(vto_at)'), $data['day']);
+
         $data['relations'] = ["user_info.user", 'title'];
 
         $data['where_not_null'] = ['vto_at'];
 
-        $result = $this->fetchGeneric($data, $this->agent_schedule);
+        $result = $this->fetchGeneric($data, $schedules);
 
         if (!$result) {
             return $this->setResponse([
