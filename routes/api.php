@@ -61,6 +61,7 @@ Route::group([
         ], function () {
 
             Route::get("/", "VoluntaryTimeOutController@all");
+            Route::get("list", "VoluntaryTimeOutController@list");
             Route::post("create/{option?}", "VoluntaryTimeOutController@create");
             Route::get('search', 'VoluntaryTimeOutController@search');
 

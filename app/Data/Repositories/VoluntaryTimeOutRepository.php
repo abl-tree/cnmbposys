@@ -430,6 +430,35 @@ class VoluntaryTimeOutRepository extends BaseRepository
         ]);
     }
 
+    public function listVto($data = []) {
+        $result = $this->agent_schedule;
+
+        $list = [];
+
+        $meta_index = "agent_schedules";
+
+        $data['relations'] = ["user_info.user", 'title'];
+
+        $data['where_not_null'] = ['vto_at'];
+
+        $result = $result->groupBy('vto_at');
+
+        $result = $this->fetchGeneric($data, $result);
+
+        foreach ($result as $key => $value) {
+            array_push($list, $value->vto_at);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully listed distinct VTO",
+            "meta" => [
+                $meta_index => $list,
+                "count" => count($result),
+            ]
+        ]);
+    }
+
     public function searchVto($data)
     {
         $result = $this->agent_schedule;
@@ -448,9 +477,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
             // data validation
     
             $validator = Validator::make($data,[
-                'timestamp' => 'required|date|date_format:Y-m-d'
+                'timestamp' => 'required|date|date_format:Y-m-d H:i:s'
             ], [
-                'timestamp.date_format' => "The timestamp does not match the format YYYY-MM-DD."
+                'timestamp.date_format' => "The timestamp does not match the format YYYY-MM-DD HH:MM:SS."
             ]);
             
             if($validator->fails()) {
@@ -468,7 +497,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                 ]);
             }
 
-            $result = $result->whereDate('vto_at', $data['timestamp']);
+            $result = $result->where('vto_at', $data['timestamp']);
         }
 
         if (isset($data['target'])) {
