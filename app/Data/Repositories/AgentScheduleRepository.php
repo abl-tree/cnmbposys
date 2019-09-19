@@ -212,6 +212,19 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
+        //validate if a schedule is already made within these dates
+        $date_hit = $this->agent_schedule
+            ->whereBetween('start_event', [$data['start_event'], $data['end_event']])
+            ->orWhereBetween('end_event', [$data['start_event'], $data['end_event']])
+            ->get()->all();
+
+        if (!empty($date_hit)) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => 'A schedule within the dates set is already created.',
+            ]);
+        }
+
         // check for duplicate schedules
         $does_exist = $this->agent_schedule
             ->where('user_id', $data['user_id'])
