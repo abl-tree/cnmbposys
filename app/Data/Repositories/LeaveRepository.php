@@ -305,7 +305,7 @@ class LeaveRepository extends BaseRepository
 
         //set auto approved leave
         if (isset($data['isApproved']) && $data['isApproved']) {
-            $this->setLeaveApproval([
+            $approval = $this->setLeaveApproval([
                 'id' => $leave->id,
                 'status' => 'approved',
                 'user_access' => $leave->allowed_access,
@@ -327,7 +327,13 @@ class LeaveRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined a leave.",
-            "parameters" => $leave,
+            "parameters" => [
+                'leave' => $leave,
+                'approval_status' => [
+                    'code' => isset($approval) ? $approval->getCode() : 200,
+                    'title' => isset($approval) ? $approval->getTitle() : 'Leave is currently pending for approval.',
+                ],
+            ],
         ]);
 
         // insertion
