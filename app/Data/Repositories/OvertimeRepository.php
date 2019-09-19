@@ -400,7 +400,7 @@ class OvertimeRepository extends BaseRepository
         $tempScheds = $data['schedules'];
 
         foreach ($tempScheds as $key => $schedule) {
-            if ($sched = $this->agent_schedule->find($schedule)) {
+            if ($sched = $this->agent_schedule->find($schedule['id'])) {
                 if ($sched->overtime_id) {
                     unset($tempScheds[$key]);
                 }
@@ -410,7 +410,7 @@ class OvertimeRepository extends BaseRepository
         if (!empty($tempScheds)) {
             return $this->setResponse([
                 "code" => 500,
-                "title" => "Schedule ID " . implode(',', $tempScheds) . " not found or not an overtime schedule.",
+                "title" => "Schedule ID " . implode(',', array_column($tempScheds, 'id')) . " not found or not an overtime schedule.",
                 "meta" => [
                     $meta_index => $tempScheds,
                 ],
@@ -421,16 +421,29 @@ class OvertimeRepository extends BaseRepository
         $overtime_sched = [];
 
         foreach ($data['schedules'] as $key => $schedule) {
-            $overtime = $this->agent_schedule->find($schedule);
+            $overtime = $this->agent_schedule->find($schedule['id']);
 
             if($option === 'revert') {
                 $overtime->approved_by = null;
-            } else $overtime->approved_by = Auth::id();
+            } else {
+                if(!isset($schedule['value']) && $overtime->conformance<=0) {
+                    return $this->setResponse([
+                        "code" => 500,
+                        "title" => "Conformance value is required for schedule ID ".$schedule['id'],
+                        "parameters" => [
+                            'schedule_id' => $schedule['id'],
+                        ],
+                    ]);
+                }
+
+                $overtime->approved_by = Auth::id();
+                if(isset($schedule['value'])) $overtime->conformance = $schedule['value'];
+            }
     
             if (!$overtime->save()) {
                 return $this->setResponse([
                     "code" => 500,
-                    "message" => "Updating overtime schedule was not successful.",
+                    "title" => "Updating overtime schedule was not successful.",
                     "meta" => [
                         "errors" => $overtime->errors(),
                     ],
