@@ -27,6 +27,17 @@ class VoluntaryTimeOutController extends BaseController
         // }
     }
 
+    public function list(Request $request)
+    {
+        $data = $request->all();
+
+        // if (isset($data['search']) || isset($data['target'])) {
+        //     return $this->absorb($this->agent_schedule_repo->searchAgentSchedule($data))->json();
+        // } else {
+            return $this->absorb($this->vto_repo->listVto($data))->json();
+        // }
+    }
+
     /**
      * Display a listing of the resource.
      *
