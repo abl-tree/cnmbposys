@@ -79,139 +79,6 @@ class UsersInfoRepository extends BaseRepository
 
         }
         $data['single'] = false;
-
-        if(isset($data['leaves'])){
-            if(isset($data['start_date']) && isset($data['end_date'])){
-                if(isset($data['leave_type'])){
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_checker',
-                        'target' => [
-                            [
-                                'column' => 'start_event',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
-                            ],
-                            [
-                                'column' => 'start_event',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
-                            ],
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
-                            ],
-                        ],
-                    ];
-                }else{
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_checker',
-                        'target' => [
-                            [
-                                'column' => 'start_event',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
-                            ],
-                            [
-                                'column' => 'start_event',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
-                            ],
-                        ],
-                    ];
-                }
-            } else if(isset($data['leave_type'])){
-                $data['wherehas'][] = [
-                    'relation' => 'leave_checker',
-                    'target' => [
-                        [
-                            'column' => 'leave_type',
-                            'value' => $data['leave_type'],
-                        ],
-                    ],
-                ];
-            } else {
-                $data['wherehas'][] = [
-                    'relation' => 'leave_checker',
-                    'target' => [],
-                ];
-            }
-        }
-
-        if(isset($data['leave_credits'])){
-            if(isset($data['leave_type'])){
-                $data['wherehas'][] = [
-                    'relation' => 'leave_credit_checker',
-                    'target' => [
-                        [
-                            'column' => 'leave_type',
-                            'value' => $data['leave_type'],
-                        ],
-                    ],
-                ];
-            }else{
-                $data['wherehas'][] = [
-                    'relation' => 'leave_credit_checker',
-                    'target' => [],
-                ];
-            }
-        }
-
-        if(isset($data['leave_slots'])){
-            if(isset($data['start_date']) && isset($data['end_date'])){
-                if(isset($data['leave_type'])){
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_slot_checker',
-                        'target' => [
-                            [
-                                'column' => 'date',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
-                            ],
-                            [
-                                'column' => 'date',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
-                            ],
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
-                            ],
-                        ],
-                    ];
-                } else if(isset($data['leave_type'])){
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_slot_checker',
-                        'target' => [
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
-                            ],
-                        ],
-                    ];
-                } else {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_slot_checker',
-                        'target' => [
-                            [
-                                'column' => 'date',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
-                            ],
-                            [
-                                'column' => 'date',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
-                            ],
-                        ],
-                    ];
-                }
-            } else {
-                $data['wherehas'][] = [
-                    'relation' => 'leave_slot_checker',
-                    'target' => [],
-                ];
-            }
-        }
        
         if (isset($data['target'])) {
             $data['where']  = [
@@ -471,12 +338,238 @@ class UsersInfoRepository extends BaseRepository
             ]);
         }
 
-        if (
-            !isset($data['leaves']) &&
-            !isset($data['leave_credits']) &&
-            !isset($data['leave_slots']) 
-        ) {
-            $count--;
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved users Informations",
+            "description"=>"UserInfo",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count-1,
+            ],
+            "parameters" => $parameters,
+            
+        ]);
+    }
+
+    /**
+     * Fetch all users with leaves
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function usersWithLeaves($data = [])
+    {
+        $meta_index = "metadata";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "metadata";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['id'] = $data['id'];
+
+        }
+        $data['single'] = false;
+
+        if(isset($data['leaves'])){
+            if(isset($data['start_date']) && isset($data['end_date'])){
+                if(isset($data['leave_type'])){
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_checker',
+                        'target' => [
+                            [
+                                'column' => 'start_event',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'start_event',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                        ],
+                    ];
+                }else{
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_checker',
+                        'target' => [
+                            [
+                                'column' => 'start_event',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'start_event',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                        ],
+                    ];
+                }
+            } else if(isset($data['leave_type'])){
+                $data['wherehas'][] = [
+                    'relation' => 'leave_checker',
+                    'target' => [
+                        [
+                            'column' => 'leave_type',
+                            'value' => $data['leave_type'],
+                        ],
+                    ],
+                ];
+            } else {
+                $data['wherehas'][] = [
+                    'relation' => 'leave_checker',
+                    'target' => [],
+                ];
+            }
+        }
+
+        if(isset($data['leave_credits'])){
+            if(isset($data['leave_type'])){
+                $data['wherehas'][] = [
+                    'relation' => 'leave_credit_checker',
+                    'target' => [
+                        [
+                            'column' => 'leave_type',
+                            'value' => $data['leave_type'],
+                        ],
+                    ],
+                ];
+            }else{
+                $data['wherehas'][] = [
+                    'relation' => 'leave_credit_checker',
+                    'target' => [],
+                ];
+            }
+        }
+
+        if(isset($data['leave_slots'])){
+            if(isset($data['start_date']) && isset($data['end_date'])){
+                if(isset($data['leave_type'])){
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_slot_checker',
+                        'target' => [
+                            [
+                                'column' => 'date',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'date',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                        ],
+                    ];
+                } else if(isset($data['leave_type'])){
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_slot_checker',
+                        'target' => [
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                        ],
+                    ];
+                } else {
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_slot_checker',
+                        'target' => [
+                            [
+                                'column' => 'date',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'date',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                        ],
+                    ];
+                }
+            } else {
+                $data['wherehas'][] = [
+                    'relation' => 'leave_slot_checker',
+                    'target' => [],
+                ];
+            }
+        }
+       
+        if (isset($data['target'])) {
+            
+            $result = $this->user_info;
+            $data['relations'] = ["user_info","accesslevel","benefits"];     
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'firstname';
+                    $data['target'][] = 'middlename';
+                    $data['target'][] = 'lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+                
+            $count_data = $data;
+            $result = $this->genericSearch($data, $result)->get()->all();
+    
+            if ($result == null) {
+                return $this->setResponse([
+                    'code' => 404,
+                    'title' => "No users are found",
+                    "meta" => [
+                        $meta_index => $result,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+    
+            $count_data['search'] = true;
+            $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+    
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "Successfully searched Users",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $count,
+                ],
+                "parameters" => $parameters,
+            ]);   
+        }
+
+        $count_data = $data;
+        $data['relations'] = ["user_info", "accesslevel", "benefits", "leaves", "leave_credits", "leave_slots"];
+
+        $result = $this->fetchGeneric($data, $this->user_info);
+        $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Users are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
         }
 
         return $this->setResponse([
@@ -491,7 +584,6 @@ class UsersInfoRepository extends BaseRepository
             
         ]);
     }
-
 
     public function fetchUser($data = [])
     {

@@ -62,7 +62,13 @@ class UserController extends BaseController
     public function usersInfo(Request $request)
     {
         $data = $request->all();
-        return $this->absorb($this->user_info->usersInfo($data))->json();     
+
+        if (isset($data['leaves']) || isset($data['leave_credits']) || isset($data['leave_slots'])) {
+            return $this->absorb($this->user_info->usersWithLeaves($data))->json();
+        } else {
+            return $this->absorb($this->user_info->usersInfo($data))->json();
+        }
+
     }
     public function usersInfoLogged(Request $request)
     {
