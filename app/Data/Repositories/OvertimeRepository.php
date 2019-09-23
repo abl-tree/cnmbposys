@@ -426,7 +426,7 @@ class OvertimeRepository extends BaseRepository
             if($option === 'revert') {
                 $overtime->approved_by = null;
             } else {
-                if(!isset($schedule['value']) && $overtime->conformance<=0) {
+                if(!isset($schedule['conformance']) && $overtime->conformance<=0) {
                     return $this->setResponse([
                         "code" => 500,
                         "title" => "Conformance value is required for schedule ID ".$schedule['id'],
@@ -437,7 +437,7 @@ class OvertimeRepository extends BaseRepository
                 }
 
                 $overtime->approved_by = Auth::id();
-                if(isset($schedule['value'])) $overtime->conformance = $schedule['value'];
+                if(isset($schedule['conformance'])) $overtime->conformance = $schedule['conformance'];
             }
     
             if (!$overtime->save()) {
