@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Storage;
 class UsersInfoRepository extends BaseRepository
 {
 
-    protected 
+    protected
         $user_info,$user_datum,$user_status,$user_benefits,$user_infos,$logs,
         $user,$access_level_hierarchy,$benefit_update,$hierarchy_update,$no_sort,$user_data_update;
 
@@ -53,18 +53,15 @@ class UsersInfoRepository extends BaseRepository
         $this->user_benefits = $user_benefits;
         $this->logs = $logs_repo;
         $this->access_level_hierarchy = $access_level_hierarchy;
-        
-    } 
 
+    }
     public function usersInfo($data = [])
     {
         $meta_index = "metadata";
         $parameters = [];
         $count      = 0;
-
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
-
             $meta_index     = "metadata";
             $data['single'] = false;
             $data['where']  = [
@@ -74,12 +71,140 @@ class UsersInfoRepository extends BaseRepository
                     "value"    => $data['id'],
                 ],
             ];
-
             $parameters['id'] = $data['id'];
-
         }
         $data['single'] = false;
-       
+        if(isset($data['leaves'])){
+            if(isset($data['start_date']) && isset($data['end_date'])){
+                if(isset($data['leave_type'])){
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_checker',
+                        'target' => [
+                            [
+                                'column' => 'start_event',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'start_event',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                        ],
+                    ];
+                }else{
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_checker',
+                        'target' => [
+                            [
+                                'column' => 'start_event',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'start_event',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                        ],
+                    ];
+                }
+            } else if(isset($data['leave_type'])){
+                $data['wherehas'][] = [
+                    'relation' => 'leave_checker',
+                    'target' => [
+                        [
+                            'column' => 'leave_type',
+                            'value' => $data['leave_type'],
+                        ],
+                    ],
+                ];
+            } else {
+                $data['wherehas'][] = [
+                    'relation' => 'leave_checker',
+                    'target' => [],
+                ];
+            }
+        }
+        if(isset($data['leave_credits'])){
+            if(isset($data['leave_type'])){
+                $data['wherehas'][] = [
+                    'relation' => 'leave_credit_checker',
+                    'target' => [
+                        [
+                            'column' => 'leave_type',
+                            'value' => $data['leave_type'],
+                        ],
+                    ],
+                ];
+            }else{
+                $data['wherehas'][] = [
+                    'relation' => 'leave_credit_checker',
+                    'target' => [],
+                ];
+            }
+        }
+        if(isset($data['leave_slots'])){
+            if(isset($data['start_date']) && isset($data['end_date'])){
+                if(isset($data['leave_type'])){
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_slot_checker',
+                        'target' => [
+                            [
+                                'column' => 'date',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'date',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                        ],
+                    ];
+                } else if(isset($data['leave_type'])){
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_slot_checker',
+                        'target' => [
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                        ],
+                    ];
+                } else {
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_slot_checker',
+                        'target' => [
+                            [
+                                'column' => 'date',
+                                'operator' => '>=',
+                                'value' => $data['start_date'],
+                            ],
+                            [
+                                'column' => 'date',
+                                'operator' => '<=',
+                                'value' => $data['end_date'],
+                            ],
+                        ],
+                    ];
+                }
+            } else {
+                $data['wherehas'][] = [
+                    'relation' => 'leave_slot_checker',
+                    'target' => [],
+                ];
+            }
+        }
+
         if (isset($data['target'])) {
             $data['where']  = [
                 [
@@ -89,7 +214,7 @@ class UsersInfoRepository extends BaseRepository
                 ],
             ];
             $result = $this->user_info;
-            $data['relations'] = ["user_info","accesslevel","benefits"];     
+            $data['relations'] = ["user_info","accesslevel","benefits"];
             foreach ((array) $data['target'] as $index => $column) {
                 if (str_contains($column, "full_name")) {
                     $data['target'][] = 'firstname';
@@ -110,8 +235,8 @@ class UsersInfoRepository extends BaseRepository
                             array_push($datani,$value);
                             $countni++;
                         }
-                        
-                       
+
+
                     }
                     return $this->setResponse([
                         "code"       => 200,
@@ -122,7 +247,7 @@ class UsersInfoRepository extends BaseRepository
                             "count"     => $countni,
                         ],
                         "parameters" => $data['query'],
-                        
+
                     ]);
                     $data['target'][] = 'accesslevel.name';
                     unset($data['target'][$index]);
@@ -137,7 +262,7 @@ class UsersInfoRepository extends BaseRepository
                         if($value->access_id==$data['query']){
                             array_push($array,$value);
                             $countresult+=1;
-                        }                            
+                        }
                     }
                     if($array!=[]){
                         return $this->setResponse([
@@ -159,8 +284,8 @@ class UsersInfoRepository extends BaseRepository
                             "parameters" => $parameters,
                         ]);
                     }
-                  
-                  
+
+
                 }
                 if (str_contains($column, "p_email")) {
                     $data['target'][] = 'p_email';
@@ -199,19 +324,18 @@ class UsersInfoRepository extends BaseRepository
                     $data['query'] = $dt->format("Y-m-d");
                     $data['target'][] = 'hired_date';
                     unset($data['target'][$index]);
-
                    // $count_data = $data;
                     $results = $this->genericSearch($data, $result)->get()->all();
                     if($results){
                         array_push($general,$results);
                          $count+=1;
                     }
-                   
-                }  
+
+                }
                 $new = [];
                 while($item = array_shift($general)){
                     array_push($new, ...$item);
-                }           
+                }
                     if ($result == null) {
                         return $this->setResponse([
                             'code' => 404,
@@ -222,10 +346,10 @@ class UsersInfoRepository extends BaseRepository
                             "parameters" => $parameters,
                         ]);
                     }
-            
+
                     $count_data['search'] = true;
                    // $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-            
+
                     return $this->setResponse([
                         "code" => 200,
                         "title" => "Successfully searched Users",
@@ -249,19 +373,19 @@ class UsersInfoRepository extends BaseRepository
                         $data['query'] = $dt->format("Y-m-d");
                         $data['target'][] = 'separation_date';
                         unset($data['target'][$index]);
-    
+
                        // $count_data = $data;
                         $results = $this->genericSearch($data, $result)->get()->all();
                         if($results){
                             array_push($general,$results);
                              $count+=1;
                         }
-                       
-                    }  
+
+                    }
                     $new = [];
                     while($item = array_shift($general)){
                         array_push($new, ...$item);
-                    }           
+                    }
                         if ($result == null) {
                             return $this->setResponse([
                                 'code' => 404,
@@ -272,10 +396,10 @@ class UsersInfoRepository extends BaseRepository
                                 "parameters" => $parameters,
                             ]);
                         }
-                
+
                         $count_data['search'] = true;
                        // $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-                
+
                         return $this->setResponse([
                             "code" => 200,
                             "title" => "Successfully searched Users",
@@ -289,7 +413,7 @@ class UsersInfoRepository extends BaseRepository
             }
             $count_data = $data;
             $result = $this->genericSearch($data, $result)->get()->all();
-    
+
             if ($result == null) {
                 return $this->setResponse([
                     'code' => 404,
@@ -300,10 +424,10 @@ class UsersInfoRepository extends BaseRepository
                     "parameters" => $parameters,
                 ]);
             }
-    
+
             $count_data['search'] = true;
             $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-    
+
             return $this->setResponse([
                 "code" => 200,
                 "title" => "Successfully searched Users",
@@ -312,7 +436,7 @@ class UsersInfoRepository extends BaseRepository
                     "count" => $count,
                 ],
                 "parameters" => $parameters,
-            ]);   
+            ]);
         }
         $count_data = $data;
         $data['relations'] = ["user_info", "accesslevel", "benefits", "leaves", "leave_credits", "leave_slots"];
@@ -323,10 +447,8 @@ class UsersInfoRepository extends BaseRepository
                 "value"    => "development",
             ],
         ];
-
         $result = $this->fetchGeneric($data, $this->user_info);
         $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-
         if (!$result) {
             return $this->setResponse([
                 'code'       => 404,
@@ -337,7 +459,6 @@ class UsersInfoRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved users Informations",
@@ -347,9 +468,10 @@ class UsersInfoRepository extends BaseRepository
                 "count"     => $count-1,
             ],
             "parameters" => $parameters,
-            
+
         ]);
     }
+
 
     /**
      * Fetch all users with leaves
@@ -513,11 +635,11 @@ class UsersInfoRepository extends BaseRepository
                 ];
             }
         }
-       
+
         if (isset($data['target'])) {
-            
+
             $result = $this->user_info;
-            $data['relations'] = ["user_info","accesslevel","benefits"];     
+            $data['relations'] = ["user_info","accesslevel","benefits"];
             foreach ((array) $data['target'] as $index => $column) {
                 if (str_contains($column, "full_name")) {
                     $data['target'][] = 'firstname';
@@ -526,10 +648,10 @@ class UsersInfoRepository extends BaseRepository
                     unset($data['target'][$index]);
                 }
             }
-                
+
             $count_data = $data;
             $result = $this->genericSearch($data, $result)->get()->all();
-    
+
             if ($result == null) {
                 return $this->setResponse([
                     'code' => 404,
@@ -540,10 +662,10 @@ class UsersInfoRepository extends BaseRepository
                     "parameters" => $parameters,
                 ]);
             }
-    
+
             $count_data['search'] = true;
             $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-    
+
             return $this->setResponse([
                 "code" => 200,
                 "title" => "Successfully searched Users",
@@ -552,7 +674,7 @@ class UsersInfoRepository extends BaseRepository
                     "count" => $count,
                 ],
                 "parameters" => $parameters,
-            ]);   
+            ]);
         }
 
         $count_data = $data;
@@ -581,7 +703,7 @@ class UsersInfoRepository extends BaseRepository
                 "count"     => $count,
             ],
             "parameters" => $parameters,
-            
+
         ]);
     }
 
@@ -640,7 +762,7 @@ class UsersInfoRepository extends BaseRepository
                     "count"     => $count,
                 ],
                 "parameters" => $parameters,
-                
+
             ]);
     }
 
@@ -648,7 +770,7 @@ class UsersInfoRepository extends BaseRepository
     public function logsInputCheck($data = [])
     {
         // data validation
-        
+
 
             if (!isset($data['user_id']) ||
                 !is_numeric($data['user_id']) ||
@@ -673,7 +795,7 @@ class UsersInfoRepository extends BaseRepository
                 ]);
             }
 
-       
+
             $action_logs = $this->action_logs->init($this->action_logs->pullFillable($data));
             $action_logs->save($data);
 
@@ -693,11 +815,11 @@ class UsersInfoRepository extends BaseRepository
             "title"      => "Successfully defined an agent schedule.",
             "parameters" => $action_logs,
         ]);
-        
+
     }
 
     public function addUser($data = [])
-    {   
+    {
         // data validation
         $error_array = new ArrayObject();
         $error_count=0;
@@ -708,7 +830,7 @@ class UsersInfoRepository extends BaseRepository
         $cluster=[];
         $user_benefits=[];
         $benefits=[];
-        $auth_id=auth()->user()->id;  
+        $auth_id=auth()->user()->id;
         $auth = $this->user->find($auth_id);
         if (!isset($data['id'])) {
             if (!isset($data['firstname'])) {
@@ -740,7 +862,7 @@ class UsersInfoRepository extends BaseRepository
                 $error_count++;
             }else{
                 $user_information['gender']= $data['gender'];
-            }    
+            }
             if (!isset($data['email'])) {
                 $error_array->offsetSet('email', "The email field is required.");
                 $error_count++;
@@ -807,12 +929,12 @@ class UsersInfoRepository extends BaseRepository
                         "errors" => $error_array,
                     ],
                 ]);
-            }   
+            }
             if(isset($data['firstname'],$data['middlename'],$data['lastname'])){
                 $user_information['excel_hash']= strtolower($data['firstname'].$data['middlename'].$data['lastname']);
                 $user_informations =  $this->user_infos->init($this->user_infos->pullFillable($user_information));
                 if (!$user_informations->save($data)) {
-                    $url = $user_informations->image_url; 
+                    $url = $user_informations->image_url;
                     $file_name = basename($url);
                     Storage::delete('images/'.$file_name);
                     if (strpos($user_informations->errors(), 'user_infos_excel_hash_unique') !== false) {
@@ -828,9 +950,9 @@ class UsersInfoRepository extends BaseRepository
                             ],
                         ]);
                     }
-                }      
+                }
             }
-            
+
             if($error_count>0){
                 return $this->setResponse([
                     "code"        => 500,
@@ -840,14 +962,14 @@ class UsersInfoRepository extends BaseRepository
                         "errors" => $error_array,
                     ],
                 ]);
-            }   
+            }
             $user_id= $user_informations->id;
             $hierarchy['child_id']= $user_id;
             if (isset($data['parent_id'])) {
                 $hierarchy['parent_id']= $data['parent_id'];
             }
            $user_hierarchy= $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($hierarchy));
-          
+
            $user_data['uid']= $user_id;
             if (isset($data['email'])) {
                 $user_data['email']= $data['email'];
@@ -884,39 +1006,39 @@ class UsersInfoRepository extends BaseRepository
             if (isset($data['separation_date'])) {
             $status_logs['separation_date']=$data['separation_date'];
             }
-            $status = $this->user_status->init($this->user_status->pullFillable($status_logs)); 
-            $action="Created";  
+            $status = $this->user_status->init($this->user_status->pullFillable($status_logs));
+            $action="Created";
             if (!$status->save($data)) {
-                $user_info_delete = $this->user_infos->find($user_id);    
+                $user_info_delete = $this->user_infos->find($user_id);
                 $user_info_delete->forceDelete();
-                $url = $user_info_delete->image_url; 
+                $url = $user_info_delete->image_url;
                 $file_name = basename($url);
                 Storage::delete('images/'.$file_name);
                 $error_array->offsetSet('status_save', "Saving Error on Status");
-                $error_count++;       
+                $error_count++;
             }
             if (!$user_hierarchy->save($data)) {
-                $user_info_delete = $this->user_infos->find($user_id);    
+                $user_info_delete = $this->user_infos->find($user_id);
                 $user_info_delete->forceDelete();
-                $url = $user_info_delete->image_url; 
+                $url = $user_info_delete->image_url;
                 $file_name = basename($url);
                 Storage::delete('images/'.$file_name);
                 $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
-                $error_count++;  
-            }   
+                $error_count++;
+            }
             if (!$users_data->save($data)) {
                 $user_id;
-                $user_info_delete = $this->user_infos->find($user_id);    
+                $user_info_delete = $this->user_infos->find($user_id);
                 $user_info_delete->forceDelete();
-                $url = $user_info_delete->image_url; 
+                $url = $user_info_delete->image_url;
                 $file_name = basename($url);
                 Storage::delete('images/'.$file_name);
                 if (strpos($users_data->errors(), 'users_email_unique') !== false) {
                     $error_array->offsetSet('duplicate_email', "Email is already in use. Please use another valid email.");
-                    $error_count++;  
+                    $error_count++;
                 }
-               
-            }  
+
+            }
             $benefits=[];
             $ben=[];
             $array=json_decode($data['benefits'], true );
@@ -925,14 +1047,14 @@ class UsersInfoRepository extends BaseRepository
                     $ben['benefit_id'] = $i;
                     $ben['id_number'] = NULL;
                     $ben['user_info_id'] = $user_id;
-                    $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
+                    $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));
                     array_push($benefits,$user_ben);
-                    $user_ben->save();   
-            }   
+                    $user_ben->save();
+            }
             }else{
                 foreach($array as $key => $value ){
-                  
-                   
+
+
                     $ben['benefit_id'] = $key+1;
                     if($array[$key]==""){
                         $ben['id_number']=NULL;
@@ -940,19 +1062,19 @@ class UsersInfoRepository extends BaseRepository
                         $ben['id_number']=$array[$key];
                     }
                     $ben['user_info_id'] = $user_id;
-                    $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
+                    $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));
                     array_push($benefits,$user_ben);
-                    $user_ben->save();   
-            }       
-           
+                    $user_ben->save();
             }
-           
-            
+
+            }
+
+
             if($error_count>0){
-                $user_info_delete = $this->user_infos->find($user_id);    
+                $user_info_delete = $this->user_infos->find($user_id);
                if($user_info_delete){
                 $user_info_delete->forceDelete();
-                $url = $user_info_delete->image_url; 
+                $url = $user_info_delete->image_url;
                 $file_name = basename($url);
                 Storage::delete('images/'.$file_name);
                }
@@ -971,7 +1093,7 @@ class UsersInfoRepository extends BaseRepository
                 "affected_data" => $auth->full_name."[".$auth->access->name."] Added a User [".$user_informations->full_name."]"
             ];
             $this->logs->logsInputCheck($logged_data);
-    
+
             return $this->setResponse([
                 "code"       => 200,
                 "title"      => "Successfully ".$action." a User.",
@@ -1001,9 +1123,9 @@ class UsersInfoRepository extends BaseRepository
             //     }else{
             //         $user_bene['id_number']=$array[$key];
             //     }
-               
+
             //     $user_bene->save();
-            //     array_push($ben,$user_bene); 
+            //     array_push($ben,$user_bene);
             // }
             // return $this->setResponse([
             //     "code"        => 500,
@@ -1046,7 +1168,7 @@ class UsersInfoRepository extends BaseRepository
                     $error_count++;
                 }else{
                     $user_information['gender']= $data['gender'];
-                }    
+                }
                 if (!isset($data['email'])) {
                     $error_array->offsetSet('email', "The email field is required.");
                     $error_count++;
@@ -1054,7 +1176,7 @@ class UsersInfoRepository extends BaseRepository
                     $error_array->offsetSet('access_id', "The access field is required.");
                     $error_count++;
                 }
-    
+
                 if (isset($data['contact_number'])) {
                     $user_information['contact_number']= $data['contact_number'];
                 }
@@ -1088,10 +1210,10 @@ class UsersInfoRepository extends BaseRepository
                 }
                 if (isset($data['separation_date'])) {
                     $user_information['separation_date']= $data['separation_date'];
-                }  
+                }
                 if (isset($data['p_email'])) {
                     $user_information['p_email']= $data['p_email'];
-                }   
+                }
                 if (isset($data['status_reason'])) {
                     $user_information['status_reason']= $data['status_reason'];
                 }
@@ -1102,7 +1224,7 @@ class UsersInfoRepository extends BaseRepository
                         $url= asset($file);
                         $user_information['image_url'] = $url;
                     }else{
-                        $url = $user_information->image_url; 
+                        $url = $user_information->image_url;
                         $file_name = basename($url);
                         Storage::delete('images/'.$file_name);
                         define('UPLOAD_DIR', 'storage/images/');
@@ -1110,7 +1232,7 @@ class UsersInfoRepository extends BaseRepository
                         $url= asset($file);
                         $user_information['image_url'] = $url;
                     }
-                   
+
                 }
                     $user_data =  $this->user_data_update->find($data['id']);
                     if (isset($data['email'])) {
@@ -1134,27 +1256,27 @@ class UsersInfoRepository extends BaseRepository
                             $error_array->offsetSet('excelhash', "Full Name is already in Use. Please use another Name.");
                             $error_count++;
                         }
-                    }      
+                    }
                     if (!$user_data->save($data)) {
-                        $user_info_delete = $this->user_infos->find($data['id']);    
+                        $user_info_delete = $this->user_infos->find($data['id']);
                         $user_info_delete->forceDelete();
-                        $url = $user_info_delete->image_url; 
+                        $url = $user_info_delete->image_url;
                         $file_name = basename($url);
                         Storage::delete('images/'.$file_name);
                         if (strpos($users_data->errors(), 'users_email_unique') !== false) {
                             $error_array->offsetSet('duplicate_email', "Email is already in use. Please use another valid email.");
-                            $error_count++;  
-                        }  
-                    }    
+                            $error_count++;
+                        }
+                    }
                     if (!$hierarchy->save($data)) {
-                        $user_info_delete = $this->user_infos->find($data['id']);    
+                        $user_info_delete = $this->user_infos->find($data['id']);
                         $user_info_delete->forceDelete();
-                        $url = $user_info_delete->image_url; 
+                        $url = $user_info_delete->image_url;
                         $file_name = basename($url);
                         Storage::delete('images/'.$file_name);
                         $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
-                        $error_count++;  
-                    }  
+                        $error_count++;
+                    }
                     if($error_count>0){
                         return $this->setResponse([
                             "code"        => 500,
@@ -1167,7 +1289,7 @@ class UsersInfoRepository extends BaseRepository
                     }
                     $ben=[];
                     if(isset($data['benefits'])){
-                    
+
                         $data['single'] = false;
                         $data['where']  = [
                             [
@@ -1178,7 +1300,7 @@ class UsersInfoRepository extends BaseRepository
                         ];
                         $user_ben =$this->fetchGeneric($data, $this->user_benefits);
                         $array=json_decode($data['benefits'], true );
-                        
+
                         foreach($user_ben as $key => $value ){
                             $user_bene = $this->benefit_update->find($value->id);
                             if($array[$key]==""){
@@ -1186,11 +1308,11 @@ class UsersInfoRepository extends BaseRepository
                             }else{
                                 $user_bene['id_number']=$array[$key];
                             }
-                           
+
                             $user_bene->save();
-                            array_push($ben,$user_bene); 
+                            array_push($ben,$user_bene);
                         }
-                    
+
                 }
                 $action="Updated";
                 $logged_data = [
@@ -1215,7 +1337,7 @@ class UsersInfoRepository extends BaseRepository
                         'code'  => 500,
                         'title' => 'User Not Found.',
                     ]);
-               
+
                 }
             }
     }
@@ -1228,7 +1350,7 @@ class UsersInfoRepository extends BaseRepository
                 'title' => "password is not set.",
             ]);
         }
-        
+
         $user_information = $this->user_data_update->find($data['id']);
         if($user_information){
            // $hashPass=bcrypt($data['password']);
@@ -1253,13 +1375,13 @@ class UsersInfoRepository extends BaseRepository
                     ]
                 ]);
             }
-       
+
         }else{
             return $this->setResponse([
                 'code'  => 500,
                 'title' => 'User Not Found.',
             ]);
-       
+
         }
 
     }
@@ -1271,7 +1393,7 @@ class UsersInfoRepository extends BaseRepository
                 'title' => "id is not set.",
             ]);
         }
-        
+
         $user_information = $this->user_data_update->find($data['id']);
         if($user_information){
            // $hashPass=bcrypt($data['password']);
@@ -1297,13 +1419,13 @@ class UsersInfoRepository extends BaseRepository
                     ]
                 ]);
             }
-       
+
         }else{
             return $this->setResponse([
                 'code'  => 500,
                 'title' => 'User Not Found.',
             ]);
-       
+
         }
 
     }
@@ -1312,9 +1434,9 @@ class UsersInfoRepository extends BaseRepository
     {
         // data validation
         $action=null;
-        $auth_id=auth()->user()->id;  
+        $auth_id=auth()->user()->id;
         $auth = $this->user->find($auth_id);
-       
+
             if (!isset($data['status'])) {
                 return $this->setResponse([
                     'code'  => 500,
@@ -1332,13 +1454,13 @@ class UsersInfoRepository extends BaseRepository
                     'code'  => 500,
                     'title' => "reason is not set.",
                 ]);
-            }   
+            }
             if (!isset($data['type'])) {
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "type is not set.",
                 ]);
-            }   
+            }
 
                 $status = $this->user_status->init($this->user_status->pullFillable($data));
                 $Users = $this->user_infos->find($data['user_id']);
@@ -1387,9 +1509,9 @@ class UsersInfoRepository extends BaseRepository
                         "logs"=>$logged_data
                     ]
                 ]);
-                    
-        
-        
+
+
+
     }
 
     public function bulkUpdateStatus($data = [])
@@ -1397,11 +1519,11 @@ class UsersInfoRepository extends BaseRepository
         // data validation
         $action=null;
         $array=$data['user_id'];
-        $auth_id=auth()->user()->id;  
+        $auth_id=auth()->user()->id;
         $auth = $this->user->find($auth_id);
        $all_users=[];
         foreach ($array as $key => $value) {
-            $data['user_id']=$value;          
+            $data['user_id']=$value;
             if (!isset($data['status'])) {
                 return $this->setResponse([
                     'code'  => 500,
@@ -1419,7 +1541,7 @@ class UsersInfoRepository extends BaseRepository
                     'code'  => 500,
                     'title' => "type is not set.",
                 ]);
-            }   
+            }
 
                 $status = $this->user_status->init($this->user_status->pullFillable($data));
                 $Users = $this->user_infos->find($value);
@@ -1468,9 +1590,9 @@ class UsersInfoRepository extends BaseRepository
                         "logs"=>$logged_data
                     ]
                 ]);
-                    
-        
-        
+
+
+
     }
 
     public function search($data)
@@ -1490,7 +1612,7 @@ class UsersInfoRepository extends BaseRepository
             "query" => $data['query'],
         ];
 
-        $data['relations'] = ["user_info","accesslevel","benefits"];     
+        $data['relations'] = ["user_info","accesslevel","benefits"];
 
         $data['where'] = [
             [
@@ -1521,8 +1643,8 @@ class UsersInfoRepository extends BaseRepository
                             array_push($datani,$value);
                             $countni++;
                         }
-                        
-                       
+
+
                     }
                     return $this->setResponse([
                         "code"       => 200,
@@ -1533,7 +1655,7 @@ class UsersInfoRepository extends BaseRepository
                             "count"     => $countni,
                         ],
                         "parameters" => $data['query'],
-                        
+
                     ]);
                     $data['target'][] = 'accesslevel.name';
                     unset($data['target'][$index]);
@@ -1548,7 +1670,7 @@ class UsersInfoRepository extends BaseRepository
                         if($value->access_id==$data['query']){
                             array_push($array,$value);
                             $countresult+=1;
-                        }                            
+                        }
                     }
                     if($array!=[]){
                         return $this->setResponse([
@@ -1570,8 +1692,8 @@ class UsersInfoRepository extends BaseRepository
                             "parameters" => $parameters,
                         ]);
                     }
-                  
-                  
+
+
                 }
                 if (str_contains($column, "p_email")) {
                     $data['target'][] = 'p_email';
@@ -1617,12 +1739,12 @@ class UsersInfoRepository extends BaseRepository
                         array_push($general,$results);
                          $count+=1;
                     }
-                   
-                }  
+
+                }
                 $new = [];
                 while($item = array_shift($general)){
                     array_push($new, ...$item);
-                }           
+                }
                     if ($result == null) {
                         return $this->setResponse([
                             'code' => 404,
@@ -1633,10 +1755,10 @@ class UsersInfoRepository extends BaseRepository
                             "parameters" => $parameters,
                         ]);
                     }
-            
+
                     $count_data['search'] = true;
                    // $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-            
+
                     return $this->setResponse([
                         "code" => 200,
                         "title" => "Successfully searched Users",
@@ -1660,19 +1782,19 @@ class UsersInfoRepository extends BaseRepository
                         $data['query'] = $dt->format("Y-m-d");
                         $data['target'][] = 'separation_date';
                         unset($data['target'][$index]);
-    
+
                        // $count_data = $data;
                         $results = $this->genericSearch($data, $result)->get()->all();
                         if($results){
                             array_push($general,$results);
                              $count+=1;
                         }
-                       
-                    }  
+
+                    }
                     $new = [];
                     while($item = array_shift($general)){
                         array_push($new, ...$item);
-                    }           
+                    }
                         if ($result == null) {
                             return $this->setResponse([
                                 'code' => 404,
@@ -1683,10 +1805,10 @@ class UsersInfoRepository extends BaseRepository
                                 "parameters" => $parameters,
                             ]);
                         }
-                
+
                         $count_data['search'] = true;
                        // $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
-                
+
                         return $this->setResponse([
                             "code" => 200,
                             "title" => "Successfully searched Users",
@@ -1754,7 +1876,7 @@ class UsersInfoRepository extends BaseRepository
 
         $count_data = $data;
 
-         $data['relations'] = ["user_info","user_logs","accesslevel"];     
+         $data['relations'] = ["user_info","user_logs","accesslevel"];
 
         $result = $this->fetchGeneric($data, $this->user);
 
@@ -1786,10 +1908,10 @@ class UsersInfoRepository extends BaseRepository
         $meta_index = "options";
         $parameters = [];
         $count      = 0;
-         
+
 
         $count_data = $data;
-        $data['relations'] = ["accesslevel","accesslevelhierarchy"];   
+        $data['relations'] = ["accesslevel","accesslevelhierarchy"];
         $result = $this->fetchGeneric($data, $this->select_users);
         $results=[];
         $keys=0;
@@ -1797,41 +1919,41 @@ class UsersInfoRepository extends BaseRepository
         foreach ($result as $key => $value) {
               if($value->accesslevelhierarchy->child_id==$data['id']){
                   $parent=$value->accesslevelhierarchy->parent_id;
-                  array_push($results,$value);     
+                  array_push($results,$value);
                 foreach ($result as $key => $val) {
                     $last_child2=null;
                     if($val->accesslevelhierarchy->child_id==$parent){
                         $keys++;
-                        $count++;  
+                        $count++;
                         array_push($results,$val);
-                       
+
                         foreach ($result as $key => $vals) {
                             if($vals->accesslevelhierarchy->parent_id==$parent&&$vals->accesslevelhierarchy->child_id!=$data['id']){
                                 $keys++;
-                                $count++;  
-                                array_push($results,$vals);                         
-                        } 
+                                $count++;
+                                array_push($results,$vals);
+                        }
                             $last_child2=$val->accesslevelhierarchy->parent_id;
                             if($vals->accesslevelhierarchy->child_id==$last_child2){
                                 $keys++;
-                                $count++;  
+                                $count++;
                                 array_push($results,$vals);
-                                
+
                             }
-                          
-        
-                        } 
-                        
-                        
+
+
+                        }
+
+
                     }
 
-                } 
-                
+                }
+
                 $keys++;
-                $count++;  
+                $count++;
             }
-            
-         } 
+
+         }
 
         if (!$results) {
             return $this->setResponse([
@@ -1843,7 +1965,7 @@ class UsersInfoRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-       
+
         // $count = $this->countData($count_data, refresh_model($this->users->getModel()));
 
         return $this->setResponse([
@@ -1854,13 +1976,13 @@ class UsersInfoRepository extends BaseRepository
                 $meta_index => $results,
                 "count"     => $count
             ],
-            
-            
+
+
         ]);
     }
 
 
-    
+
 
 
 

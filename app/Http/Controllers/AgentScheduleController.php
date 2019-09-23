@@ -141,4 +141,10 @@ class AgentScheduleController extends BaseController
         return $this->absorb($this->agent_schedule_repo->remarks($data, $id))->json();
     }
 
+    public function excel_to_array(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->agent_schedule_repo->excelData($data))->json();
+    }
+
 }

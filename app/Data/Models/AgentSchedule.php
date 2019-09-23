@@ -315,16 +315,20 @@ class AgentSchedule extends BaseModel
             return null;
         }
 
-        if ($this->leave_id) {
-            return "On-Leave";
-        }
 
         if ($value != 0) {
             return 'Absent';
         }
 
-        if ($this->attendances->count()) {
+        if ($this->attendances->where('is_leave',0)->count()) {
             return 'Present';
+        }
+
+
+        if ($this->leave_id) {
+            if($this->leave->status == "approved"){
+                return "On-Leave";
+            }
         }
 
         return 'NCNS';

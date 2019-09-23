@@ -20,6 +20,7 @@ use App\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Maatwebsite\Excel\Facades\Excel;
+use DateTime;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -69,21 +70,33 @@ class AgentScheduleRepository extends BaseRepository
             if (isset($firstPage[$x + 3])) {
                 if ($firstPage[$x + 3][1] != null) {
                     if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
-                        $arr[] = array(
-                            "cluster" => $firstPage[$x + 3][2],
+                        $arr[] = [
+                            "om_id" => $firstPage[$x + 3][2],
                             "tl_id" => $firstPage[$x + 3][3],
                             "email" => $firstPage[$x + 3][1],
                             "title_id" => 1,
                             "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
                             "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][6]),
-                        );
+                        ];
                     }
                 }
             }
         };
-        $arr['auth_id'] = $data['auth_id'];
-        $result = $this->bulkScheduleInsertion($arr);
-        return $result;
+        $parameters = $data;
+        $excel_data_count = count($arr);
+        // $arr['auth_id'] = $data['auth_id'];
+        // $result = $this->bulkScheduleInsertion($arr);
+        // return $result;
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully extracted excel data.",
+            "meta" => [
+                "excel_data" => $arr,
+                "count" => $excel_data_count,
+            ],
+            "parameters" => $parameters,
+        ]);
 
     }
 
@@ -94,16 +107,19 @@ class AgentScheduleRepository extends BaseRepository
             $auth_id = $data[0]['auth_id'];
             unset($data[0]);
         }
+
         if (isset($data['auth_id'])) {
             $auth_id = $data['auth_id'];
             unset($data['auth_id']);
         }
+
         if (!isset($auth_id)) {
             return $this->setResponse([
                 'code' => 500,
                 'title' => "No user was logged in.",
             ]);
         }
+
         foreach ($data as $key => $save) {
             $save['auth_id'] = $auth_id;
             $result = $this->defineAgentSchedule($save);
@@ -143,17 +159,45 @@ class AgentScheduleRepository extends BaseRepository
 
                 if (isset($data['email'])) {
                     $user = $this->user->where('email', $data['email'])->first();
-                    if (isset($user->id)) {
-                        $data['user_id'] = $user->id;
+                    $om = $this->user->where('email', $data['om_id'])->first();
+                    $tl = $this->user->where('email', $data['tl_id'])->first();
+                    if (isset($user->uid)) {
+                        $data['user_id'] = $user->uid;
+                        $data['info'] = $this->user_info->find($user->uid);
                     }
-                }
 
-                if (!isset($data['user_id'])) {
-                    return $this->setResponse([
-                        'code' => 500,
-                        'title' => "User ID is not set. | Email is not registered",
-                        'parameters' => $data,
-                    ]);
+                    if (!isset($data['user_id'])) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Unknown agent email.",
+                            'parameters' => $data,
+                        ]);
+                    }
+
+                    if (isset($om->id)) {
+                        $data['om_id'] = $om->id;
+                    }
+
+
+                    if (!isset($data['om_id'])) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Unknown OM email.",
+                            'parameters' => $data,
+                        ]);
+                    }
+
+                    if (isset($tl->id)) {
+                        $data['tl_id'] = $tl->id;
+                    }
+
+                    if (!isset($data['tl_id'])) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Unknown TL email.",
+                            'parameters' => $data,
+                        ]);
+                    }
                 }
             }
 
@@ -161,6 +205,7 @@ class AgentScheduleRepository extends BaseRepository
                 return $this->setResponse([
                     'code' => 500,
                     'title' => "Title ID is not set.",
+                    'parameters' => $data,
                 ]);
             }
 
@@ -168,15 +213,10 @@ class AgentScheduleRepository extends BaseRepository
                 return $this->setResponse([
                     'code' => 500,
                     'title' => "Start date is not set.",
+                    'parameters' => $data,
                 ]);
             }
 
-            if (!isset($data['end_event'])) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'title' => "End date is not set.",
-                ]);
-            }
 
         }
         // data validation
@@ -185,10 +225,14 @@ class AgentScheduleRepository extends BaseRepository
 
         if (isset($data['user_id'])) {
             if (!$this->user_info->find($data['user_id'])) {
+                $data['email'] = "UserID# ".$data['user_id'];
                 return $this->setResponse([
                     'code' => 500,
+                    'parameters' => $data,
                     'title' => "User ID is not available.",
                 ]);
+            }else{
+                $data['email'] = $this->user->where('uid',$data['user_id'])->first()->email;
             }
         }
 
@@ -196,6 +240,8 @@ class AgentScheduleRepository extends BaseRepository
             if (!$this->event_title->find($data['title_id'])) {
                 return $this->setResponse([
                     'code' => 500,
+                    'parameters' => $data,
+
                     'title' => "Title ID is not available.",
                 ]);
             }
@@ -207,22 +253,38 @@ class AgentScheduleRepository extends BaseRepository
             if (!$does_exist) {
                 return $this->setResponse([
                     'code' => 500,
+                    'parameters' => $data,
                     'title' => 'Agent Schedule ID does not exist.',
                 ]);
             }
+        }
+
+
+        // check if start event is before end event
+        $start = new DateTime($data['start_event']);
+        $end = new DateTime($data['end_event']);
+        if ($end->format('Y-m-d H:i:s') < $start->format('Y-m-d H:i:s')) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => "Invalid dates.",
+                'parameters' => $data,
+            ]);
         }
 
         //validate if a schedule is already made within these dates
         $date_hit = $this->agent_schedule
             ->whereBetween('start_event', [$data['start_event'], $data['end_event']])
             ->orWhereBetween('end_event', [$data['start_event'], $data['end_event']])
-            ->get()->all();
+            ->first();
 
         if (!empty($date_hit)) {
-            return $this->setResponse([
-                'code' => 500,
-                'title' => 'A schedule within the dates set is already created.',
-            ]);
+            // if($data["id"]!=$date_hit->id){
+                return $this->setResponse([
+                    'code' => 500,
+                    'parameters' => $data,
+                    'title' => 'A schedule within the dates set is already created.',
+                ]);
+            // }
         }
 
         // check for duplicate schedules
@@ -264,6 +326,8 @@ class AgentScheduleRepository extends BaseRepository
                 return $this->setResponse([
                     'code' => 500,
                     'title' => "User ID is not available.",
+                    'parameters' => $data,
+
                 ]);
             }
 
@@ -312,7 +376,9 @@ class AgentScheduleRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined an agent schedule.",
-            "parameters" => $agent_schedule,
+            "meta" => $agent_schedule,
+            'parameters' => $data,
+
         ]);
 
     }
@@ -1193,7 +1259,7 @@ class AgentScheduleRepository extends BaseRepository
                     $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
 
                     $query->where(function ($query) use ($parameters, $end) {
-                        $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['end_event', '<', $end]]);
+                        $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['start_event', '<', $end]]);
                         $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters, $end) {
                             $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
                             $ot_query->where('end_event', '<', $end);
@@ -1209,7 +1275,7 @@ class AgentScheduleRepository extends BaseRepository
                             $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
 
                             $query->where(function ($query) use ($parameters, $end) {
-                                $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['end_event', '<', $end]]);
+                                $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['start_event', '<', $end]]);
                                 $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters) {
                                     $end = Carbon::parse($parameters['end']);
                                     $end = $end->addDays(1);

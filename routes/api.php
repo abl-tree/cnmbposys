@@ -85,6 +85,7 @@ Route::group([
         Route::get('agents', 'AgentScheduleController@fetchAllAgentsWithSchedule');
         Route::get('agents/{agent_id}', 'AgentScheduleController@fetchAgentWithSchedule');
         Route::post("create", "AgentScheduleController@create");
+        Route::post("excel_to_array", "AgentScheduleController@excel_to_array");
         Route::post("create/bulk", "AgentScheduleController@bulkScheduleInsertion");
         Route::post("create/bulk/excel", "AgentScheduleController@excelData");
         Route::post('delete/{schedule_id}', 'AgentScheduleController@delete');

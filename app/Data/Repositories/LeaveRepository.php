@@ -81,18 +81,25 @@ class LeaveRepository extends BaseRepository
                 ->get()->all();
 
             //check if a leave slot is full
-            foreach ($schedule_slots as $slot) {
-                $leave_slot = $operations_manager->leave_slots
-                    ->where('leave_type', $leave->leave_type)
-                    ->where('date', '>=', $slot->start_event)
-                    ->where('date', '<=', $slot->end_event)
-                    ->first();
+            if($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence"){
+                foreach ($schedule_slots as $slot) {
+                    $leave_slot = $operations_manager->leave_slots
+                        ->where('leave_type', $leave->leave_type)
+                        ->where('date', '>=', $slot->start_event)
+                        ->where('date', '<=', $slot->end_event)
+                        ->first();
 
-                if (!isset($leave_slot) || $leave_slot->value <= 0) {
-                    return $this->setResponse([
-                        'code' => 500,
-                        'title' => "Leave slots for {$slot->start_event} are already full.",
-                    ]);
+                    if ($leave_slot->value <= 0) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Leave slots for {$slot->start_event} are already full.",
+                        ]);
+                    }else if(!isset($leave_slot)){
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "There are no leave slots for {$slot->start_event}.",
+                        ]);
+                    }
                 }
             }
 
@@ -104,9 +111,11 @@ class LeaveRepository extends BaseRepository
                     ->where('date', '<=', $slot->end_event)
                     ->first();
 
-                $leave_slot->update([
-                    'value' => --$leave_slot->value,
-                ]);
+                if ($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence") {
+                    $leave_slot->update([
+                        'value' => --$leave_slot->value,
+                    ]);
+                }
             }
         }
 
@@ -114,58 +123,61 @@ class LeaveRepository extends BaseRepository
             strtolower($data['status']) == "approved" &&
             strtolower($leave->leave_type) != "suspended"
         ) {
-            //fetch available leave credits
-            $leave_credits = $this->leave_credit
+            if($leave->leave_type == "vacation_leave" || $leave->leave_type == "sick_leave"){
+                    //fetch available leave credits
+                $leave_credits = $this->leave_credit
                 ->where('user_id', $leave->user_id)
                 ->where('leave_type', $leave->leave_type)
                 ->first();
 
-            if (!$leave_credits) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'title' => "Employee does not have leave credits.",
-                ]);
-            }
+                if (!$leave_credits) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Employee does not have leave credits.",
+                    ]);
+                }
 
-            //initialize credits needed
-            $credits_needed = 0;
+                //initialize credits needed
+                $credits_needed = 0;
 
-            //fetch all schedules hit by leave
-            $schedules_hit = refresh_model($this->agent_schedule->getModel())
-                ->where('user_id', $leave->user_id)
-                ->where('start_event', '>=', $leave->start_event)
-                ->where('end_event', '<=', $leave->end_event)
-                ->get()->all();
+                //fetch all schedules hit by leave
+                $schedules_hit = refresh_model($this->agent_schedule->getModel())
+                    ->where('user_id', $leave->user_id)
+                    ->where('start_event', '>=', $leave->start_event)
+                    ->where('end_event', '<=', $leave->end_event)
+                    ->get()->all();
 
-            /**
-             * loop through all schedules hit
-             * to calculate total of hours needed
-             */
-            foreach ($schedules_hit as $schedule) {
-                $diff = strtotime($schedule->end_event) - strtotime($schedule->start_event);
-                $hours = $diff / (3600);
+                /**
+                 * loop through all schedules hit
+                 * to calculate total of hours needed
+                 */
+                foreach ($schedules_hit as $schedule) {
+                    $diff = strtotime($schedule->end_event) - strtotime($schedule->start_event);
+                    $hours = $diff / (3600);
 
-                //total hours summation
-                $credits_needed += $hours;
-            }
+                    //total hours summation
+                    $credits_needed += $hours;
+                }
 
-            if ($leave_credits->value < $credits_needed) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'title' => "Employee does not have enough leave credits.",
-                    'parameters' => [
-                        'credits' => [
-                            'available' => $leave_credits->value,
-                            'needed' => $credits_needed,
+                if ($leave_credits->value < $credits_needed) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Employee does not have enough leave credits.",
+                        'parameters' => [
+                            'credits' => [
+                                'available' => $leave_credits->value,
+                                'needed' => $credits_needed,
+                            ],
                         ],
-                    ],
-                ]);
-            }
+                    ]);
+                }
 
-            //update leave credits
-            $leave_credits->update([
-                'value' => $leave_credits->value - $credits_needed,
-            ]);
+                //update leave credits
+                $leave_credits->update([
+                    'value' => $leave_credits->value - $credits_needed,
+                ]);
+
+            }
 
         }
 
@@ -174,7 +186,8 @@ class LeaveRepository extends BaseRepository
             $raw_schedules = refresh_model($this->agent_schedule->getModel())
                 ->where('user_id', $leave->user_id)
                 ->where('start_event', '>=', $leave->start_event)
-                ->where('end_event', '<=', $leave->end_event);
+                ->where('end_event', '<=', $leave->end_event)
+                ->where('leave_id','=',null);
 
             //update agent schedules
             $raw_schedules->update([
@@ -185,15 +198,15 @@ class LeaveRepository extends BaseRepository
             $schedules = $raw_schedules->get()->all();
 
             //add attendance for leave schedules
-            foreach ($schedules as $schedule) {
-                refresh_model($this->attendance->getModel())
-                    ->save([
-                        'schedule_id' => $schedule->id,
-                        'time_in' => $schedule->start_event,
-                        'time_out' => $schedule->end_event,
-                        'is_leave' => 1,
-                    ]);
-            }
+            // foreach ($schedules as $schedule) {
+            //     refresh_model($this->attendance->getModel())
+            //         ->save([
+            //             'schedule_id' => $schedule->id,
+            //             'time_in' => $schedule->start_event,
+            //             'time_out' => $schedule->end_event,
+            //             'is_leave' => 1,
+            //         ]);
+            // }
         }
 
         return $this->defineLeave([
@@ -397,12 +410,12 @@ class LeaveRepository extends BaseRepository
                 ->where('end_event', '<=', $leave->end_event);
 
             //remove attendance
-            foreach ($schedules->get()->all() as $schedule) {
-                refresh_model($this->attendance->getModel())
-                    ->where('schedule_id', $schedule->id)
-                    ->where('is_leave', '!=', 0)
-                    ->delete();
-            }
+            // foreach ($schedules->get()->all() as $schedule) {
+            //     refresh_model($this->attendance->getModel())
+            //         ->where('schedule_id', $schedule->id)
+            //         ->where('is_leave', '!=', 0)
+            //         ->delete();
+            // }
 
             //remove schedule-leave tie
             $schedules->update([
@@ -437,6 +450,13 @@ class LeaveRepository extends BaseRepository
 
                     //total hours summation
                     $credits_needed += $hours;
+
+                    // delete attendance
+                    $attendance = $this->attendance->where("schedule_id",$schedule->id)->get()->all();
+                    foreach($attendance as $datum){
+                        $this->attendance->find($datum->id);
+                        $this->attendance->delete();
+                    }
                 }
 
                 //update leave credits
