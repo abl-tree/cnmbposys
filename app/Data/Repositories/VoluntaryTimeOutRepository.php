@@ -52,6 +52,46 @@ class VoluntaryTimeOutRepository extends BaseRepository
 
         $meta_index = 'agent_schedule';
 
+        if(isset($data['agent'])) {
+
+            if($validator->fails()) {
+                $errors = $validator->errors();
+                $errorText = "";
+    
+                foreach ($errors->all() as $message) {
+                    $errorText .= $message;
+                }
+    
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => $errorText,
+                    'parameters' => $data
+                ]);
+            }
+
+            $agent_schedule = $this->agent_schedule
+                        ->whereNull('overtime_id')
+                        ->where('start_event', '<=', $data['timestamp'])
+                        ->where('end_event', '>', $data['timestamp'])
+                        ->where('user_id', $data['agent'])
+                        ->first();
+
+            if(!$agent_schedule) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "No schedule found",
+                    "meta" => [
+                        $meta_index => $agent_schedule,
+                    ],
+                    "parameters" => $data,
+                ]);
+            }
+
+            unset($data['schedules']);
+
+            $data['schedules'][0] = $agent_schedule->id;
+        }
+
         $tempScheds = $data['schedules'];
 
         if($option === 'revert') {
