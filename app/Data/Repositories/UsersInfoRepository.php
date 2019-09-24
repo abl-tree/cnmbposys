@@ -511,7 +511,7 @@ class UsersInfoRepository extends BaseRepository
             }
             if (isset($data['end_date'])) {
                 $target_data[] = [
-                    'column' => 'end_event',
+                    'column' => 'start_event',
                     'operator' => '<=',
                     'value' => $data['end_date'],
                 ];
