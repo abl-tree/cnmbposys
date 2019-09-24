@@ -499,6 +499,31 @@ class UsersInfoRepository extends BaseRepository
         }
         $data['single'] = false;
 
+        if (isset($data['tl_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'leave_checker.schedule',
+                'target' => [
+                    [
+                        'column' => 'tl_id',
+                        'operator' => '=',
+                        'value' => $data['tl_id'],
+                    ],
+                ],
+            ];
+        }
+        if (isset($data['om_id'])) {
+            $data['wherehas'][] = [
+                'relation' => 'leave_checker.schedule',
+                'target' => [
+                    [
+                        'column' => 'om_id',
+                        'operator' => '=',
+                        'value' => $data['om_id'],
+                    ],
+                ],
+            ];
+        }
+
         if (isset($data['leaves'])) {
             $target_data = [];
 
