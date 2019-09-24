@@ -500,209 +500,89 @@ class UsersInfoRepository extends BaseRepository
         $data['single'] = false;
 
         if (isset($data['leaves'])) {
-            if (isset($data['start_date']) && isset($data['end_date'])) {
-                if (isset($data['leave_type'])) {
-                    if (isset($data['status'])) {
-                        $data['wherehas'][] = [
-                            'relation' => 'leave_checker',
-                            'target' => [
-                                [
-                                    'column' => 'start_event',
-                                    'operator' => '>=',
-                                    'value' => $data['start_date'],
-                                ],
-                                [
-                                    'column' => 'start_event',
-                                    'operator' => '<=',
-                                    'value' => $data['end_date'],
-                                ],
-                                [
-                                    'column' => 'leave_type',
-                                    'value' => $data['leave_type'],
-                                ],
-                                [
-                                    'column' => 'status',
-                                    'value' => $data['status'],
-                                ],
-                            ],
-                        ];
-                    } else {
-                        $data['wherehas'][] = [
-                            'relation' => 'leave_checker',
-                            'target' => [
-                                [
-                                    'column' => 'start_event',
-                                    'operator' => '>=',
-                                    'value' => $data['start_date'],
-                                ],
-                                [
-                                    'column' => 'start_event',
-                                    'operator' => '<=',
-                                    'value' => $data['end_date'],
-                                ],
-                                [
-                                    'column' => 'leave_type',
-                                    'value' => $data['leave_type'],
-                                ],
-                            ],
-                        ];
-                    }
+            $target_data = [];
 
-                }  else if(isset($data['status'])){
-                     $data['wherehas'][] = [
-                            'relation' => 'leave_checker',
-                            'target' => [
-                                [
-                                    'column' => 'start_event',
-                                    'operator' => '>=',
-                                    'value' => $data['start_date'],
-                                ],
-                                [
-                                    'column' => 'start_event',
-                                    'operator' => '<=',
-                                    'value' => $data['end_date'],
-                                ],
-                                [
-                                    'column' => 'status',
-                                    'value' => $data['status'],
-                                ],
-                            ],
-                        ];
-                } else {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_checker',
-                        'target' => [
-                            [
-                                'column' => 'start_event',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
-                            ],
-                            [
-                                'column' => 'start_event',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
-                            ],
-                        ],
-                    ];
-                }
-            } else if (isset($data['leave_type'])) {
-                if (isset($data['status'])) {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_checker',
-                        'target' => [
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
-                            ],
-                            [
-                                'column' => 'status',
-                                'value' => $data['status'],
-                            ],
-                        ],
-                    ];
-                } else {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_checker',
-                        'target' => [
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
-                            ],
-                        ],
-                    ];
-                }
-            } else if (isset($data['status'])) {
-                $data['wherehas'][] = [
-                    'relation' => 'leave_checker',
-                    'target' => [
-                        [
-                            'column' => 'status',
-                            'value' => $data['status'],
-                        ],
-                    ],
-                ];
-            } else {
-                $data['wherehas'][] = [
-                    'relation' => 'leave_checker',
-                    'target' => [],
+            if (isset($data['start_date'])) {
+                $target_data[] = [
+                    'column' => 'start_event',
+                    'operator' => '>=',
+                    'value' => $data['start_date'],
                 ];
             }
+            if (isset($data['end_date'])) {
+                $target_data[] = [
+                    'column' => 'end_event',
+                    'operator' => '<=',
+                    'value' => $data['end_date'],
+                ];
+            }
+            if (isset($data['status'])) {
+                $target_data[] = [
+                    'column' => 'status',
+                    'operator' => '=',
+                    'value' => $data['status'],
+                ];
+            }
+            if (isset($data['leave_type'])) {
+                $target_data[] = [
+                    'column' => 'leave_type',
+                    'operator' => '=',
+                    'value' => $data['leave_type'],
+                ];
+            }
+
+            $data['wherehas'][] = [
+                'relation' => 'leave_checker',
+                'target' => $target_data,
+            ];
         }
 
         if (isset($data['leave_credits'])) {
+            $target_data = [];
+
             if (isset($data['leave_type'])) {
-                $data['wherehas'][] = [
-                    'relation' => 'leave_credit_checker',
-                    'target' => [
-                        [
-                            'column' => 'leave_type',
-                            'value' => $data['leave_type'],
-                        ],
-                    ],
-                ];
-            } else {
-                $data['wherehas'][] = [
-                    'relation' => 'leave_credit_checker',
-                    'target' => [],
+                $target_data[] = [
+                    'column' => 'leave_type',
+                    'operator' => '=',
+                    'value' => $data['leave_type'],
                 ];
             }
+
+            $data['wherehas'][] = [
+                'relation' => 'leave_credit_checker',
+                'target' => $target_data,
+            ];
         }
 
         if (isset($data['leave_slots'])) {
-            if (isset($data['start_date']) && isset($data['end_date'])) {
-                if (isset($data['leave_type'])) {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_slot_checker',
-                        'target' => [
-                            [
-                                'column' => 'date',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
-                            ],
-                            [
-                                'column' => 'date',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
-                            ],
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
-                            ],
-                        ],
-                    ];
-                } else if (isset($data['leave_type'])) {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_slot_checker',
-                        'target' => [
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
-                            ],
-                        ],
-                    ];
-                } else {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_slot_checker',
-                        'target' => [
-                            [
-                                'column' => 'date',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
-                            ],
-                            [
-                                'column' => 'date',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
-                            ],
-                        ],
-                    ];
-                }
-            } else {
-                $data['wherehas'][] = [
-                    'relation' => 'leave_slot_checker',
-                    'target' => [],
+            $target_data = [];
+
+            if (isset($data['start_date'])) {
+                $target_data[] = [
+                    'column' => 'date',
+                    'operator' => '>=',
+                    'value' => $data['start_date'],
                 ];
             }
+            if (isset($data['end_date'])) {
+                $target_data[] = [
+                    'column' => 'date',
+                    'operator' => '<=',
+                    'value' => $data['end_date'],
+                ];
+            }
+            if (isset($data['leave_type'])) {
+                $target_data[] = [
+                    'column' => 'leave_type',
+                    'operator' => '=',
+                    'value' => $data['leave_type'],
+                ];
+            }
+
+            $data['wherehas'][] = [
+                'relation' => 'leave_slot_checker',
+                'target' => $target_data,
+            ];
         }
 
         if (isset($data['target'])) {
