@@ -19,8 +19,8 @@ use App\Services\ExcelDateService;
 use App\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Maatwebsite\Excel\Facades\Excel;
 use DateTime;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AgentScheduleRepository extends BaseRepository
 {
@@ -178,7 +178,6 @@ class AgentScheduleRepository extends BaseRepository
                         $data['om_id'] = $om->id;
                     }
 
-
                     if (!isset($data['om_id'])) {
                         return $this->setResponse([
                             'code' => 500,
@@ -217,7 +216,6 @@ class AgentScheduleRepository extends BaseRepository
                 ]);
             }
 
-
         }
         // data validation
 
@@ -225,14 +223,14 @@ class AgentScheduleRepository extends BaseRepository
 
         if (isset($data['user_id'])) {
             if (!$this->user_info->find($data['user_id'])) {
-                $data['email'] = "UserID# ".$data['user_id'];
+                $data['email'] = "UserID# " . $data['user_id'];
                 return $this->setResponse([
                     'code' => 500,
                     'parameters' => $data,
                     'title' => "User ID is not available.",
                 ]);
-            }else{
-                $data['email'] = $this->user->where('uid',$data['user_id'])->first()->email;
+            } else {
+                $data['email'] = $this->user->where('uid', $data['user_id'])->first()->email;
             }
         }
 
@@ -259,7 +257,6 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
-
         // check if start event is before end event
         $start = new DateTime($data['start_event']);
         $end = new DateTime($data['end_event']);
@@ -279,11 +276,11 @@ class AgentScheduleRepository extends BaseRepository
 
         if (!empty($date_hit)) {
             // if($data["id"]!=$date_hit->id){
-                return $this->setResponse([
-                    'code' => 500,
-                    'parameters' => $data,
-                    'title' => 'A schedule within the dates set is already created.',
-                ]);
+            return $this->setResponse([
+                'code' => 500,
+                'parameters' => $data,
+                'title' => 'A schedule within the dates set is already created.',
+            ]);
             // }
         }
 
@@ -477,6 +474,24 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
+        //filter by start date
+        if (isset($data['start_date'])) {
+            $data['where'][] = [
+                "target" => "start_event",
+                "operator" => ">=",
+                "value" => $data['start_date'],
+            ];
+        }
+
+        //filter by end date
+        if (isset($data['end_date'])) {
+            $data['where'][] = [
+                "target" => "end_event",
+                "operator" => "<=",
+                "value" => $data['end_date'],
+            ];
+        }
+
         $count_data = $data;
 
         $data['relations'] = ['user_info.user', 'tl_info.user', 'om_info.user', 'title', 'leave'];
@@ -666,6 +681,24 @@ class AgentScheduleRepository extends BaseRepository
             } else {
                 $data['where_null'] = ['approved_by'];
             }
+        }
+
+        //filter by start date
+        if (isset($data['start_date'])) {
+            $data['where'][] = [
+                "target" => "start_event",
+                "operator" => ">=",
+                "value" => $data['start_date'],
+            ];
+        }
+
+        //filter by end date
+        if (isset($data['end_date'])) {
+            $data['where'][] = [
+                "target" => "end_event",
+                "operator" => "<=",
+                "value" => $data['end_date'],
+            ];
         }
 
         if (isset($data['target'])) {
