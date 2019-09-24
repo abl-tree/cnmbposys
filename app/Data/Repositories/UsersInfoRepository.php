@@ -696,7 +696,7 @@ class UsersInfoRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully retrieved users Informations",
+            "title"      => "Successfully retrieved users",
             "description"=>"UserInfo",
             "meta"       => [
                 $meta_index => $result,
@@ -704,6 +704,120 @@ class UsersInfoRepository extends BaseRepository
             ],
             "parameters" => $parameters,
 
+        ]);
+    }
+
+     /**
+     * Fetch all users with leaves
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function usersWithSchedules($data = [])
+    {
+        $meta_index = "metadata";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "metadata";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['id'] = $data['id'];
+
+        }
+
+        if(isset($data['tl'])){
+            $data['wherehas'][] = [
+                'relation' => 'tl_schedule_checker',
+                'target' => [],
+            ];
+        }
+
+        if(isset($data['om'])){
+            $data['wherehas'][] = [
+                'relation' => 'om_schedule_checker',
+                'target' => [],
+            ];
+        }
+       
+        if (isset($data['target'])) {
+            
+            $result = $this->user_info;
+            $data['relations'] = ["tl_schedules", "om_schedules"];     
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'firstname';
+                    $data['target'][] = 'middlename';
+                    $data['target'][] = 'lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+                
+            $count_data = $data;
+            $result = $this->genericSearch($data, $result)->get()->all();
+    
+            if ($result == null) {
+                return $this->setResponse([
+                    'code' => 404,
+                    'title' => "No users are found",
+                    "meta" => [
+                        $meta_index => $result,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+    
+            $count_data['search'] = true;
+            $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+    
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "Successfully searched Users",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $count,
+                ],
+                "parameters" => $parameters,
+            ]);   
+        }
+
+        $count_data = $data;
+        $data['relations'] = ["tl_schedules", "om_schedules"];
+
+        $result = $this->fetchGeneric($data, $this->user_info);
+        $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No Users are found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved users",
+            "description"=> "UserInfo",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+            
         ]);
     }
 
