@@ -502,25 +502,72 @@ class UsersInfoRepository extends BaseRepository
         if (isset($data['leaves'])) {
             if (isset($data['start_date']) && isset($data['end_date'])) {
                 if (isset($data['leave_type'])) {
-                    $data['wherehas'][] = [
-                        'relation' => 'leave_checker',
-                        'target' => [
-                            [
-                                'column' => 'start_event',
-                                'operator' => '>=',
-                                'value' => $data['start_date'],
+                    if (isset($data['status'])) {
+                        $data['wherehas'][] = [
+                            'relation' => 'leave_checker',
+                            'target' => [
+                                [
+                                    'column' => 'start_event',
+                                    'operator' => '>=',
+                                    'value' => $data['start_date'],
+                                ],
+                                [
+                                    'column' => 'start_event',
+                                    'operator' => '<=',
+                                    'value' => $data['end_date'],
+                                ],
+                                [
+                                    'column' => 'leave_type',
+                                    'value' => $data['leave_type'],
+                                ],
+                                [
+                                    'column' => 'status',
+                                    'value' => $data['status'],
+                                ],
                             ],
-                            [
-                                'column' => 'start_event',
-                                'operator' => '<=',
-                                'value' => $data['end_date'],
+                        ];
+                    } else {
+                        $data['wherehas'][] = [
+                            'relation' => 'leave_checker',
+                            'target' => [
+                                [
+                                    'column' => 'start_event',
+                                    'operator' => '>=',
+                                    'value' => $data['start_date'],
+                                ],
+                                [
+                                    'column' => 'start_event',
+                                    'operator' => '<=',
+                                    'value' => $data['end_date'],
+                                ],
+                                [
+                                    'column' => 'leave_type',
+                                    'value' => $data['leave_type'],
+                                ],
                             ],
-                            [
-                                'column' => 'leave_type',
-                                'value' => $data['leave_type'],
+                        ];
+                    }
+
+                }  else if(isset($data['status'])){
+                     $data['wherehas'][] = [
+                            'relation' => 'leave_checker',
+                            'target' => [
+                                [
+                                    'column' => 'start_event',
+                                    'operator' => '>=',
+                                    'value' => $data['start_date'],
+                                ],
+                                [
+                                    'column' => 'start_event',
+                                    'operator' => '<=',
+                                    'value' => $data['end_date'],
+                                ],
+                                [
+                                    'column' => 'status',
+                                    'value' => $data['status'],
+                                ],
                             ],
-                        ],
-                    ];
+                        ];
                 } else {
                     $data['wherehas'][] = [
                         'relation' => 'leave_checker',
@@ -539,12 +586,38 @@ class UsersInfoRepository extends BaseRepository
                     ];
                 }
             } else if (isset($data['leave_type'])) {
+                if (isset($data['status'])) {
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_checker',
+                        'target' => [
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                            [
+                                'column' => 'status',
+                                'value' => $data['status'],
+                            ],
+                        ],
+                    ];
+                } else {
+                    $data['wherehas'][] = [
+                        'relation' => 'leave_checker',
+                        'target' => [
+                            [
+                                'column' => 'leave_type',
+                                'value' => $data['leave_type'],
+                            ],
+                        ],
+                    ];
+                }
+            } else if (isset($data['status'])) {
                 $data['wherehas'][] = [
                     'relation' => 'leave_checker',
                     'target' => [
                         [
-                            'column' => 'leave_type',
-                            'value' => $data['leave_type'],
+                            'column' => 'status',
+                            'value' => $data['status'],
                         ],
                     ],
                 ];
