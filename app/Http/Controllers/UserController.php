@@ -61,7 +61,9 @@ class UserController extends BaseController
     {
         $data = $request->all();
 
-        if (isset($data['leaves']) || isset($data['leave_credits']) || isset($data['leave_slots'])) {
+        if ((isset($data['tl']) && isset($data['leaves'])) || (isset($data['om']) && isset($data['leaves']))) {
+            return $this->absorb($this->user_info->leavesByTlOm($data))->json();
+        } else if (isset($data['leaves']) || isset($data['leave_credits']) || isset($data['leave_slots'])) {
             return $this->absorb($this->user_info->usersWithLeaves($data))->json();
         } else if (isset($data['tl']) || isset($data['om'])) {
             return $this->absorb($this->user_info->usersWithSchedules($data))->json();
