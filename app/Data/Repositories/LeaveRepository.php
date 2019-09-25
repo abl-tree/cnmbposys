@@ -8,6 +8,7 @@ use App\Data\Models\Leave;
 use App\Data\Models\LeaveCredit;
 use App\Data\Repositories\BaseRepository;
 use App\User;
+use DateTime;
 
 class LeaveRepository extends BaseRepository
 {
@@ -67,11 +68,11 @@ class LeaveRepository extends BaseRepository
          */
         if (
             strtolower($data['status']) == "approved" &&
-            (strtolower($leave->leave_type) == "sick_leave" || strtolower($leave->leave_type) == "vacation_leave")
+            (strtolower($leave->leave_type) == "leave_of_absence" || strtolower($leave->leave_type) == "vacation_leave")
         ) {
 
             //fetch user data
-            $operations_manager = refresh_model($this->user->getModel())->find($data['approved_by']);
+            $operations_manager = refresh_model($this->user->getModel())->find($data['om_id']);
 
             //fetch all schedules
             $schedule_slots = refresh_model($this->agent_schedule->getModel())
@@ -83,40 +84,45 @@ class LeaveRepository extends BaseRepository
             //check if a leave slot is full
             if($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence"){
                 foreach ($schedule_slots as $slot) {
+                    $start = new DateTime(substr($slot->start_event,0,10));
                     $leave_slot = $operations_manager->leave_slots
                         ->where('leave_type', $leave->leave_type)
-                        ->where('date', '>=', $slot->start_event)
-                        ->where('date', '<=', $slot->end_event)
+                        ->where('date', '=', $start->format("Y-m-d H:i:s"))
                         ->first();
+                    if(!isset($leave_slot)){
+                        return $this->setResponse([
+                            'code' => 500,
+                            'meta' => $operations_manager,
+                            'title' => "There are no leave slots for {$start}.",
+                        ]);
+                    }
 
                     if ($leave_slot->value <= 0) {
                         return $this->setResponse([
                             'code' => 500,
-                            'title' => "Leave slots for {$slot->start_event} are already full.",
-                        ]);
-                    }else if(!isset($leave_slot)){
-                        return $this->setResponse([
-                            'code' => 500,
-                            'title' => "There are no leave slots for {$slot->start_event}.",
+                            'title' => "Leave slots for {$start} are already full.",
                         ]);
                     }
                 }
             }
 
             //decrement leave slots
-            foreach ($schedule_slots as $slot) {
-                $leave_slot = $operations_manager->leave_slots
-                    ->where('leave_type', $leave->leave_type)
-                    ->where('date', '>=', $slot->start_event)
-                    ->where('date', '<=', $slot->end_event)
-                    ->first();
+            if($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence"){
+                foreach ($schedule_slots as $slot) {
+                    $start = new DateTime(substr($slot->start_event,0,10));
+                    $leave_slot = $operations_manager->leave_slots
+                        ->where('leave_type', $leave->leave_type)
+                        ->where('date', '=', $start->format("Y-m-d H:i:s"))
+                        ->first();
 
-                if ($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence") {
-                    $leave_slot->update([
-                        'value' => --$leave_slot->value,
-                    ]);
+                    if ($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence") {
+                        $leave_slot->update([
+                            'value' => --$leave_slot->value,
+                        ]);
+                    }
                 }
             }
+
         }
 
         if (
@@ -517,6 +523,24 @@ class LeaveRepository extends BaseRepository
             ];
         }
 
+        //if generated_by is set
+        if (isset($data['generated_by']) && is_numeric($data['generated_by'])) {
+            $data['where'][] = [
+                "target" => 'generated_by',
+                "operator" => "=",
+                "value" => $data['generated_by'],
+            ];
+        }
+
+        //if allowed_access is set
+        if (isset($data['allowed_access']) && is_numeric($data['allowed_access'])) {
+            $data['where'][] = [
+                "target" => 'allowed_access',
+                "operator" => "=",
+                "value" => $data['allowed_access'],
+            ];
+        }
+
         //filter by date range
         if (isset($data['start_date'])) {
             $data['where'][] = [
@@ -531,6 +555,28 @@ class LeaveRepository extends BaseRepository
                 "target" => "start_event",
                 "operator" => "<=",
                 "value" => $data['end_date'],
+            ];
+        }
+
+        //filter by created-at range
+        if (isset($data['created_at_start'])) {
+            // $created_at_start = new DateTime($data['created_at_start']);
+            $data['where'][] = [
+                "target" => "created_at",
+                "operator" => ">=",
+                // "value" => $created_at_start->format('Y-m-d H:i:s')."",
+                "value" => $data['created_at_start'],
+            ];
+        }
+
+        if (isset($data['created_at_end'])) {
+            // $created_at_end = new DateTime($data['created_at_end']);
+            $data['where'][] = [
+                "target" => "created_at",
+                "operator" => "<=",
+                // "value" => $created_at_end->format('Y-m-d H:i:s')."",
+                "value" => $data['created_at_end'],
+
             ];
         }
 
