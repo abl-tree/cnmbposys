@@ -469,6 +469,167 @@ class UsersInfoRepository extends BaseRepository
         ]);
     }
 
+    public function leavesByTlOm($data = []){
+
+        $meta_index = "metadata";
+        $parameters = [];
+        $count = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index = "metadata";
+            $data['single'] = false;
+            $data['where'] = [
+                [
+                    "target" => "id",
+                    "operator" => "=",
+                    "value" => $data['id'],
+                ],
+            ];
+
+            $parameters['id'] = $data['id'];
+
+        }
+        $data['single'] = false;
+
+        if (isset($data['leaves'])) {
+            $target_data = [];
+
+            if (isset($data['start_date'])) {
+                $target_data[] = [
+                    'column' => 'created_at',
+                    'operator' => '>=',
+                    'value' => $data['start_date'],
+                ];
+            }
+            if (isset($data['end_date'])) {
+                $target_data[] = [
+                    'column' => 'created_at',
+                    'operator' => '<=',
+                    'value' => $data['end_date'],
+                ];
+            }
+            if (isset($data['status'])) {
+                $target_data[] = [
+                    'column' => 'status',
+                    'operator' => '=',
+                    'value' => $data['status'],
+                ];
+            }
+            if (isset($data['leave_type'])) {
+                $target_data[] = [
+                    'column' => 'leave_type',
+                    'operator' => '=',
+                    'value' => $data['leave_type'],
+                ];
+            }
+            if (isset($data['allowed_access'])) {
+                $target_data[] = [
+                    'column' => 'allowed_access',
+                    'operator' => '=',
+                    'value' => $data['allowed_access'],
+                ];
+            }
+            if (isset($data['tl'])) {
+                $data['wherehas'][] = [
+                    'relation' => 'tl_schedule_checker.leave',
+                    'target' => $target_data,
+                ];
+            } else if (isset($data['om'])){
+                $data['wherehas'][] = [
+                    'relation' => 'om_schedule_checker.leave',
+                    'target' => $target_data,
+                ];
+            }else{
+                $data['wherehas'][] = [
+                    'relation' => 'leave_checker',
+                    'target' => $target_data,
+                ];
+            }
+
+        }
+
+        if (isset($data['target'])) {
+
+            $result = $this->user_info;
+            $data['relations'] = ["user_info", "accesslevel"];
+
+            if(isset($data['no_relations'])){
+                unset($data['relations']);
+            }
+
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "full_name")) {
+                    $data['target'][] = 'firstname';
+                    $data['target'][] = 'middlename';
+                    $data['target'][] = 'lastname';
+                    unset($data['target'][$index]);
+                }
+            }
+
+            $count_data = $data;
+            $result = $this->genericSearch($data, $result)->get()->all();
+
+            if ($result == null) {
+                return $this->setResponse([
+                    'code' => 404,
+                    'title' => "No users are found",
+                    "meta" => [
+                        $meta_index => $result,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+
+            $count_data['search'] = true;
+            $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "Successfully searched Users",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $count,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count_data = $data;
+        $data['relations'] = ["user_info", "accesslevel", "leaves", "leave_credits", "leave_slots"];
+
+        if(isset($data['no_relations'])){
+            unset($data['relations']);
+        }
+
+        $result = $this->fetchGeneric($data, $this->user_info);
+        $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
+
+        if (!$result) {
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No Users are found",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully retrieved users",
+            "description" => "UserInfo",
+            "meta" => [
+                $meta_index => $result,
+                "count" => $count,
+            ],
+            "parameters" => $parameters,
+
+        ]);
+    }
+
     /**
      * Fetch all users with leaves
      *
@@ -499,31 +660,6 @@ class UsersInfoRepository extends BaseRepository
         }
         $data['single'] = false;
 
-        if (isset($data['tl_id'])) {
-            $data['wherehas'][] = [
-                'relation' => 'leave_checker.schedule',
-                'target' => [
-                    [
-                        'column' => 'tl_id',
-                        'operator' => '=',
-                        'value' => $data['tl_id'],
-                    ],
-                ],
-            ];
-        }
-        if (isset($data['om_id'])) {
-            $data['wherehas'][] = [
-                'relation' => 'leave_checker.schedule',
-                'target' => [
-                    [
-                        'column' => 'om_id',
-                        'operator' => '=',
-                        'value' => $data['om_id'],
-                    ],
-                ],
-            ];
-        }
-
         if (isset($data['leaves'])) {
             $target_data = [];
 
@@ -553,6 +689,39 @@ class UsersInfoRepository extends BaseRepository
                     'column' => 'leave_type',
                     'operator' => '=',
                     'value' => $data['leave_type'],
+                ];
+            }
+            if (isset($data['allowed_access'])) {
+                $target_data[] = [
+                    'column' => 'allowed_access',
+                    'operator' => '=',
+                    'value' => $data['allowed_access'],
+                ];
+            }
+
+            if (isset($data['om_id'])) {
+                $data['wherehas'][] = [
+                    'relation' => 'leave_checker.schedule',
+                    'target' => [
+                        [
+                            'column' => 'om_id',
+                            'operator' => '=',
+                            'value' => $data['om_id'],
+                        ],
+                    ],
+                ];
+            }
+
+            if (isset($data['tl_id'])) {
+                $data['wherehas'][] = [
+                    'relation' => 'leave_checker.schedule',
+                    'target' => [
+                        [
+                            'column' => 'tl_id',
+                            'operator' => '=',
+                            'value' => $data['tl_id'],
+                        ],
+                    ],
                 ];
             }
 
@@ -613,7 +782,12 @@ class UsersInfoRepository extends BaseRepository
         if (isset($data['target'])) {
 
             $result = $this->user_info;
-            $data['relations'] = ["user_info", "accesslevel", "benefits"];
+            $data['relations'] = ["user_info", "accesslevel"];
+
+            if(isset($data['no_relations'])){
+                unset($data['relations']);
+            }
+
             foreach ((array) $data['target'] as $index => $column) {
                 if (str_contains($column, "full_name")) {
                     $data['target'][] = 'firstname';
@@ -652,7 +826,11 @@ class UsersInfoRepository extends BaseRepository
         }
 
         $count_data = $data;
-        $data['relations'] = ["user_info", "accesslevel", "benefits", "leaves", "leave_credits", "leave_slots"];
+        $data['relations'] = ["user_info", "accesslevel", "leaves", "leave_credits", "leave_slots"];
+
+        if(isset($data['no_relations'])){
+            unset($data['relations']);
+        }
 
         $result = $this->fetchGeneric($data, $this->user_info);
         $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));
@@ -835,6 +1013,10 @@ class UsersInfoRepository extends BaseRepository
                 }
             }
 
+            if(isset($data['no_relations'])){
+                unset($data['relations']);
+            }
+
             $count_data = $data;
             $result = $this->genericSearch($data, $result)->get()->all();
 
@@ -865,6 +1047,10 @@ class UsersInfoRepository extends BaseRepository
 
         $count_data = $data;
         $data['relations'] = ["tl_schedules", "om_schedules"];
+
+        if(isset($data['no_relations'])){
+            unset($data['relations']);
+        }
 
         $result = $this->fetchGeneric($data, $this->user_info);
         $count = $this->countData($count_data, refresh_model($this->user_info->getModel()));

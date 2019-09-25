@@ -463,6 +463,19 @@ class LeaveRepository extends BaseRepository
                         $this->attendance->find($datum->id);
                         $this->attendance->delete();
                     }
+
+                    // return leave slot
+                    $leave_slot = $this->leave_slot
+                        ->where('user_id', $leave->om_id)
+                        ->where('date', $schedule->start_event)
+                        ->where('leave_type', $leave->leave_type)
+                        ->first();
+
+                    if (isset($leave_slot)) {
+                        $leave_slot->update([
+                            'value' => ++$leave_slot->value,
+                        ]);
+                    }
                 }
 
                 //update leave credits
