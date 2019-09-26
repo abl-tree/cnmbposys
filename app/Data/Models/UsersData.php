@@ -92,6 +92,26 @@ class UsersData extends BaseModel
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
     }
 
+    public function tl_schedules()
+    {
+        return $this->hasMany('\App\Data\Models\AgentSchedule', 'tl_id', 'id');
+    }
+
+    public function tl_schedule_checker()
+    {
+        return $this->hasOne('\App\Data\Models\AgentSchedule', 'tl_id', 'id');
+    }
+
+    public function om_schedules()
+    {
+        return $this->hasMany('\App\Data\Models\AgentSchedule', 'om_id', 'id');
+    }
+
+    public function om_schedule_checker()
+    {
+        return $this->hasOne('\App\Data\Models\AgentSchedule', 'om_id', 'id');
+    }
+
     public function leaves()
     {
         return $this->hasMany('\App\Data\Models\Leave', 'user_id', 'id');

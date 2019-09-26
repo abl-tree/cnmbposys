@@ -81,7 +81,12 @@ class BaseRepository
                 $model = $model->whereHas($conditions['relation'], function ($q) use ($conditions) {
                     foreach ((array) $conditions['target'] as $key => $value) {
                         if (isset($value['operator'])) {
-                            $q->where($value['column'], $value['operator'], $value['value']);
+                            if ($value['operator'] == 'not_null') {
+                                $q->whereNotNull($value['column']);
+                            } else {
+                                $q->where($value['column'], $value['operator'], $value['value']);
+                            }
+
                         } else {
                             $q->where($value['column'], $value['value']);
                         }
@@ -284,7 +289,12 @@ class BaseRepository
                 $model = $model->whereHas($conditions['relation'], function ($q) use ($conditions) {
                     foreach ((array) $conditions['target'] as $key => $value) {
                         if (isset($value['operator'])) {
-                            $q->where($value['column'], $value['operator'], $value['value']);
+                            if ($value['operator'] == 'not_null') {
+                                $q->whereNotNull($value['column']);
+                            } else {
+                                $q->where($value['column'], $value['operator'], $value['value']);
+                            }
+
                         } else {
                             $q->where($value['column'], $value['value']);
                         }

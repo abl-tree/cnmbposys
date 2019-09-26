@@ -29,7 +29,7 @@ class LeaveController extends BaseController
         $data['id'] = $id;
         $data['status'] = $action == "approve" ? 'approved' : 'rejected';
         $data['approved_by'] = $request->user()->id;
-        $data['user_access'] = $request->user()->access->id;
+            $data['user_access'] = $request->user()->access->id;
 
         if (!isset($data['id']) ||
             !is_numeric($data['id']) ||
