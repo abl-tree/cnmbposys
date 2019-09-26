@@ -54,6 +54,7 @@ class AgentSchedule extends BaseModel
         'end_event',
         'overtime_id',
         'leave_id',
+        'vto_at',
     ];
 
     public $timestamps = true;

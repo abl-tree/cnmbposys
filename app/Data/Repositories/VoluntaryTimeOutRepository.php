@@ -477,13 +477,17 @@ class VoluntaryTimeOutRepository extends BaseRepository
 
         $meta_index = "agent_schedules";
 
+        $parameters = [
+            "query" => isset($data['query']) ? $data['query'] : null,
+        ];
+
         $data['relations'] = ["user_info.user", 'title'];
 
         $data['where_not_null'] = ['vto_at'];
 
         $result = $result->groupBy('vto_at');
 
-        $result = $this->fetchGeneric($data, $result);
+        $result = $this->genericSearch($data, $result)->get();
 
         foreach ($result as $key => $value) {
             array_push($list, $value->vto_at);
@@ -494,8 +498,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
             "title" => "Successfully listed distinct VTO",
             "meta" => [
                 $meta_index => $list,
-                "count" => count($result),
-            ]
+                "count" => count($list),
+            ],
+            "parameters" => $parameters
         ]);
     }
 
