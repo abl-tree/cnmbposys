@@ -38,7 +38,8 @@ class AgentSchedule extends BaseModel
         'break',
         'remaining_time',
         'leave',
-
+        'om',
+        'tl'
     ];
 
     protected $searchable = [
@@ -144,6 +145,8 @@ class AgentSchedule extends BaseModel
             return number_format($value ? $value : 0, 1);
         }
     }
+
+
 
     public function getVtoHoursAttribute()
     {
@@ -444,10 +447,28 @@ class AgentSchedule extends BaseModel
         return $data;
     }
 
+    public function getOmAttribute(){
+        return $this->user_info->find($this->om_id);
+    }
+
+    public function getTlAttribute(){
+        return $this->user_info->find($this->tl_id);
+    }
+
     public function approved_by()
     {
         return $this->hasOne('App\Data\Models\UserInfo', 'id', 'approved_by');
     }
+
+    // public function om()
+    // {
+    //     return $this->hasOne('App\Data\Models\UserInfo','id','om_id');
+    // }
+
+    // public function tl()
+    // {
+    //     return $this->hasOne('App\Data\Models\UserInfo','id','om_id');
+    // }
 
     public function attendances()
     {

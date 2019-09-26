@@ -1287,6 +1287,7 @@ class AgentScheduleRepository extends BaseRepository
                     });
                 }
 
+
                 $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);
                     $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);

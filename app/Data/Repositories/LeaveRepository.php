@@ -322,7 +322,7 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
-        //set auto approved leave
+        //set auto approved
         if (isset($data['isApproved']) && $data['isApproved']) {
             $approval = $this->setLeaveApproval([
                 'id' => $leave->id,
@@ -408,12 +408,14 @@ class LeaveRepository extends BaseRepository
 
         $data['start_leave'] = $data['cancel_event'] ?? $leave->start_event;
 
+
         if ($leave->status == 'approved') {
             //raw schedules (query builder format)
             $schedules = $this->agent_schedule
                 ->where('leave_id', $leave->id)
                 ->where('start_event', '>=', $data['start_leave'])
                 ->where('end_event', '<=', $leave->end_event);
+
 
             //remove attendance
             // foreach ($schedules->get()->all() as $schedule) {
@@ -484,11 +486,23 @@ class LeaveRepository extends BaseRepository
                 ]);
             }
         }
-
-        return $this->defineLeave([
-            'id' => $data['id'],
-            'status' => 'cancelled',
-        ]);
+        $cancel_event = new DateTime($data['cancel_event']);
+        $cancel_event = $cancel_event->setTime(00,00,00);
+        $cancel_event = $cancel_event->format('Y-m-d H:i:s');
+        if($cancel_event == $leave->start_event){
+            return $this->defineLeave([
+                'id' => $data['id'],
+                'status' => 'cancelled',
+            ]);
+        }else{
+            $new_end = new DateTime($data['cancel_event']);
+            $new_end = $new_end->modify('-1 day')->format('Y-m-d');
+            return $this->defineLeave([
+                'id' => $data['id'],
+                'status' => 'approved',
+                'end_event' => $new_end." 23:59:59"
+            ]);
+        }
     }
 
     public function fetchLeave($data = [])
