@@ -270,8 +270,12 @@ class AgentScheduleRepository extends BaseRepository
 
         //validate if a schedule is already made within these dates
         $date_hit = $this->agent_schedule
-            ->whereBetween('start_event', [$data['start_event'], $data['end_event']])
-            ->orWhereBetween('end_event', [$data['start_event'], $data['end_event']])
+            ->where('user_id', $data['user_id'])
+            ->where(function ($query) use ($data) {
+                $query
+                    ->whereBetween('start_event', [$data['start_event'], $data['end_event']])
+                    ->orWhereBetween('end_event', [$data['start_event'], $data['end_event']]);
+            })
             ->first();
 
         if (!empty($date_hit)) {
@@ -1286,7 +1290,6 @@ class AgentScheduleRepository extends BaseRepository
                         });
                     });
                 }
-
 
                 $data['relations'] = array('schedule' => function ($query) use ($parameters) {
                     $end = Carbon::parse($parameters['end']);
