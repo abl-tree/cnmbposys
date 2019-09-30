@@ -539,6 +539,7 @@ class LeaveRepository extends BaseRepository
 
         //set relations
         $data['relations'][] = 'user';
+        $data['relations'][] = 'approved_by';
         $data['relations'][] = 'leave_credits';
 
         //fetch user if set

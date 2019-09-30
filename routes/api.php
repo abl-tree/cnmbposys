@@ -314,6 +314,7 @@ Route::group([
         Route::get('reassign_template', 'excelController@Reassigntemplate');
         Route::post('import_to_array', 'excelController@importToArray');
         Route::post('import', 'excelController@importStoreAdd');
+        Route::post('create_multisheet_excel', 'excelController@createMultisheetExcel');
     });
 });
 

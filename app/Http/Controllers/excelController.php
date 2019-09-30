@@ -27,7 +27,7 @@ use App\Http\Controllers\BaseController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
 
- 
+
 class excelController extends BaseController
 {
       /**
@@ -35,7 +35,7 @@ class excelController extends BaseController
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     */ 
+     */
 
 
     function Addtemplate(){
@@ -71,7 +71,7 @@ class excelController extends BaseController
                 $worksheet = $spreadsheet->getActiveSheet(0);
                 $worksheet->fromArray($header,null,'A1');
                 $worksheet->setTitle("Add");
-                
+
                 // //position sheet
                 // $worksheet = new Worksheet($spreadsheet, 'Position');
                 // $worksheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
@@ -112,7 +112,7 @@ class excelController extends BaseController
                 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
                 $writer->setPreCalculateFormulas(false);
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                header('Content-Disposition: attachment;filename='. $filename); 
+                header('Content-Disposition: attachment;filename='. $filename);
                 header('Cache-Control: max-age=0');
                 $writer->save('php://output');
         // });
@@ -154,7 +154,7 @@ class excelController extends BaseController
                 ->select(DB::raw('concat_ws(" ",user_infos.firstname,user_infos.middlename, user_infos.lastname) as fullname'),'access_levels.code as code')
                 ->where([['user_infos.id','=',$datum->parent_id],['user_infos.status','!=','inactive']])
                 ->get();
-            
+
                 $id = $datum->id;
                 $emp_name = $datum->fullname;
                 $emp_pos = $datum->position;
@@ -224,7 +224,7 @@ class excelController extends BaseController
             $worksheet->fromArray($datum,null,'A'.($k));
             $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange($tmp1[$k],$spreadsheet->getSheetByName('Parent'),($k).':'.($k)));
         }
-       
+
         //config sheet
         $token = DB::table('excel_template_validators')->where('template','Reassign')->pluck('token');
         $config=[
@@ -237,17 +237,17 @@ class excelController extends BaseController
         $worksheet->fromArray($config,null,'A1');
 
         // //defining named range
-        
+
         // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('hrm',$spreadsheet->getSheetByName('Parent'),'2:2'));
         // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('om',$spreadsheet->getSheetByName('Parent'),'3:3'));
         // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('rtam',$spreadsheet->getSheetByName('Parent'),'4:4'));
         // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('tqm',$spreadsheet->getSheetByName('Parent'),'5:5'));
         // $spreadsheet->addNamedRange(new \PhpOffice\PhpSpreadsheet\NamedRange('tl',$spreadsheet->getSheetByName('Parent'),'6:6'));
-        
+
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->setPreCalculateFormulas(false);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'. $filename); 
+        header('Content-Disposition: attachment;filename="'. $filename);
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit;
@@ -287,7 +287,7 @@ class excelController extends BaseController
         // echo json_encode($userInfo);
         // $worksheet->setTitle("All employee");
         foreach($userInfo as $k => $datum){
-            
+
             if(!empty($datum->image_url)){
                 $worksheet->getRowDimension($k+2)->setRowHeight(50);
                 $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
@@ -326,7 +326,7 @@ class excelController extends BaseController
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->setPreCalculateFormulas(false);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'. $filename); 
+        header('Content-Disposition: attachment;filename="'. $filename);
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit;
@@ -350,7 +350,7 @@ class excelController extends BaseController
             $object['outdated'] = false;
             $sheets = $spreadsheet->getSheetNames();
             if(!in_array('config',$sheets)){
-                
+
                 exit;
             }
             $handler = $spreadsheet->setActiveSheetIndexByName('config');
@@ -388,7 +388,7 @@ class excelController extends BaseController
                         $etv = $etv->updateExcelToken("Reassign");
                     }
                 }
-                
+
             }else{
                 echo json_encode('Template is outdated.');
                 exit;
@@ -420,7 +420,7 @@ class excelController extends BaseController
         $duplicate=0;
         $insertstatus=0; //0=saved, 1=duplicate, 2=error
 
-        
+
         if(in_array($concat,$hash)){
             $duplicate=1;
         }
@@ -500,7 +500,7 @@ class excelController extends BaseController
         if($duplicate>0){
             $insertstatus=1;
         }
-        
+
         if($error>0){
             $insertstatus=2;
         }
@@ -511,9 +511,9 @@ class excelController extends BaseController
 
         if(($insertstatus>0)){
             $etv = new ExcelTemplateValidator;
-            $etv = $etv->updateExcelToken("Reassign");  
+            $etv = $etv->updateExcelToken("Reassign");
         }
-        
+
         echo json_encode(['status'=>$insertstatus,'eid'=>$request->obj[14]]);
         // return $this->setResponse([
         //     "code"       => 200,
@@ -526,16 +526,16 @@ class excelController extends BaseController
     }
 
     public function createExcelFile($header,$data){
-        
+
     /**
      * creates an excel file
-     * 
+     *
      * for array of strings only
-     *  
+     *
      * @param header, @param data
-     * 
-     * Sample usage 
-     * 
+     *
+     * Sample usage
+     *
      *   $header = [
      *      "First name",
      *      "Middle name",
@@ -549,15 +549,38 @@ class excelController extends BaseController
     */
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet(0);
+
         $worksheet->fromArray($header,null,'A1');
         $worksheet->fromArray($data,null,'A2');
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->setPreCalculateFormulas(false);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename='); 
+        header('Content-Disposition: attachment;filename=');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit;
     }
 
+    function createMultisheetExcel(Request $request){
+        // with multiple sheets
+        $data = json_decode($request->obj,true);
+        $spreadsheet = new Spreadsheet();
+        foreach($data['content'] as $key => $value){
+            if($key == 0){
+                $worksheet = $spreadsheet->getActiveSheet(0);
+                $worksheet->setTitle($value['sheet_name']);
+            }else{
+                $worksheet = new Worksheet($spreadsheet, $value['sheet_name']);
+                $spreadsheet->addSheet($worksheet);
+            }
+            $worksheet->fromArray($value['sheet_data'],null,'A1');
+        }
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->setPreCalculateFormulas(false);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
+    }
 }

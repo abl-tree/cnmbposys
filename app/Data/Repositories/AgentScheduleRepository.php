@@ -275,14 +275,14 @@ class AgentScheduleRepository extends BaseRepository
                 $query
                     ->whereBetween('start_event', [$data['start_event'], $data['end_event']])
                     ->orWhereBetween('end_event', [$data['start_event'], $data['end_event']]);
-            })
-            ->first();
+            })->first();
 
         if (!empty($date_hit)) {
             // if($data["id"]!=$date_hit->id){
             return $this->setResponse([
                 'code' => 500,
                 'parameters' => $data,
+                'meta' => $date_hit,
                 'title' => 'A schedule within the dates set is already created.',
             ]);
             // }

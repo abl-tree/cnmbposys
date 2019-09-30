@@ -188,11 +188,11 @@ class AttendanceRepository extends BaseRepository
         }
         if ($auth_id != null) {
             $logged_in_user = $this->user->find($auth_id);
-            $timed_in_user = $attendance ? $this->user->find($attendance->id) : $this->user->find($user->id);
-            $message = "Successfully created an attendance for " . $timed_in_user->full_name . "[" . $timed_in_user->access->name . "]" . " by " . $logged_in_user->full_name . "[" . $logged_in_user->access->name . "].";
+            // $timed_in_user = $attendance ? $this->user->find($attendance->id) : $this->user->find($user->id);
+            // $message = "Successfully created an attendance for " . $timed_in_user->full_name . "[" . $timed_in_user->access->name . "]" . " by " . $logged_in_user->full_name . "[" . $logged_in_user->access->name . "].";
         } else {
-            $logged_in_user = $attendance ? $this->user->find($attendance->id) : $this->user->find($user->id);
-            $message = "Successfully created an attendance for " . $logged_in_user->full_name . "[" . $logged_in_user->access->name . "].";
+            // $logged_in_user = $attendance ? $this->user->find($attendance->id) : $this->user->find($user->id);
+            // $message = "Successfully created an attendance for " . $logged_in_user->full_name . "[" . $logged_in_user->access->name . "].";
         }
         if (!$logged_in_user) {
             return $this->setResponse([
