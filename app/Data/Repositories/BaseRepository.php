@@ -95,6 +95,26 @@ class BaseRepository
             }
         }
 
+        // add where query on relations
+        if (isset($data['where_relations'])) {
+            foreach ((array) $data['where_relations'] as $key => $conditions) {
+                $model = $model->with([$conditions['relation'] => function ($q) use ($conditions) {
+                    foreach ((array) $conditions['target'] as $key => $value) {
+                        if (isset($value['operator'])) {
+                            if ($value['operator'] == 'not_null') {
+                                $q->whereNotNull($value['column']);
+                            } else {
+                                $q->where($value['column'], $value['operator'], $value['value']);
+                            }
+
+                        } else {
+                            $q->where($value['column'], $value['value']);
+                        }
+                    }
+                }]);
+            }
+        }
+
         // Start ORWHEREHAS clauses
         if (isset($data['orwherehas'])) {
             foreach ((array) $data['orwherehas'] as $key => $conditions) {
@@ -300,6 +320,26 @@ class BaseRepository
                         }
                     }
                 });
+            }
+        }
+
+        // add where query on relations
+        if (isset($data['where_relations'])) {
+            foreach ((array) $data['where_relations'] as $key => $conditions) {
+                $model = $model->with([$conditions['relation'] => function ($q) use ($conditions) {
+                    foreach ((array) $conditions['target'] as $key => $value) {
+                        if (isset($value['operator'])) {
+                            if ($value['operator'] == 'not_null') {
+                                $q->whereNotNull($value['column']);
+                            } else {
+                                $q->where($value['column'], $value['operator'], $value['value']);
+                            }
+
+                        } else {
+                            $q->where($value['column'], $value['value']);
+                        }
+                    }
+                }]);
             }
         }
 
