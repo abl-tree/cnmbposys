@@ -343,7 +343,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
             }
 
             if($is_agent) {
-                $vto['schedule'] = $agent_schedule;
+                $vto['agent_schedule'] = $agent_schedule;
             } else {
                 $vto['success'][] = $agent_schedule;
             }
