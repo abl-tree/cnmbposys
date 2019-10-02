@@ -69,6 +69,14 @@ class VoluntaryTimeOutRepository extends BaseRepository
                 ]);
             }
 
+            if(!$this->user->find($data['agent'])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Agent not found",
+                    "parameters" => $data,
+                ]);
+            }
+
             $agent_schedule = $this->agent_schedule
                         ->whereNull('overtime_id')
                         ->where('start_event', '<=', $data['timestamp'])
@@ -167,6 +175,18 @@ class VoluntaryTimeOutRepository extends BaseRepository
                     ]
                 ]);
     
+            }
+
+            if(!$agent_schedule->time_in) {
+
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => 'Agent must be present.',
+                    'meta' => [
+                        $meta_index => $agent_schedule
+                    ]
+                ]);
+
             }
     
             // existence check
