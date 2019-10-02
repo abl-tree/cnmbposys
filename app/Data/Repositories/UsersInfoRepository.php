@@ -469,7 +469,8 @@ class UsersInfoRepository extends BaseRepository
         ]);
     }
 
-    public function leavesByTlOm($data = []){
+    public function leavesByTlOm($data = [])
+    {
 
         $meta_index = "metadata";
         $parameters = [];
@@ -536,12 +537,12 @@ class UsersInfoRepository extends BaseRepository
                     'relation' => 'tl_schedule_checker.leave',
                     'target' => $target_data,
                 ];
-            } else if (isset($data['om'])){
+            } else if (isset($data['om'])) {
                 $data['wherehas'][] = [
                     'relation' => 'om_schedule_checker.leave',
                     'target' => $target_data,
                 ];
-            }else{
+            } else {
                 $data['wherehas'][] = [
                     'relation' => 'leave_checker',
                     'target' => $target_data,
@@ -555,7 +556,7 @@ class UsersInfoRepository extends BaseRepository
             $result = $this->user_info;
             $data['relations'] = ["user_info", "accesslevel"];
 
-            if(isset($data['no_relations'])){
+            if (isset($data['no_relations'])) {
                 unset($data['relations']);
             }
 
@@ -599,7 +600,7 @@ class UsersInfoRepository extends BaseRepository
         $count_data = $data;
         $data['relations'] = ["user_info", "accesslevel", "leaves", "leave_credits", "leave_slots"];
 
-        if(isset($data['no_relations'])){
+        if (isset($data['no_relations'])) {
             unset($data['relations']);
         }
 
@@ -784,7 +785,7 @@ class UsersInfoRepository extends BaseRepository
             $result = $this->user_info;
             $data['relations'] = ["user_info", "accesslevel"];
 
-            if(isset($data['no_relations'])){
+            if (isset($data['no_relations'])) {
                 unset($data['relations']);
             }
 
@@ -828,7 +829,7 @@ class UsersInfoRepository extends BaseRepository
         $count_data = $data;
         $data['relations'] = ["user_info", "accesslevel", "leaves", "leave_credits", "leave_slots"];
 
-        if(isset($data['no_relations'])){
+        if (isset($data['no_relations'])) {
             unset($data['relations']);
         }
 
@@ -888,122 +889,76 @@ class UsersInfoRepository extends BaseRepository
 
         }
 
-        if (isset($data['tl'])) {
+        //where_relations data
+        $target_where_relations = [];
 
-            if (isset($data['start_date']) && $data['end_date'] && isset($data['approved'])) {
-                $data['wherehas'][] = [
-                    'relation' => 'tl_schedule_checker',
-                    'target' => [
-                        [
-                            'column' => 'start_event',
-                            'operator' => '>=',
-                            'value' => $data['start_date'],
-                        ],
-                        [
-                            'column' => 'start_event',
-                            'operator' => '<=',
-                            'value' => $data['end_date'],
-                        ],
-                        [
-                            'column' => 'approved_by',
-                            'operator' => 'not_null',
-                        ],
-                    ],
-                ];
-            } else if (isset($data['start_date']) && $data['end_date']) {
-                $data['wherehas'][] = [
-                    'relation' => 'tl_schedule_checker',
-                    'target' => [
-                        [
-                            'column' => 'start_event',
-                            'operator' => '>=',
-                            'value' => $data['start_date'],
-                        ],
-                        [
-                            'column' => 'start_event',
-                            'operator' => '<=',
-                            'value' => $data['end_date'],
-                        ],
-                    ],
-                ];
-            } else if (isset($data['approved'])) {
-                $data['wherehas'][] = [
-                    'relation' => 'tl_schedule_checker',
-                    'target' => [
-                        [
-                            'column' => 'approved_by',
-                            'operator' => 'not_null',
-                        ],
-                    ],
-                ];
-            } else {
-                $data['wherehas'][] = [
-                    'relation' => 'tl_schedule_checker',
-                    'target' => [],
-                ];
-            }
-
+        if (isset($data['start_date'])) {
+            $target_where_relations[] = [
+                'column' => 'start_event',
+                'operator' => '>=',
+                'value' => $data['start_date'],
+            ];
         }
 
+        if (isset($data['end_date'])) {
+            $target_where_relations[] = [
+                'column' => 'start_event',
+                'operator' => '<=',
+                'value' => $data['end_date'],
+            ];
+        }
+
+        $data['where_relations'][] = [
+            'relation' => 'tl_schedules',
+            'target' => $target_where_relations,
+        ];
+
+        $data['where_relations'][] = [
+            'relation' => 'om_schedules',
+            'target' => $target_where_relations,
+        ];
+
+        //wherehas data
+        $target_data = [];
+
+        if (isset($data['start_date'])) {
+            $target_data[] = [
+                'column' => 'start_event',
+                'operator' => '>=',
+                'value' => $data['start_date'],
+            ];
+        }
+        if (isset($data['end_date'])) {
+            $target_data[] = [
+                'column' => 'start_event',
+                'operator' => '<=',
+                'value' => $data['end_date'],
+            ];
+        }
+        if (isset($data['approved'])) {
+            $target_data[] = [
+                'column' => 'approved_by',
+                'operator' => 'not_null',
+            ];
+        }
+
+        if (isset($data['tl'])) {
+            $data['wherehas'][] = [
+                'relation' => 'tl_schedule_checker',
+                'target' => $target_data,
+            ];
+        }
         if (isset($data['om'])) {
-            if (isset($data['start_date']) && $data['end_date'] && isset($data['approved'])) {
-                $data['wherehas'][] = [
-                    'relation' => 'om_schedule_checker',
-                    'target' => [
-                        [
-                            'column' => 'start_event',
-                            'operator' => '>=',
-                            'value' => $data['start_date'],
-                        ],
-                        [
-                            'column' => 'start_event',
-                            'operator' => '<=',
-                            'value' => $data['end_date'],
-                        ],
-                        [
-                            'column' => 'approved_by',
-                            'operator' => 'not_null',
-                        ],
-                    ],
-                ];
-            } else if (isset($data['start_date']) && $data['end_date']) {
-                $data['wherehas'][] = [
-                    'relation' => 'om_schedule_checker',
-                    'target' => [
-                        [
-                            'column' => 'start_event',
-                            'operator' => '>=',
-                            'value' => $data['start_date'],
-                        ],
-                        [
-                            'column' => 'start_event',
-                            'operator' => '<=',
-                            'value' => $data['end_date'],
-                        ],
-                    ],
-                ];
-            } else if (isset($data['approved'])) {
-                $data['wherehas'][] = [
-                    'relation' => 'om_schedule_checker',
-                    'target' => [
-                        [
-                            'column' => 'approved_by',
-                            'operator' => 'not_null',
-                        ],
-                    ],
-                ];
-            } else {
-                $data['wherehas'][] = [
-                    'relation' => 'om_schedule_checker',
-                    'target' => [],
-                ];
-            }
+            $data['wherehas'][] = [
+                'relation' => 'om_schedule_checker',
+                'target' => $target_data,
+            ];
         }
 
         if (isset($data['target'])) {
 
             $result = $this->user_info;
-            $data['relations'] = ["tl_schedules", "om_schedules"];
+            // $data['relations'] = ["tl_schedules", "om_schedules"];
             foreach ((array) $data['target'] as $index => $column) {
                 if (str_contains($column, "full_name")) {
                     $data['target'][] = 'firstname';
@@ -1013,7 +968,7 @@ class UsersInfoRepository extends BaseRepository
                 }
             }
 
-            if(isset($data['no_relations'])){
+            if (isset($data['no_relations'])) {
                 unset($data['relations']);
             }
 
@@ -1046,10 +1001,10 @@ class UsersInfoRepository extends BaseRepository
         }
 
         $count_data = $data;
-        $data['relations'] = ["tl_schedules", "om_schedules"];
+        // $data['relations'] = ["tl_schedules", "om_schedules"];
 
-        if(isset($data['no_relations'])){
-            unset($data['relations']);
+        if (isset($data['no_relations'])) {
+            unset($data['where_relations']);
         }
 
         $result = $this->fetchGeneric($data, $this->user_info);

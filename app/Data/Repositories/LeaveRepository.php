@@ -82,14 +82,14 @@ class LeaveRepository extends BaseRepository
                 ->get()->all();
 
             //check if a leave slot is full
-            if($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence"){
+            if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "leave_of_absence") {
                 foreach ($schedule_slots as $slot) {
-                    $start = new DateTime(substr($slot->start_event,0,10));
+                    $start = new DateTime(substr($slot->start_event, 0, 10));
                     $leave_slot = $operations_manager->leave_slots
                         ->where('leave_type', $leave->leave_type)
                         ->where('date', '=', $start->format("Y-m-d H:i:s"))
                         ->first();
-                    if(!isset($leave_slot)){
+                    if (!isset($leave_slot)) {
                         return $this->setResponse([
                             'code' => 500,
                             'meta' => $operations_manager,
@@ -107,15 +107,15 @@ class LeaveRepository extends BaseRepository
             }
 
             //decrement leave slots
-            if($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence"){
+            if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "leave_of_absence") {
                 foreach ($schedule_slots as $slot) {
-                    $start = new DateTime(substr($slot->start_event,0,10));
+                    $start = new DateTime(substr($slot->start_event, 0, 10));
                     $leave_slot = $operations_manager->leave_slots
                         ->where('leave_type', $leave->leave_type)
                         ->where('date', '=', $start->format("Y-m-d H:i:s"))
                         ->first();
 
-                    if ($leave->leave_type=="vacation_leave" || $leave->leave_type=="leave_of_absence") {
+                    if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "leave_of_absence") {
                         $leave_slot->update([
                             'value' => --$leave_slot->value,
                         ]);
@@ -129,12 +129,12 @@ class LeaveRepository extends BaseRepository
             strtolower($data['status']) == "approved" &&
             strtolower($leave->leave_type) != "suspended"
         ) {
-            if($leave->leave_type == "vacation_leave" || $leave->leave_type == "sick_leave"){
-                    //fetch available leave credits
+            if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "sick_leave") {
+                //fetch available leave credits
                 $leave_credits = $this->leave_credit
-                ->where('user_id', $leave->user_id)
-                ->where('leave_type', $leave->leave_type)
-                ->first();
+                    ->where('user_id', $leave->user_id)
+                    ->where('leave_type', $leave->leave_type)
+                    ->first();
 
                 if (!$leave_credits) {
                     return $this->setResponse([
@@ -192,16 +192,26 @@ class LeaveRepository extends BaseRepository
             $raw_schedules = refresh_model($this->agent_schedule->getModel())
                 ->where('user_id', $leave->user_id)
                 ->where('start_event', '>=', $leave->start_event)
-                ->where('end_event', '<=', $leave->end_event)
-                ->where('leave_id','=',null);
+                ->where('end_event', '<=', $leave->end_event);
+            // ->where('leave_id','=',null);
+
+            //fetch schedules
+            $schedules = $raw_schedules->get()->all();
+            //revert leaves to be overriden
+            foreach ($schedules as $schedule) {
+                $hit_leave = refresh_model($this->leave->getModel())->find($schedule->leave_id ?? 0);
+                if($hit_leave){
+                    $this->revertLeave([
+                        'id' => $leave->id,
+                        'cancel_event' => $hit_leave->start_event
+                    ]);
+                }
+            }
 
             //update agent schedules
             $raw_schedules->update([
                 'leave_id' => $leave->id,
             ]);
-
-            //fetch schedules
-            $schedules = $raw_schedules->get()->all();
 
             //add attendance for leave schedules
             // foreach ($schedules as $schedule) {
@@ -408,14 +418,12 @@ class LeaveRepository extends BaseRepository
 
         $data['start_leave'] = $data['cancel_event'] ?? $leave->start_event;
 
-
         if ($leave->status == 'approved') {
             //raw schedules (query builder format)
             $schedules = $this->agent_schedule
                 ->where('leave_id', $leave->id)
                 ->where('start_event', '>=', $data['start_leave'])
                 ->where('end_event', '<=', $leave->end_event);
-
 
             //remove attendance
             // foreach ($schedules->get()->all() as $schedule) {
@@ -460,8 +468,8 @@ class LeaveRepository extends BaseRepository
                     $credits_needed += $hours;
 
                     // delete attendance
-                    $attendance = $this->attendance->where("schedule_id",$schedule->id)->get()->all();
-                    foreach($attendance as $datum){
+                    $attendance = $this->attendance->where("schedule_id", $schedule->id)->get()->all();
+                    foreach ($attendance as $datum) {
                         $this->attendance->find($datum->id);
                         $this->attendance->delete();
                     }
@@ -486,21 +494,21 @@ class LeaveRepository extends BaseRepository
                 ]);
             }
         }
-        $cancel_event = new DateTime($data['cancel_event']);
-        $cancel_event = $cancel_event->setTime(00,00,00);
+        $cancel_event = new DateTime($data['cancel_event'] ?? $leave->start_event);
+        $cancel_event = $cancel_event->setTime(00, 00, 00);
         $cancel_event = $cancel_event->format('Y-m-d H:i:s');
-        if($cancel_event == $leave->start_event){
+        if ($cancel_event == $leave->start_event) {
             return $this->defineLeave([
                 'id' => $data['id'],
                 'status' => 'cancelled',
             ]);
-        }else{
+        } else {
             $new_end = new DateTime($data['cancel_event']);
             $new_end = $new_end->modify('-1 day')->format('Y-m-d');
             return $this->defineLeave([
                 'id' => $data['id'],
                 'status' => 'approved',
-                'end_event' => $new_end." 23:59:59"
+                'end_event' => $new_end . " 23:59:59",
             ]);
         }
     }
@@ -539,6 +547,7 @@ class LeaveRepository extends BaseRepository
 
         //set relations
         $data['relations'][] = 'user';
+        $data['relations'][] = 'approved_by';
         $data['relations'][] = 'leave_credits';
 
         //fetch user if set
