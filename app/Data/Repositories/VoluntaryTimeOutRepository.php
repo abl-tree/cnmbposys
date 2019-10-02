@@ -52,7 +52,11 @@ class VoluntaryTimeOutRepository extends BaseRepository
 
         $meta_index = 'agent_schedule';
 
+        $is_agent = false;
+
         if(isset($data['agent'])) {
+
+            $is_agent = true;
 
             if($validator->fails()) {
                 $errors = $validator->errors();
@@ -157,10 +161,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
 
         // existence check
 
-        $vto = [
-            'success' => [],
-            'failed' => []
-        ];
+        $vto = [];
 
         foreach ($data['schedules'] as $key => $schedule_id) {
             $agent_schedule = $this->agent_schedule->find($schedule_id);
@@ -325,19 +326,27 @@ class VoluntaryTimeOutRepository extends BaseRepository
             }
     
             if (!$agent_schedule->save($data)) {
-                $vto['failed'][] = $agent_schedule;
+                if($is_agent) {
+                    return $this->setResponse([
+                        "code" => 500,
+                        "title" => "Data Validation Error.",
+                        "description" => "An error was detected on one of the inputted data.",
+                        "meta" => [
+                            "errors" => $agent_schedule->errors(),
+                        ],
+                    ]);
+                } else {
+                    $vto['failed'][] = $agent_schedule;
+                }
+                
                 continue;
-                // return $this->setResponse([
-                //     "code" => 500,
-                //     "title" => "Data Validation Error.",
-                //     "description" => "An error was detected on one of the inputted data.",
-                //     "meta" => [
-                //         "errors" => $agent_schedule->errors(),
-                //     ],
-                // ]);
             }
 
-            $vto['success'][] = $agent_schedule;
+            if($is_agent) {
+                $vto['schedule'] = $agent_schedule;
+            } else {
+                $vto['success'][] = $agent_schedule;
+            }
     
             if (isset($auth_id) ||
                 !is_numeric($auth_id) ||
