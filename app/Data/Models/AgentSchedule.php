@@ -138,12 +138,10 @@ class AgentSchedule extends BaseModel
         if ($this->overtime_schedule) {
             return number_format($value, 1);
         } else {
-            $billableSeconds = $this->rendered_hours['billable']['second'];
-            $regularSeconds = $this->vto_at ? $this->vto_at->diffInSeconds($this->start_event) : $this->regular_hours['second'];
+            $billableSeconds = $this->vto_at ? $this->rendered_hours['billable']['second'] + $this->vto_hours['second'] : $this->rendered_hours['billable']['second'];
+            $regularSeconds = $this->regular_hours['second'];
 
             $value = ($billableSeconds / $regularSeconds) * 100;
-
-            if($this->vto_at) $value = 100;
 
             return number_format($value ? $value : 0, 1);
         }
