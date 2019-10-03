@@ -207,7 +207,7 @@ class excelController extends BaseController
                 $schedule = $agent->schedule->first() ? $agent->schedule->first() : null;
 
                 if($value = $schedule) {
-                    $cluster = $value->om_info ? $value->om_info : $agent->operations_manager;
+                    $cluster = $value->om_info ? $value->om_info : (count($agent->operations_manager) ? $agent->operations_manager : null);
                     $team_lead = $value->tl_info ? $value->tl_info : $agent->team_leader;
         
                     $worksheet->fromArray([
@@ -252,7 +252,7 @@ class excelController extends BaseController
                         ];
                     }
                 } else {
-                    $cluster = $agent->operations_manager;
+                    $cluster = count($agent->operations_manager) ? $agent->operations_manager : null;
                     $team_lead = $agent->team_leader;
             
                     $worksheet->fromArray([
