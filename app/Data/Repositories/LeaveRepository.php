@@ -84,11 +84,12 @@ class LeaveRepository extends BaseRepository
             //check if a leave slot is full
             if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "leave_of_absence") {
                 foreach ($schedule_slots as $slot) {
-                    $start = new DateTime(substr($slot->start_event, 0, 10));
+                    $start = substr($slot->start_event, 0, 10);
                     $leave_slot = $operations_manager->leave_slots
                         ->where('leave_type', $leave->leave_type)
-                        ->where('date', '=', $start->format("Y-m-d H:i:s"))
+                        ->where('date', $start." 00:00:00")
                         ->first();
+                        // dd($leave_slot);
                     if (!isset($leave_slot)) {
                         return $this->setResponse([
                             'code' => 500,
@@ -109,10 +110,10 @@ class LeaveRepository extends BaseRepository
             //decrement leave slots
             if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "leave_of_absence") {
                 foreach ($schedule_slots as $slot) {
-                    $start = new DateTime(substr($slot->start_event, 0, 10));
+                    $start = substr($slot->start_event, 0, 10);
                     $leave_slot = $operations_manager->leave_slots
                         ->where('leave_type', $leave->leave_type)
-                        ->where('date', '=', $start->format("Y-m-d H:i:s"))
+                        ->where('date', $start." 00:00:00")
                         ->first();
 
                     if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "leave_of_absence") {
@@ -568,14 +569,15 @@ class LeaveRepository extends BaseRepository
             ];
         }
 
-        //if allowed_access is set
+        //fetch allowed access if set
         if (isset($data['allowed_access']) && is_numeric($data['allowed_access'])) {
             $data['where'][] = [
-                "target" => 'allowed_access',
+                "target" => "allowed_access",
                 "operator" => "=",
                 "value" => $data['allowed_access'],
             ];
         }
+
 
         //filter by date range
         if (isset($data['start_date'])) {
