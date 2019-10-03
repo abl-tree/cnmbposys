@@ -20,6 +20,67 @@ class LeaveCreditRepository extends BaseRepository
         $this->user = $user;
     }
 
+    public function defineLeaveCreditForAgents($data)
+    {
+        //data validation
+        if (!isset($data['leave_type'])) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => "Leave type is not set.",
+            ]);
+        }
+
+        if (!isset($data['value'])) {
+            return $this->setResponse([
+                'code' => 500,
+                'title' => "Value is not set.",
+            ]);
+        }
+
+        //initialize empty success and errors variables
+        $errors = [];
+        $success = [];
+
+        //fetch users
+        $agents = $this->user
+            ->where('access_id', 17) //fetch agents only
+            ->get()->all();
+
+        foreach ($agents as $agent) {
+            $leave_credit = $this->defineLeaveCredit([
+                'user_id' => $agent->uid,
+                'leave_type' => $data['leave_type'],
+                'value' => $data['value'],
+            ]);
+
+            if (is_code_success($leave_credit->code)) {
+                $success[] = [
+                    'user_id' => $agent->uid,
+                    'full_name' => $agent->full_name,
+                    'title' => $leave_credit->title,
+                ];
+            } else {
+                $errors[] = [
+                    'user_id' => $agent->uid,
+                    'full_name' => $agent->full_name,
+                    'title' => $leave_credit->title,
+                ];
+            }
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully defined bulk leave credit for agents.",
+            "meta" => [
+                'success' => $success,
+                'errors' => $errors,
+                'success_count' => count($success),
+                'errors_count' => count($errors),
+            ],
+            "parameters" => $data,
+        ]);
+    }
+
     public function defineLeaveCredit($data = [])
     {
         // data validation
@@ -69,6 +130,22 @@ class LeaveCreditRepository extends BaseRepository
                 return $this->setResponse([
                     'code' => 500,
                     'title' => 'User does not exist.',
+                ]);
+            }
+        }
+
+        if (!isset($data['id'])) {
+
+            $does_exist = $this->leave_credit
+                ->where('user_id', $data['user_id'])
+                ->where('leave_type', $data['leave_type'])
+                ->first();
+
+            if ($does_exist) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Leave credit for this user's {$data['leave_type']} already exists.",
+                    "parameters" => $data,
                 ]);
             }
         }

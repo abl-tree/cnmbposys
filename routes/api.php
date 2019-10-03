@@ -189,6 +189,7 @@ Route::group([
 
             Route::get("/", "LeaveCreditController@all");
             Route::post("create", "LeaveCreditController@create");
+            Route::post("create/agents", "LeaveCreditController@createForAgents");
             Route::post('delete/{leave_credit_id}', 'LeaveCreditController@delete');
             Route::get("fetch/{leave_credit_id}", "LeaveCreditController@fetch");
             Route::post('update/{leave_credit_id}', 'LeaveCreditController@update');

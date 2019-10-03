@@ -28,6 +28,12 @@ class LeaveCreditController extends BaseController
         return $this->absorb($this->leave_credit_repo->defineLeaveCredit($data))->json();
     }
 
+    public function createForAgents(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->leave_credit_repo->defineLeaveCreditForAgents($data))->json();
+    }
+
     public function delete(Request $request, $id)
     {
         $data = $request->all();
