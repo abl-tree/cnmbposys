@@ -290,7 +290,9 @@ class User extends BaseAuthModel
             }
 
             if ($value->leave_id) {
-                $ncns_count++;
+                if($value->leave->status == "approved"){
+                    $leave_count++;
+                } else $absent_count++;
             }
         }
 
