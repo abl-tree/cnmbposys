@@ -324,7 +324,8 @@ class AgentSchedule extends BaseModel
                     return "On-Leave";
                 }
             }
-            return "upcoming";
+
+            return "Upcoming";
 
         }
 

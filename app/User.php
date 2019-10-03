@@ -279,6 +279,7 @@ class User extends BaseAuthModel
         $leave_count = 0;
         $present_count = 0;
         $absent_count = 0;
+        $upcoming_count = 0;
 
         foreach ($this->schedule as $key => $value) {
             if ($value->remarks === "NCNS") {
@@ -287,6 +288,8 @@ class User extends BaseAuthModel
                 $present_count++;
             } else if ($value->remarks === "Absent") {
                 $absent_count++;
+            } else if ($value->remarks === "Upcoming") {
+                $upcoming_count++;
             }
 
             if ($value->leave_id) {
@@ -301,6 +304,7 @@ class User extends BaseAuthModel
             'leave' => $leave_count,
             'present' => $present_count,
             'absent' => $absent_count,
+            'upcoming' => $upcoming_count,
             'time' => $this->remainingTimeSummary(),
             'conformance' => [
                 'overall' => $this->conformance('overall'),
