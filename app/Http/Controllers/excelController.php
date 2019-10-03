@@ -207,7 +207,7 @@ class excelController extends BaseController
                 $schedule = $agent->schedule->first() ? $agent->schedule->first() : null;
 
                 if($value = $schedule) {
-                    $cluster = $value->om_info ? $value->om_info : (count($agent->operations_manager) ? $agent->operations_manager : null);
+                    $cluster = $value->om_info ? $value->om_info : $agent->operations_manager;
                     $team_lead = $value->tl_info ? $value->tl_info : $agent->team_leader;
         
                     $worksheet->fromArray([
@@ -252,14 +252,14 @@ class excelController extends BaseController
                         ];
                     }
                 } else {
-                    $cluster = count($agent->operations_manager) ? $agent->operations_manager : null;
-                    $team_lead = $agent->team_leader;
+                    $cluster = $agent->operations_manager ? $agent->operations_manager : null;
+                    $team_lead = $agent->team_leader ? $agent->team_leader : null;
             
                     $worksheet->fromArray([
-                        $cluster ? $cluster->firstname : null, 
+                        $cluster ? $cluster['firstname'] : null, 
                         $agent->full_name, 
                         $agent->user_info->p_email, 
-                        $team_lead ? $team_lead->fullname : null,
+                        $team_lead ? $team_lead['full_name'] : null,
                         'OFF',
                         'OFF',
                         'OFF',
@@ -279,10 +279,10 @@ class excelController extends BaseController
 
                     } else {
                         $summaryData[$agentkey] = [
-                            $cluster ? $cluster->firstname : null, 
+                            $cluster ? $cluster['firstname'] : null, 
                             $agent->full_name, 
                             $agent->user_info->p_email, 
-                            $team_lead ? $team_lead->fullname : null,
+                            $team_lead ? $team_lead['full_name'] : null,
                             0,
                             'OFF',
                             'OFF'
