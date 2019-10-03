@@ -143,6 +143,8 @@ class AgentSchedule extends BaseModel
 
             $value = ($billableSeconds / $regularSeconds) * 100;
 
+            if($this->vto_at) $value = 100;
+
             return number_format($value ? $value : 0, 1);
         }
     }
