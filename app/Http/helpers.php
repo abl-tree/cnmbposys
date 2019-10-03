@@ -129,6 +129,21 @@ if (!function_exists("refresh_model")) {
     }
 }
 
+if (!function_exists("between")) {
+    /**
+     * Check if value is in between.
+     *
+     * @param float $value
+     * @param float $min
+     * @param float $max
+     * @return boolean
+     */
+    function between($value, $min, $max)
+    {
+        return ($min <= $value) && ($value <= $max);
+    }
+}
+
 //validation for success code
 if (!function_exists("is_code_success")) {
     function is_code_success($code)
