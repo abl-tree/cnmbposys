@@ -84,10 +84,28 @@ class LeaveSlotRepository extends BaseRepository
             }
         }
 
-        $does_exist = $this->leave_slot
-            ->where('user_id', $data['user_id'])
-            ->where('date', $data['date'])
-            ->first();
+
+        if (!isset($data['id'])) {
+
+            $does_exist = $this->leave_credit
+                ->where('user_id', $data['user_id'])
+                ->where('leave_type', $data['leave_type'])
+                ->where('date', $data['date'])
+                ->first();
+
+            if ($does_exist) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Leave slot for this user's {$data['leave_type']}  for {$data['date']} already exists.",
+                    "parameters" => $data,
+                ]);
+            }
+        }
+
+        // $does_exist = $this->leave_slot
+        //     ->where('user_id', $data['user_id'])
+        //     ->where('date', $data['date'])
+        //     ->first();
 
         // existence check
 
