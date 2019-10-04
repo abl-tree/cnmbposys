@@ -248,9 +248,7 @@ class LeaveCreditRepository extends BaseRepository
                 "value" => $data['user_id'],
             ];
         }
-
-        //fetch leave type if set
-        if (isset($data['leave_type']) ) {
+        if (isset($data['leave_type'])) {
             $data['where'][] = [
                 "target" => "leave_type",
                 "operator" => "=",
