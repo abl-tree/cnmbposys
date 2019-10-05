@@ -61,11 +61,11 @@ class VoluntaryTimeOutRepository extends BaseRepository
             if($validator->fails()) {
                 $errors = $validator->errors();
                 $errorText = "";
-    
+
                 foreach ($errors->all() as $message) {
                     $errorText .= $message;
                 }
-    
+
                 return $this->setResponse([
                     'code' => 500,
                     'title' => $errorText,
@@ -89,11 +89,12 @@ class VoluntaryTimeOutRepository extends BaseRepository
                         ->first();
 
             if(!$agent_schedule) {
+
                 return $this->setResponse([
                     "code" => 500,
                     "title" => "No schedule found",
                     "meta" => [
-                        $meta_index => $agent_schedule,
+                        $meta_index => $this->user->find($data['agent']),
                     ],
                     "parameters" => $data,
                 ]);
@@ -149,7 +150,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
         }
 
         $timestamp = (isset($data['timestamp'])) ? Carbon::parse($data['timestamp']) : null;
-        
+
         if ($auth_user->access->code === 'representative_op') {
             return $this->setResponse([
                 'code' => 500,
@@ -165,7 +166,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
 
         foreach ($data['schedules'] as $key => $schedule_id) {
             $agent_schedule = $this->agent_schedule->find($schedule_id);
-    
+
             if(isset($data['timestamp']) && !$timestamp->between(Carbon::parse($agent_schedule->start_event), Carbon::parse($agent_schedule->end_event)) && $option != 'revert') {
 
                 return $this->setResponse([
@@ -175,7 +176,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                         $meta_index => $agent_schedule
                     ]
                 ]);
-    
+
             }
 
             if(!$agent_schedule->time_in) {
@@ -189,18 +190,18 @@ class VoluntaryTimeOutRepository extends BaseRepository
                 ]);
 
             }
-    
+
             // existence check
 
             // update
-    
+
             if($current_vto = $agent_schedule->vto_at) {
                 // check available leave credits
                 $leave_credits = $this->leave_credit
                 ->where('user_id', $agent_schedule->user_id)
                 ->where('leave_type', 'vacation_leave')
                 ->first();
-        
+
                 if (!$leave_credits) {
                     return $this->setResponse([
                         'code' => 500,
@@ -210,19 +211,19 @@ class VoluntaryTimeOutRepository extends BaseRepository
                         ]
                     ]);
                 }
-        
-                $total_vto_hrs = (float) Carbon::parse($agent_schedule->end_event)->diffInSeconds($agent_schedule->vto_at) / 3600;   
+
+                $total_vto_hrs = (float) Carbon::parse($agent_schedule->end_event)->diffInSeconds($agent_schedule->vto_at) / 3600;
                 $total_vto_hrs = number_format($total_vto_hrs, 2);
 
                 $data = [
                     'vto_at' => null
                 ];
-    
+
                 //revert leave credits
                 $leave_credits->update([
                     'value' => (float) $leave_credits->value + $total_vto_hrs,
                 ]);
-    
+
                 if($option === 'revert') {
                     $title = "Successfully removed a VTO.";
                 } else {
@@ -231,7 +232,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                     ->where('user_id', $agent_schedule->user_id)
                     ->where('leave_type', 'vacation_leave')
                     ->first();
-            
+
                     if (!$leave_credits) {
 
                         return $this->setResponse([
@@ -242,13 +243,13 @@ class VoluntaryTimeOutRepository extends BaseRepository
                             ]
                         ]);
                     }
-        
+
                     $current_vto_hrs = $total_vto_hrs;
-                    $total_vto_hrs = (float) Carbon::parse($agent_schedule->end_event)->diffInSeconds($timestamp) / 3600;   
+                    $total_vto_hrs = (float) Carbon::parse($agent_schedule->end_event)->diffInSeconds($timestamp) / 3600;
                     $total_vto_hrs = number_format($total_vto_hrs, 2);
-            
+
                     if ($leave_credits->value < $total_vto_hrs) {
-                        
+
                         //revert leave credits
                         $leave_credits->update([
                             'value' => (float) $leave_credits->value - $current_vto_hrs,
@@ -265,19 +266,19 @@ class VoluntaryTimeOutRepository extends BaseRepository
                             ],
                         ]);
                     }
-        
+
                     //update leave credits
                     $leave_credits->update([
                         'value' => $leave_credits->value - $total_vto_hrs,
                     ]);
-        
+
                     $data = [
                         'vto_at' => isset($timestamp) ? $timestamp : Carbon::now()
                     ];
-        
+
                     $title = "Successfully defined a VTO at ".$timestamp;
                 }
-    
+
             } else {
                 if($option != 'revert') {
                     // check available leave credits
@@ -285,7 +286,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                     ->where('user_id', $agent_schedule->user_id)
                     ->where('leave_type', 'vacation_leave')
                     ->first();
-            
+
                     if (!$leave_credits) {
                         return $this->setResponse([
                             'code' => 500,
@@ -295,10 +296,10 @@ class VoluntaryTimeOutRepository extends BaseRepository
                             ]
                         ]);
                     }
-            
-                    $total_vto_hrs = (float) Carbon::parse($agent_schedule->end_event)->diffInSeconds($timestamp) / 3600;   
+
+                    $total_vto_hrs = (float) Carbon::parse($agent_schedule->end_event)->diffInSeconds($timestamp) / 3600;
                     $total_vto_hrs = number_format($total_vto_hrs, 2);
-            
+
                     if ($leave_credits->value < $total_vto_hrs) {
                         return $this->setResponse([
                             'code' => 500,
@@ -311,20 +312,20 @@ class VoluntaryTimeOutRepository extends BaseRepository
                             ],
                         ]);
                     }
-        
+
                     //update leave credits
                     $leave_credits->update([
                         'value' => $leave_credits->value - $total_vto_hrs,
                     ]);
-        
+
                     $data = [
                         'vto_at' => isset($timestamp) ? $timestamp : Carbon::now()
                     ];
-        
+
                     $title = "Successfully defined a VTO at ".$timestamp;
                 } else $title = "Vto not set";
             }
-    
+
             if (!$agent_schedule->save($data)) {
                 if($is_agent) {
                     return $this->setResponse([
@@ -338,7 +339,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                 } else {
                     $vto['failed'][] = $agent_schedule;
                 }
-                
+
                 continue;
             }
 
@@ -347,13 +348,13 @@ class VoluntaryTimeOutRepository extends BaseRepository
             } else {
                 $vto['success'][] = $agent_schedule;
             }
-    
+
             if (isset($auth_id) ||
                 !is_numeric($auth_id) ||
                 $auth_id <= 0) {
                 $logged_in_user = $this->user->find($auth_id);
                 $current_employee = $this->user->find($agent_schedule->user_id);
-    
+
                 if (!$logged_in_user) {
                     return $this->setResponse([
                         'code' => 500,
@@ -375,9 +376,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
                 }
                 $this->logs->logsInputCheck($logged_data);
             }
-    
+
             // insertion
-    
+
             $notification = $this->notification_repo->triggerNotification([
                 'sender_id' => $auth_id,
                 'recipient_id' => $agent_schedule->user_id,
@@ -549,13 +550,13 @@ class VoluntaryTimeOutRepository extends BaseRepository
 
         if(isset($data['timestamp'])) {
             // data validation
-    
+
             $validator = Validator::make($data,[
                 'timestamp' => 'required|date|date_format:Y-m-d H:i:s'
             ], [
                 'timestamp.date_format' => "The timestamp does not match the format YYYY-MM-DD HH:MM:SS."
             ]);
-            
+
             if($validator->fails()) {
                 $errors = $validator->errors();
                 $errorText = "";

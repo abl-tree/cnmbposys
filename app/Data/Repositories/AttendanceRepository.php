@@ -200,12 +200,12 @@ class AttendanceRepository extends BaseRepository
                 'title' => "User ID is not available.",
             ]);
         }
-        $logged_data = [
-            "user_id" => $auth_id != null ? $auth_id : $attendance ? $attendance->id : $user->id,
-            "action" => "POST",
-            "affected_data" => $message,
-        ];
-        $this->logs->logsInputCheck($logged_data);
+        // $logged_data = [
+        //     "user_id" => $auth_id != null ? $auth_id : $attendance ? $attendance->id : $user->id,
+        //     "action" => "POST",
+        //     "affected_data" => $message,
+        // ];
+        // $this->logs->logsInputCheck($logged_data);
 
         $response = $this->setResponse([
             "code" => 200,

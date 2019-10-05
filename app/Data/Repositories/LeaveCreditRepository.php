@@ -248,6 +248,13 @@ class LeaveCreditRepository extends BaseRepository
                 "value" => $data['user_id'],
             ];
         }
+        if (isset($data['leave_type'])) {
+            $data['where'][] = [
+                "target" => "leave_type",
+                "operator" => "=",
+                "value" => $data['leave_type'],
+            ];
+        }
 
         $count_data = $data;
 
@@ -293,6 +300,25 @@ class LeaveCreditRepository extends BaseRepository
         $parameters = [
             "query" => $data['query'],
         ];
+
+
+        //fetch user if set
+        if (isset($data['user_id']) && is_numeric($data['user_id'])) {
+            $data['where'][] = [
+                "target" => "user_id",
+                "operator" => "=",
+                "value" => $data['user_id'],
+            ];
+        }
+        
+        //fetch leave type if set
+        if (isset($data['leave_type']) ) {
+            $data['where'][] = [
+                "target" => "leave_type",
+                "operator" => "=",
+                "value" => $data['leave_type'],
+            ];
+        }
 
         $count_data = $data;
         $result = $this->genericSearch($data, $result)->get()->all();
