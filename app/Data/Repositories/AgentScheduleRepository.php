@@ -1275,23 +1275,23 @@ class AgentScheduleRepository extends BaseRepository
                 //     });
                 // }
 
-                if (isset($data['tl_id'])) {
-                    $result = $result->where(function ($q) use ($data) {
-                        $q->whereHas('schedule', function ($q) use ($data) {
-                            $q->where('tl_id', $data['tl_id']);
-                        });
-                    });
-                }
+                // if (isset($data['tl_id'])) {
+                //     $result = $result->where(function ($q) use ($data) {
+                //         $q->whereHas('schedule', function ($q) use ($data) {
+                //             $q->where('tl_id', $data['tl_id']);
+                //         });
+                //     });
+                // }
 
-                if (isset($data['om_id'])) {
-                    $result = $result->where(function ($q) use ($data) {
-                        $q->whereHas('schedule', function ($q) use ($data) {
-                            $q->where('om_id', $data['om_id']);
-                        });
-                    });
-                }
+                // if (isset($data['om_id'])) {
+                //     $result = $result->where(function ($q) use ($data) {
+                //         $q->whereHas('schedule', function ($q) use ($data) {
+                //             $q->where('om_id', $data['om_id']);
+                //         });
+                //     });
+                // }
 
-                $data['relations'] = array('schedule' => function ($query) use ($parameters) {
+                $data['relations'] = array('schedule' => function ($query) use ($parameters, $data) {
                     $end = Carbon::parse($parameters['end']);
                     $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
 
@@ -1302,6 +1302,10 @@ class AgentScheduleRepository extends BaseRepository
                             $ot_query->where('end_event', '<', $end);
                         });
                     });
+
+                    if(isset($data['om_id'])) $query->where('om_id', $data['om_id']);
+
+                    if(isset($data['tl_id'])) $query->where('tl_id', $data['tl_id']);
                 });
 
                 if (!isset($parameters['userid'])) {
