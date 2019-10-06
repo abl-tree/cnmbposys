@@ -94,7 +94,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                     "code" => 500,
                     "title" => "No schedule found",
                     "meta" => [
-                        $meta_index => $this->user->find($data['agent']),
+                        $meta_index => $agent_schedule,
                     ],
                     "parameters" => $data,
                 ]);
@@ -258,6 +258,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
                         return $this->setResponse([
                             'code' => 500,
                             'title' => "Employee does not have enough leave credits.",
+                            'meta' => [
+                                $meta_index => $agent_schedule
+                            ],
                             'parameters' => [
                                 'credits' => [
                                     'available' => $leave_credits->value,
@@ -304,6 +307,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
                         return $this->setResponse([
                             'code' => 500,
                             'title' => "Employee does not have enough leave credits.",
+                            'meta' => [
+                                $meta_index => $agent_schedule
+                            ],
                             'parameters' => [
                                 'credits' => [
                                     'available' => $leave_credits->value,
@@ -334,6 +340,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                         "description" => "An error was detected on one of the inputted data.",
                         "meta" => [
                             "errors" => $agent_schedule->errors(),
+                            $meta_index => $agent_schedule
                         ],
                     ]);
                 } else {
