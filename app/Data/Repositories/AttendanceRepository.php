@@ -127,6 +127,9 @@ class AttendanceRepository extends BaseRepository
                 return $this->setResponse([
                     'code' => 500,
                     'title' => "Time in is not set.",
+                    'meta' => [
+                        'agent_schedule' => $schedule
+                    ]
                 ]);
             }
 
@@ -173,6 +176,9 @@ class AttendanceRepository extends BaseRepository
             return $this->setResponse([
                 'code' => 404,
                 'title' => "Attendance not found.",
+                'meta' => [
+                    'agent_schedule' => $schedule
+                ]
             ]);
         }
 
@@ -183,6 +189,7 @@ class AttendanceRepository extends BaseRepository
                 "description" => "An error was detected on one of the inputted data.",
                 "meta" => [
                     "errors" => $attendance->errors(),
+                    'agent_schedule' => $schedule
                 ],
             ]);
         }
@@ -210,7 +217,9 @@ class AttendanceRepository extends BaseRepository
         $response = $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined an attendance.",
-            'meta' => $schedule,
+            'meta' => [
+                'agent_schedule' => $schedule
+            ],
             "parameters" => $attendance,
         ]);
         //pusher
