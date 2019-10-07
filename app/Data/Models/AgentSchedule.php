@@ -258,7 +258,7 @@ class AgentSchedule extends BaseModel
         $day_billable = "";
         $day_nonbillable = "";
         $start = $this->time_in;
-        $end = $this->vto_at ? $this->vto_at : ($this->time_out ? $this->time_out : Carbon::now());
+        $end = $this->vto_at && $this->vto_at->lt($this->time_out) ? $this->vto_at : ($this->time_out ? $this->time_out : Carbon::now());
 
         if ($this->attendances->count() && $start->lessThan($this->end_event)) {
 
