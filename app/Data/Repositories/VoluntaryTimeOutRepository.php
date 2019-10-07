@@ -397,9 +397,9 @@ class VoluntaryTimeOutRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => $title,
-            "meta" => [
+            "meta" =>
                 $vto
-            ],
+            ,
             "parameters" => $data
         ]);
 
