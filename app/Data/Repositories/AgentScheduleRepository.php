@@ -467,6 +467,20 @@ class AgentScheduleRepository extends BaseRepository
                 "operator" => "=",
                 "value" => $data['om_id'],
             ];
+            
+            //show tl only
+            if (isset($data['tl'])) {
+                $data['wherehas'][] = [
+                    'relation' => 'user_data',
+                    'target' => [
+                        [
+                            'column' => 'access_id',
+                            'operator' => '=',
+                            'value' => '16',
+                        ]
+                    ],
+                ];
+            }
         }
 
         //filter by approved_by
@@ -676,6 +690,20 @@ class AgentScheduleRepository extends BaseRepository
                 "operator" => "=",
                 "value" => $data['om_id'],
             ];
+
+            //show tl only
+            if (isset($data['tl'])) {
+                $data['wherehas'][] = [
+                    'relation' => 'user_data',
+                    'target' => [
+                        [
+                            'column' => 'access_id',
+                            'operator' => '=',
+                            'value' => '16',
+                        ]
+                    ],
+                ];
+            }
         }
 
         //filter by approved_by
@@ -1303,9 +1331,14 @@ class AgentScheduleRepository extends BaseRepository
                         });
                     });
 
-                    if(isset($data['om_id'])) $query->where('om_id', $data['om_id']);
+                    if (isset($data['om_id'])) {
+                        $query->where('om_id', $data['om_id']);
+                    }
 
-                    if(isset($data['tl_id'])) $query->where('tl_id', $data['tl_id']);
+                    if (isset($data['tl_id'])) {
+                        $query->where('tl_id', $data['tl_id']);
+                    }
+
                 });
 
                 if (!isset($parameters['userid'])) {
