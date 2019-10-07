@@ -94,7 +94,7 @@ class VoluntaryTimeOutRepository extends BaseRepository
                     "code" => 500,
                     "title" => "No schedule found",
                     "meta" => [
-                        $meta_index => $agent_schedule,
+                        $meta_index => $this->user->with('user_info')->find($data['agent'])
                     ],
                     "parameters" => $data,
                 ]);
