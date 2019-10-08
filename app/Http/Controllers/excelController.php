@@ -218,11 +218,11 @@ class excelController extends BaseController
                         $value->start_event->format('h:i A').'-'.$value->end_event->format('h:i A'),
                         $value->start_event,
                         $value->end_event,
-                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_in : 'LEAVE'),
-                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_out : 'LEAVE'),
+                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_in : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
+                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_out : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
                         (!$value->leave_id) ? $value->conformance / 100 : null,
                         (!$value->leave_id) ? implode(', ', $value->log_status) : null,
-                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? null : 'LEAVE'),
+                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? null : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
                         $value->remarks
                     ], null, 'A'.($row + 3), true);
                 
@@ -236,7 +236,7 @@ class excelController extends BaseController
 
                     if(isset($summaryData[$agentkey])) {
 
-                        array_push($summaryData[$agentkey], (!$value->leave_id) ? $value->conformance / 100 : null, ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->remarks : 'LEAVE'));
+                        array_push($summaryData[$agentkey], (!$value->leave_id) ? $value->conformance / 100 : null, ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->remarks : (($value->leave->status === 'approved') ? 'LEAVE' : null)));
 
                         if(!$value->leave_id) $summaryData[$agentkey][4] += ((float)$value->conformance / 2 )/ 100;
 
@@ -248,7 +248,7 @@ class excelController extends BaseController
                             $team_lead ? $team_lead->fullname : null,
                             0,
                             (!$value->leave_id) ? $value->conformance / 100 : null, 
-                            ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->remarks : 'LEAVE')
+                            ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->remarks : (($value->leave->status === 'approved') ? 'LEAVE' : null))
                         ];
                     }
                 } else {
