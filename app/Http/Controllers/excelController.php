@@ -179,11 +179,10 @@ class excelController extends BaseController
 
             $agents = User::with(['schedule' => function($q) use ($start){
                         $q->where(function($q) use ($start) {
-                            $q->whereDate('start_event', $start);
+                            $q->whereDate('start_event', $start->format('Y-m-d'));
                             $q->whereDoesntHave('overtime_schedule');
                         });
                         $q->with('om_info', 'tl_info');
-                        $q->first();
                     }])->whereHas('accesslevel', function($q) {
                         $q->where('code', 'representative_op');
                     })->get();
