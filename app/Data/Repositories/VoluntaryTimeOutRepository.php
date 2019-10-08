@@ -196,6 +196,14 @@ class VoluntaryTimeOutRepository extends BaseRepository
             // update
 
             if($current_vto = $agent_schedule->vto_at) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "VTO already exists.",
+                    'meta' => [
+                        $meta_index => $agent_schedule
+                    ]
+                ]);
+
                 // check available leave credits
                 $leave_credits = $this->leave_credit
                 ->where('user_id', $agent_schedule->user_id)
