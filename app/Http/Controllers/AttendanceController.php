@@ -81,6 +81,20 @@ class AttendanceController extends BaseController
         return $this->absorb($this->attendance_repo->searchAgentAttendance($data))->json();
     }
 
+    public function timeIn(Request $request)
+    {
+        $data = $request->all();
+
+        return $this->absorb($this->attendance_repo->timeIn($data))->json();
+    }
+
+    public function timeOut(Request $request)
+    {
+        $data = $request->all();
+
+        return $this->absorb($this->attendance_repo->timeOut($data))->json();
+    }
+
     public function update(Request $request, $id)
     {
         $data = $request->all();
