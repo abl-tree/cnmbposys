@@ -14,6 +14,7 @@ use App\Data\Repositories\LogsRepository;
 use App\Services\ExcelDateService;
 use App\User;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class AttendanceRepository extends BaseRepository
 {
@@ -374,6 +375,118 @@ class AttendanceRepository extends BaseRepository
             ],
             "parameters" => $parameters,
         ]);
+    }
+
+    public function timeIn($data)
+    {
+
+        if(!isset($data['schedule_id'])){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Schedule ID not set",
+                "parameters" => $data
+            ]);
+        }
+
+        $schedule = $this->agent_schedule->find($data['schedule_id']);
+
+        if(!$schedule){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Unknown schedule ID.",
+                "parameters" => $data
+            ]);
+        }
+
+        $check_attendance = $this->attendance_repo->where('schedule_id',$data['schedule_id'])->first();
+
+        if($check_attendance){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "You already have existing time in stamp.",
+                "parameters" => $data
+            ]);
+        }
+
+        if(!$check_attendance){
+            $time_in = $this->attendance_repo->init($this->attendance_repo->pullFillable($data));
+            $data['time_in'] = Carbon::now();
+            if(!$time_in->save($data)){
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "There's a problem with your input data.",
+                    "parameters" => $data
+                ]);
+            }
+
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "Successfully timed in at ".$data['time_in'].".",
+                'meta' => [
+                    'agent_schedule' => $schedule
+                ],
+                "parameters" => $data,
+            ]);
+        }
+    }
+
+    public function timeOut($data)
+    {
+        // validate if request doesn't have attendance_id then throw error
+        if(!isset($data['attendance_id'])){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Attendance ID not set",
+                "parameters" => $data
+            ]);
+        }
+
+        //  find attendance by requested attendance_id
+        $attendance = $this->attendance_repo->find($data['attendance_id']);
+
+        // validate if find attendance is null then throw error
+        if(!$attendance){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "You don't have timein stamp.",
+                "parameters" => $data
+            ]);
+        }
+
+        // validate if attendance have time_out value then throw error
+        if($attendance->time_out){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "You already have timeout stamp.",
+                "parameters" => $data
+            ]);
+        }
+
+        // find schedule for meta response
+        $schedule = $this->agent_schedule->find($attendance->schedule_id);
+
+        // define time_out with current date and time
+        $data['time_out'] = Carbon::now();
+
+        // if not saved throw error
+        if(!$attendance->save($data)){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "There's a problem with your input data.",
+                "parameters" => $data
+            ]);
+        }
+
+        // if saved thow success error
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully timed out at ".$data['time_out'].".",
+            'meta' => [
+                'agent_schedule' => $schedule
+            ],
+            "parameters" => $data,
+        ]);
+
     }
 
 }

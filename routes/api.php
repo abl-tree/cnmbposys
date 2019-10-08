@@ -34,6 +34,8 @@ Route::group([
         Route::get("fetch/{attendance_id}", "AttendanceController@fetch");
         Route::get('search', 'AttendanceController@search');
         Route::post('update/{attendance_id}', 'AttendanceController@update');
+        Route::post('time_in', 'AttendanceController@timeIn');
+        Route::post('time_out', 'AttendanceController@timeOut');
 
     });
 
