@@ -278,14 +278,14 @@ class AgentScheduleRepository extends BaseRepository
             })->first();
 
         if (!empty($date_hit)) {
-            // if($data["id"]!=$date_hit->id){
-            return $this->setResponse([
-                'code' => 500,
-                'parameters' => $data,
-                'meta' => $date_hit,
-                'title' => 'A schedule within the dates set is already created.',
-            ]);
-            // }
+            if($data["id"]!=$date_hit->id){
+                return $this->setResponse([
+                    'code' => 500,
+                    'parameters' => $data,
+                    'meta' => $date_hit,
+                    'title' => 'A schedule within the dates set is already created.',
+                ]);
+            }
         }
 
         // check for duplicate schedules
@@ -467,7 +467,7 @@ class AgentScheduleRepository extends BaseRepository
                 "operator" => "=",
                 "value" => $data['om_id'],
             ];
-            
+
             //show tl only
             if (isset($data['tl'])) {
                 $data['wherehas'][] = [
