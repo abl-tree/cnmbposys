@@ -212,7 +212,7 @@ class excelController extends BaseController
         
                     $worksheet->fromArray([
                         $cluster ? $cluster->firstname : null, 
-                        $agent->full_name.$agent->id, 
+                        $agent->full_name, 
                         $agent->user_info->p_email, 
                         $team_lead ? $team_lead->fullname : null,
                         $value->start_event->format('h:i A').'-'.$value->end_event->format('h:i A'),
