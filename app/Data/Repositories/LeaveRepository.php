@@ -485,6 +485,14 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
+        if (strpos($leave->leave_type, 'loa') !== false) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "This type of leave cannot be cancelled.",
+                "parameters" => $leave,
+            ]);
+        }
+
         $data['start_leave'] = $data['cancel_event'] ?? $leave->start_event;
 
         if ($leave->status == 'approved') {
