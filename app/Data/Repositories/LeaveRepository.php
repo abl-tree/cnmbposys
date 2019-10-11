@@ -87,9 +87,9 @@ class LeaveRepository extends BaseRepository
                     $start = substr($slot->start_event, 0, 10);
                     $leave_slot = $operations_manager->leave_slots
                         ->where('leave_type', $leave->leave_type)
-                        ->where('date', $start." 00:00:00")
+                        ->where('date', $start . " 00:00:00")
                         ->first();
-                        // dd($leave_slot);
+                    // dd($leave_slot);
                     if (!isset($leave_slot)) {
                         return $this->setResponse([
                             'code' => 500,
@@ -113,7 +113,7 @@ class LeaveRepository extends BaseRepository
                     $start = substr($slot->start_event, 0, 10);
                     $leave_slot = $operations_manager->leave_slots
                         ->where('leave_type', $leave->leave_type)
-                        ->where('date', $start." 00:00:00")
+                        ->where('date', $start . " 00:00:00")
                         ->first();
 
                     if ($leave->leave_type == "vacation_leave" || $leave->leave_type == "leave_of_absence") {
@@ -186,6 +186,74 @@ class LeaveRepository extends BaseRepository
 
             }
 
+            if ($leave->leave_type == 'loa1' || $leave->leave_type == 'loa2') {
+                //fetch available leave credits
+                $leave_credits = $this->leave_credit
+                    ->where('user_id', $leave->user_id)
+                    ->whereIn('leave_type', ['sick_leave', 'vacation_leave'])
+                    ->orderBy('leave_type', $leave->leave_type == 'loa1' ? 'asc' : 'desc')
+                    ->get()->all();
+
+                if (!$leave_credits) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Employee does not have leave credits.",
+                    ]);
+                }
+
+                //initialize credits needed
+                $credits_needed = 0;
+
+                //fetch all schedules hit by leave
+                $schedules_hit = refresh_model($this->agent_schedule->getModel())
+                    ->where('user_id', $leave->user_id)
+                    ->where('start_event', '>=', $leave->start_event)
+                    ->where('end_event', '<=', $leave->end_event)
+                    ->get()->all();
+
+                /**
+                 * loop through all schedules hit
+                 * to calculate total of hours needed
+                 */
+                foreach ($schedules_hit as $schedule) {
+                    $diff = strtotime($schedule->end_event) - strtotime($schedule->start_event);
+                    $hours = $diff / (3600);
+
+                    //total hours summation
+                    $credits_needed += $hours;
+                }
+
+                $credits_available = 0;
+                foreach ($leave_credits as $leave_credit) {
+                    $credits_available += $leave_credit->value;
+                }
+
+                if ($credits_available < $credits_needed) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Employee does not have enough leave credits.",
+                        'parameters' => [
+                            'credits' => [
+                                'available' => $credits_available,
+                                'needed' => $credits_needed,
+                            ],
+                        ],
+                    ]);
+                }
+
+                //update leave credits
+                foreach ($leave_credits as $leave_credit) {
+                    if (($leave_credit->value - $credits_needed) >= 0) {
+                        $leave_credit->value = $leave_credit->value - $credits_needed;
+                    } else {
+                        $credits_needed = $credits_needed - $leave_credit->value;
+                        $leave_credit->value = 0;
+                    }
+                    //save newly computed credits
+                    $leave_credit->save();
+                }
+            }
+
         }
 
         if (strtolower($data['status']) == "approved") {
@@ -201,10 +269,10 @@ class LeaveRepository extends BaseRepository
             //revert leaves to be overriden
             foreach ($schedules as $schedule) {
                 $hit_leave = refresh_model($this->leave->getModel())->find($schedule->leave_id ?? 0);
-                if($hit_leave){
+                if ($hit_leave) {
                     $this->revertLeave([
                         'id' => $leave->id,
-                        'cancel_event' => $hit_leave->start_event
+                        'cancel_event' => $hit_leave->start_event,
                     ]);
                 }
             }
@@ -361,7 +429,7 @@ class LeaveRepository extends BaseRepository
                 'leave' => $leave,
                 'approval_status' => [
                     'code' => isset($approval) ? $approval->getCode() : 200,
-                    'title' => isset($approval) ? $approval->getTitle() : 'Leave is currently pending for approval.',
+                    'title' => isset($approval) ? $approval->getTitle() : ($leave->status != 'pending') ? "Successfully {$leave->status} leave." : 'Leave is currently pending for approval.',
                 ],
             ],
         ]);
@@ -577,7 +645,6 @@ class LeaveRepository extends BaseRepository
                 "value" => $data['allowed_access'],
             ];
         }
-
 
         //filter by date range
         if (isset($data['start_date'])) {
