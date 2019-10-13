@@ -88,9 +88,13 @@ class AttendanceController extends BaseController
         return $this->absorb($this->attendance_repo->timeIn($data))->json();
     }
 
-    public function timeOut(Request $request)
+    public function timeOut(Request $request, $option = null)
     {
         $data = $request->all();
+
+        if($option === 'remove') {
+            return $this->absorb($this->attendance_repo->timeOutRemove($data))->json();
+        }
 
         return $this->absorb($this->attendance_repo->timeOut($data))->json();
     }

@@ -15,6 +15,7 @@ use App\Services\ExcelDateService;
 use App\User;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
+use Auth;
 
 class AttendanceRepository extends BaseRepository
 {
@@ -290,6 +291,7 @@ class AttendanceRepository extends BaseRepository
     public function fetchAgentAttendance($data = [])
     {
         $meta_index = "attendances";
+        $result = $this->attendance_repo;
         $parameters = [];
         $count = 0;
 
@@ -310,10 +312,18 @@ class AttendanceRepository extends BaseRepository
 
         }
 
+        if(isset($data['time_out']) && $data['time_out'] === 'false') {
+
+            $result = $result->where(function($q) {
+                $q->whereNull('time_out')->orWhereNotNull('time_out_by');
+            });
+            
+        }
+
         $count_data = $data;
 
         $data['relations'] = ['schedule.user_info', 'schedule.title'];
-        $result = $this->fetchGeneric($data, $this->attendance_repo);
+        $result = $this->fetchGeneric($data, $result);
 
         if (!$result) {
             return $this->setResponse([
@@ -333,7 +343,7 @@ class AttendanceRepository extends BaseRepository
             "title" => "Successfully retrieved agent attendance",
             "meta" => [
                 $meta_index => $result,
-                "count" => $count,
+                "count" => count($result),
             ],
             "parameters" => $parameters,
         ]);
@@ -432,6 +442,10 @@ class AttendanceRepository extends BaseRepository
 
     public function timeOut($data)
     {
+        $auth = Auth::user();
+
+        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' ? true : false;
+
         // validate if request doesn't have attendance_id then throw error
         if(!isset($data['attendance_id'])){
             return $this->setResponse([
@@ -466,7 +480,27 @@ class AttendanceRepository extends BaseRepository
         $schedule = $this->agent_schedule->find($attendance->schedule_id);
 
         // define time_out with current date and time
-        $data['time_out'] = Carbon::now();
+        if($isRta) {
+            if(!isset($data['time_out'])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Timeout parameter not set.",
+                    "parameters" => $data
+                ]);
+            }
+
+            if(!Carbon::parse($attendance->time_in)->lt(Carbon::parse($data['time_out']))) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Timeout parameter should be greater than time-in stamp ".$attendance->time_in.".",
+                    "parameters" => $data
+                ]);
+            }
+
+            $data['time_out_by'] = $auth->id;
+        } else {
+            $data['time_out'] = Carbon::now();
+        }
 
         // if not saved throw error
         if(!$attendance->save($data)){
@@ -481,6 +515,74 @@ class AttendanceRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully timed out at ".$data['time_out'].".",
+            'meta' => [
+                'agent_schedule' => $schedule
+            ],
+            "parameters" => $data,
+        ]);
+
+    }
+
+    public function timeOutRemove($data)
+    {
+        $auth = Auth::user();
+
+        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' ? true : false;
+
+        // validate if request doesn't have attendance_id then throw error
+        if(!isset($data['attendance_id'])){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Attendance ID not set",
+                "parameters" => $data
+            ]);
+        }
+
+        //  find attendance by requested attendance_id
+        $attendance = $this->attendance_repo->find($data['attendance_id']);
+
+        // validate if attendance exists
+        if(!$attendance){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Attendance does not exist.",
+                "parameters" => $data
+            ]);
+        }
+
+        // find schedule for meta response
+        $schedule = $this->agent_schedule->find($attendance->schedule_id);
+
+        // define time_out with current date and time
+        if($isRta) {
+
+            $data['time_out'] = null;
+
+            $data['time_out_by'] = null;
+
+        } else {
+
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "You are not allowed to remove timeout stamp",
+                "parameters" => $data
+            ]);
+
+        }
+
+        // if not saved throw error
+        if(!$attendance->save($data)){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "There's a problem with your input data.",
+                "parameters" => $data
+            ]);
+        }
+
+        // if saved thow success error
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully removed timeout.",
             'meta' => [
                 'agent_schedule' => $schedule
             ],

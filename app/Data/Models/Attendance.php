@@ -11,6 +11,7 @@ class Attendance extends BaseModel
         'schedule_id',
         'time_in',
         'time_out',
+        'time_out_by',
         'is_leave',
     ];
 
