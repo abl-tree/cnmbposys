@@ -95,16 +95,28 @@ class LoginController extends Controller
 
         if (Auth::attempt(['email' => $data['username'], 'password' => $data['password']])) {
             $user = Auth::user();
-            $success['access_token'] = $user->createToken('CNM')->accessToken;
-            return response()->json(
-                [
-                    'code' => 200,
-                    "title" => 'Successfully logged in',
-                    'meta' => [
-                        'token' => $success,
-                        'user' => $user,
-                    ],
-                ], 200);
+            if($user->status=="active"){
+                $success['access_token'] = $user->createToken('CNM')->accessToken;
+                return response()->json(
+                    [
+                        'code' => 200,
+                        "title" => 'Successfully logged in',
+                        'meta' => [
+                            'token' => $success,
+                            'user' => $user,
+                        ],
+                    ], 200);
+
+            }else{
+                return response()->json(
+                    [
+                        'code' => 500,
+                        "title" => 'Your account is inactive.',
+                        'meta' => [
+                            'username' => $data['username'],
+                        ],
+                    ], 500);
+            }
         } else {
             return response()->json(
                 [
