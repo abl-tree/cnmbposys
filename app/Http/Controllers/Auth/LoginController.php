@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Data\Models\UserInfo;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -95,7 +96,8 @@ class LoginController extends Controller
 
         if (Auth::attempt(['email' => $data['username'], 'password' => $data['password']])) {
             $user = Auth::user();
-            if($user->status=="active"){
+            $status = UserInfo::find($user->uid)->status;
+            if(strtolower($status)=="active"){
                 $success['access_token'] = $user->createToken('CNM')->accessToken;
                 return response()->json(
                     [
