@@ -277,7 +277,17 @@ class AgentScheduleRepository extends BaseRepository
                     ->orWhereBetween('end_event', [$data['start_event'], $data['end_event']]);
             })->first();
 
-        if (!empty($date_hit)) {
+
+        if (!empty($date_hit) && !isset($data["id"])) {
+            return $this->setResponse([
+                'code' => 500,
+                'parameters' => $data,
+                'meta' => $date_hit,
+                'title' => 'A schedule within the dates set is already created.',
+            ]);
+        }
+
+        if (!empty($date_hit) && isset($data["id"])) {
             if($data["id"]!=$date_hit->id){
                 return $this->setResponse([
                     'code' => 500,
@@ -287,6 +297,7 @@ class AgentScheduleRepository extends BaseRepository
                 ]);
             }
         }
+
 
         // check for duplicate schedules
         $does_exist = $this->agent_schedule

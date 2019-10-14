@@ -71,11 +71,28 @@ class LeaveSlotRepository extends BaseRepository
                     'title' => 'Leave slot does not exist.',
                 ]);
             }
+            // original value - remaining slots = consumed slots
+            // consumed slots > data throw error
+            $consumed = $does_exist->original_value - $does_exist->value;
+
+            if($does_exist->original_value != $does_exist->value){
+
+                if($consumed > $data['value']){
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => 'Slot not shrinkable, new value must be equal or greater than the consumed slots.',
+                    ]);
+                }
+
+                $data['original_value'] = $data['value'];
+
+                $data["value"] = $data["original_value"] - $consumed;
+
+            }
         }
 
         if (isset($data['user_id'])) {
             $does_exist = $this->user->find($data['user_id']);
-
             if (!$does_exist) {
                 return $this->setResponse([
                     'code' => 500,
@@ -148,6 +165,13 @@ class LeaveSlotRepository extends BaseRepository
             return $this->setResponse([
                 "code" => 404,
                 "title" => "Leave slot not found",
+            ]);
+        }
+
+        if($leave_slot->original_value != $leave_slot->value){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Slots cannot be deleted.",
             ]);
         }
 
