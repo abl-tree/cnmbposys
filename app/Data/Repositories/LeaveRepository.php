@@ -190,7 +190,7 @@ class LeaveRepository extends BaseRepository
                 //fetch available leave credits
                 $leave_credits = $this->leave_credit
                     ->where('user_id', $leave->user_id)
-                    ->whereIn('leave_type', ['sick_leave', 'vacation_leave'])
+                    ->whereIn('leave_type', $leave->leave_type == 'loa1' ? ['sick_leave', 'vacation_leave'] : ['vacation_leave'])
                     ->orderBy('leave_type', $leave->leave_type == 'loa1' ? 'asc' : 'desc')
                     ->get()->all();
 
