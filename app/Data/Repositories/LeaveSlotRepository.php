@@ -87,7 +87,7 @@ class LeaveSlotRepository extends BaseRepository
 
         if (!isset($data['id'])) {
 
-            $does_exist = $this->leave_credit
+            $does_exist = $this->leave_slot
                 ->where('user_id', $data['user_id'])
                 ->where('leave_type', $data['leave_type'])
                 ->where('date', $data['date'])
