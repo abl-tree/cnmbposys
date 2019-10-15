@@ -383,10 +383,27 @@ class LeaveRepository extends BaseRepository
         if (!isset($data['id'])) {
 
             if (!isset($data['user_id'])) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'title' => "User ID is not set.",
-                ]);
+                if (isset($data['schedule_id'])) {
+                    $schedule = refresh_model($this->agent_schedule->getModel())->find($schedule_id);
+
+                    if ($schedule) {
+                        $data['user_id'] = $schedule->user_id;
+                        $data['start_event'] = $schedule->start_event;
+                        $data['end_event'] = $schedule->end_event;
+                        $data['leave_type'] = 'partial_sick_leave';
+                    } else {
+                        return $this->setResponse([
+                            'code' => 404,
+                            'title' => "Schedule is not found.",
+                        ]);
+                    }
+                } else {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "User ID is not set.",
+                    ]);
+                }
+
             }
 
             if (!isset($data['allowed_access'])) {
