@@ -8,6 +8,7 @@ use App\Data\Models\Leave;
 use App\Data\Models\LeaveCredit;
 use App\Data\Repositories\BaseRepository;
 use App\User;
+use Carbon\Carbon;
 use DateTime;
 
 class LeaveRepository extends BaseRepository
@@ -186,6 +187,69 @@ class LeaveRepository extends BaseRepository
 
             }
 
+            if ($leave->leave_type == "partial_sick_leave") {
+                //fetch available leave credits
+                $leave_credits = $this->leave_credit
+                    ->where('user_id', $leave->user_id)
+                    ->where('leave_type', 'sick_leave')
+                    ->first();
+
+                if (!$leave_credits) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Employee does not have leave credits.",
+                    ]);
+                }
+
+                //initialize credits needed
+                $credits_needed = 0;
+
+                //fetch all schedules hit by leave
+                $schedules_hit = refresh_model($this->agent_schedule->getModel())
+                    ->where('user_id', $leave->user_id)
+                    ->where('start_event', '>=', $leave->start_event)
+                    ->where('end_event', '<=', $leave->end_event)
+                    ->get()->all();
+
+                /**
+                 * loop through all schedules hit
+                 * to calculate total of hours needed
+                 */
+                foreach ($schedules_hit as $schedule) {
+                    $attendance = refresh_model($this->attendance->getModel())
+                        ->where('schedule_id', $schedule->id)
+                        ->first();
+
+                    if ($attendance) {
+                        $diff = strtotime($schedule->end_event) - strtotime($attendance->time_out);
+                        $hours = $diff / (3600);
+
+                        //total hours summation
+                        $credits_needed += $hours;
+
+                        //do something if credits are not enough
+                        if ($leave_credits->value < $credits_needed) {
+                            $attendance->update([
+                                'time_out' => Carbon::parse($attendance->time_out)->addHours($leave_credits->value),
+                            ]);
+
+                            //set credits needed to current leave value to even out data
+                            $credits_needed = $leave_credits->value;
+                        } else {
+                            $attendance->update([
+                                'time_out' => Carbon::parse($schedule->end_event),
+                            ]);
+                        }
+
+                        //update leave credits
+                        $leave_credits->update([
+                            'value' => $leave_credits->value - $credits_needed,
+                        ]);
+                    }
+                }
+
+            }
+
             if ($leave->leave_type == 'loa1' || $leave->leave_type == 'loa2') {
                 //fetch available leave credits
                 $leave_credits = $this->leave_credit
@@ -319,10 +383,27 @@ class LeaveRepository extends BaseRepository
         if (!isset($data['id'])) {
 
             if (!isset($data['user_id'])) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'title' => "User ID is not set.",
-                ]);
+                if (isset($data['schedule_id'])) {
+                    $schedule = refresh_model($this->agent_schedule->getModel())->find($schedule_id);
+
+                    if ($schedule) {
+                        $data['user_id'] = $schedule->user_id;
+                        $data['start_event'] = $schedule->start_event;
+                        $data['end_event'] = $schedule->end_event;
+                        $data['leave_type'] = 'partial_sick_leave';
+                    } else {
+                        return $this->setResponse([
+                            'code' => 404,
+                            'title' => "Schedule is not found.",
+                        ]);
+                    }
+                } else {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "User ID is not set.",
+                    ]);
+                }
+
             }
 
             if (!isset($data['allowed_access'])) {
