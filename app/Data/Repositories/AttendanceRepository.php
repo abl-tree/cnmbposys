@@ -317,7 +317,7 @@ class AttendanceRepository extends BaseRepository
             $result = $result->where(function($q) {
                 $q->whereNull('time_out')->orWhereNotNull('time_out_by');
             });
-            
+
         }
 
         $count_data = $data;
@@ -444,7 +444,7 @@ class AttendanceRepository extends BaseRepository
     {
         $auth = Auth::user();
 
-        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' ? true : false;
+        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' ||$auth->accesslevel()->first()->code === 'rtasupervisor' ||$auth->accesslevel()->first()->code === 'rtaanalyst'  ? true : false;
 
         // validate if request doesn't have attendance_id then throw error
         if(!isset($data['attendance_id'])){
@@ -527,7 +527,7 @@ class AttendanceRepository extends BaseRepository
     {
         $auth = Auth::user();
 
-        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' ? true : false;
+        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' || $auth->accesslevel()->first()->code === 'rtasupervisor' || $auth->accesslevel()->first()->code === 'rtaanalyst' ? true : false;
 
         // validate if request doesn't have attendance_id then throw error
         if(!isset($data['attendance_id'])){
