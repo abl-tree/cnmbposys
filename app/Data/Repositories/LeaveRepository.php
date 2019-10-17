@@ -180,6 +180,30 @@ class LeaveRepository extends BaseRepository
                     ]);
                 }
 
+                /**
+                 * loop through all schedules hit
+                 * to add conformance
+                 */
+                foreach ($schedules_hit as $schedule) {
+                    $diff_mins = Carbon::parse($schedule->end_event)->diffInMinutes(Carbon::parse($schedule->start_event), true);
+                    $hours = $diff_mins / 60;
+                    $_hours = 0;
+
+                    $attendance = refresh_model($this->attendance->getModel())
+                        ->where('schedule_id', $schedule->id)
+                        ->first();
+
+                    if ($attendance) {
+                        $_diff_mins = Carbon::parse($attendance->time_out)->diffInMinutes(Carbon::parse($attendance->time_in), true);
+                        $_hours = $_diff_mins / 60;
+                    }
+
+                    $conformance = ($_hours + $hours) / ($hours * 100);
+                    $schedule->save([
+                        'conformance' => $conformance,
+                    ]);
+                }
+
                 //update leave credits
                 $leave_credits->update([
                     'value' => $leave_credits->value - $credits_needed,
@@ -247,6 +271,16 @@ class LeaveRepository extends BaseRepository
                         $leave_credits->update([
                             'value' => $leave_credits->value - $credits_needed,
                         ]);
+
+                        //for conformance
+
+                        $_diff_mins = Carbon::parse($schedule->end_event)->diffInMinutes(Carbon::parse($schedule->start_event), true);
+                        $_hours = $diff_mins / 60;
+
+                        $conformance = ($hours + $credits_needed) / ($_hours * 100);
+                        $schedule->save([
+                            'conformance' => $conformance,
+                        ]);
                     }
                 }
 
@@ -304,6 +338,30 @@ class LeaveRepository extends BaseRepository
                                 'needed' => $credits_needed,
                             ],
                         ],
+                    ]);
+                }
+
+                /**
+                 * loop through all schedules hit
+                 * to add conformance
+                 */
+                foreach ($schedules_hit as $schedule) {
+                    $diff_mins = Carbon::parse($schedule->end_event)->diffInMinutes(Carbon::parse($schedule->start_event), true);
+                    $hours = $diff_mins / 60;
+                    $_hours = 0;
+
+                    $attendance = refresh_model($this->attendance->getModel())
+                        ->where('schedule_id', $schedule->id)
+                        ->first();
+
+                    if ($attendance) {
+                        $_diff_mins = Carbon::parse($attendance->time_out)->diffInMinutes(Carbon::parse($attendance->time_in), true);
+                        $_hours = $_diff_mins / 60;
+                    }
+
+                    $conformance = ($_hours + $hours) / ($hours * 100);
+                    $schedule->save([
+                        'conformance' => $conformance,
                     ]);
                 }
 
