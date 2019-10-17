@@ -13,26 +13,30 @@ class Attendance extends BaseModel
         'time_out',
         'time_out_by',
         'is_leave',
+        'raw_time_out',
     ];
 
     protected $appends = [
         'rendered_time',
     ];
 
-    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'raw_time_out'];
 
-    public function getTimeInAttribute($value) {
+    public function getTimeInAttribute($value)
+    {
         return Carbon::parse($value);
     }
 
-    public function getTimeOutAttribute($value) {
+    public function getTimeOutAttribute($value)
+    {
         return $value ? Carbon::parse($value) : null;
     }
 
-    public function getRenderedTimeAttribute() {
+    public function getRenderedTimeAttribute()
+    {
         $start = $this->time_in;
         $end = $this->time_out ? $this->time_out : Carbon::now();
-        $difference  = $end->diffInSeconds($start);
+        $difference = $end->diffInSeconds($start);
 
         return $difference;
     }

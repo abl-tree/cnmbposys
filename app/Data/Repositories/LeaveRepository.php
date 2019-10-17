@@ -160,8 +160,8 @@ class LeaveRepository extends BaseRepository
                  * to calculate total of hours needed
                  */
                 foreach ($schedules_hit as $schedule) {
-                    $diff = strtotime($schedule->end_event) - strtotime($schedule->start_event);
-                    $hours = $diff / (3600);
+                    $diff_mins = Carbon::parse($schedule->end_event)->diffInMinutes(Carbon::parse($schedule->start_event), true);
+                    $hours = $diff_mins / 60;
 
                     //total hours summation
                     $credits_needed += $hours;
@@ -221,8 +221,8 @@ class LeaveRepository extends BaseRepository
                         ->first();
 
                     if ($attendance) {
-                        $diff = strtotime($schedule->end_event) - strtotime($attendance->time_out);
-                        $hours = $diff / (3600);
+                        $diff_mins = Carbon::parse($schedule->end_event)->diffInMinutes(Carbon::parse($attendance->time_out), true);
+                        $hours = $diff_mins / 60;
 
                         //total hours summation
                         $credits_needed += $hours;
@@ -230,13 +230,15 @@ class LeaveRepository extends BaseRepository
                         //do something if credits are not enough
                         if ($leave_credits->value < $credits_needed) {
                             $attendance->update([
-                                'time_out' => Carbon::parse($attendance->time_out)->addHours($leave_credits->value),
+                                'raw_time_out' => $attendance->time_out,
+                                'time_out' => Carbon::parse($attendance->time_out)->addMinutes($leave_credits->value * 60),
                             ]);
 
                             //set credits needed to current leave value to even out data
                             $credits_needed = $leave_credits->value;
                         } else {
                             $attendance->update([
+                                'raw_time_out' => $attendance->time_out,
                                 'time_out' => Carbon::parse($schedule->end_event),
                             ]);
                         }
@@ -280,8 +282,8 @@ class LeaveRepository extends BaseRepository
                  * to calculate total of hours needed
                  */
                 foreach ($schedules_hit as $schedule) {
-                    $diff = strtotime($schedule->end_event) - strtotime($schedule->start_event);
-                    $hours = $diff / (3600);
+                    $diff_mins = Carbon::parse($schedule->end_event)->diffInMinutes(Carbon::parse($schedule->start_event), true);
+                    $hours = $diff_mins / 60;
 
                     //total hours summation
                     $credits_needed += $hours;
@@ -577,6 +579,63 @@ class LeaveRepository extends BaseRepository
         $data['start_leave'] = $data['cancel_event'] ?? $leave->start_event;
 
         if ($leave->status == 'approved') {
+
+            //do something for partial sick leave
+            if ($leave->leave_type == "partial_sick_leave") {
+                //fetch available leave credits
+                $leave_credits = $this->leave_credit
+                    ->where('user_id', $leave->user_id)
+                    ->where('leave_type', 'sick_leave')
+                    ->first();
+
+                if (!$leave_credits) {
+                    $leave_credits = refresh_model($this->leave_credit->getModel());
+                    $leave_credits->save([
+                        'user_id' => $leave->user_id,
+                        'leave_type' => 'sick_leave',
+                        'value' => 0,
+                    ]);
+                }
+
+                //initialize credits needed
+                $credits_needed = 0;
+
+                //fetch all schedules hit by leave
+                $schedules_hit = refresh_model($this->agent_schedule->getModel())
+                    ->where('user_id', $leave->user_id)
+                    ->where('start_event', '>=', $leave->start_event)
+                    ->where('end_event', '<=', $leave->end_event)
+                    ->get()->all();
+
+                /**
+                 * loop through all schedules hit
+                 * to calculate total of hours needed
+                 */
+                foreach ($schedules_hit as $schedule) {
+                    $attendance = refresh_model($this->attendance->getModel())
+                        ->where('schedule_id', $schedule->id)
+                        ->first();
+
+                    if ($attendance) {
+                        $diff_mins = Carbon::parse($attendance->time_out)->diffInMinutes(Carbon::parse($attendance->raw_time_out), true);
+                        $hours = $diff_mins / 60;
+
+                        //total hours summation
+                        $credits_needed += $hours;
+
+                        $attendance->update([
+                            'time_out' => Carbon::parse($attendance->raw_time_out),
+                        ]);
+
+                        //update leave credits
+                        $leave_credits->update([
+                            'value' => $leave_credits->value + $credits_needed,
+                        ]);
+                    }
+                }
+
+            }
+
             //raw schedules (query builder format)
             $schedules = $this->agent_schedule
                 ->where('leave_id', $leave->id)
