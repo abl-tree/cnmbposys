@@ -447,6 +447,13 @@ class LeaveRepository extends BaseRepository
                     $schedule = refresh_model($this->agent_schedule->getModel())->find($schedule_id);
 
                     if ($schedule) {
+                        if (!isset($schedule->attendances)) {
+                            return $this->setResponse([
+                                'code' => 404,
+                                'title' => "No existing attendance for this schedule.",
+                            ]);
+                        }
+
                         $data['user_id'] = $schedule->user_id;
                         $data['start_event'] = $schedule->start_event;
                         $data['end_event'] = $schedule->end_event;
