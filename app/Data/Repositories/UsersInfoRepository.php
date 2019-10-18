@@ -941,6 +941,13 @@ class UsersInfoRepository extends BaseRepository
                 'operator' => 'not_null',
             ];
         }
+        if (isset($data['om_id']) && $data['om_id']!=null) {
+            $target_data[] = [
+                'column' => 'om_id',
+                'operator' => '=',
+                'value' => $data['om_id'],
+            ];
+        }
 
         if (isset($data['tl'])) {
             $data['wherehas'][] = [
