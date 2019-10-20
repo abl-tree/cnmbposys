@@ -99,6 +99,7 @@ Route::group([
         Route::post('conformance/{id}', 'AgentScheduleController@conformance');
         Route::post('conformance/bulk/update', 'AgentScheduleController@conformanceBulkUpdate');
         Route::post('remarks/{id}', 'AgentScheduleController@remarks');
+        Route::get('no_timeout', 'AgentScheduleController@noTimeOut');
 
     });
 

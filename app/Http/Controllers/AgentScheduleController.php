@@ -147,4 +147,10 @@ class AgentScheduleController extends BaseController
         return $this->absorb($this->agent_schedule_repo->excelData($data))->json();
     }
 
+    public function noTimeOut(Request $request) {
+        $data = $request->all();
+
+        return $this->absorb($this->agent_schedule_repo->noTimeOut($data))->json();
+    }
+
 }
