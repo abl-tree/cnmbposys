@@ -538,6 +538,7 @@ class LeaveRepository extends BaseRepository
                 ->where('start_event', '>=', $data['start_event'])
                 ->where('end_event', '<=', $data['end_event'])
                 ->where('leave_type', $data['leave_type'])
+                ->where('status', 'approved')
                 ->get()->all();
 
             if ($does_exist) {
