@@ -448,7 +448,7 @@ class LeaveRepository extends BaseRepository
 
             if (!isset($data['user_id'])) {
                 if (isset($data['schedule_id'])) {
-                    $schedule = refresh_model($this->agent_schedule->getModel())->find($schedule_id);
+                    $schedule = refresh_model($this->agent_schedule->getModel())->find($data['schedule_id']);
 
                     if ($schedule) {
                         if (!isset($schedule->attendances)) {
