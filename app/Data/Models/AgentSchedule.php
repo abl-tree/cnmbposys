@@ -138,18 +138,24 @@ class AgentSchedule extends BaseModel
         if ($this->overtime_schedule) {
             return number_format($value, 1);
         } else {
-            if($this->attendances && $this->attendances->first() && !$this->attendances->first()->time_out) {
-                
-                return number_format(0, 1);
+            if($this->remarks == "Present"){
+                    
+                if($this->attendances && $this->attendances->first() && !$this->attendances->first()->time_out) {
+                    
+                    return number_format(0, 1);
+
+                }
+
+                $billableSeconds = $this->vto_at ? $this->rendered_hours['billable']['second'] + $this->vto_hours['second'] : $this->rendered_hours['billable']['second'];
+                $regularSeconds = $this->regular_hours['second'];
+
+                $value = ($billableSeconds / $regularSeconds) * 100;
+
+                return number_format($value ? $value : 0, 1);
+            }else if($this->remarks == "On-Leave"){
+                return number_format($value ? $value : 0, 1);
 
             }
-
-            $billableSeconds = $this->vto_at ? $this->rendered_hours['billable']['second'] + $this->vto_hours['second'] : $this->rendered_hours['billable']['second'];
-            $regularSeconds = $this->regular_hours['second'];
-
-            $value = ($billableSeconds / $regularSeconds) * 100;
-
-            return number_format($value ? $value : 0, 1);
         }
     }
 

@@ -202,7 +202,7 @@ class LeaveRepository extends BaseRepository
                         $_hours = $_diff_mins / 60;
                     }
 
-                    $conformance = ($_hours + $hours) / ($hours * 100);
+                    $conformance = (($_hours + $hours) / $hours )* 100;
                     $schedule->save([
                         'conformance' => $conformance,
                     ]);
@@ -466,7 +466,7 @@ class LeaveRepository extends BaseRepository
                         return $this->setResponse([
                             'code' => 404,
                             'title' => "Schedule is not found.",
-                        ]);
+                        ]); 
                     }
                 } else {
                     return $this->setResponse([
