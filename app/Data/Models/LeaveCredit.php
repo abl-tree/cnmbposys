@@ -18,6 +18,9 @@ class LeaveCredit extends BaseModel
         'user_id',
         'leave_type',
         'value',
+        'user.firstname',
+        'user.middlename',
+        'user.lastname',
     ];
 
     public $timestamps = true;

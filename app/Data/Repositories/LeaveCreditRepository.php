@@ -301,6 +301,14 @@ class LeaveCreditRepository extends BaseRepository
             "query" => $data['query'],
         ];
 
+        foreach ((array) $data['target'] as $index => $column) {
+            if (str_contains($column, "full_name")) {
+                $data['target'][] = 'user.firstname';
+                $data['target'][] = 'user.middlename';
+                $data['target'][] = 'user.lastname';
+                unset($data['target'][$index]);
+            }
+        }
 
         //fetch user if set
         if (isset($data['user_id']) && is_numeric($data['user_id'])) {
@@ -310,9 +318,9 @@ class LeaveCreditRepository extends BaseRepository
                 "value" => $data['user_id'],
             ];
         }
-        
+
         //fetch leave type if set
-        if (isset($data['leave_type']) ) {
+        if (isset($data['leave_type'])) {
             $data['where'][] = [
                 "target" => "leave_type",
                 "operator" => "=",
