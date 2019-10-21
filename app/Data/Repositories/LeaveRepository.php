@@ -6,6 +6,7 @@ use App\Data\Models\AgentSchedule;
 use App\Data\Models\Attendance;
 use App\Data\Models\Leave;
 use App\Data\Models\LeaveCredit;
+use App\Data\Models\LeaveSlot;
 use App\Data\Repositories\BaseRepository;
 use App\User;
 use Carbon\Carbon;
@@ -16,6 +17,7 @@ class LeaveRepository extends BaseRepository
 
     protected $leave,
     $leave_credit,
+    $leave_slot,
     $agent_schedule,
     $attendance,
         $user;
@@ -25,12 +27,14 @@ class LeaveRepository extends BaseRepository
     public function __construct(
         Leave $leave,
         LeaveCredit $leaveCredit,
+        LeaveSlot $leaveSlot,
         AgentSchedule $agentSchedule,
         Attendance $attendance,
         User $user
     ) {
         $this->leave = $leave;
         $this->leave_credit = $leaveCredit;
+        $this->leave_slot = $leaveSlot;
         $this->agent_schedule = $agentSchedule;
         $this->attendance = $attendance;
         $this->user = $user;
