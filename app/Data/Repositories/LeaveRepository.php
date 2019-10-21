@@ -202,7 +202,7 @@ class LeaveRepository extends BaseRepository
                         $_hours = $_diff_mins / 60;
                     }
 
-                    $conformance = (($_hours + $hours) / $hours )* 100;
+                    $conformance = (($_hours + $hours) / $hours) * 100;
                     $schedule->save([
                         'conformance' => $conformance,
                     ]);
@@ -281,7 +281,7 @@ class LeaveRepository extends BaseRepository
                         $_diff_mins = Carbon::parse($schedule->end_event)->diffInMinutes(Carbon::parse($schedule->start_event), true);
                         $_hours = $diff_mins / 60;
 
-                        $conformance = ($hours + $credits_needed) / ($_hours * 100);
+                        $conformance = (($hours + $credits_needed) / $_hours) * 100;
                         $schedule->save([
                             'conformance' => $conformance,
                         ]);
@@ -363,7 +363,7 @@ class LeaveRepository extends BaseRepository
                         $_hours = $_diff_mins / 60;
                     }
 
-                    $conformance = ($_hours + $hours) / ($hours * 100);
+                    $conformance = (($_hours + $hours) / $hours) * 100;
                     $schedule->save([
                         'conformance' => $conformance,
                     ]);
@@ -466,7 +466,7 @@ class LeaveRepository extends BaseRepository
                         return $this->setResponse([
                             'code' => 404,
                             'title' => "Schedule is not found.",
-                        ]); 
+                        ]);
                     }
                 } else {
                     return $this->setResponse([
