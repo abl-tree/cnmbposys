@@ -1685,4 +1685,73 @@ class AgentScheduleRepository extends BaseRepository
             "parameters" => $data,
         ]);
     }
+
+    public function noTimeOut($data = []) {
+
+        $meta_index = "schedule";
+
+        $user = $this->user;
+
+        if(!isset($data['userid'])) {
+
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Parameter 'userid' is required.",
+                "parameters" => $data,
+            ]);
+
+        }
+
+        $user = $user->find($data['userid']);
+
+        if(!$user) {
+
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "User ID does not exists.",
+                "meta" => [
+                    'agent' => $user,
+                ],
+                "parameters" => $data,
+            ]);
+
+        }
+
+        $previousOngoingSchedule = $user->schedule()
+            ->whereHas('attendances', function($q) {
+                $q->whereNull('time_out');
+            })
+            ->get();
+
+        $previousOngoingSchedule = collect($previousOngoingSchedule)->where('start_event', '<', Carbon::now())->sortBy('start_event')->first();
+
+        if($previousOngoingSchedule) {
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "No Timeout Schedule.",
+                "meta" => [
+                    'agent' => $user,
+                    $meta_index => $previousOngoingSchedule,
+                ],
+                "parameters" => $data,
+            ]);
+        }
+
+        $upcomingSchedule = $user->schedule()
+            ->whereDoesntHave('attendances')
+            ->get();
+
+        $upcomingSchedule = collect($upcomingSchedule)->where('start_event', '>', Carbon::now())->sortBy('start_event')->first();
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Upcoming Schedule.",
+            "meta" => [
+                'agent' => $user,
+                $meta_index => $upcomingSchedule,
+            ],
+            "parameters" => $data,
+        ]);
+
+    }
 }
