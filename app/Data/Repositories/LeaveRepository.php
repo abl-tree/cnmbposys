@@ -532,6 +532,22 @@ class LeaveRepository extends BaseRepository
             }
         }
 
+        if (!isset($data['id'])) {
+            $does_exist = refresh_model($this->leave->getModel())
+                ->where('user_id', $data['user_id'])
+                ->where('start_event', '>=', $data['start_event'])
+                ->where('end_event', '<=', $data['end_event'])
+                ->where('leave_type', $data['leave_type'])
+                ->get()->all();
+
+            if ($does_exist) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "{$data['leave_type']} for {$data['start_event']} to {$data['end_event']} already exists",
+                ]);
+            }
+        }
+
         // existence check
 
         // insertion
