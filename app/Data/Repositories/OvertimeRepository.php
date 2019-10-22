@@ -16,6 +16,7 @@ use App\Data\Repositories\NotificationRepository;
 use Carbon\Carbon;
 use App\User;
 use Auth;
+use Nexmo\Client\Exception\Validation;
 
 class OvertimeRepository extends BaseRepository
 {
@@ -439,7 +440,7 @@ class OvertimeRepository extends BaseRepository
                 $overtime->approved_by = Auth::id();
                 if(isset($schedule['conformance'])) $overtime->conformance = $schedule['conformance'];
             }
-    
+
             if (!$overtime->save()) {
                 return $this->setResponse([
                     "code" => 500,
@@ -767,5 +768,22 @@ class OvertimeRepository extends BaseRepository
             ],
             "parameters" => $parameters,
         ]);
+    }
+
+    public function fetchCurrentOvertime(){
+        $now = Carbon::now();
+        $schedule = $this->overtime_schedule
+        ->where("start_event","<=",$now)
+        ->where("end_event",">=",$now)
+        ->first();
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "current overtime.",
+            "meta" => [
+                "overtime" => $schedule,
+            ],
+            "parameters" => [],
+        ]);
+
     }
 }

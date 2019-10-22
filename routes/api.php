@@ -48,6 +48,7 @@ Route::group([
         Route::post("create", "OvertimeController@create"); // primary table function create
         Route::post("update/{id}", "OvertimeController@update"); // primary table function update
         Route::post("delete/{id}", "OvertimeController@delete"); // primary table function delete
+        Route::get("current", "OvertimeController@current"); // primary table function delete
         // secondary functions
         // Route::get("/searchAgent", "OvertimeController@searchAgent");
         // Route::get("agents", "OvertimeController@agents");

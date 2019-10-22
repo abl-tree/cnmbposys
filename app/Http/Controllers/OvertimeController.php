@@ -143,4 +143,11 @@ class OvertimeController extends BaseController
 
         return $this->absorb($this->overtime_repo->searchAgentOvertimeSchedule($data))->json();
     }
+
+    public function current(Request $request)
+    {
+        $data = $request->all();
+
+        return $this->absorb($this->overtime_repo->fetchCurrentOvertime($data))->json();
+    }
 }

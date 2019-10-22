@@ -1742,13 +1742,34 @@ class AgentScheduleRepository extends BaseRepository
 
         $previous = collect($previous)->where('start_event', '<', Carbon::now())->sortBy('start_event')->first();
 
-        // get ongoing schedules
-
-        $ongoing = $this->agent_schedule
-        ->where("user_id",$data["userid"])
+        // get overtime schedule
+        $overtime = $this->overtime_schedule
         ->where("start_event","<=",$now)
         ->where("end_event",">=",$now)
         ->first();
+
+        // check if user has ongoing overtime
+        if($overtime){
+            $overtime = $this->agent_schedule
+            ->where("user_id",$data["userid"])
+            ->where("overtime_id", $overtime->id)
+            ->first();
+        }
+
+
+        if($overtime){
+            $ongoing = $overtime;
+        }else{
+            // get ongoing schedules
+            $ongoing = $this->agent_schedule
+            ->where("user_id",$data["userid"])
+            ->where("start_event","<=",$now)
+            ->where("end_event",">=",$now)
+            ->first();
+        }
+
+
+
 
         // get upcoming schedules
         $upcoming = $user->schedule()
