@@ -135,13 +135,13 @@ class AgentSchedule extends BaseModel
 
     public function getConformanceAttribute($value)
     {
-        if ($this->overtime_schedule) {
+        if ($this->overtime_id) {
             return number_format($value, 1);
         } else {
             if($this->remarks == "Present"){
-                    
+
                 if($this->attendances && $this->attendances->first() && !$this->attendances->first()->time_out) {
-                    
+
                     return number_format(0, 1);
 
                 }
@@ -153,7 +153,7 @@ class AgentSchedule extends BaseModel
 
                 return number_format($value ? $value : 0, 1);
             }else if($this->remarks == "On-Leave"){
-                if($this->leave->leave_type=="partial_sick_leave"){
+                if($this->leave && $this->leave->leave_type=="partial_sick_leave"){
                     $billableSeconds = $this->vto_at ? $this->rendered_hours['billable']['second'] + $this->vto_hours['second'] : $this->rendered_hours['billable']['second'];
                     $regularSeconds = $this->regular_hours['second'];
 
@@ -162,6 +162,8 @@ class AgentSchedule extends BaseModel
                     return number_format($value ? $value : 0, 1);
                 }
                 return number_format($value ? $value : 0, 1);
+            }else{
+                return number_format(0, 1);
             }
         }
     }
@@ -352,14 +354,14 @@ class AgentSchedule extends BaseModel
         }
 
         if ($this->attendances->where('is_leave',0)->count()) {
-            
+
             if ($this->leave_id) {
                 if($this->leave->status == "approved"){
                     return "On-Leave";
                 }
             }
             return 'Present';
-            
+
         }
 
 

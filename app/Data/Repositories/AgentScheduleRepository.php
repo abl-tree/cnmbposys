@@ -1688,24 +1688,30 @@ class AgentScheduleRepository extends BaseRepository
 
     public function noTimeOut($data = []) {
 
+        $status = null;
+
+        $previous = null;
+        $ongoing = null;
+        $upcoming = null;
+        $leave = null;
+
+        $schedule = null;
+
         $meta_index = "schedule";
 
         $user = $this->user;
 
         if(!isset($data['userid'])) {
-
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Parameter 'userid' is required.",
                 "parameters" => $data,
             ]);
-
         }
 
         $user = $user->find($data['userid']);
 
         if(!$user) {
-
             return $this->setResponse([
                 "code" => 500,
                 "title" => "User ID does not exists.",
@@ -1714,41 +1720,67 @@ class AgentScheduleRepository extends BaseRepository
                 ],
                 "parameters" => $data,
             ]);
-
         }
 
-        $previousOngoingSchedule = $user->schedule()
+        // check if today is on leave
+
+        $now = Carbon::now();
+
+        $leave = $this->leave
+        ->where("user_id", $data["userid"])
+        ->where("start_event","<=",$now)
+        ->where("end_event",">=",$now)
+        ->where("status","approved")
+        ->first();
+
+        // get previous schedules with no timeout
+        $previous = $user->schedule()
             ->whereHas('attendances', function($q) {
                 $q->whereNull('time_out');
             })
             ->get();
 
-        $previousOngoingSchedule = collect($previousOngoingSchedule)->where('start_event', '<', Carbon::now())->sortBy('start_event')->first();
+        $previous = collect($previous)->where('start_event', '<', Carbon::now())->sortBy('start_event')->first();
 
-        if($previousOngoingSchedule) {
-            return $this->setResponse([
-                "code" => 200,
-                "title" => "No Timeout Schedule.",
-                "meta" => [
-                    'agent' => $user,
-                    $meta_index => $previousOngoingSchedule,
-                ],
-                "parameters" => $data,
-            ]);
+        // get ongoing schedules
+
+        $ongoing = $this->agent_schedule
+        ->where("user_id",$data["userid"])
+        ->where("start_event","<=",$now)
+        ->where("end_event",">=",$now)
+        ->first();
+
+        // get upcoming schedules
+        $upcoming = $user->schedule()
+        ->whereDoesntHave('attendances')
+        ->get();
+
+        $upcoming = collect($upcoming)->where('start_event', '>', Carbon::now())->sortBy('start_event')->first();
+
+        if($previous){
+            $status = "previous";
+            $schedule = $previous;
+        }else{
+            if($ongoing){
+                $status = "ongoing";
+                $schedule = $ongoing;
+            }else{
+                $status = "upcoming";
+                $schedule = $upcoming;
+            }
         }
 
-        $upcomingSchedule = $user->schedule()
-            ->whereDoesntHave('attendances')
-            ->get();
-
-        $upcomingSchedule = collect($upcomingSchedule)->where('start_event', '>', Carbon::now())->sortBy('start_event')->first();
+        if($leave){
+            $status = "on-leave";
+        }
 
         return $this->setResponse([
             "code" => 200,
-            "title" => "Upcoming Schedule.",
+            "title" => $status." schedule.",
             "meta" => [
                 'agent' => $user,
-                $meta_index => $upcomingSchedule,
+                $meta_index => $schedule,
+                "leave" => $leave
             ],
             "parameters" => $data,
         ]);
