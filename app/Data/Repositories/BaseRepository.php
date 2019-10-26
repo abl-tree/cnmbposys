@@ -5,6 +5,9 @@ namespace App\Data\Repositories;
 use App\Data\Models\BaseModel;
 use Common\Traits\Response;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class BaseRepository
 {
@@ -83,13 +86,17 @@ class BaseRepository
                         if (isset($value['operator'])) {
                             if ($value['operator'] == 'not_null') {
                                 $q->whereNotNull($value['column']);
+                            } else if ($value['operator'] == 'wherein') {
+                                $q->whereIn($value['column'], $value['value']);
                             } else {
                                 $q->where($value['column'], $value['operator'], $value['value']);
                             }
-
                         } else {
                             $q->where($value['column'], $value['value']);
                         }
+
+
+
                     }
                 });
             }
@@ -311,6 +318,8 @@ class BaseRepository
                         if (isset($value['operator'])) {
                             if ($value['operator'] == 'not_null') {
                                 $q->whereNotNull($value['column']);
+                            } else if ($value['operator'] == 'wherein') {
+                                $q->whereIn($value['column'], $value['value']);
                             } else {
                                 $q->where($value['column'], $value['operator'], $value['value']);
                             }
@@ -409,5 +418,22 @@ class BaseRepository
         }
 
         return $term;
+    }
+
+    /**
+     * Collection Paginator
+     *
+     * @param array|Collection      $items
+     * @param int   $perPage
+     * @param int  $page
+     * @param array $options
+     *
+     * @return LengthAwarePaginator
+     */
+    public function paginate($items, $perPage = 10, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator(array_values($items->forPage($page, $perPage)->toArray()), $items->count(), $perPage, $page, $options);
     }
 }

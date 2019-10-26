@@ -13,7 +13,7 @@ class UserInfo extends BaseModel
      * The attributes that are mass assignable.
      *
      * @var array
-     * 
+     *
      */
     protected $primaryKey = 'id';
     protected $table = 'user_infos';
@@ -36,10 +36,10 @@ class UserInfo extends BaseModel
     protected $appends = [
         'full_name','count','image'
     ];
-    
+
     protected $hidden = [
-        'created_at', 
-        'updated_at', 
+        'created_at',
+        'updated_at',
         'deleted_at',
         'image','image_ext'
     ];
@@ -68,7 +68,7 @@ class UserInfo extends BaseModel
     public function setAddressAttribute($value)
     {
         $this->attributes['address'] = strtolower($value);
-    }    
+    }
 
     public function setExcelHashAttribute($value)
     {
@@ -83,24 +83,24 @@ class UserInfo extends BaseModel
 
     public function getMiddlenameAttribute($value)
     {
-        return ucwords($value);        
+        return ucwords($value);
     }
 
     public function getLastnameAttribute($value)
     {
-        return ucwords($value);        
+        return ucwords($value);
     }
-    
+
     public function getSuffixAttribute($value)
     {
-        return ucwords($value);        
+        return ucwords($value);
     }
 
     public function getAddressAttribute($value)
     {
         return ucwords($value);
-    }    
-  
+    }
+
 
     public function getFullNameAttribute(){
         $name = null;
@@ -111,6 +111,17 @@ class UserInfo extends BaseModel
 
 
     //Relationships
+
+
+    public function child_logs(){
+        return $this->hasMany('\App\Data\Models\HierarchyLog', 'parent_id', 'id');
+    }
+
+    public function parent_logs(){
+        return $this->hasMany('\App\Data\Models\HierarchyLog', 'child_id', 'id');
+    }
+
+
     public function user() {
         return $this->hasOne('\App\User', 'uid', 'id');
     }
@@ -150,5 +161,5 @@ class UserInfo extends BaseModel
         return $this->hasMany('\App\Data\Models\UserReport' ,'user_reports_id', 'id')->count();
     }
 
-    
+
 }

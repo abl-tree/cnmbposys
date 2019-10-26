@@ -40,6 +40,16 @@ Route::group([
     });
 
     Route::group([
+        "prefix" => "hierarchy_log",
+    ], function () {
+
+        Route::get("/", "HierarchyLogController@all");
+        Route::post("create", "HierarchyLogController@create");
+        Route::post('delete/{id}', 'HierarchyLogController@delete');
+
+    });
+
+    Route::group([
         "prefix" => "overtime",
     ], function () {
 
