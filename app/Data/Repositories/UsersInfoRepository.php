@@ -2319,6 +2319,7 @@ class UsersInfoRepository extends BaseRepository
             "rta" => [12,13], // real time analyst
             "op" => [15,16], // operations
             "fo" => [19], // finance officer
+            "all" => [1,2,4,8,10,12,13,15,16,19]
         ];
 
         $data["relations"][] = "user_info";
@@ -2390,6 +2391,10 @@ class UsersInfoRepository extends BaseRepository
 
         $result = $this->fetchGeneric($data, $this->user_info);
         
+        $result = collect($result)->filter(function($i){
+            return $i->id != 3;
+        });
+        
         if(isset($data["full_name"])){
             $result = collect($result)->filter(function($i) use ($data){
                 if(strpos(strtolower($i['full_name']), strtolower($data["full_name"])) !== false){
@@ -2398,6 +2403,7 @@ class UsersInfoRepository extends BaseRepository
             });
             $result = array_values($result->toArray());
         }
+
 
         return $this->setResponse([
             "code" => 200,
