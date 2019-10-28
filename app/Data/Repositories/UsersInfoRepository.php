@@ -1050,6 +1050,8 @@ class UsersInfoRepository extends BaseRepository
         $parameters = [];
         $count = 0;
 
+        $data["relations"][]="benefits";
+
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 

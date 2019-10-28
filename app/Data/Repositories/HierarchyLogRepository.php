@@ -278,4 +278,41 @@ class HierarchyLogRepository extends BaseRepository
         ]);
     }
 
+    // ______________________________________________________________
+
+    public function destroy($data = []){
+        // validate if exist
+        if(!isset($data["id"])){
+            return $this->setResponse([
+                "code" => 422,
+                "title" => "id parameter is required.",
+            ]);
+        } 
+
+        $hierarchy_log = $this->hierarchy_log->find($data["id"]);
+
+        if(!$hierarchy_log){
+            return $this->setResponse([
+                "code" => 422,
+                "title" => "id does not exist.",
+                "parameters" => $data["id"]
+            ]);
+        }
+
+        if(!$this->hierarchy_log->destroy($data["id"])){
+            return $this->setResponse([
+                "code" => 422,
+                "title" => "something is wrong! data not deleted.",
+                "parameters" => $data["id"]
+            ]);
+        };
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "data successfully deleted.",
+            "meta" => $hierarchy_log,
+            "parameters" => $data["id"]
+        ]);
+    }
+
 }

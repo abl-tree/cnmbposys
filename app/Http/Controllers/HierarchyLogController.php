@@ -37,6 +37,12 @@ class HierarchyLogController extends BaseController
         return $this->absorb($this->hierarchy_log_repo->define($data))->json();
     }
 
+    public function destroy(Request $request, $id)
+    {
+        $data["id"] = $id;
+        return $this->absorb($this->hierarchy_log_repo->destroy($data))->json();
+    }
+
     // public function count(Request $request)
     // {
     //     $data = $request->all();
