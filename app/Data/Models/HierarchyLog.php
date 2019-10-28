@@ -43,7 +43,11 @@ class HierarchyLog extends BaseModel
     }
 
     public function getTmpEndDateAttribute($value){
-        return $this->end_date ? $this->end_date : Carbon::now()->endOfDay()->toDateTimeString();
+        return $this->end_date!=null ? $this->end_date : Carbon::now()->endOfDay()->toDateTimeString();
+    }
+
+    public function setEndDateAttribute($value){
+        $this->attributes["end_date"] = Carbon::parse($value)->endOfDay()->toDateTimeString();
     }
 
 

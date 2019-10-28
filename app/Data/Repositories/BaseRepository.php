@@ -94,9 +94,6 @@ class BaseRepository
                         } else {
                             $q->where($value['column'], $value['value']);
                         }
-
-
-
                     }
                 });
             }

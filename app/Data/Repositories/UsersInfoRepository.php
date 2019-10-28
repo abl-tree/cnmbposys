@@ -2,6 +2,7 @@
 namespace App\Data\Repositories;
 
 use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\AccessLevel;
 use App\Data\Models\BenefitUpdate;
 use App\Data\Models\HierarchyUpdate;
 use App\Data\Models\UpdateStatus;
@@ -24,7 +25,8 @@ class UsersInfoRepository extends BaseRepository
 {
 
     protected $user_info, $user_datum, $user_status, $user_benefits, $user_infos, $logs,
-    $user, $access_level_hierarchy, $benefit_update, $hierarchy_update, $no_sort, $user_data_update;
+    $user, $access_level_hierarchy, $benefit_update, $hierarchy_update, $no_sort, $user_data_update,
+    $access_level;
 
     public function __construct(
         UsersData $user_info,
@@ -38,7 +40,8 @@ class UsersInfoRepository extends BaseRepository
         UserCluster $select_users,
         UserBenefit $user_benefits,
         LogsRepository $logs_repo,
-        AccessLevelHierarchy $access_level_hierarchy
+        AccessLevelHierarchy $access_level_hierarchy,
+        AccessLevel $access_level
     ) {
         $this->user_info = $user_info;
         $this->user_infos = $user_infos;
@@ -52,7 +55,7 @@ class UsersInfoRepository extends BaseRepository
         $this->user_benefits = $user_benefits;
         $this->logs = $logs_repo;
         $this->access_level_hierarchy = $access_level_hierarchy;
-
+        $this->access_level = $access_level;
     }
     public function usersInfo($data = [])
     {
@@ -2297,6 +2300,111 @@ class UsersInfoRepository extends BaseRepository
                 "count" => $count,
             ],
 
+        ]);
+    }
+
+    public function remote($data=[]){
+        /**
+         * static queries
+         * status = active
+         * relations = user_info
+         * dept_heads or department heads
+         */
+        $dept_heads = [
+            "admin" => [1,2],
+            "it" => [4], // information tech
+            "qa" => [8,10], // quality assurance
+            "rta" => [12,13], // real time analyst
+            "op" => [15,16], // operations
+            "fo" => [19], // finance officer
+        ];
+
+        $data["relations"][] = "user_info";
+        
+        if(isset($data["status"])){
+            $data["where"][] = [
+                "target" => "status",
+                "operator" => "=",
+                "value" => "active"
+            ];
+        }
+        
+        // list value mandatory heads/subordinates
+        if(!isset($data["list"])){
+            return $this->setResponse([
+                'code' => 422,
+                'title' => "list parameter value is required.",
+            ]);
+        }
+
+        if($data["list"]=="heads"){
+            if(isset($data["position_id"]) && isset($data["department"])){
+                return $this->setResponse([
+                    'code' => 422,
+                    'title' => "presence of position id and department parameters cannot be processed.",
+                ]);
+            }
+
+            if(isset($data["position_id"])){
+                // to be resumed get head list by position id
+            }
+
+            if(isset($data["department"])){
+                $data["wherehas"][] = [
+                    "relation" => "user_info",
+                    "target" => [
+                        [
+                            "column" => "access_id",
+                            "operator" => "wherein",
+                            "value" => $dept_heads[$data["department"]],
+                        ]
+                    ]
+                ];
+            }
+        }else{
+            // list == subordinates
+            if(isset($data["head_id"])){
+                $head_access = $this->user->where("uid",$data["head_id"])->first()->access_id;
+                $children_access = collect($this->access_level
+                ->where("parent",$head_access)
+                ->get())->pluck("id")->all();
+                
+                // dd($children_access);
+                
+                $data["wherehas"][] = [
+                    "relation" => "user_info",
+                    "target" => [
+                        [
+                            "column" => "access_id",
+                            "operator" => "wherein",
+                            "value" => $children_access,
+                        ]
+                    ]
+                ];
+            }
+
+        }
+
+
+        $result = $this->fetchGeneric($data, $this->user_info);
+        
+        if(isset($data["full_name"])){
+            $result = collect($result)->filter(function($i) use ($data){
+                if(strpos(strtolower($i['full_name']), strtolower($data["full_name"])) !== false){
+                    return $i;
+                }
+            });
+            $result = array_values($result->toArray());
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully query.",
+            "meta" => [
+                "remote" => $result,
+                "count" => collect($result)->count()
+            ],
+            "parameters" => $data,
         ]);
     }
 

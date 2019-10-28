@@ -103,9 +103,7 @@ class HierarchyLogRepository extends BaseRepository
             ];
         }
 
-
-
-
+        // i
 
         $data["relations"][] = 'parent_details';
         $data["relations"][] = 'child_details';
@@ -115,15 +113,27 @@ class HierarchyLogRepository extends BaseRepository
         $result = $this->fetchGeneric($data, $this->hierarchy_log);
 
         $result = collect($result)
-        ->where('start_date',"<=",$data['date'])
-        ->where('tmp_end_date',">=",$data['date']);
-
+        ->where('start_date',"<=",Carbon::parse($data['date'])->startOfDay()->toDateTimeString())
+        ->where('tmp_end_date',">=",Carbon::parse($data['date'])->startOfDay()->toDateTimeString());
 
         //  result in distinct list form base on filter_by value
         if (isset($data['list']) && isset($data['filter_by'])) {
-            $result = array_values($result->groupBy($data['filter_by'])->map(function($i){
+            $result = 
+            array_values(
+                $result->groupBy($data['filter_by'].".full_name")
+                ->map(function($i){
                 return $i[0];
-            })->toArray());
+            })->toArray())
+            ;
+        }
+
+        
+        if(isset($data['target'])) {
+            $result = collect($result)->filter(function($v,$i)use($data){
+                if(strpos(strtolower($v[$data["filter_by"]]["full_name"]),strtolower($data["query"])) !== false){
+                    return $v;
+                }
+            });
         }
 
         $count = collect($result)->count();
@@ -138,7 +148,6 @@ class HierarchyLogRepository extends BaseRepository
                 "parameters" => $parameters,
             ]);
         }
-
 
         return $this->setResponse([
             "code" => 200,
@@ -155,7 +164,9 @@ class HierarchyLogRepository extends BaseRepository
     // _______________________________________________________________
 
     public function define($data = []){
+
         // column validation
+
         if(!isset($data["parent_id"])){
             return $this->setResponse([
                 "code" => 422,
@@ -183,6 +194,16 @@ class HierarchyLogRepository extends BaseRepository
             ]);
         }
 
+        // initialize response meta
+        
+        $response = [
+            "head" => $this->user_info->find($data["parent_id"]),
+            "subordinate" => $this->user_info->find($data["child_id"]),
+            "start_date" => $data["start_date"],
+            "status" => 1,
+            "title" => "uploaded"
+        ];
+
         // child must  not have duplicate start_date
         $start_duplicate = $this->hierarchy_log
         ->where("child_id",$data["child_id"])
@@ -190,10 +211,12 @@ class HierarchyLogRepository extends BaseRepository
         ->first();
 
         if($start_duplicate){
+            $response["status"] = 0;
+            $response["title"] = "duplicate start date.";
             return $this->setResponse([
                 "code" => 422,
                 "title" => "Subordinate has duplicate date.",
-                "meta" => [],
+                "meta" => $response,
                 "parameters" => $data,
             ]);
         }
@@ -214,19 +237,22 @@ class HierarchyLogRepository extends BaseRepository
             ->first();
 
             if($conflict_date){
+                $response["status"] = 0;
+                $response["title"] = "conflict start date.";
                 return $this->setResponse([
                     "code" => 422,
                     "title" => "Conflict date field please adjust date.",
-                    "meta" => [],
+                    "meta" => $response,
                     "parameters" => $data,
                 ]);
             }
 
             $null = $this->hierarchy_log
             ->where('child_id',$data["child_id"])
-            ->whereNull('end_date');
+            ->whereNull('end_date')->first();
 
             $null->end_date = Carbon::parse($data["start_date"])->sub(CarbonInterval::days(1));
+            $null->save();
 
         }
         // check if parent and start date is confict
@@ -234,10 +260,12 @@ class HierarchyLogRepository extends BaseRepository
         $hierarchy_log = $this->hierarchy_log->init($this->hierarchy_log->pullFillable($data));
 
         if(!$hierarchy_log->save($data)){
+            $response["status"] = 0;
+            $response["title"] = "something is wrong! data not saved.";
             return $this->setResponse([
                 "code" => 500,
                 "title" => "There is a problem with the input data.",
-                "meta" => [],
+                "meta" => $response,
                 "parameters" => $data,
             ]);
         }
@@ -245,7 +273,7 @@ class HierarchyLogRepository extends BaseRepository
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined hierarchy.",
-            "meta" => [],
+            "meta" => $response,
             "parameters" => $data,
         ]);
     }

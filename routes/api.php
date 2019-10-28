@@ -305,6 +305,8 @@ Route::group([
         Route::post("import_user", "UserController@addUserImport");
         Route::post("update_user_status/{id}", "UserController@updateUserStatus");
         Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
+        Route::get("remote", "UserController@remote");
+
 
     });
 

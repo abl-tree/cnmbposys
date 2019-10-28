@@ -362,4 +362,16 @@ class UserController extends BaseController
 
         return back()->withSuccess(trans('app.success_destroy'));
     }
+
+    /**
+     * Query storage for remote search value
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function remote(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->user_info->remote($data))->json();
+    }
 }
