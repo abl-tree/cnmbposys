@@ -11,7 +11,7 @@ use App\Data\Models\BaseModel;
 class UsersUpdate extends BaseModel
 {
     use Notifiable;
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'uid';
     protected $table = 'users';
     protected $appends = [
        'value','name','firstlast_name'

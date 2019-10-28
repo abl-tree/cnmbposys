@@ -10,7 +10,6 @@ use Carbon\Carbon;
 class HierarchyLogController extends BaseController
 {
     protected $hierarchy_log_repo;
-
     public function __construct(
         HierarchyLogRepository $hierarchyLogRepository
     ) {

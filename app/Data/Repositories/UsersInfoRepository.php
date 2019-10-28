@@ -2,6 +2,7 @@
 namespace App\Data\Repositories;
 
 use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\HierarchyLog;
 use App\Data\Models\AccessLevel;
 use App\Data\Models\BenefitUpdate;
 use App\Data\Models\HierarchyUpdate;
@@ -20,13 +21,14 @@ use DateInterval;
 use DatePeriod;
 use DateTime;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class UsersInfoRepository extends BaseRepository
 {
 
     protected $user_info, $user_datum, $user_status, $user_benefits, $user_infos, $logs,
     $user, $access_level_hierarchy, $benefit_update, $hierarchy_update, $no_sort, $user_data_update,
-    $access_level;
+    $access_level, $hierarchy_log;
 
     public function __construct(
         UsersData $user_info,
@@ -41,7 +43,8 @@ class UsersInfoRepository extends BaseRepository
         UserBenefit $user_benefits,
         LogsRepository $logs_repo,
         AccessLevelHierarchy $access_level_hierarchy,
-        AccessLevel $access_level
+        AccessLevel $access_level,
+        HierarchyLog $hierarchy_log
     ) {
         $this->user_info = $user_info;
         $this->user_infos = $user_infos;
@@ -56,6 +59,7 @@ class UsersInfoRepository extends BaseRepository
         $this->logs = $logs_repo;
         $this->access_level_hierarchy = $access_level_hierarchy;
         $this->access_level = $access_level;
+        $this->hierarchy_log = $hierarchy_log;
     }
     public function usersInfo($data = [])
     {
@@ -1306,7 +1310,7 @@ class UsersInfoRepository extends BaseRepository
             }
             $user_hierarchy = $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($hierarchy));
 
-            $user_data['uid'] = $user_id;
+            // $user_data['uid'] = $user_id;
             if (isset($data['email'])) {
                 $user_data['email'] = $data['email'];
             }
@@ -1362,6 +1366,13 @@ class UsersInfoRepository extends BaseRepository
                 $error_array->offsetSet('user_hierarchy_error', "Saving Error on User Hierarchy");
                 $error_count++;
             }
+            // hierarchy log insertion
+            $hierarchy_log = $this->hierarchy_log;
+            $hierarchy_log->child_id = $user_id;
+            $hierarchy_log->parent_id = $data["parent_id"];
+            $hierarchy_log->start_date = Carbon::parse($data["hired_date"])->startOfDay()->toDateTimeString();
+            $hierarchy_log->save();
+
             if (!$users_data->save($data)) {
                 $user_id;
                 $user_info_delete = $this->user_infos->find($user_id);
@@ -1472,6 +1483,14 @@ class UsersInfoRepository extends BaseRepository
 
             $user_information = $this->user_infos->find($data['id']);
             if ($user_information) {
+                // hierarchy log insertion
+                $hierarchy_log_id = $this->hierarchy_log->where('child_id',$data["id"])->where('start_date',Carbon::parse($user_information->hired_date)->startOfDay()->toDateTimeString())->first()->id;
+                if($hierarchy_log_id){
+                    $hierarchy_log = $this->hierarchy_log->find($hierarchy_log_id);
+                    $hierarchy_log->parent_id = $data["parent_id"];
+                    $hierarchy_log->start_date = Carbon::parse($data["hired_date"])->startOfDay()->toDateTimeString();
+                    $hierarchy_log->save();
+                }
                 if (!isset($data['firstname'])) {
                     $error_array->offsetSet('firstname', "The username field is required.");
                     $error_count++;
