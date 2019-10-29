@@ -1310,7 +1310,7 @@ class UsersInfoRepository extends BaseRepository
             }
             $user_hierarchy = $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($hierarchy));
 
-            // $user_data['uid'] = $user_id;
+            $user_data['uid'] = $user_id;
             if (isset($data['email'])) {
                 $user_data['email'] = $data['email'];
             }
