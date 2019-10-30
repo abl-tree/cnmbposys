@@ -423,8 +423,9 @@ class AttendanceRepository extends BaseRepository
             //  deduct 2hours from scheduled timein
             $scheduled_timein = Carbon::parse($schedule->time_in);
             $allowed_timein = $scheduled_timein->subHours(2);
+            $title = "You are only allowed to time-in 2 hours before the schedule.";
             $now = Carbon::now();
-            if(!$allowed_timein->isAfter($now)){
+            if($allowed_timein->isAfter($now)){
                 return $this->setResponse([
                     "code" => 422,
                     "title" => "You are only allowed to time-in 2 hours before the schedule.",

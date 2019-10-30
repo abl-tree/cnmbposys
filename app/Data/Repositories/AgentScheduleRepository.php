@@ -1769,11 +1769,9 @@ class AgentScheduleRepository extends BaseRepository
         }
 
 
-
-
         // get upcoming schedules
-        $upcoming = $user->schedule()
-        ->whereDoesntHave('attendances')
+        $upcoming = $user->schedule()   
+        // ->whereDoesntHave('attendances') 
         ->get();
 
         $upcoming = collect($upcoming)->where('start_event', '>', Carbon::now())->sortBy('start_event')->first();
