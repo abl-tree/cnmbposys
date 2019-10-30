@@ -298,7 +298,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 foreach($data['benefits'] as $key => $value ){
                    
                     $ben['benefit_id'] = $key+1;
-                    $user_bene['id_number']=$value;
+                    $ben['id_number']=$value;
                     $ben['user_info_id'] = $user_id;
                     $user_ben = $this->user_benefits->init($this->user_benefits->pullFillable($ben));   
                     array_push($benefits,$user_ben);
