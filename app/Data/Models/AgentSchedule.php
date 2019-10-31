@@ -33,13 +33,14 @@ class AgentSchedule extends BaseModel
         'overtime',
         'time_in',
         'time_out',
+        'time_out_origin',
         'log_status',
         'is_working',
         'break',
         'remaining_time',
         'leave',
         'om',
-        'tl'
+        'tl',
     ];
 
     protected $searchable = [
@@ -138,9 +139,9 @@ class AgentSchedule extends BaseModel
         if ($this->overtime_id) {
             return number_format($value, 1);
         } else {
-            if($this->remarks == "Present"){
+            if ($this->remarks == "Present") {
 
-                if($this->attendances && $this->attendances->first() && !$this->attendances->first()->time_out) {
+                if ($this->attendances && $this->attendances->first() && !$this->attendances->first()->time_out) {
 
                     return number_format(0, 1);
 
@@ -152,8 +153,8 @@ class AgentSchedule extends BaseModel
                 $value = ($billableSeconds / $regularSeconds) * 100;
 
                 return number_format($value ? $value : 0, 1);
-            }else if($this->remarks == "On-Leave"){
-                if($this->leave && $this->leave->leave_type=="partial_sick_leave"){
+            } else if ($this->remarks == "On-Leave") {
+                if ($this->leave && $this->leave->leave_type == "partial_sick_leave") {
                     $billableSeconds = $this->vto_at ? $this->rendered_hours['billable']['second'] + $this->vto_hours['second'] : $this->rendered_hours['billable']['second'];
                     $regularSeconds = $this->regular_hours['second'];
 
@@ -162,13 +163,11 @@ class AgentSchedule extends BaseModel
                     return number_format($value ? $value : 0, 1);
                 }
                 return number_format($value ? $value : 0, 1);
-            }else{
+            } else {
                 return number_format(0, 1);
             }
         }
     }
-
-
 
     public function getVtoHoursAttribute()
     {
@@ -339,7 +338,7 @@ class AgentSchedule extends BaseModel
         if ($this->start_event->isFuture()) {
 
             if ($this->leave_id) {
-                if($this->leave->status == "approved"){
+                if ($this->leave->status == "approved") {
                     return "On-Leave";
                 }
             }
@@ -348,15 +347,14 @@ class AgentSchedule extends BaseModel
 
         }
 
-
         if ($value != 0) {
             return 'Absent';
         }
 
-        if ($this->attendances->where('is_leave',0)->count()) {
+        if ($this->attendances->where('is_leave', 0)->count()) {
 
             if ($this->leave_id) {
-                if($this->leave->status == "approved"){
+                if ($this->leave->status == "approved") {
                     return "On-Leave";
                 }
             }
@@ -364,9 +362,8 @@ class AgentSchedule extends BaseModel
 
         }
 
-
         if ($this->leave_id) {
-            if($this->leave->status == "approved"){
+            if ($this->leave->status == "approved") {
                 return "On-Leave";
             }
         }
@@ -393,6 +390,13 @@ class AgentSchedule extends BaseModel
         }
     }
 
+    public function getTimeOutOriginAttribute()
+    {
+        if ($this->attendances->count()) {
+            return $this->attendances[$this->attendances->count() - 1]->time_out_origin;
+        }
+    }
+
     public function getLogStatusAttribute()
     {
         $remarks = array();
@@ -407,6 +411,7 @@ class AgentSchedule extends BaseModel
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
             $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 'Overtime' : 'Undertime';
+            $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : null;
 
         } else if ($rendered_ot) {
 
@@ -416,7 +421,7 @@ class AgentSchedule extends BaseModel
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
             $remarks[1] = 'Overtime';
-
+            $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : null;
         }
 
         return $remarks;
@@ -477,11 +482,13 @@ class AgentSchedule extends BaseModel
         return $data;
     }
 
-    public function getOmAttribute(){
+    public function getOmAttribute()
+    {
         return $this->user_info->find($this->om_id);
     }
 
-    public function getTlAttribute(){
+    public function getTlAttribute()
+    {
         return $this->user_info->find($this->tl_id);
     }
 
