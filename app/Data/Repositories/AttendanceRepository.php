@@ -408,6 +408,10 @@ class AttendanceRepository extends BaseRepository
             ]);
         }
 
+        if(!Carbon::now()->isBetween(Carbon::parse($schedule->start_event)->subHours(2),Carbon::parse($schedule->end_event),true)){
+            
+        }
+
         $check_attendance = $this->attendance_repo->where('schedule_id',$data['schedule_id'])->first();
 
         if($check_attendance){
@@ -419,6 +423,12 @@ class AttendanceRepository extends BaseRepository
         }
 
         if(!$check_attendance){
+            if(!Carbon::now()->isBetween(Carbon::parse($schedule->start_event)->subHours(2),Carbon::parse($schedule->end_event),true)){
+                return $this->setResponse([
+                    "code" => 422,
+                    "title" => "Schedule no longer available.",
+                ]);
+            }
             // allow timein 2hours before the scheduled time incident
             //  deduct 2hours from scheduled timein
             $scheduled_timein = Carbon::parse($schedule->start_event);
