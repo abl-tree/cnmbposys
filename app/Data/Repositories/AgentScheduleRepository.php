@@ -1430,7 +1430,13 @@ class AgentScheduleRepository extends BaseRepository
             if (isset($data['log_status'])) {
                 $schedule = $res->schedule->filter(function ($query) use ($data) {
                     $search_array = array_map('strtolower', $query->log_status);
-                    return in_array(strtolower($data['log_status']), $search_array);
+
+                    if (is_array($data['log_status'])) {
+                        return !empty(array_intersect($data['log_status'], $search_array));
+                    } else {
+                        return in_array(strtolower($data['log_status']), $search_array);
+                    }
+
                 });
                 $result[$key]->schedule = $schedule;
             }
