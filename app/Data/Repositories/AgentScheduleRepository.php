@@ -1793,13 +1793,43 @@ class AgentScheduleRepository extends BaseRepository
             $status = "on-leave";
         }
 
+        //  fetch overtime schedule 
+        $now = Carbon::now()->addMinutes(15)->toDateTimeString();
+        $ot_schedule = $this->overtime_schedule
+        ->where("start_event","<=",$now)
+        ->where("end_event",">=",$now)
+        ->first();
+
+        if($ot_schedule && $schedule){
+
+            if(Carbon::parse($ot_schedule->start_event)->isBetween(Carbon::parse($schedule->start_event)->subHours(2),Carbon::parse($schedule->end_event)->addHour(),true)){
+                $ot_schedule = null;
+            }
+
+            if($ot_schedule){
+                if(Carbon::parse($ot_schedule->end_event)->isBetween(Carbon::parse($schedule->start_event)->subHours(2),Carbon::parse($schedule->end_event)->addHour(),true)){
+                    $ot_schedule = null;
+                }
+            }
+            
+            // if fetched schedule is an ot schedule
+            if($ot_schedule){
+                if($ot_schedule->id == $schedule->overtime_id){
+                    $ot_schedule = null;
+                }
+            }
+
+        }
+
+
         return $this->setResponse([
             "code" => 200,
             "title" => $status." schedule.",
             "meta" => [
                 'agent' => $user,
                 $meta_index => $schedule,
-                "leave" => $leave
+                "leave" => $leave,
+                "overtime" => $ot_schedule,
             ],
             "parameters" => $data,
         ]);

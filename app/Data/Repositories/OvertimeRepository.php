@@ -240,6 +240,17 @@ class OvertimeRepository extends BaseRepository
 
         // data validation
 
+        //  allowed time to join
+        $scheduled_timein = Carbon::parse($available_ot->start_event);
+        $allowed_timein = $scheduled_timein->subMinutes(10);
+        $now = Carbon::now();
+        if($allowed_timein->isAfter($now)){
+            return $this->setResponse([
+                "code" => 422,
+                "title" => "You are only allowed to join 10 minutes before the schedule.",
+            ]);
+        }
+
         if (!isset($data['id'])) {
 
             if (!isset($data['user_id']) ||
@@ -259,7 +270,7 @@ class OvertimeRepository extends BaseRepository
                         'title' => "User ID is not set. | Email is not registered",
                         'parameters' => $data,
                     ]);
-                }
+                  }
             }
 
             if (!isset($data['title_id'])) {
@@ -771,7 +782,7 @@ class OvertimeRepository extends BaseRepository
     }
 
     public function fetchCurrentOvertime(){
-        $now = Carbon::now();
+        $now = Carbon::now()->addMinutes(15)->toDateTimeString();
         $schedule = $this->overtime_schedule
         ->where("start_event","<=",$now)
         ->where("end_event",">=",$now)
