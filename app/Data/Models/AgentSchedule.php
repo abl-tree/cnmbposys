@@ -226,10 +226,12 @@ class AgentSchedule extends BaseModel
             'billable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
+                'decimal' => number_format(0, 2)
             ),
             'nonbillable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
+                'decimal' => number_format(0, 2)
             ),
             'time' => '00:00:00',
             'second' => 0,
@@ -242,10 +244,12 @@ class AgentSchedule extends BaseModel
             'billable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
+                'decimal' => number_format(0, 2)
             ),
             'nonbillable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
+                'decimal' => number_format(0, 2)
             ),
             'time' => '00:00:00',
             'second' => 0,
@@ -274,6 +278,8 @@ class AgentSchedule extends BaseModel
         $rendered_time = 0;
         $rendered_time_nonbillable = 0;
         $rendered_time_billable = 0;
+        $rendered_time_billable_in_decimal = 0;
+        $rendered_time_nonbillable_in_decimal = 0;
         $day = "";
         $day_billable = "";
         $day_nonbillable = "";
@@ -306,14 +312,19 @@ class AgentSchedule extends BaseModel
             $day_nonbillable = (int) ($rendered_time_nonbillable / 86400) . 'd ';
         }
 
+        $rendered_time_billable_in_decimal = (float) ($rendered_time_billable / 3600);
+        $rendered_time_nonbillable_in_decimal = (float) ($rendered_time_nonbillable / 3600);
+
         return array(
             'billable' => array(
                 'time' => $day_billable . gmdate('H:i:s', $rendered_time_billable),
                 'second' => $rendered_time_billable,
+                'decimal' => number_format($rendered_time_billable_in_decimal, 2)
             ),
             'nonbillable' => array(
                 'time' => $day_nonbillable . gmdate('H:i:s', $rendered_time_nonbillable),
                 'second' => $rendered_time_nonbillable,
+                'decimal' => number_format($rendered_time_nonbillable_in_decimal, 2)
             ),
             'time' => $day . gmdate('H:i:s', $rendered_time),
             'second' => $rendered_time,
