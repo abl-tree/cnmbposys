@@ -157,6 +157,7 @@ class excelController extends BaseController
             'TIME-OUT',
             'TIME-IN',
             'TIME-OUT',
+            'Rendered Time',
             'Conformance',
             'Status',
             'Override Status',
@@ -219,13 +220,14 @@ class excelController extends BaseController
                         $value->end_event,
                         ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_in : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
                         ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_out : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
+                        $value->overtime_id ? $value->overtime['billable']['decimal'] : $value->rendered_hours['billable']['decimal'],
                         (!$value->leave_id) ? $value->conformance / 100 : null,
                         (!$value->leave_id) ? implode(', ', $value->log_status) : null,
                         ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? null : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
                         $value->remarks
                     ], null, 'A'.($row + 3), true);
                 
-                    $worksheet->getStyle('J'.($row + 3))
+                    $worksheet->getStyle('K'.($row + 3))
                     ->getNumberFormat()
                     ->setFormatCode(
                         \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00
@@ -259,6 +261,7 @@ class excelController extends BaseController
                         $agent->full_name, 
                         $agent->user_info->p_email, 
                         $team_lead ? $team_lead['full_name'] : null,
+                        'OFF',
                         'OFF',
                         'OFF',
                         'OFF',
