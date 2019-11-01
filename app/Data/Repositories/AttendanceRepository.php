@@ -522,6 +522,14 @@ class AttendanceRepository extends BaseRepository
 
             $data['time_out_by'] = $auth->id;
         } else {
+            // 
+            $delay = Carbon::parse($schedule->end_event)->addMinutes(15);
+            if(Carbon::now()->isAfter($delay)){
+                return $this->setResponse([
+                    "code" => 422,
+                    "title" => "Schedule is expired.",
+                ]);
+            }
             $data['time_out'] = Carbon::now();
         }
 

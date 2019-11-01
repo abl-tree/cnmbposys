@@ -19,7 +19,8 @@ class Attendance extends BaseModel
 
     protected $appends = [
         'rendered_time', 
-        'timeout_origin'
+        'timeout_origin',
+        'system_timeout',
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'raw_time_out'];
@@ -29,28 +30,64 @@ class Attendance extends BaseModel
         return Carbon::parse($value);
     }
 
-    public function getTimeOutAttribute($value)
-    {
-        // return $value ? Carbon::parse($value) : null;
+    
+    public function getTimeoutOriginAttribute(){
         
         $schedule = $this->with("schedule")->find($this->id)->schedule;
         $delay = Carbon::parse($schedule->end_event)->addHour();
         $now = Carbon::now();
+        $result =null;
 
         // return 
         if($this->time_in){
-            if(!$value){
+            if(!$this->time_out){
                 if($now->isAfter($delay)){
-                    return Carbon::parse($schedule->end_event);
-                }
-                    return null;
-            }
-            return Carbon::parse($value);
-        }else{
-            return null;
-        }
+                    $result = "system";
+                }else{
+                    $result = null;
 
+                }
+            }else{
+                $result = "user";
+            }
+        }else{
+            $result = null;
+
+        }
+    
+        return $result;
     }
+    
+    public function getTimeOutAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function getSystemTimeoutAttribute(){
+        $schedule = $this->with("schedule")->find($this->id)->schedule;
+        $delay = Carbon::parse($schedule->end_event)->addHour();
+        $now = Carbon::now();
+        $result =null;
+
+        // return 
+        if($this->time_in){
+            if(!$this->time_out){
+                if($now->isAfter($delay)){
+                    $result = Carbon::parse($schedule->end_event);
+                }else{
+                    $result = null;
+
+                }
+            }else{
+                $result = Carbon::parse($schedule->end_event);
+            }
+        }else{
+            $result = null;
+
+        }
+        return $result;
+    }
+
 
     public function getRenderedTimeAttribute()
     {
@@ -61,24 +98,6 @@ class Attendance extends BaseModel
         return $difference;
     }
 
-    public function getTimeoutOriginAttribute(){
-        $schedule = $this->with("schedule")->find($this->id)->schedule;
-        $delay = Carbon::parse($schedule->end_event)->addHour();
-        $now = Carbon::now();
-
-        // return 
-        if($this->time_in){
-            if(!$this->time_out){
-                if($now->isAfter($delay)){
-                    return "system";
-                }
-                    return null;
-            }
-            return "user";
-        }else{
-            return null;
-        }
-    }
 
     public function schedule()
     {
