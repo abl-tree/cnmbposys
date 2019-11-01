@@ -421,7 +421,9 @@ class AgentSchedule extends BaseModel
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
             $remarks[1] = 'Overtime';
-            $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : null;
+            $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : 'No_Log';
+        } else {
+            $remarks = ['No_Log', 'No_Log', 'No_Log'];
         }
 
         return $remarks;

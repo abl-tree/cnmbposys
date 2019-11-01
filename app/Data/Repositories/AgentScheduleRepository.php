@@ -1347,6 +1347,10 @@ class AgentScheduleRepository extends BaseRepository
                     if (isset($data['tl_id'])) {
                         $query->where('tl_id', $data['tl_id']);
                     }
+
+                    if (isset($data['remarks'])) {
+                        $query->where('remarks', $data['remarks']);
+                    }
                 });
 
                 if (!isset($parameters['userid'])) {
