@@ -186,7 +186,12 @@ class excelController extends BaseController
                         $q->with('om_info', 'tl_info');
                     }])->whereHas('accesslevel', function($q) {
                         $q->where('code', 'representative_op');
-                    })->get();
+                    })->when($request->om_id, function($q) use ($request) {
+                        return $q->whereHas('schedule', function($q) use ($request){
+                            $q->whereIn('om_id', $request->om_id);
+                        });
+                    })
+                    ->get();
 
             if($sheetNumber > 0) {
                 $myWorkSheet = new Worksheet($spreadsheet, $start->format('m.d.Y'));
@@ -211,7 +216,7 @@ class excelController extends BaseController
                     $team_lead = $value->tl_info ? $value->tl_info : $agent->team_leader;
         
                     $worksheet->fromArray([
-                        $cluster ? $cluster->firstname : null, 
+                        $cluster ? $cluster->full_name : null, 
                         $agent->full_name, 
                         $agent->user_info->p_email, 
                         $team_lead ? $team_lead->fullname : null,
@@ -257,7 +262,7 @@ class excelController extends BaseController
                     $team_lead = $agent->team_leader ? $agent->team_leader : null;
             
                     $worksheet->fromArray([
-                        $cluster ? $cluster['firstname'] : null, 
+                        $cluster ? $cluster['full_name'] : null, 
                         $agent->full_name, 
                         $agent->user_info->p_email, 
                         $team_lead ? $team_lead['full_name'] : null,
