@@ -8,6 +8,7 @@ ini_set('memory_limit', '500M');
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\AccessLevel;
 use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\HierarchyLog;
 use App\Data\Models\EventTitle;
 use App\Data\Models\UserInfo;
 use App\Data\Models\UsersData;
@@ -35,7 +36,7 @@ class ImportUsersExcelRepository extends BaseRepository
 
     protected $user_benefit,
     $excel_date,
-    $user,$user_datum,$user_benefits,$logs,
+    $user,$user_datum,$user_benefits,$logs, $hierarchy_log,
     $user_info,$access_level,$access_level_hierarchy,$user_status,$user_infos,$status_list;
 
     public function __construct(
@@ -50,7 +51,8 @@ class ImportUsersExcelRepository extends BaseRepository
         AccessLevelHierarchy $access_level_hierarchy,
         UpdateStatus $user_status,
         LogsRepository $logs_repo,
-        UserBenefit $user_benefits
+        UserBenefit $user_benefits,
+        HierarchyLog $hierarchy_log
     ) {
         $this->user_benefit = $user_benefit;
         $this->user = $user;
@@ -64,6 +66,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $this->user_benefits = $user_benefits;
         $this->status_list = $status_list;
         $this->logs = $logs_repo;
+        $this->hierarchy_log = $hierarchy_log;
     }
 
     public function excelImportUser($data)
@@ -241,7 +244,14 @@ class ImportUsersExcelRepository extends BaseRepository
             $hierarchy['parent_id']= $data['parent_id'];
         
             $user_hierarchy= $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($hierarchy));
-            
+            // insert hierarchy log
+            $hierarchy_log = $this->hierarchy_log;
+            $hierarchy_log->parent_id = $hierarchy['parent_id'];
+            $hierarchy_log->child_id = $hierarchy['child_id'];
+            $hierarchy_log->start_date = $user_information['hired_date'];
+            $hierarchy_log->save();
+
+
             $user_data['uid']= $user_id;
             $user_data['email']= $data['email'];
             $user_data['access_id']= $data['access_id'];
@@ -272,6 +282,7 @@ class ImportUsersExcelRepository extends BaseRepository
                 $error_array->offsetSet(1, "Saving Error Hierarchy");
                 $error_count++;  
             }   
+
             if (!$users_data->save($data)) {
                 $user_info_delete = $this->user_infos->find($user_id);    
                 if($user_info_delete){
