@@ -343,7 +343,8 @@ Route::group([
         Route::post('verify_coach', 'CoachingController@verifyCoach');
         Route::post('agent_action', 'CoachingController@agentAction');
         Route::get('coach_details/{id}', 'CoachingController@coachDetails');
-        // Route::post('import_to_array', 'excelController@importToArray');
+        Route::post("update", "CoachingController@update");
+        Route::post('delete/{id}', 'CoachingController@delete');
         // Route::post('import', 'excelController@importStoreAdd');
         // Route::post('create_multisheet_excel', 'excelController@createMultisheetExcel');
     });

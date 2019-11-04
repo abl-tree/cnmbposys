@@ -4,6 +4,7 @@ namespace App\Data\Repositories;
 use App\Data\Models\Coaching;
 use App\User;
 use App\Data\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Storage;
 
 class CoachingRepository extends BaseRepository
 {
@@ -210,6 +211,77 @@ class CoachingRepository extends BaseRepository
             ],
             "parameters" => $parameters,
         ]);
+    }
+
+    public function update($data = [])
+    {
+        $coachingdata = $this->coaching->find($data['id']);
+        if($coachingdata->filed_by!==auth()->user()->id){
+            return $this->setResponse([
+                "code"       => 500,
+                "title"      => "Action Not Valid",
+                "meta"        => [
+                    "errors" => "You are not the user who made the coaching.",
+                ]
+            ]);
+        }
+            if (isset($data['imageName'])) {
+                $url = $coachingdata->img_proof_url;
+                $file_name = basename($url);
+                Storage::delete('images/' . $file_name);
+
+                define('UPLOAD_DIR', 'storage/images/');
+                $file = request()->image->move(UPLOAD_DIR, $data['imageName']);
+                $url = asset($file);
+                $data['img_proof_url'] = $url;
+            }
+            $coachingdata->save($data);
+        if (!$coachingdata->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $coachingdata->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully updated a coach.",
+            "meta"        => [
+                "status" => $coachingdata,
+            ]
+        ]);
+            
+        
+    }
+
+    public function delete($data = [])
+    {
+        $coachingdata = $this->coaching->find($data['id']);
+
+        if (!$coachingdata->delete()) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $coachingdata->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully deleted a Coach.",
+            "meta"        => [
+                "status" => $coachingdata,
+            ]
+        ]);
+            
+        
     }
 
 
