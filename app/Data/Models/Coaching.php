@@ -26,9 +26,9 @@ class Coaching extends BaseModel
     ];
     
 
-    public function schedule() {
-        return $this->belongsTo('\App\Data\Models\AgentSchedule', 'sched_id', 'id');
-    }
+    // public function schedule() {
+    //     return $this->belongsTo('\App\Data\Models\AgentSchedule', 'sched_id', 'id');
+    // }
 
     public function filed_by() {
         return $this->belongsTo('\App\Data\Models\UserInfo','filed_by', 'id');

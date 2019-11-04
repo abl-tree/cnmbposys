@@ -152,5 +152,10 @@ class AgentScheduleController extends BaseController
 
         return $this->absorb($this->agent_schedule_repo->noTimeOut($data))->json();
     }
+    
+    public function missedLogs(Request $request) {
+        $data = $request->all();
+        return $this->absorb($this->agent_schedule_repo->missedLogs($data))->json();
+    }
 
 }

@@ -111,6 +111,7 @@ Route::group([
         Route::post('conformance/bulk/update', 'AgentScheduleController@conformanceBulkUpdate');
         Route::post('remarks/{id}', 'AgentScheduleController@remarks');
         Route::get('today', 'AgentScheduleController@noTimeOut');
+        Route::get('missed_logs', 'AgentScheduleController@missedLogs');
 
     });
 

@@ -1857,4 +1857,34 @@ class AgentScheduleRepository extends BaseRepository
         ]);
 
     }
+
+    public function missedLogs($data = []){
+        // filter params id, tl_id, om_id
+        $result = $this->agent_schedule->with("coaching","coaching.filed_by")->where("title_id",1)->orderBy("start_event","desc")->get();
+
+        if(isset($data["id"]) && $data["id"]){
+            $result = collect($result)->where('user_info.id',$data["id"]);
+        }
+        
+        if(isset($data["tl_id"]) && $data["tl_id"]){
+            $result = collect($result)->where('tl_id',$data["tl_id"]);
+        }
+        
+        if(isset($data["om_id"]) && $data["om_id"]){
+            $result = collect($result)->where('om_id',$data["om_id"]);
+        }
+
+        $result = array_values(collect($result)->filter(function($i){
+            if(count(array_intersect($i->log_status,["tardy","undertime","no_timeout"]))>0){
+                return $i;
+            }
+        })->toArray());
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "successfully fetch missed logs",
+            "meta" => [
+                'missed_logs' => isset($data["page"])? $this->paginate($result,$data["perpage"],$data["page"]):$result,
+            ],
+        ]);
+    }
 }

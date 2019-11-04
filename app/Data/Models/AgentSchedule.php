@@ -409,9 +409,11 @@ class AgentSchedule extends BaseModel
             $time_in = Carbon::parse($this->time_in);
             $total_hrs = Carbon::parse($this->end_event)->diffInSeconds($sched_start);
 
-            $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
-            $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 'Overtime' : 'Undertime';
-            $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : null;
+            $remarks[0] = ($time_in->lte($sched_start) ? 'punctual' : 'tardy');
+            $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 
+              (strtolower($this->time_out_origin) == 'system') ? 'no_timeout' :'overtime'
+            : 'undertime';
+            // $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : null;
 
         } else if ($rendered_ot) {
 
@@ -419,11 +421,15 @@ class AgentSchedule extends BaseModel
             $time_in = Carbon::parse($this->time_in);
             $total_hrs = Carbon::parse($this->end_event)->diffInSeconds($sched_start);
 
-            $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
-            $remarks[1] = 'Overtime';
-            $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : 'No_Log';
+            $remarks[0] = ($time_in->lte($sched_start) ? 'punctual' : 'tardy');
+            $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 
+              (strtolower($this->time_out_origin) == 'system') ? 'no_timeout' :'overtime'
+            : 'undertime';
         } else {
-            $remarks = ['No_Log', 'No_Log', 'No_Log'];
+            // $remarks = ['No_Log', 'No_Log'];
+            // if($this->remarks == "NCNS"){
+            //     $remarks = ["No_Timein","No_Timeout"];
+            // }
         }
 
         return $remarks;
@@ -553,8 +559,14 @@ class AgentSchedule extends BaseModel
     {
         return $this->hasOne('App\Data\Models\Leave', "id", "leave_id");
     }
+
     public function user()
     {
         return $this->hasMany('App\Data\Models\UpdateStatus', 'user_id', 'user_id');
+    }
+    
+    public function coaching()
+    {
+        return $this->hasOne('App\Data\Models\Coaching', 'sched_id', 'id');
     }
 }

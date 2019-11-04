@@ -45,6 +45,12 @@ class CoachingRepository extends BaseRepository
                     'title' => "sched_id  is not set.",
                 ]);
             }
+            if (!isset($data['image'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "proof  is not set.",
+                ]);
+            }
             if (!isset($data['remarks'])) {
                 return $this->setResponse([
                     'code'  => 500,
