@@ -406,11 +406,14 @@ class AgentSchedule extends BaseModel
         if ($rendered_time) {
 
             $sched_start = Carbon::parse($this->start_event)->addMinutes(5);
+            $sched_end = Carbon::parse($this->end_event)->subMinutes(5);
             $time_in = Carbon::parse($this->time_in);
+            $time_out = Carbon::parse($this->time_out);
             $total_hrs = Carbon::parse($this->end_event)->subMinutes(5)->diffInSeconds($sched_start);
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
-            $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 'Overtime' : 'Undertime';
+            // $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 'Overtime' : 'Undertime';
+            $remarks[1] = ($time_out->gte($sched_end) ? 'Overtime' : 'Undertime');
             $remarks[2] = (strtolower($this->time_out_origin) == 'system') ? 'No_Timeout' : null;
 
         } else if ($rendered_ot) {
