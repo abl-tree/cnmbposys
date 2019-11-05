@@ -405,9 +405,9 @@ class AgentSchedule extends BaseModel
 
         if ($rendered_time) {
 
-            $sched_start = Carbon::parse($this->start_event);
+            $sched_start = Carbon::parse($this->start_event)->addMinutes(5);
             $time_in = Carbon::parse($this->time_in);
-            $total_hrs = Carbon::parse($this->end_event)->diffInSeconds($sched_start);
+            $total_hrs = Carbon::parse($this->end_event)->subMinutes(5)->diffInSeconds($sched_start);
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
             $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 'Overtime' : 'Undertime';
@@ -415,9 +415,9 @@ class AgentSchedule extends BaseModel
 
         } else if ($rendered_ot) {
 
-            $sched_start = Carbon::parse($this->start_event);
+            $sched_start = Carbon::parse($this->start_event)->addMinutes(5);
             $time_in = Carbon::parse($this->time_in);
-            $total_hrs = Carbon::parse($this->end_event)->diffInSeconds($sched_start);
+            $total_hrs = Carbon::parse($this->end_event)->subMinutes(5)->diffInSeconds($sched_start);
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'Punctual' : 'Tardy');
             $remarks[1] = 'Overtime';
