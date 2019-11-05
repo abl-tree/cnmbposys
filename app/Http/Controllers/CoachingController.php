@@ -62,6 +62,12 @@ class CoachingController extends BaseController
         $data = $request->all();
         return $this->absorb($this->coaching->agentAction($data))->json();
     }
+    public function revertVerify(Request $request,$id)
+    {
+        $data = $request->all();
+        $data['id'] = $id;
+        return $this->absorb($this->coaching->revertVerify($data))->json();
+    }
     public function coachDetails(Request $request, $id)
     {
         $data = $request->all();

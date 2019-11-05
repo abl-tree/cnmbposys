@@ -345,6 +345,7 @@ Route::group([
         Route::get('coach_details/{id}', 'CoachingController@coachDetails');
         Route::post("update", "CoachingController@update");
         Route::post('delete/{id}', 'CoachingController@delete');
+        Route::post('revert_verify/{id}', 'CoachingController@revertVerify');
         // Route::post('import', 'excelController@importStoreAdd');
         // Route::post('create_multisheet_excel', 'excelController@createMultisheetExcel');
     });
