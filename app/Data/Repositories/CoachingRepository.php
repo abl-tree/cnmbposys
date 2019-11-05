@@ -225,6 +225,13 @@ class CoachingRepository extends BaseRepository
                 ]
             ]);
         }
+
+        if($coachingdata->verified_by){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Unable to modify verified coaching.",
+            ]);
+        }
             if (isset($data['imageName'])) {
                 $url = $coachingdata->img_proof_url;
                 $file_name = basename($url);
@@ -261,7 +268,13 @@ class CoachingRepository extends BaseRepository
     public function delete($data = [])
     {
         $coachingdata = $this->coaching->find($data['id']);
-
+        if($coachingdata->verified_by){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Unable to modify verified coaching.",
+            ]);
+        }
+        
         if (!$coachingdata->delete()) {
             return $this->setResponse([
                 "code"        => 500,

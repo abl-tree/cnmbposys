@@ -38,15 +38,16 @@ class Coaching extends BaseModel
     }
     public function verified_by() {
         return $this->belongsTo('\App\Data\Models\Users','filed_by', 'id');
-    }
-
-
-    public function getVerifiedbyAttribute(){
-        $name = null;
-        if(isset($this->verified_by)){
-            $name = $this->verified_by->full_name;
-        }
         
-        return $name;
     }
+
+
+    // public function getVerifiedbyAttribute(){
+    //     $name = null;
+    //     if(isset($this->verified_by)){
+    //         $name = $this->verified_by->full_name;
+    //     }
+        
+    //     return $name;
+    // }
 }
