@@ -230,7 +230,7 @@ class CoachingRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Updates Coach",
+            "title"      => "Successfully reverted verified coaching.",
             "meta"        => [
                 "status" => $coachingdata,
             ]

@@ -37,7 +37,8 @@ class Coaching extends BaseModel
         return $this->belongsTo('\App\Data\Models\UserInfo','filed_to', 'id');
     }
     public function verified_by() {
-        return $this->belongsTo('\App\Data\Models\Users','filed_by', 'id');
+        return $this->belongsTo('\App\Data\Models\UserInfo','verified_by', 'id');
+
         
     }
 

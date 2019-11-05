@@ -1860,7 +1860,7 @@ class AgentScheduleRepository extends BaseRepository
 
     public function missedLogs($data = []){
         // filter params id, tl_id, om_id
-        $result = $this->agent_schedule->with("coaching","coaching.filed_by")->where("title_id",1)->orderBy("start_event","desc")->get();
+        $result = $this->agent_schedule->with("coaching","coaching.filed_by","coaching.verified_by")->where("title_id",1)->orderBy("start_event","desc")->get();
 
         if(isset($data["id"]) && $data["id"]){
             $result = collect($result)->where('user_info.id',$data["id"]);
