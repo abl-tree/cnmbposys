@@ -104,6 +104,18 @@ class CoachingRepository extends BaseRepository
                 ]);
             }
             $coachingdata = $this->coaching->find($data['id']);
+            if($coachingdata==null){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coach not found.",
+                ]);
+            }
+            if(strtolower($coachingdata->filed_to_action)!=='approved'){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coaching Not Yet Approved.",
+                ]);
+            }
             $coachingdata->save($data);
 
         if (!$coachingdata->save($data)) {
@@ -152,6 +164,56 @@ class CoachingRepository extends BaseRepository
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully updated approval.",
+            "meta"        => [
+                "status" => $coachingdata,
+            ]
+        ]);
+            
+        
+    }
+
+    public function revertVerify($data = [])
+    {
+            if (!isset($data['id'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "coaching id is not set.",
+                ]);
+            }
+            $coachingdata = $this->coaching->find($data['id']);
+            if($coachingdata==null){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coach not found.",
+                ]);
+            }
+            if($coachingdata->verified_by==NULL){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coach is not yet verified.",
+                ]);
+            }
+            if($coachingdata->verified_by!==auth()->user()->id){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "You are not the one who verified this coach.",
+                ]);
+            }
+            $coachingdata->verified_by=NULL;
+        if (!$coachingdata->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $coachingdata->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully Updates Coach",
             "meta"        => [
                 "status" => $coachingdata,
             ]
@@ -216,6 +278,12 @@ class CoachingRepository extends BaseRepository
     public function update($data = [])
     {
         $coachingdata = $this->coaching->find($data['id']);
+        if($coachingdata==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Coach not found.",
+            ]);
+        }
         if($coachingdata->filed_by!==auth()->user()->id){
             return $this->setResponse([
                 "code"       => 500,
@@ -272,6 +340,12 @@ class CoachingRepository extends BaseRepository
     public function delete($data = [])
     {
         $coachingdata = $this->coaching->find($data['id']);
+        if($coachingdata==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Coach not found.",
+            ]);
+        }
         if($coachingdata->verified_by){
             return $this->setResponse([
                 "code"       => 422,
