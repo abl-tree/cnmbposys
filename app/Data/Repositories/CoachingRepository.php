@@ -131,7 +131,7 @@ class CoachingRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully updated a coach.",
+            "title"      => "Successfully verified coaching.",
             "meta"        => [
                 "status" => $coachingdata,
             ]
@@ -141,14 +141,31 @@ class CoachingRepository extends BaseRepository
     }
     public function agentAction($data = [])
     {
-            if (!isset($data['filed_to_action'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "filed_to_action id is not set.",
-                ]);
-            }
-            $coachingdata = $this->coaching->find($data['id']);
-            $coachingdata->save($data);
+        if (!isset($data['filed_to_action'])) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "filed_to_action id is not set.",
+            ]);
+        }
+
+        $coachingdata = $this->coaching->find($data['id']);
+
+        if(!$coachingdata){
+            return $this->setResponse([
+                'code'  => 422,
+                'title' => "Action not processed, data is already outdated.",
+            ]);
+        }
+        // added validation
+        // throw error if coaching status == verified
+        if($coachingdata->status == "verified"){
+            return $this->setResponse([
+                'code'  => 422,
+                'title' => "Action not processed, data is already outdated.",
+            ]);
+        }
+
+        $coachingdata->save($data);
 
         if (!$coachingdata->save($data)) {
             return $this->setResponse([
@@ -193,13 +210,13 @@ class CoachingRepository extends BaseRepository
                     'title' => "Coach is not yet verified.",
                 ]);
             }
-            if($coachingdata->verified_by!==auth()->user()->id){
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "You are not the one who verified this coach.",
-                ]);
-            }
-            $coachingdata->verified_by=NULL;
+            // if($coachingdata->verified_by!==auth()->user()->id){
+            //     return $this->setResponse([
+            //         'code'  => 500,
+            //         'title' => "You are not the one who verified this coach.",
+            //     ]);
+            // }
+            $data['verified_by']=NULL;
         if (!$coachingdata->save($data)) {
             return $this->setResponse([
                 "code"        => 500,
@@ -293,11 +310,11 @@ class CoachingRepository extends BaseRepository
                 ]
             ]);
         }
-
-        if($coachingdata->verified_by){
+        
+        if($coachingdata->status != "pending"){
             return $this->setResponse([
                 "code"       => 422,
-                "title"      => "Unable to modify verified coaching.",
+                "title"      => "Action not processed, data is already outdated.",
             ]);
         }
         
@@ -346,10 +363,10 @@ class CoachingRepository extends BaseRepository
                 'title' => "Coach not found.",
             ]);
         }
-        if($coachingdata->verified_by){
+        if($coachingdata->status != "pending"){
             return $this->setResponse([
                 "code"       => 422,
-                "title"      => "Unable to modify verified coaching.",
+                "title"      => "Action not processed, data is already outdated.",
             ]);
         }
         
