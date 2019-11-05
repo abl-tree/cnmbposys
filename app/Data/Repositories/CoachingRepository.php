@@ -151,7 +151,7 @@ class CoachingRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Updates Coach",
+            "title"      => "Successfully updated approval.",
             "meta"        => [
                 "status" => $coachingdata,
             ]
@@ -232,6 +232,8 @@ class CoachingRepository extends BaseRepository
                 "title"      => "Unable to modify verified coaching.",
             ]);
         }
+        
+        if(isset($data["image"])){
             if (isset($data['imageName'])) {
                 $url = $coachingdata->img_proof_url;
                 $file_name = basename($url);
@@ -242,7 +244,9 @@ class CoachingRepository extends BaseRepository
                 $url = asset($file);
                 $data['img_proof_url'] = $url;
             }
-            $coachingdata->save($data);
+        }
+
+        $coachingdata->save($data);
         if (!$coachingdata->save($data)) {
             return $this->setResponse([
                 "code"        => 500,

@@ -1874,6 +1874,15 @@ class AgentScheduleRepository extends BaseRepository
             $result = collect($result)->where('om_id',$data["om_id"]);
         }
 
+        if(isset($data["query"]) && $data["query"]){
+            $result = collect($result)->filter(function($i)use($data){
+                if(strpos(strtolower($i['user_info']['full_name']),strtolower($data['query']))!==false){
+                    return $i;
+                }
+            });
+        }
+
+
         $result = array_values(collect($result)->filter(function($i){
             if(count(array_intersect($i->log_status,["tardy","undertime","no_timeout"]))>0){
                 return $i;
