@@ -413,7 +413,16 @@ class AgentSchedule extends BaseModel
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'punctual' : 'tardy');
             // $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 'Overtime' : 'Undertime';
-            $remarks[1] = ($time_out->gte($sched_end) ? (strtolower($this->time_out_origin) == 'system') ? 'no_timeout' :'overtime' : 'undertime');
+            if ($time_out->gte($sched_end)) {
+                if (strtolower($this->time_out_origin) == 'system') {
+                    $remarks[1] = 'no_timeout';
+                } else {
+                    $remarks[1] = ($time_out->lte($sched_end->addMinutes(20))) ? 'timed_out' : 'overtime';
+                }
+            } else {
+                $remarks[1] = 'undertime';
+            }
+            // $remarks[1] = ($time_out->gte($sched_end) ? (strtolower($this->time_out_origin) == 'system') ? 'no_timeout' : 'overtime' : 'undertime');
 
         } else if ($rendered_ot) {
 
@@ -422,8 +431,8 @@ class AgentSchedule extends BaseModel
             $total_hrs = Carbon::parse($this->end_event)->subMinutes(5)->diffInSeconds($sched_start);
 
             $remarks[0] = ($time_in->lte($sched_start) ? 'punctual' : 'tardy');
-            $remarks[1] = ($rendered_time - $total_hrs >= 0) ? 
-              (strtolower($this->time_out_origin) == 'system') ? 'no_timeout' :'overtime'
+            $remarks[1] = ($rendered_time - $total_hrs >= 0) ?
+            (strtolower($this->time_out_origin) == 'system') ? 'no_timeout' : 'overtime'
             : 'undertime';
         } else {
             // $remarks = ['No_Log', 'No_Log'];
@@ -564,7 +573,7 @@ class AgentSchedule extends BaseModel
     {
         return $this->hasMany('App\Data\Models\UpdateStatus', 'user_id', 'user_id');
     }
-    
+
     public function coaching()
     {
         return $this->hasOne('App\Data\Models\Coaching', 'sched_id', 'id');
