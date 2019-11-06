@@ -1766,6 +1766,12 @@ class AgentScheduleRepository extends BaseRepository
 
         $previous = collect($previous)->where('start_event', '<', Carbon::now())->sortBy('start_event')->first();
 
+        if($previous){
+            $end = Carbon::parse($previous->end_event)->addMinutes(15); 
+            if(Carbon::now()->isAfter($end)){
+                $previous = null;
+            }
+        }
         // get overtime schedule
         $overtime = $this->overtime_schedule
             ->where("start_event", "<=", $now)
@@ -1798,10 +1804,6 @@ class AgentScheduleRepository extends BaseRepository
 
         $upcoming = collect($upcoming)->where('start_event', '>', Carbon::now())->sortBy('start_event')->first();
 
-        $end = Carbon::parse($previous->end_event)->addMinutes(15); 
-        if(Carbon::now()->isAfter($end)){
-            $previous = null;
-        }
         
         if ($previous) {
             $status = "previous";
