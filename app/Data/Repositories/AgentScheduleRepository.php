@@ -1874,6 +1874,17 @@ class AgentScheduleRepository extends BaseRepository
             $result = collect($result)->where('om_id',$data["om_id"]);
         }
 
+        
+        if(isset($data['status'])){
+            $result = collect($result)->filter(function($i)use($data){
+                if($i['coaching']){
+                    if(strtolower($i['coaching']['status']) == strtolower($data["status"])){
+                        return $i;
+                    }
+                }
+            });
+        }
+
         if(isset($data["query"]) && $data["query"]){
             $result = collect($result)->filter(function($i)use($data){
                 if(strpos(strtolower($i['user_info']['full_name']),strtolower($data['query']))!==false){
@@ -1881,6 +1892,7 @@ class AgentScheduleRepository extends BaseRepository
                 }
             });
         }
+        
 
 
         $result = array_values(collect($result)->filter(function($i){
