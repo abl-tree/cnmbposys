@@ -118,6 +118,29 @@ class OvertimeRepository extends BaseRepository
                     'title' => 'Overtime Schedule ID does not exist.',
                 ]);
             }
+            
+            // validation update extend only
+            // must have the same start_event
+            if($does_exist->start_event != $data["start_event"]){
+                return $this->setResponse([
+                    'code' => 422,
+                    'title' => 'Start details must be '. $does_exist->start_event.".",
+                ]);
+            }
+
+            
+            if(Carbon::parse($does_exist->end_event)->isAfter(Carbon::parse($data["end_event"]))){
+                return $this->setResponse([
+                    'code' => 422,
+                    'title' => "New end details must be past ".$does_exist->end_event.".",
+                ]);
+            }
+            // else{
+            //     return $this->setResponse([
+            //         'code' => 200,
+            //         'title' => 'Success',
+            //     ]);
+            // }
         }
 
         //Check for conflicts
@@ -487,7 +510,17 @@ class OvertimeRepository extends BaseRepository
         if (!$record) {
             return $this->setResponse([
                 "code" => 404,
-                "title" => "Overtime schedule not found",
+                "title" => "Overtime schedule not found.",
+            ]);
+        }
+
+        // validate if overtime has agent schedules
+        $schedules = $this->agent_schedule->where('overtime_id',$data["id"])->first();
+
+        if($schedules){
+            return $this->setResponse([
+                "code" => 422,
+                "title" => "You cannot delete overtime with existing agents.",
             ]);
         }
 
