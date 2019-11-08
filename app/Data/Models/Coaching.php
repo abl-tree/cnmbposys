@@ -26,9 +26,9 @@ class Coaching extends BaseModel
     ];
     
 
-    public function schedule() {
-        return $this->belongsTo('\App\Data\Models\AgentSchedule', 'sched_id', 'id');
-    }
+    // public function schedule() {
+    //     return $this->belongsTo('\App\Data\Models\AgentSchedule', 'sched_id', 'id');
+    // }
 
     public function filed_by() {
         return $this->belongsTo('\App\Data\Models\UserInfo','filed_by', 'id');
@@ -37,16 +37,18 @@ class Coaching extends BaseModel
         return $this->belongsTo('\App\Data\Models\UserInfo','filed_to', 'id');
     }
     public function verified_by() {
-        return $this->belongsTo('\App\Data\Models\Users','filed_by', 'id');
-    }
+        return $this->belongsTo('\App\Data\Models\UserInfo','verified_by', 'id');
 
-
-    public function getVerifiedbyAttribute(){
-        $name = null;
-        if(isset($this->verified_by)){
-            $name = $this->verified_by->full_name;
-        }
         
-        return $name;
     }
+
+
+    // public function getVerifiedbyAttribute(){
+    //     $name = null;
+    //     if(isset($this->verified_by)){
+    //         $name = $this->verified_by->full_name;
+    //     }
+        
+    //     return $name;
+    // }
 }

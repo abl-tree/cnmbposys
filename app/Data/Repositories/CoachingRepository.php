@@ -4,6 +4,7 @@ namespace App\Data\Repositories;
 use App\Data\Models\Coaching;
 use App\User;
 use App\Data\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Storage;
 
 class CoachingRepository extends BaseRepository
 {
@@ -43,6 +44,12 @@ class CoachingRepository extends BaseRepository
                 return $this->setResponse([
                     'code'  => 500,
                     'title' => "sched_id  is not set.",
+                ]);
+            }
+            if (!isset($data['image'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "proof  is not set.",
                 ]);
             }
             if (!isset($data['remarks'])) {
@@ -97,6 +104,18 @@ class CoachingRepository extends BaseRepository
                 ]);
             }
             $coachingdata = $this->coaching->find($data['id']);
+            if($coachingdata==null){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coach not found.",
+                ]);
+            }
+            if(strtolower($coachingdata->filed_to_action)!=='approved'){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coaching Not Yet Approved.",
+                ]);
+            }
             $coachingdata->save($data);
 
         if (!$coachingdata->save($data)) {
@@ -112,7 +131,7 @@ class CoachingRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully updated a coach.",
+            "title"      => "Successfully verified coaching.",
             "meta"        => [
                 "status" => $coachingdata,
             ]
@@ -122,14 +141,31 @@ class CoachingRepository extends BaseRepository
     }
     public function agentAction($data = [])
     {
-            if (!isset($data['filed_to_action'])) {
-                return $this->setResponse([
-                    'code'  => 500,
-                    'title' => "filed_to_action id is not set.",
-                ]);
-            }
-            $coachingdata = $this->coaching->find($data['id']);
-            $coachingdata->save($data);
+        if (!isset($data['filed_to_action'])) {
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "filed_to_action id is not set.",
+            ]);
+        }
+
+        $coachingdata = $this->coaching->find($data['id']);
+
+        if(!$coachingdata){
+            return $this->setResponse([
+                'code'  => 422,
+                'title' => "Action not processed, data is already outdated.",
+            ]);
+        }
+        // added validation
+        // throw error if coaching status == verified
+        if($coachingdata->status == "verified"){
+            return $this->setResponse([
+                'code'  => 422,
+                'title' => "Action not processed, data is already outdated.",
+            ]);
+        }
+
+        $coachingdata->save($data);
 
         if (!$coachingdata->save($data)) {
             return $this->setResponse([
@@ -144,7 +180,57 @@ class CoachingRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully Updates Coach",
+            "title"      => "Successfully updated approval.",
+            "meta"        => [
+                "status" => $coachingdata,
+            ]
+        ]);
+            
+        
+    }
+
+    public function revertVerify($data = [])
+    {
+            if (!isset($data['id'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "coaching id is not set.",
+                ]);
+            }
+            $coachingdata = $this->coaching->find($data['id']);
+            if($coachingdata==null){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coach not found.",
+                ]);
+            }
+            if($coachingdata->verified_by==NULL){
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "Coach is not yet verified.",
+                ]);
+            }
+            // if($coachingdata->verified_by!==auth()->user()->id){
+            //     return $this->setResponse([
+            //         'code'  => 500,
+            //         'title' => "You are not the one who verified this coach.",
+            //     ]);
+            // }
+            $data['verified_by']=NULL;
+        if (!$coachingdata->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $coachingdata->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully reverted verified coaching.",
             "meta"        => [
                 "status" => $coachingdata,
             ]
@@ -204,6 +290,106 @@ class CoachingRepository extends BaseRepository
             ],
             "parameters" => $parameters,
         ]);
+    }
+
+    public function update($data = [])
+    {
+        $coachingdata = $this->coaching->find($data['id']);
+        if($coachingdata==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Coach not found.",
+            ]);
+        }
+        if($coachingdata->filed_by!==auth()->user()->id){
+            return $this->setResponse([
+                "code"       => 500,
+                "title"      => "Action Not Valid",
+                "meta"        => [
+                    "errors" => "You are not the user who made the coaching.",
+                ]
+            ]);
+        }
+        
+        if($coachingdata->status != "pending"){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action not processed, data is already outdated.",
+            ]);
+        }
+        
+        if(isset($data["image"])){
+            if (isset($data['imageName'])) {
+                $url = $coachingdata->img_proof_url;
+                $file_name = basename($url);
+                Storage::delete('images/' . $file_name);
+
+                define('UPLOAD_DIR', 'storage/images/');
+                $file = request()->image->move(UPLOAD_DIR, $data['imageName']);
+                $url = asset($file);
+                $data['img_proof_url'] = $url;
+            }
+        }
+
+        $coachingdata->save($data);
+        if (!$coachingdata->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $coachingdata->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully updated a coach.",
+            "meta"        => [
+                "status" => $coachingdata,
+            ]
+        ]);
+            
+        
+    }
+
+    public function delete($data = [])
+    {
+        $coachingdata = $this->coaching->find($data['id']);
+        if($coachingdata==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Coach not found.",
+            ]);
+        }
+        if($coachingdata->status != "pending"){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action not processed, data is already outdated.",
+            ]);
+        }
+        
+        if (!$coachingdata->delete()) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $coachingdata->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully deleted a Coach.",
+            "meta"        => [
+                "status" => $coachingdata,
+            ]
+        ]);
+            
+        
     }
 
 

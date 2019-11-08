@@ -111,6 +111,7 @@ Route::group([
         Route::post('conformance/bulk/update', 'AgentScheduleController@conformanceBulkUpdate');
         Route::post('remarks/{id}', 'AgentScheduleController@remarks');
         Route::get('today', 'AgentScheduleController@noTimeOut');
+        Route::get('missed_logs', 'AgentScheduleController@missedLogs');
 
     });
 
@@ -342,7 +343,9 @@ Route::group([
         Route::post('verify_coach', 'CoachingController@verifyCoach');
         Route::post('agent_action', 'CoachingController@agentAction');
         Route::get('coach_details/{id}', 'CoachingController@coachDetails');
-        // Route::post('import_to_array', 'excelController@importToArray');
+        Route::post("update", "CoachingController@update");
+        Route::post('delete/{id}', 'CoachingController@delete');
+        Route::post('revert_verify/{id}', 'CoachingController@revertVerify');
         // Route::post('import', 'excelController@importStoreAdd');
         // Route::post('create_multisheet_excel', 'excelController@createMultisheetExcel');
     });

@@ -34,7 +34,7 @@ class Attendance extends BaseModel
     public function getTimeoutOriginAttribute(){
         
         $schedule = $this->with("schedule")->find($this->id)->schedule;
-        $delay = Carbon::parse($schedule->end_event)->addHour();
+        $delay = Carbon::parse($schedule->end_event)->addMinutes(15);
         $now = Carbon::now();
         $result =null;
 
@@ -65,7 +65,7 @@ class Attendance extends BaseModel
 
     public function getSystemTimeoutAttribute(){
         $schedule = $this->with("schedule")->find($this->id)->schedule;
-        $delay = Carbon::parse($schedule->end_event)->addHour();
+        $delay = Carbon::parse($schedule->end_event)->addMinutes(15);
         $now = Carbon::now();
         $result =null;
 

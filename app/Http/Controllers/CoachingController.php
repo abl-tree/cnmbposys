@@ -29,6 +29,28 @@ class CoachingController extends BaseController
 
         return $this->absorb($this->coaching->create($data))->json();
     }
+    public function update(Request $request)
+    {
+        $data = $request->all();
+        if (isset($data['image'])) {
+            request()->validate([
+
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+
+            ]);
+            $imageName = time() . '.' . request()->image->getClientOriginalExtension();
+            $data['imageName'] = $imageName;
+        }
+
+        return $this->absorb($this->coaching->update($data))->json();
+    }
+
+    public function delete(Request $request, $id)
+    {
+        $data = $request->all();
+        $data['id'] = $id;
+        return $this->absorb($this->coaching->delete($data))->json();
+    }
 
     public function verifyCoach(Request $request)
     {
@@ -39,6 +61,12 @@ class CoachingController extends BaseController
     {
         $data = $request->all();
         return $this->absorb($this->coaching->agentAction($data))->json();
+    }
+    public function revertVerify(Request $request,$id)
+    {
+        $data = $request->all();
+        $data['id'] = $id;
+        return $this->absorb($this->coaching->revertVerify($data))->json();
     }
     public function coachDetails(Request $request, $id)
     {
