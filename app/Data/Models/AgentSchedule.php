@@ -226,15 +226,18 @@ class AgentSchedule extends BaseModel
             'billable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
-                'decimal' => number_format(0, 2)
+                'decimal' => number_format(0, 2),
+                'night_difference' => 0
             ),
             'nonbillable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
-                'decimal' => number_format(0, 2)
+                'decimal' => number_format(0, 2),
+                'night_difference' => 0
             ),
             'time' => '00:00:00',
             'second' => 0,
+            'night_difference' => 0
         );
     }
 
@@ -244,15 +247,18 @@ class AgentSchedule extends BaseModel
             'billable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
-                'decimal' => number_format(0, 2)
+                'decimal' => number_format(0, 2),
+                'night_difference' => 0
             ),
             'nonbillable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
-                'decimal' => number_format(0, 2)
+                'decimal' => number_format(0, 2),
+                'night_difference' => 0
             ),
             'time' => '00:00:00',
             'second' => 0,
+            'night_difference' => 0
         );
     }
 
@@ -280,19 +286,23 @@ class AgentSchedule extends BaseModel
         $rendered_time_billable = 0;
         $rendered_time_billable_in_decimal = 0;
         $rendered_time_nonbillable_in_decimal = 0;
+        $night_dif_billable = 0;
+        $night_dif = 0;
         $day = "";
         $day_billable = "";
         $day_nonbillable = "";
         $start = $this->time_in;
         $end = $this->vto_at && $this->vto_at->lt($this->time_out) ? $this->vto_at : ($this->time_out ? $this->time_out : Carbon::now());
+        $start_billable = null;
+        $end_billable = null;
 
         if ($this->attendances->count() && $start->lessThan($this->end_event)) {
 
             $rendered_time = $end->diffInSeconds($start);
 
-            $start = $start->greaterThan($this->start_event) && $start->lessThan($this->end_event) ? $start : $this->start_event;
-            $end = $end->lessThan($this->end_event) ? $end : $this->end_event;
-            $rendered_time_billable = $end->diffInSeconds($start);
+            $start_billable = $start->greaterThan($this->start_event) && $start->lessThan($this->end_event) ? $start : $this->start_event;
+            $end_billable = $end->lessThan($this->end_event) ? $end : $this->end_event;
+            $rendered_time_billable = $end_billable->diffInSeconds($start_billable);
 
         }
 
@@ -315,19 +325,68 @@ class AgentSchedule extends BaseModel
         $rendered_time_billable_in_decimal = (float) ($rendered_time_billable / 3600);
         $rendered_time_nonbillable_in_decimal = (float) ($rendered_time_nonbillable / 3600);
 
+        $tmp = [];
+
+        $time_in = Carbon::parse($start);
+        $time_out = Carbon::parse($end);
+        $diff_start = $time_in->copy()->subDay();
+        $diff_end = $time_out->copy()->addDay();
+        $start_billable = Carbon::parse($start_billable);
+        $end_billable = Carbon::parse($end_billable);
+
+        while($diff_start->lte($diff_end)) {
+
+            $tmp_diff_start = $diff_start->copy()->setTime(22, 0, 0);
+
+            $tmp_diff_end = $diff_start->copy()->addDay()->setTime(6, 0, 0);
+
+            if($time_in->lt($tmp_diff_end) && $time_out->gt($tmp_diff_start)) {
+
+                if(!$time_in->lt($tmp_diff_start)) {
+                    $tmp_diff_start = $time_in->copy();
+                }
+
+                if($time_out->lt($tmp_diff_end)) {
+                    $tmp_diff_end = $time_out->copy();
+                }
+
+                $night_dif += $tmp_diff_end->diffInSeconds($tmp_diff_start);
+
+            }
+
+            if($start_billable->lt($tmp_diff_end) && $end_billable->gt($tmp_diff_start)) {
+
+                if(!$start_billable->lt($tmp_diff_start)) {
+                    $tmp_diff_start = $start_billable->copy();
+                }
+
+                if($end_billable->lt($tmp_diff_end)) {
+                    $tmp_diff_end = $end_billable->copy();
+                }
+
+                $night_dif_billable += $tmp_diff_end->diffInSeconds($tmp_diff_start);
+
+            }
+
+            $diff_start->addDay();
+        }
+
         return array(
             'billable' => array(
                 'time' => $day_billable . gmdate('H:i:s', $rendered_time_billable),
                 'second' => $rendered_time_billable,
-                'decimal' => number_format($rendered_time_billable_in_decimal, 2)
+                'decimal' => number_format($rendered_time_billable_in_decimal, 2),
+                'night_difference' => number_format((float) ($night_dif_billable/3600), 2)
             ),
             'nonbillable' => array(
                 'time' => $day_nonbillable . gmdate('H:i:s', $rendered_time_nonbillable),
                 'second' => $rendered_time_nonbillable,
-                'decimal' => number_format($rendered_time_nonbillable_in_decimal, 2)
+                'decimal' => number_format($rendered_time_nonbillable_in_decimal, 2),
+                'night_difference' => number_format((float) (($night_dif - $night_dif_billable)/3600), 2)
             ),
             'time' => $day . gmdate('H:i:s', $rendered_time),
             'second' => $rendered_time,
+            'night_difference' => number_format((float) ($night_dif/3600), 2)
         );
     }
 
