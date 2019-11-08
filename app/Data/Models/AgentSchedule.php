@@ -371,22 +371,26 @@ class AgentSchedule extends BaseModel
             $diff_start->addDay();
         }
 
+        $night_dif_nonbillable = number_format((float) (($night_dif - $night_dif_billable)/3600), 2);
+        $night_dif = number_format((float) ($night_dif/3600), 2);
+        $night_dif_billable = number_format((float) ($night_dif_billable/3600), 2);
+
         return array(
             'billable' => array(
                 'time' => $day_billable . gmdate('H:i:s', $rendered_time_billable),
                 'second' => $rendered_time_billable,
                 'decimal' => number_format($rendered_time_billable_in_decimal, 2),
-                'night_difference' => number_format((float) ($night_dif_billable/3600), 2)
+                'night_difference' => $night_dif_billable
             ),
             'nonbillable' => array(
                 'time' => $day_nonbillable . gmdate('H:i:s', $rendered_time_nonbillable),
                 'second' => $rendered_time_nonbillable,
                 'decimal' => number_format($rendered_time_nonbillable_in_decimal, 2),
-                'night_difference' => number_format((float) (($night_dif - $night_dif_billable)/3600), 2)
+                'night_difference' => $night_dif_nonbillable
             ),
             'time' => $day . gmdate('H:i:s', $rendered_time),
             'second' => $rendered_time,
-            'night_difference' => number_format((float) ($night_dif/3600), 2)
+            'night_difference' => $night_dif
         );
     }
 
