@@ -25,7 +25,7 @@ class AlterLeaveSlotsTable extends Migration
      */
     public function down()
     {
-        Schema::table('overtime_schedules', function (Blueprint $table) {
+        Schema::table('leave_slots', function (Blueprint $table) {
             $table->dropColumn('original_value');
         });
     }
