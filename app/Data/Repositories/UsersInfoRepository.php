@@ -2369,6 +2369,16 @@ class UsersInfoRepository extends BaseRepository
 
             if(isset($data["position_id"])){
                 // to be resumed get head list by position id
+                $data["wherehas"][] = [
+                    "relation" => "user_info",
+                    "target" => [
+                        [
+                            "column" => "access_id",
+                            "operator" => "=",
+                            "value" => $data["position_id"]
+                        ]
+                    ]
+                ];
             }
 
             if(isset($data["department"])){
