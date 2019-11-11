@@ -1333,14 +1333,14 @@ class AgentScheduleRepository extends BaseRepository
                 }
 
                 $data['relations'] = array('schedule' => function ($query) use ($parameters, $data) {
-                    $end = Carbon::parse($parameters['end']);
-                    $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
+                    $end = Carbon::parse($parameters['end'])->endOfDay();
+                    $end = ($end->isToday()) ? Carbon::now()->endOfDay() : $end->addDays(1)->endOfDay();
 
                     $query->where(function ($query) use ($parameters, $end) {
-                        $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['start_event', '<', $end]]);
+                        $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['start_event', '<=', $end]]);
                         $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters, $end) {
                             $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
-                            $ot_query->where('end_event', '<', $end);
+                            $ot_query->where('end_event', '<=', $end);
                         });
                     });
 
@@ -1361,17 +1361,17 @@ class AgentScheduleRepository extends BaseRepository
                     $data['wherehas_by_relations'] = array(
                         'target' => 'schedule',
                         'query' => function ($query) use ($parameters) {
-                            $end = Carbon::parse($parameters['end']);
-                            $end = ($end->isToday()) ? Carbon::now() : $end->addDays(1);
+                            $end = Carbon::parse($parameters['end'])->endOfDay();
+                            $end = ($end->isToday()) ? Carbon::now()->endOfDay() : $end->addDays(1)->endOfDay();
 
                             $query->where(function ($query) use ($parameters, $end) {
-                                $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['start_event', '<', $end]]);
+                                $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['start_event', '<=', $end]]);
                                 $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters) {
-                                    $end = Carbon::parse($parameters['end']);
+                                    $end = Carbon::parse($parameters['end'])->endOfDay();
                                     $end = $end->addDays(1);
 
                                     $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
-                                    $ot_query->where('end_event', '<', $end);
+                                    $ot_query->where('end_event', '<=', $end);
                                 });
                             });
                         });
