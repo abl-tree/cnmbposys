@@ -53,15 +53,16 @@ class UserInfosTableSeeder extends Seeder
             ],
         ];
 
-        HierarchyLog::create([
-            'parent_id' => 1,
-            'child_id' => 2,
-            'start_date' => Carbon::now(),
-            'end_date' => null
-        ]);
        
         foreach($data as $datum){
             UserInfo::create($datum);
         }
+
+        
+        HierarchyLog::create([
+            'parent_id' => 1,
+            'child_id' => 2,
+            'start_date' => Carbon::now()->startOfDay(),
+        ]);
     }
 }

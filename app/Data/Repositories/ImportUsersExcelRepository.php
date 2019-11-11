@@ -248,7 +248,7 @@ class ImportUsersExcelRepository extends BaseRepository
             $hierarchy_log = $this->hierarchy_log;
             $hierarchy_log->parent_id = $hierarchy['parent_id'];
             $hierarchy_log->child_id = $hierarchy['child_id'];
-            $hierarchy_log->start_date = $user_information['hired_date'];
+            $hierarchy_log->start_date = Carbon::parse($user_information['hired_date'])->startOfDay();
             $hierarchy_log->save();
 
 
