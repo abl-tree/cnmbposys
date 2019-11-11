@@ -175,19 +175,19 @@ class AgentScheduleRepository extends BaseRepository
                     }
 
                     if (isset($om->id)) {
-                        $data['om_id'] = $om->id;
+                        $data['om_id'] = $om->uid;
                     }
 
                     if (!isset($data['om_id'])) {
                         return $this->setResponse([
                             'code' => 500,
-                            'title' => "Unknown OM email.",
+                            'title' => "Unknown OM email.", 
                             'parameters' => $data,
                         ]);
                     }
 
                     if (isset($tl->id)) {
-                        $data['tl_id'] = $tl->id;
+                        $data['tl_id'] = $tl->uid;
                     }
 
                     if (!isset($data['tl_id'])) {
@@ -331,7 +331,7 @@ class AgentScheduleRepository extends BaseRepository
             !is_numeric($auth_id) ||
             $auth_id <= 0) {
             $logged_in_user = $this->user->find($auth_id);
-            $current_employee = isset($data['user_id']) ? $this->user->find($data['user_id']) : $this->user->find($agent_schedule->user_id);
+            $current_employee = isset($data['user_id']) ? $this->user->where('uid',$data['user_id'])->first() : $this->user->find($agent_schedule->user_id);
             if (!$logged_in_user) {
                 return $this->setResponse([
                     'code' => 500,
