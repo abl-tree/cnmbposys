@@ -301,7 +301,7 @@ class CoachingRepository extends BaseRepository
                 'title' => "Coach not found.",
             ]);
         }
-        if($coachingdata->filed_by!==auth()->user()->id){
+        if($coachingdata->filed_by!==auth()->user()->uid){
             return $this->setResponse([
                 "code"       => 500,
                 "title"      => "Action Not Valid",
