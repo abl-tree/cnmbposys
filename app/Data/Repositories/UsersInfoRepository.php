@@ -1,10 +1,10 @@
 <?php
 namespace App\Data\Repositories;
 
-use App\Data\Models\AccessLevelHierarchy;
-use App\Data\Models\HierarchyLog;
 use App\Data\Models\AccessLevel;
+use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\BenefitUpdate;
+use App\Data\Models\HierarchyLog;
 use App\Data\Models\HierarchyUpdate;
 use App\Data\Models\UpdateStatus;
 use App\Data\Models\UserBenefit;
@@ -17,11 +17,11 @@ use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\LogsRepository;
 use App\User;
 use ArrayObject;
+use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DateTime;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
 class UsersInfoRepository extends BaseRepository
 {
@@ -685,6 +685,20 @@ class UsersInfoRepository extends BaseRepository
                     'value' => $data['end_date'],
                 ];
             }
+            if (isset($data['created_start_date'])) {
+                $target_data[] = [
+                    'column' => 'created_at',
+                    'operator' => '>=',
+                    'value' => $data['created_start_date'],
+                ];
+            }
+            if (isset($data['created_end_date'])) {
+                $target_data[] = [
+                    'column' => 'created_at',
+                    'operator' => '<=',
+                    'value' => $data['created_end_date'],
+                ];
+            }
             if (isset($data['status'])) {
                 $target_data[] = [
                     'column' => 'status',
@@ -737,6 +751,11 @@ class UsersInfoRepository extends BaseRepository
                 'relation' => 'leave_checker',
                 'target' => $target_data,
             ];
+
+            $data['where_relations'][] = [
+                'relation' => 'leaves',
+                'target' => $target_data,
+            ];
         }
 
         if (isset($data['leave_credits'])) {
@@ -752,6 +771,11 @@ class UsersInfoRepository extends BaseRepository
 
             $data['wherehas'][] = [
                 'relation' => 'leave_credit_checker',
+                'target' => $target_data,
+            ];
+
+            $data['where_relations'][] = [
+                'relation' => 'leave_credits',
                 'target' => $target_data,
             ];
         }
@@ -783,6 +807,11 @@ class UsersInfoRepository extends BaseRepository
 
             $data['wherehas'][] = [
                 'relation' => 'leave_slot_checker',
+                'target' => $target_data,
+            ];
+
+            $data['where_relations'][] = [
+                'relation' => 'leave_slots',
                 'target' => $target_data,
             ];
         }
@@ -834,7 +863,17 @@ class UsersInfoRepository extends BaseRepository
         }
 
         $count_data = $data;
-        $data['relations'] = ["user_info", "accesslevel", "leaves", "leave_credits", "leave_slots"];
+        $data['relations'] = ["user_info", "accesslevel"];
+
+        if (!isset($data['leaves'])) {
+            $data['relations'][] = 'leaves';
+        }
+        if (!isset($data['leave_credits'])) {
+            $data['relations'][] = 'leave_credits';
+        }
+        if (!isset($data['leave_slots'])) {
+            $data['relations'][] = 'leave_slots';
+        }
 
         if (isset($data['no_relations'])) {
             unset($data['relations']);
@@ -852,6 +891,11 @@ class UsersInfoRepository extends BaseRepository
                 ],
                 "parameters" => $parameters,
             ]);
+        }
+
+        foreach ($result as $user) {
+            $user->last_approved_leave = $user->leave_checker->recently_approved;
+            unset($user->leave_checker);
         }
 
         return $this->setResponse([
@@ -948,7 +992,7 @@ class UsersInfoRepository extends BaseRepository
                 'operator' => 'not_null',
             ];
         }
-        if (isset($data['om_id']) && $data['om_id']!=null) {
+        if (isset($data['om_id']) && $data['om_id'] != null) {
             $target_data[] = [
                 'column' => 'om_id',
                 'operator' => '=',
@@ -1054,7 +1098,7 @@ class UsersInfoRepository extends BaseRepository
         $parameters = [];
         $count = 0;
 
-        $data["relations"][]="benefits";
+        $data["relations"][] = "benefits";
 
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
@@ -1484,8 +1528,8 @@ class UsersInfoRepository extends BaseRepository
             $user_information = $this->user_infos->find($data['id']);
             if ($user_information) {
                 // hierarchy log insertion
-                $hierarchy_log_id = $this->hierarchy_log->where('child_id',$data["id"])->where('start_date',Carbon::parse($user_information->hired_date)->startOfDay()->toDateTimeString())->first()->id;
-                if($hierarchy_log_id){
+                $hierarchy_log_id = $this->hierarchy_log->where('child_id', $data["id"])->where('start_date', Carbon::parse($user_information->hired_date)->startOfDay()->toDateTimeString())->first()->id;
+                if ($hierarchy_log_id) {
                     $hierarchy_log = $this->hierarchy_log->find($hierarchy_log_id);
                     $hierarchy_log->parent_id = $data["parent_id"];
                     $hierarchy_log->start_date = Carbon::parse($data["hired_date"])->startOfDay()->toDateTimeString();
@@ -2324,7 +2368,8 @@ class UsersInfoRepository extends BaseRepository
         ]);
     }
 
-    public function remote($data=[]){
+    public function remote($data = [])
+    {
         /**
          * static queries
          * status = active
@@ -2332,42 +2377,42 @@ class UsersInfoRepository extends BaseRepository
          * dept_heads or department heads
          */
         $dept_heads = [
-            "admin" => [1,2],
+            "admin" => [1, 2],
             "it" => [4], // information tech
-            "qa" => [8,10], // quality assurance
-            "rta" => [12,13], // real time analyst
-            "op" => [15,16], // operations
+            "qa" => [8, 10], // quality assurance
+            "rta" => [12, 13], // real time analyst
+            "op" => [15, 16], // operations
             "fo" => [19], // finance officer
-            "all" => [1,2,4,8,10,12,13,15,16,19]
+            "all" => [1, 2, 4, 8, 10, 12, 13, 15, 16, 19],
         ];
 
         $data["relations"][] = "user_info";
-        
-        if(isset($data["status"])){
+
+        if (isset($data["status"])) {
             $data["where"][] = [
                 "target" => "status",
                 "operator" => "=",
-                "value" => "active"
+                "value" => "active",
             ];
         }
-        
+
         // list value mandatory heads/subordinates
-        if(!isset($data["list"])){
+        if (!isset($data["list"])) {
             return $this->setResponse([
                 'code' => 422,
                 'title' => "list parameter value is required.",
             ]);
         }
 
-        if($data["list"]=="heads"){
-            if(isset($data["position_id"]) && isset($data["department"])){
+        if ($data["list"] == "heads") {
+            if (isset($data["position_id"]) && isset($data["department"])) {
                 return $this->setResponse([
                     'code' => 422,
                     'title' => "presence of position id and department parameters cannot be processed.",
                 ]);
             }
 
-            if(isset($data["position_id"])){
+            if (isset($data["position_id"])) {
                 // to be resumed get head list by position id
                 $data["wherehas"][] = [
                     "relation" => "user_info",
@@ -2375,13 +2420,13 @@ class UsersInfoRepository extends BaseRepository
                         [
                             "column" => "access_id",
                             "operator" => "=",
-                            "value" => $data["position_id"]
-                        ]
-                    ]
+                            "value" => $data["position_id"],
+                        ],
+                    ],
                 ];
             }
 
-            if(isset($data["department"])){
+            if (isset($data["department"])) {
                 $data["wherehas"][] = [
                     "relation" => "user_info",
                     "target" => [
@@ -2389,20 +2434,20 @@ class UsersInfoRepository extends BaseRepository
                             "column" => "access_id",
                             "operator" => "wherein",
                             "value" => $dept_heads[$data["department"]],
-                        ]
-                    ]
+                        ],
+                    ],
                 ];
             }
-        }else{
+        } else {
             // list == subordinates
-            if(isset($data["head_id"])){
-                $head_access = $this->user->where("uid",$data["head_id"])->first()->access_id;
+            if (isset($data["head_id"])) {
+                $head_access = $this->user->where("uid", $data["head_id"])->first()->access_id;
                 $children_access = collect($this->access_level
-                ->where("parent",$head_access)
-                ->get())->pluck("id")->all();
-                
+                        ->where("parent", $head_access)
+                        ->get())->pluck("id")->all();
+
                 // dd($children_access);
-                
+
                 $data["wherehas"][] = [
                     "relation" => "user_info",
                     "target" => [
@@ -2410,36 +2455,34 @@ class UsersInfoRepository extends BaseRepository
                             "column" => "access_id",
                             "operator" => "wherein",
                             "value" => $children_access,
-                        ]
-                    ]
+                        ],
+                    ],
                 ];
             }
 
         }
 
-
         $result = $this->fetchGeneric($data, $this->user_info);
-        
-        $result = collect($result)->filter(function($i){
+
+        $result = collect($result)->filter(function ($i) {
             return $i->id != 3;
         });
-        
-        if(isset($data["full_name"])){
-            $result = collect($result)->filter(function($i) use ($data){
-                if(strpos(strtolower($i['full_name']), strtolower($data["full_name"])) !== false){
+
+        if (isset($data["full_name"])) {
+            $result = collect($result)->filter(function ($i) use ($data) {
+                if (strpos(strtolower($i['full_name']), strtolower($data["full_name"])) !== false) {
                     return $i;
                 }
             });
             $result = array_values($result->toArray());
         }
 
-
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully query.",
             "meta" => [
                 "remote" => $result,
-                "count" => collect($result)->count()
+                "count" => collect($result)->count(),
             ],
             "parameters" => $data,
         ]);
