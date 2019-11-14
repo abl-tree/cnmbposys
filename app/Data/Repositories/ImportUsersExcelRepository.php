@@ -91,9 +91,10 @@ class ImportUsersExcelRepository extends BaseRepository
             $birthdate=null;
             if (isset($firstPage[$x + 1])) {
                 if ($firstPage[$x + 1][1] != null) {  
-                    $parent = UserInfo::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
-                    if($parent!='[]'){
-                        $parent_id=$parent[0]->id;
+                    $parent = DB::table('users')->where('email', $firstPage[$x + 1][12])->get();
+                    // $parent = User::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
+                    if($parent!='[]'||$parent!=null){
+                        $parent_id=$parent[0]->uid;
                     }
                 
                         foreach ($position as $key => $value) {
