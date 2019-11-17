@@ -181,7 +181,7 @@ class AgentScheduleRepository extends BaseRepository
                     if (!isset($data['om_id'])) {
                         return $this->setResponse([
                             'code' => 500,
-                            'title' => "Unknown OM email.", 
+                            'title' => "Unknown OM email.",
                             'parameters' => $data,
                         ]);
                     }
@@ -331,7 +331,7 @@ class AgentScheduleRepository extends BaseRepository
             !is_numeric($auth_id) ||
             $auth_id <= 0) {
             $logged_in_user = $this->user->find($auth_id);
-            $current_employee = isset($data['user_id']) ? $this->user->where('uid',$data['user_id'])->first() : $this->user->find($agent_schedule->user_id);
+            $current_employee = isset($data['user_id']) ? $this->user->where('uid', $data['user_id'])->first() : $this->user->find($agent_schedule->user_id);
             if (!$logged_in_user) {
                 return $this->setResponse([
                     'code' => 500,
@@ -1402,6 +1402,8 @@ class AgentScheduleRepository extends BaseRepository
             ]),
         ]);
 
+        $result_count = $result;
+
         if (isset($data['target'])) {
             if (!is_array($data['target'])) {
                 $data['target'] = (array) $data['target'];
@@ -1421,13 +1423,15 @@ class AgentScheduleRepository extends BaseRepository
             $result = $this->fetchGeneric($data, $result);
         }
 
+        $count = $this->countData($data, $result_count);
+
         if ($result == null) {
             return $this->setResponse([
                 "code" => 404,
                 "title" => "No activities found at the moment",
                 "meta" => [
                     $meta_index => $result,
-                    "count" => $result->count(),
+                    "count" => $count,
                 ],
                 "parameters" => $parameters,
             ]);
@@ -1479,7 +1483,7 @@ class AgentScheduleRepository extends BaseRepository
             "title" => $title,
             "meta" => [
                 $meta_index => $result_data,
-                "count" => $result->count(),
+                "count" => $count,
                 "summary" => $summary,
             ],
             "parameters" => $parameters,
