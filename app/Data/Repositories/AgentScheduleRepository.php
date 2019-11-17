@@ -1287,7 +1287,7 @@ class AgentScheduleRepository extends BaseRepository
                 //     });
                 // }
 
-                if (isset($data['tl_id'])) {
+                if (isset($data['tl_id']) && $data['tl_id'] != 'null') {
                     $result = $result->where(function ($q) use ($data) {
                         $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('tl_id', $data['tl_id']);
@@ -1297,7 +1297,7 @@ class AgentScheduleRepository extends BaseRepository
                     });
                 }
 
-                if (isset($data['om_id'])) {
+                if (isset($data['om_id']) && $data['om_id'] != 'null') {
                     $result = $result->where(function ($q) use ($data) {
                         $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('om_id', $data['om_id']);
