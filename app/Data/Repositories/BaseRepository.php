@@ -317,7 +317,11 @@ class BaseRepository
                                 $q->whereNotNull($value['column']);
                             } else if ($value['operator'] == 'wherein') {
                                 $q->whereIn($value['column'], $value['value']);
-                            } else {
+                            } else if ($value['operator'] == 'like') {
+                                $q->where($value['column'], 'LIKE', "%{$value['value']}%") 
+                                ->orWhere($value['column'], 'LIKE', "%{$value['value']}%");   
+                            }
+                             else {
                                 $q->where($value['column'], $value['operator'], $value['value']);
                             }
 

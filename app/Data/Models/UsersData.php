@@ -14,7 +14,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'user_infos';
     protected $appends = [
-        'full_name', 'email', 'company_id', 'contract', 'contact', 'access_id', 'position', 'parent_id', 'child_id', 'crypted_id', 'head_name',
+        'full_name', 'email', 'company_id', 'contract', 'contact', 'access_id', 'position', 'parent_id', 'child_id', 'crypted_id', 'head_name','position',
     ];
 
     // public $status_color = [
@@ -87,6 +87,7 @@ class UsersData extends BaseModel
     {
         return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'id');
     }
+    
     public function accesslevelhierarchy()
     {
         return $this->hasOne('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
