@@ -261,7 +261,7 @@ class UsersInfoRepository extends BaseRepository
                     $access = AccessLevel::all();
                    $access_id=[];
                    foreach ($access as $key => $value) {
-                    if (strpos($value->code,strtolower(str_replace(' ', '', $data['query'])))!==false){
+                    if (strpos(strtolower(str_replace(' ', '',$value->code)),strtolower(str_replace(' ', '', $data['query'])))!==false){
                            array_push($access_id, $value->id);
                            // $countni++;
                        }
@@ -284,9 +284,10 @@ class UsersInfoRepository extends BaseRepository
                            'target' => [
                                [
                                    'column' => 'access_id',
-                                   'operator' => '=',
-                                   'value' =>$access_id[0],
+                                   'operator' => 'like',
+                                   'value' =>$access_id,
                                ],
+                               
                            ],
                        ];
                    
