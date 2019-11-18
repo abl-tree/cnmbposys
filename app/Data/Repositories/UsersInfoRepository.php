@@ -229,34 +229,19 @@ class UsersInfoRepository extends BaseRepository
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "gender")) {
-                    $data['target'][] = 'gender';
+                    $data['wherehas'][] = [
+                        'relation' => 'user_info',
+                        'target' => [
+                            [
+                                'column' => 'gender',
+                                'operator' => '=',
+                                'value' =>$data['query'],
+                            ],
+                            
+                        ],
+                    ];
                     unset($data['target'][$index]);
                 }
-                // if (str_contains($column, "position")) {
-                //     $datani = [];
-                //     $countni = 0;
-                //     $result = $this->genericSearch($data, $result)->get()->all();
-                //     foreach ($result as $key => $value) {
-                //         if (strpos(strtolower($value->position), strtolower($data['query'])) !== false) {
-                //             array_push($datani, $value);
-                //             $countni++;
-                //         }
-
-                //     }
-                //     return $this->setResponse([
-                //         "code" => 200,
-                //         "title" => "Successfully retrieved users Informations",
-                //         "description" => "UserInfo",
-                //         "meta" => [
-                //             $meta_index => $datani,
-                //             "count" => $countni,
-                //         ],
-                //         "parameters" => $data['query'],
-
-                //     ]);
-                //     $data['target'][] = 'accesslevel.name';
-                //     unset($data['target'][$index]);
-                // }
                 if (str_contains($column, "position")) {
                     $access = AccessLevel::all();
                    $access_id=[];
@@ -267,32 +252,17 @@ class UsersInfoRepository extends BaseRepository
                        }
 
                    }
-            //    return $this->setResponse([
-            //        "code" => 200,
-            //        "title" => "Successfully retrieved users Informations",
-            //        "description" => "UserInfosss",
-            //        "meta" => [
-            //            $meta_index => $access_id,
-            //            // "count" => $countni,
-            //        ],
-            //        "parameters" => $data['query'],
-
-            //    ]);
-                  
                        $data['wherehas'][] = [
                            'relation' => 'user_info',
                            'target' => [
                                [
                                    'column' => 'access_id',
-                                   'operator' => 'like',
+                                   'operator' => 'wherein',
                                    'value' =>$access_id,
                                ],
                                
                            ],
                        ];
-                   
-             
-                   // $data['target'][] = 'user_info.access_id';
                    unset($data['target'][$index]);
            }
                 if (str_contains($column, "access_id")) {
