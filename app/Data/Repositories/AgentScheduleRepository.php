@@ -59,6 +59,10 @@ class AgentScheduleRepository extends BaseRepository
         $this->notification_repo = $notificationRepository;
         $this->overtime_schedule = $overtimeSchedule;
         $this->leave = $leave;
+
+        $this->no_sort = [
+            'full_name'
+        ];
     }
 
     public function excelData($data)

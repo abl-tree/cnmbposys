@@ -180,6 +180,14 @@ class BaseRepository
             $result = $model->get()->first();
         } else if (isset($data['no_all_method']) && $data['no_all_method'] === true) {
             $result = $model->get();
+
+            if (isset($data['sort']) && in_array($data['sort'], $this->no_sort)) {
+                if (isset($data['order']) && $data['order'] == 'desc') {
+                    $result = $result->sortByDesc($data['sort']);
+                } else {
+                    $result = $result->sortBy($data['sort']);
+                }
+            }
         } else if (isset($data['sort']) && in_array($data['sort'], $this->no_sort)) {
             $result = $model->get();
 

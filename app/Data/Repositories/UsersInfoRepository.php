@@ -60,6 +60,10 @@ class UsersInfoRepository extends BaseRepository
         $this->access_level_hierarchy = $access_level_hierarchy;
         $this->access_level = $access_level;
         $this->hierarchy_log = $hierarchy_log;
+
+        $this->no_sort = [
+            'full_name'
+        ];
     }
     public function usersInfo($data = [])
     {
