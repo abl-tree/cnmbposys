@@ -153,7 +153,7 @@ class BaseRepository
         }
 
         if (isset($data['sort']) && !in_array($data['sort'], $this->no_sort)) {
-            $model = $model->orderBy($data["sort"], $data['order']);
+            $model = $model->orderBy($data["sort"], $data['order'] ?? 'asc');
         }
 
         if (isset($data['with_count'])) {

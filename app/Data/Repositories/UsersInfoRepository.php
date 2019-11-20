@@ -27,7 +27,7 @@ class UsersInfoRepository extends BaseRepository
 {
 
     protected $user_info, $user_datum, $user_status, $user_benefits, $user_infos, $logs,
-    $user, $access_level_hierarchy, $benefit_update, $hierarchy_update, $no_sort, $user_data_update,
+    $user, $access_level_hierarchy, $benefit_update, $hierarchy_update, $user_data_update,
     $access_level, $hierarchy_log;
 
     public function __construct(
