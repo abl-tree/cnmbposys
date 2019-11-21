@@ -62,7 +62,7 @@ class UsersInfoRepository extends BaseRepository
         $this->hierarchy_log = $hierarchy_log;
 
         $this->no_sort = [
-            'full_name'
+            'full_name',
         ];
     }
     public function usersInfo($data = [])
@@ -239,36 +239,36 @@ class UsersInfoRepository extends BaseRepository
                             [
                                 'column' => 'gender',
                                 'operator' => '=',
-                                'value' =>$data['query'],
+                                'value' => $data['query'],
                             ],
-                            
+
                         ],
                     ];
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "position")) {
                     $access = AccessLevel::all();
-                   $access_id=[];
-                   foreach ($access as $key => $value) {
-                    if (strpos(strtolower(str_replace(' ', '',$value->code)),strtolower(str_replace(' ', '', $data['query'])))!==false){
-                           array_push($access_id, $value->id);
-                           // $countni++;
-                       }
+                    $access_id = [];
+                    foreach ($access as $key => $value) {
+                        if (strpos(strtolower(str_replace(' ', '', $value->code)), strtolower(str_replace(' ', '', $data['query']))) !== false) {
+                            array_push($access_id, $value->id);
+                            // $countni++;
+                        }
 
-                   }
-                       $data['wherehas'][] = [
-                           'relation' => 'user_info',
-                           'target' => [
-                               [
-                                   'column' => 'access_id',
-                                   'operator' => 'wherein',
-                                   'value' =>$access_id,
-                               ],
-                               
-                           ],
-                       ];
-                   unset($data['target'][$index]);
-           }
+                    }
+                    $data['wherehas'][] = [
+                        'relation' => 'user_info',
+                        'target' => [
+                            [
+                                'column' => 'access_id',
+                                'operator' => 'wherein',
+                                'value' => $access_id,
+                            ],
+
+                        ],
+                    ];
+                    unset($data['target'][$index]);
+                }
                 if (str_contains($column, "access_id")) {
                     $array = [];
                     $countresult = 0;
@@ -906,7 +906,7 @@ class UsersInfoRepository extends BaseRepository
         }
 
         foreach ($result as $user) {
-            $user->last_approved_leave = $user->leave_checker->recently_approved;
+            $user->last_approved_leave = isset($user->leave_checker) ? $user->leave_checker->recently_approved : null;
             unset($user->leave_checker);
         }
 
@@ -2040,15 +2040,15 @@ class UsersInfoRepository extends BaseRepository
                     unset($data['target'][$index]);
                 }
                 if (str_contains($column, "position")) {
-                         $access = AccessLevel::all();
-                        $access_id=[];
-                        foreach ($access as $key => $value) {
-                            if (strpos( $value->code,strtolower($data['query']))!==false) {
-                                array_push($access_id, $value->id);
-                                // $countni++;
-                            }
-    
+                    $access = AccessLevel::all();
+                    $access_id = [];
+                    foreach ($access as $key => $value) {
+                        if (strpos($value->code, strtolower($data['query'])) !== false) {
+                            array_push($access_id, $value->id);
+                            // $countni++;
                         }
+
+                    }
                     return $this->setResponse([
                         "code" => 200,
                         "title" => "Successfully retrieved users Informations",
@@ -2060,21 +2060,21 @@ class UsersInfoRepository extends BaseRepository
                         "parameters" => $data['query'],
 
                     ]);
-                        foreach ($access_id as $key => $value) {
-                            $data['wherehas'][] = [
-                                'relation' => 'user_info',
-                                'target' => [
-                                    [
-                                        'column' => 'access_id',
-                                        'operator' => '=',
-                                        'value' =>$value,
-                                    ],
+                    foreach ($access_id as $key => $value) {
+                        $data['wherehas'][] = [
+                            'relation' => 'user_info',
+                            'target' => [
+                                [
+                                    'column' => 'access_id',
+                                    'operator' => '=',
+                                    'value' => $value,
                                 ],
-                            ];
-                        }
-                  
-                        // $data['target'][] = 'user_info.access_id';
-                        unset($data['target'][$index]);
+                            ],
+                        ];
+                    }
+
+                    // $data['target'][] = 'user_info.access_id';
+                    unset($data['target'][$index]);
                 }
                 // if (str_contains($column, "position")) {
 
@@ -2085,7 +2085,7 @@ class UsersInfoRepository extends BaseRepository
                 //                 array_push($access_id, $value->id);
                 //                 // $countni++;
                 //             }
-    
+
                 //         }
                 //         $data['target'][] = 'access_id';
                 //         unset($data['target'][$access_id[0]]);
@@ -2098,7 +2098,7 @@ class UsersInfoRepository extends BaseRepository
                 //         //         // "count" => $countni,
                 //         //     ],
                 //         //     "parameters" => $data['query'],
-    
+
                 //         // ]);
                 //         // $data['target'][] = 'firstname';
                 //         // $data['target'][] = 'middlename';
