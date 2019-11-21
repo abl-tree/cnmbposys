@@ -63,6 +63,8 @@ class UsersInfoRepository extends BaseRepository
 
         $this->no_sort = [
             'full_name',
+            'email',
+            'position',
         ];
     }
     public function usersInfo($data = [])
