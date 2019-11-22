@@ -17,7 +17,7 @@ class AccessLevel extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'code', 'name','parent'
+        'code', 'name','parent','flag'
     ];
     
     /**

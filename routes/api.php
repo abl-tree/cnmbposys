@@ -346,8 +346,14 @@ Route::group([
         Route::post("update", "CoachingController@update");
         Route::post('delete/{id}', 'CoachingController@delete');
         Route::post('revert_verify/{id}', 'CoachingController@revertVerify');
-        // Route::post('import', 'excelController@importStoreAdd');
-        // Route::post('create_multisheet_excel', 'excelController@createMultisheetExcel');
+    });
+
+    Route::group([
+        "prefix" => "position",
+    ], function () {
+        Route::post('create', 'UserController@addPosition');
+        Route::post('update', 'UserController@updatePosition');
+        Route::post('delete', 'UserController@deletePosition');
     });
 });
 

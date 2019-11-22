@@ -236,6 +236,24 @@ class UserController extends BaseController
         return $this->absorb($this->import_user_repo->addUser($data))->json();
     }
 
+
+    public function addPosition(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->addPosition($data))->json();
+    }
+    public function updatePosition(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->updatePosition($data))->json();
+    }
+    public function deletePosition(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->deletePosition($data))->json();
+    }
+
+
     /**
      * Store a newly created resource in storage.
      *
