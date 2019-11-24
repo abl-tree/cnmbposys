@@ -238,7 +238,7 @@ class UserController extends BaseController
 
 
     public function addPosition(Request $request)
-    {
+    {   
         $data = $request->all();
         return $this->absorb($this->access->addPosition($data))->json();
     }
@@ -251,6 +251,12 @@ class UserController extends BaseController
     {
         $data = $request->all();
         return $this->absorb($this->access->deletePosition($data))->json();
+    }
+
+    public function fetchLevels(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->fetchLevels($data))->json();
     }
 
 
