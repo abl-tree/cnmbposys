@@ -73,22 +73,14 @@ class LeaveSlotRepository extends BaseRepository
             }
             // original value - remaining slots = consumed slots
             // consumed slots > data throw error
-            $consumed = $does_exist->original_value - $does_exist->value;
-
             if($does_exist->original_value != $does_exist->value){
-
-                if($consumed > $data['value']){
-                    return $this->setResponse([
-                        'code' => 500,
-                        'title' => 'Slot not shrinkable, new value must be equal or greater than the consumed slots.',
-                    ]);
-                }
-
-                $data['original_value'] = $data['value'];
-
-                $data["value"] = $data["original_value"] - $consumed;
-
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => 'Slot not shrinkable, new value must be equal or greater than the consumed slots.',
+                ]);
             }
+            $data['original_value'] = $data['value'];
+            $data['value'] = $data['value'];
         }
 
         if (isset($data['user_id'])) {
