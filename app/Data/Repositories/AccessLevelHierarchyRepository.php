@@ -151,4 +151,130 @@ class AccessLevelHierarchyRepository extends BaseRepository
             
         ]);
     }
+
+    public function addPosition($data = [])
+    {
+        // data validation
+             
+            if (!isset($data['code'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "code is not set.",
+                ]);
+            }
+            if (!isset($data['name'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "name  is not set.",
+                ]);
+            }
+            if (!isset($data['parent'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "parent id  is not set.",
+                ]);
+            }
+            $data['flag']=1;
+            $position = $this->access->init($this->access->pullFillable($data));
+        if (!$position->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $position->errors(),
+                ],
+            ]);
+        }
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Position Added Successfully",
+            "description" => "Access Level",
+            "meta"       => [
+                "metadata" => $position,
+            ],
+        ]);
+        
+    }
+
+    public function updatePosition($data = [])
+    {
+        $positionData = $this->access->find($data['id']);
+        if($positionData==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Access Level not found.",
+            ]);
+        }
+        if($positionData->flag == null){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action not processed, Not allowed to delete this access.",
+            ]);
+        }
+        
+        
+
+        $positionData->save($data);
+        if (!$positionData->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $positionData->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully updated a Position.",
+            "meta"        => [
+                "status" => $positionData,
+            ]
+        ]);
+            
+        
+    }
+
+
+    public function deletePosition($data = [])
+    {
+        $positionData = $this->access->find($data['id']);
+        if($positionData==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Access Level not found.",
+            ]);
+        }
+        if($positionData->flag == null){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action can't be processed. Position Can't be Deleted ",
+            ]);
+        }
+        
+        if (!$positionData->delete()) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $positionData->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully deleted a Coach.",
+            "meta"        => [
+                "status" => $positionData,
+            ]
+        ]);
+            
+        
+    }
+
 }
