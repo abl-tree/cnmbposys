@@ -152,6 +152,60 @@ class AccessLevelHierarchyRepository extends BaseRepository
         ]);
     }
 
+    public function fetchLevels($data = [])
+    {
+        $meta_index = "access levels";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "coach";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['coach_id'] = $data['id'];
+
+        }
+
+        $count_data = $data;
+
+        //  $data['relations'] = ["schedule",'verified_by','filed_to','filed_by'];     
+
+        $result = $this->fetchGeneric($data, $this->access);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No position found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count = $this->countData($count_data, refresh_model($this->access->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved access levels",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+
     public function addPosition($data = [])
     {
         // data validation
@@ -209,7 +263,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
         if($positionData->flag == null){
             return $this->setResponse([
                 "code"       => 422,
-                "title"      => "Action not processed, Not allowed to delete this access.",
+                "title"      => "Action not processed, Not allowed to update this access.",
             ]);
         }
         

@@ -351,6 +351,7 @@ Route::group([
     Route::group([
         "prefix" => "position",
     ], function () {
+        Route::get('/', 'UserController@fetchLevels');
         Route::post('create', 'UserController@addPosition');
         Route::post('update', 'UserController@updatePosition');
         Route::post('delete', 'UserController@deletePosition');
