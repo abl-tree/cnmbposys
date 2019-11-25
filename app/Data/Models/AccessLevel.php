@@ -40,7 +40,11 @@ class AccessLevel extends BaseModel
     }
 
     public function parents() {
-        return $this->hasMany('\App\Data\Models\\AccessLevelHierarchy', 'child_id', 'id');
+        return $this->hasMany('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
+    }
+    
+    public function parent() {
+        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'parent');
     }
 
     public function getParentLevel($position){
