@@ -93,9 +93,10 @@ class ImportUsersExcelRepository extends BaseRepository
                 if ($firstPage[$x + 1][1] != null) {  
                     $parent = DB::table('users')->where('email', $firstPage[$x + 1][12])->get();
                     // $parent = User::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
-                    if($parent!='[]'||$parent!=null){
+                   
+                    if($parent!='[]'){
                         $parent_id=$parent[0]->uid;
-                    }
+                    }else
                 
                         foreach ($position as $key => $value) {
                             if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
