@@ -154,7 +154,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
 
     public function fetchLevels($data = [])
     {
-        $meta_index = "access levels";
+        $meta_index = "access_levels";
         $parameters = [];
         $count      = 0;
 
