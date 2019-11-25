@@ -20,6 +20,9 @@ class AccessLevel extends BaseModel
         'code', 'name','parent','flag'
     ];
     
+    protected $searchable = [
+       'name','code'
+    ];
     /**
      * Set the access level's name.
      *

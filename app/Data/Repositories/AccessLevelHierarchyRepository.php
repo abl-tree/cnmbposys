@@ -161,7 +161,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
         if (isset($data['id']) &&
             is_numeric($data['id'])) {
 
-            $meta_index     = "coach";
+            $meta_index     = "positions";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -171,8 +171,49 @@ class AccessLevelHierarchyRepository extends BaseRepository
                 ],
             ];
 
-            $parameters['coach_id'] = $data['id'];
+            $parameters['position'] = $data['id'];
 
+        }
+        if (isset($data['target'])) {
+            $result = $this->access;
+            // $data['relations'] = ["user_info", "accesslevel", "benefits"];
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "code")) {
+                    $data['target'][] = 'firstname';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "name")) {
+                    $data['target'][] = 'name';
+                    unset($data['target'][$index]);
+                }
+                $count_data = $data;
+                $result = $this->genericSearch($data, $result)->get()->all();
+    
+                if ($result == null) {
+                    return $this->setResponse([
+                        'code' => 404,
+                        'title' => "No position are found",
+                        "meta" => [
+                            $meta_index => $result,
+                        ],
+                        "parameters" => $parameters,
+                    ]);
+                }
+    
+                // $count_data['search'] = true;
+                $count = $this->countData($count_data, refresh_model($this->access->getModel()));
+    
+                return $this->setResponse([
+                    "code" => 200,
+                    "title" => "Successfully searched position",
+                    "meta" => [
+                        $meta_index => $result,
+                        "count" => $count,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+
+            }
         }
 
         $count_data = $data;
@@ -322,7 +363,7 @@ class AccessLevelHierarchyRepository extends BaseRepository
 
         return $this->setResponse([
             "code"       => 200,
-            "title"      => "Successfully deleted a Coach.",
+            "title"      => "Successfully deleted a position.",
             "meta"        => [
                 "status" => $positionData,
             ]
