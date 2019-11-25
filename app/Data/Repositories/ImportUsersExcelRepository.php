@@ -78,7 +78,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $parameters = [];
         $auth_id=auth()->user()->id;  
         $auth = $this->user->find($auth_id);
-        $position = $this->genericSearch($data, $this->access_level)->get()->all();
+        $position =  $result = $this->fetchGeneric($data, $this->access_level);
         $stat = $this->genericSearch($data, $this->status_list)->get()->all();
         
         $firstPage = $excel[0];
@@ -96,17 +96,16 @@ class ImportUsersExcelRepository extends BaseRepository
                    
                     if($parent!='[]'){
                         $parent_id=$parent[0]->uid;
-                    }else
-                
-                        foreach ($position as $key => $value) {
-                            if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
-                            $access_id=$value->id;
-                            }
+                    }
+                    foreach ($position as $key => $value) {
+                        if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
+                        $access_id=$value->id;
                         }
-                        foreach ($stat as $key => $value) {
-                        if(strtolower($firstPage[$x + 1][13])==strtolower($value->type)){
-                            $status=$value->status;
-                        }
+                    }
+                    foreach ($stat as $key => $value) {
+                    if(strtolower($firstPage[$x + 1][13])==strtolower($value->type)){
+                        $status=$value->status;
+                    }
                     }
                         
                         array_push($benefits,strval($firstPage[$x + 1][16]));
