@@ -250,7 +250,15 @@ class AccessLevelHierarchyRepository extends BaseRepository
     public function addPosition($data = [])
     {
         // data validation
-             
+        $result = $this->fetchGeneric($data, $this->access); 
+        foreach ($result as $key => $value) {
+          if($value->code==$data['code']){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Position already used.",
+            ]);
+          }
+        }
             if (!isset($data['code'])) {
                 return $this->setResponse([
                     'code'  => 500,
@@ -307,6 +315,14 @@ class AccessLevelHierarchyRepository extends BaseRepository
                 "title"      => "Action not processed, Not allowed to update this access.",
             ]);
         }
+
+        if($positionData->id == $data['parent']){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action not processed, Parent not applicable.",
+            ]);
+        }
+        
         
         
 
