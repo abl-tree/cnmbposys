@@ -219,13 +219,13 @@ class AccessLevelHierarchyRepository extends BaseRepository
             if (!isset($data['name'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "name  is not set.",
+                    'title' => "description  is not set.",
                 ]);
             }
             if (!isset($data['parent'])) {
                 return $this->setResponse([
                     'code'  => 500,
-                    'title' => "parent id  is not set.",
+                    'title' => "supervising head is not set.",
                 ]);
             }
             $data['flag']=1;
