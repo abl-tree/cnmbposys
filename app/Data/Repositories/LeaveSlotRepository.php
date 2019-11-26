@@ -225,7 +225,7 @@ class LeaveSlotRepository extends BaseRepository
         if (isset($data['leave_type'])) {
             $data['where'][] = [
                 "target" => "leave_type",
-                "operator" => ">=",
+                "operator" => "=",
                 "value" => $data['leave_type'],
             ];
         }
