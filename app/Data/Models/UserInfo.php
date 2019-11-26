@@ -5,7 +5,10 @@ namespace App\Data\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Data\Models\UserBenefit;
+use App\Data\Models\HierarchyLog;
 use App\Data\Models\BaseModel;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserInfo extends BaseModel
 {
@@ -34,7 +37,7 @@ class UserInfo extends BaseModel
     ];
 
     protected $appends = [
-        'full_name','count','image'
+        'full_name','count','image', 'current_head_id'
     ];
 
     protected $hidden = [
@@ -106,6 +109,14 @@ class UserInfo extends BaseModel
         $name = null;
         $name = ucwords($this->firstname) . ' ' .ucwords($this->middlename) . ' ' . ucwords($this->lastname). ' ' . ucwords($this->suffix);
         return $name;
+    }
+
+    public function getCurrentHeadIdAttribute(){
+        $result = HierarchyLog::where("child_id", $this->id)->get();
+        $result = collect($result)
+        ->where('start_date',"<=",Carbon::now())
+        ->where('tmp_end_date',">=",Carbon::now());
+        return $result[0]->parent_id;
     }
 
 

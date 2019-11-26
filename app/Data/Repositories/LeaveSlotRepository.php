@@ -221,6 +221,15 @@ class LeaveSlotRepository extends BaseRepository
             ];
         }
 
+        //fetch per leave_type
+        if (isset($data['leave_type'])) {
+            $data['where'][] = [
+                "target" => "leave_type",
+                "operator" => ">=",
+                "value" => $data['leave_type'],
+            ];
+        }
+
         //fetch per date range
         if (isset($data['start_event'])) {
             $data['where'][] = [
