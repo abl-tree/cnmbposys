@@ -148,7 +148,7 @@ class UserController extends BaseController
         }
         $data = $request->all();
         $userInfo = UsersUpdate::where('uid', '=', $request->id)->first();
-        $data['password'] = bcrypt($userInfo->firstlast_name);
+        $data['password'] = bcrypt("123456");
         $data['id'] = $userInfo->id;
         return $this->absorb($this->user_info->resetPass($data))->json();
     }

@@ -122,9 +122,10 @@ class ImportUsersExcelRepository extends BaseRepository
                         $birthdate=date("m/d/Y", strtotime($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6])));
                     }
                     
-                    $password_combi = strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][3]);
-                    $password_combi = str_replace('ñ','n',$password_combi);
-                    $password = trim(preg_replace('/[^A-Za-z0-9-]/', '', $password_combi)," ");
+                    // $password_combi = strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][3]);
+                    // $password_combi = str_replace('ñ','n',$password_combi);
+                    // $password = trim(preg_replace('/[^A-Za-z0-9-]/', '', $password_combi)," ");
+                    $password = "123456";
                     $userInfo[] = array(
                         "firstname" => $firstPage[$x + 1][1],
                         "middlename" => $firstPage[$x + 1][2],
