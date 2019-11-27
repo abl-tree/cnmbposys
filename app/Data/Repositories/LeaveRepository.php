@@ -490,6 +490,7 @@ class LeaveRepository extends BaseRepository
                     'title' => "Start leave is not set.",
                 ]);
             } else {
+                //7 days past checker
                 $start_date = Carbon::parse($data['start_event']);
                 $current_date = Carbon::now();
 
@@ -499,6 +500,23 @@ class LeaveRepository extends BaseRepository
                         'code' => 500,
                         'title' => "Leaves should be filed a week before.",
                     ]);
+                }
+
+                //last week of the month checker
+                if ($current_date->weekOfMonth >= 4) {
+                    if ($start_date->isCurrentMonth()) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Currently available leaves are for the month of {$current_date->addMonth()->englishMonth}.",
+                        ]);
+                    }
+                } else { //1-3 week checker
+                    if (!$start_date->isCurrentMonth()) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Currently available leaves are for the month of {$current_date->englishMonth}.",
+                        ]);
+                    }
                 }
             }
 
