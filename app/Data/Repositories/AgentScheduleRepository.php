@@ -1721,7 +1721,7 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
-        $user = $user->find($data['userid']);
+        $user = $user->where('uid',$data['userid'])->first();
 
         if (!$user) {
             return $this->setResponse([
