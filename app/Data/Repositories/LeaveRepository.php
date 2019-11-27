@@ -489,6 +489,35 @@ class LeaveRepository extends BaseRepository
                     'code' => 500,
                     'title' => "Start leave is not set.",
                 ]);
+            } else {
+                //7 days past checker
+                $start_date = Carbon::parse($data['start_event']);
+                $current_date = Carbon::now();
+
+                $check_date = $current_date->diffInDays($start_date);
+                if ($check_date < 7) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "Leaves should be filed a week before.",
+                    ]);
+                }
+
+                //last week of the month checker
+                if ($current_date->weekOfMonth >= 4) {
+                    if ($start_date->isCurrentMonth()) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Currently available leaves are for the month of {$current_date->addMonth()->englishMonth}.",
+                        ]);
+                    }
+                } else { //1-3 week checker
+                    if (!$start_date->isCurrentMonth()) {
+                        return $this->setResponse([
+                            'code' => 500,
+                            'title' => "Currently available leaves are for the month of {$current_date->englishMonth}.",
+                        ]);
+                    }
+                }
             }
 
             if (!isset($data['end_event'])) {
@@ -522,7 +551,7 @@ class LeaveRepository extends BaseRepository
         }
 
         if (isset($data['user_id'])) {
-            $does_exist = $this->user->where('uid',$data['user_id'])->first();
+            $does_exist = $this->user->where('uid', $data['user_id'])->first();
 
             if (!$does_exist) {
                 return $this->setResponse([

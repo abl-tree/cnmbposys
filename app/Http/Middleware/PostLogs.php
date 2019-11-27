@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Data\Repositories\LogsRepository;
 use App\User;
+use App\Data\Models\UserInfo;
 use Closure;
 
 class PostLogs
@@ -14,7 +15,7 @@ class PostLogs
 
     public function __construct(
         LogsRepository $logsRepository,
-        User $user
+        UserInfo $user
     ) {
         $this->logs_repo = $logsRepository;
         $this->user = $user;
