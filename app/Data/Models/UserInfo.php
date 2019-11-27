@@ -50,22 +50,22 @@ class UserInfo extends BaseModel
      //Mutator
     public function setFirstnameAttribute($value)
     {
-        $this->attributes['firstname'] = strtolower($value);
+        $this->attributes['firstname'] = strtolower(trim($value));
     }
 
     public function setMiddlenameAttribute($value)
     {
-        $this->attributes['middlename'] = strtolower($value);
+        $this->attributes['middlename'] = strtolower(trim($value));
     }
 
     public function setLastnameAttribute($value)
     {
-        $this->attributes['lastname'] = strtolower($value);
+        $this->attributes['lastname'] = strtolower(trim($value));
     }
 
     public function setSuffixAttribute($value)
     {
-        $this->attributes['suffix'] = strtolower($value);
+        $this->attributes['suffix'] = strtolower(trim($value));
     }
 
     public function setAddressAttribute($value)
