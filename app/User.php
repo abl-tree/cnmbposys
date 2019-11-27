@@ -15,7 +15,7 @@ class User extends BaseAuthModel
 {
     use Notifiable, HasApiTokens;
 
-    protected $primaryKey = 'uid';
+    protected $primaryKey = 'id';
     protected $table = 'users';
     protected $appends = [
         'team_leader',
