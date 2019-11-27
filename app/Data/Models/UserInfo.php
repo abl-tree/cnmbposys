@@ -116,7 +116,7 @@ class UserInfo extends BaseModel
         $result = collect($result)
         ->where('start_date',"<=",Carbon::now())
         ->where('tmp_end_date',">=",Carbon::now());
-        if($result->count() > 0){
+        if(isset($result[0])){
             $result = $result[0]->parent_id;
         }else{
             $result = null;
