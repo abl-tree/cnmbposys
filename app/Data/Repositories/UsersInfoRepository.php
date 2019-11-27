@@ -1386,8 +1386,9 @@ class UsersInfoRepository extends BaseRepository
                 $user_data['contract'] = $data['contract'];
             }
             
-            $password_combi = $data['firstname'] . $data['lastname'];
-            $password = strtolower(trim(preg_replace('/[^A-Za-z0-9-]/', '', $password_combi)," "));
+            $password_combi = strtolower($data['firstname'] . $data['lastname']);
+            $password_combi = str_replace('ñ','n',$password_combi);
+            $password = trim(preg_replace('/[^A-Za-z0-9-]/', '', $password_combi)," ");
             // dd($password);
             $user_data['password'] = bcrypt($password);
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
