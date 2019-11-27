@@ -2045,92 +2045,25 @@ class UsersInfoRepository extends BaseRepository
                     $access = AccessLevel::all();
                     $access_id = [];
                     foreach ($access as $key => $value) {
-                        if (strpos($value->code, strtolower($data['query'])) !== false) {
+                        if (strpos(strtolower(str_replace(' ', '', $value->code)), strtolower(str_replace(' ', '', $data['query']))) !== false) {
                             array_push($access_id, $value->id);
                             // $countni++;
                         }
 
                     }
-                    return $this->setResponse([
-                        "code" => 200,
-                        "title" => "Successfully retrieved users Informations",
-                        "description" => "UserInfosss",
-                        "meta" => [
-                            $meta_index => $access_id,
-                            // "count" => $countni,
-                        ],
-                        "parameters" => $data['query'],
-
-                    ]);
-                    foreach ($access_id as $key => $value) {
-                        $data['wherehas'][] = [
-                            'relation' => 'user_info',
-                            'target' => [
-                                [
-                                    'column' => 'access_id',
-                                    'operator' => '=',
-                                    'value' => $value,
-                                ],
+                    $data['wherehas'][] = [
+                        'relation' => 'user_info',
+                        'target' => [
+                            [
+                                'column' => 'access_id',
+                                'operator' => 'wherein',
+                                'value' => $access_id,
                             ],
-                        ];
-                    }
 
-                    // $data['target'][] = 'user_info.access_id';
+                        ],
+                    ];
                     unset($data['target'][$index]);
                 }
-                // if (str_contains($column, "position")) {
-
-                //         $access = AccessLevel::all();
-                //         $access_id=[];
-                //         foreach ($access as $key => $value) {
-                //             if (strpos( $value->code,strtolower($data['query']))!==false) {
-                //                 array_push($access_id, $value->id);
-                //                 // $countni++;
-                //             }
-
-                //         }
-                //         $data['target'][] = 'access_id';
-                //         unset($data['target'][$access_id[0]]);
-                //         // return $this->setResponse([
-                //         //     "code" => 200,
-                //         //     "title" => "Successfully retrieved users Informations",
-                //         //     "description" => "UserInfo",
-                //         //     "meta" => [
-                //         //         $meta_index => $access_id,
-                //         //         // "count" => $countni,
-                //         //     ],
-                //         //     "parameters" => $data['query'],
-
-                //         // ]);
-                //         // $data['target'][] = 'firstname';
-                //         // $data['target'][] = 'middlename';
-                //         // $data['target'][] = 'lastname';
-                //         // unset($data['target'][$index]);
-                //     // $datani = [];
-                //     // $countni = 0;
-                //     // $results = $this->fetchGeneric($data, $result);
-                //     // // $result = $this->genericSearch($data, $result)->get()->all();
-                //     // foreach ($result as $key => $value) {
-                //     //     if (strpos(strtolower($value->position), strtolower($data['query'])) !== false) {
-                //     //         array_push($datani, $value);
-                //     //         $countni++;
-                //     //     }
-
-                //     // }
-                //     // return $this->setResponse([
-                //     //     "code" => 200,
-                //     //     "title" => "Successfully retrieved users Informations",
-                //     //     "description" => "UserInfo",
-                //     //     "meta" => [
-                //     //         $meta_index => $datani,
-                //     //         "count" => $countni,
-                //     //     ],
-                //     //     "parameters" => $data['query'],
-
-                //     // ]);
-                //     // $data['target'][] = 'accesslevel.name';
-                //     // unset($data['target'][$index]);
-                // }
                 if (str_contains($column, "access_id")) {
                     $array = [];
                     $countresult = 0;
