@@ -1385,7 +1385,11 @@ class UsersInfoRepository extends BaseRepository
             if (isset($data['contract'])) {
                 $user_data['contract'] = $data['contract'];
             }
-            $user_data['password'] = bcrypt(strtolower($data['firstname'] . $data['lastname']));
+            
+            $password_combi = $data['firstname'] . $data['lastname'];
+            $password = strtolower(trim(preg_replace('/[^A-Za-z0-9-]/', '', $password_combi)," "));
+            // dd($password);
+            $user_data['password'] = bcrypt($password);
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
             $users_data;
             if (isset($data['status'])) {
