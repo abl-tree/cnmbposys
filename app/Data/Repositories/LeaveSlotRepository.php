@@ -5,6 +5,7 @@ namespace App\Data\Repositories;
 use App\Data\Models\LeaveSlot;
 use App\Data\Repositories\BaseRepository;
 use App\User;
+use App\Data\Models\UserInfo;
 
 class LeaveSlotRepository extends BaseRepository
 {
@@ -14,7 +15,7 @@ class LeaveSlotRepository extends BaseRepository
 
     public function __construct(
         LeaveSlot $leaveSlot,
-        User $user
+        UserInfo $user
     ) {
         $this->leave_slot = $leaveSlot;
         $this->user = $user;
