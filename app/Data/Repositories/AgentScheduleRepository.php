@@ -249,6 +249,7 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
+        $does_exist = null;
         if (isset($data['id'])) {
             $does_exist = $this->agent_schedule->find($data['id']);
 
