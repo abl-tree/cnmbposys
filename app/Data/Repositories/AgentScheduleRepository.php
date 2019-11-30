@@ -1851,6 +1851,12 @@ class AgentScheduleRepository extends BaseRepository
     {
         // filter params id, tl_id, om_id
         $result = $this->agent_schedule->with("coaching", "coaching.filed_by", "coaching.verified_by")->where("title_id", 1)->orderBy("start_event", "desc")->get();
+        $type = "";
+        if (!isset($data['type'])) {
+            $type = ["tardy", "undertime", "no_timeout"];
+        }else{
+            $type = [$data["type"]];
+        }
 
         if (isset($data["id"]) && $data["id"]) {
             $result = collect($result)->where('user_info.id', $data["id"]);
@@ -1874,19 +1880,31 @@ class AgentScheduleRepository extends BaseRepository
             });
         }
 
+
         if (isset($data["query"]) && $data["query"]) {
             $result = collect($result)->filter(function ($i) use ($data) {
-                if (strpos(strtolower($i['user_info']['full_name']), strtolower($data['query'])) !== false) {
+                if (strpos(strtolower($i['user_info']['full_name']), strtolower($data['query'])) !== false ||
+                strpos(strtolower($i['date']['ymd']), strtolower($data['query'])) !== false ||
+                strpos(strtolower($i['date']['day']), strtolower($data['query'])) !== false) {
                     return $i;
                 }
             });
         }
 
-        $result = array_values(collect($result)->filter(function ($i) {
-            if (count(array_intersect($i->log_status, ["tardy", "undertime", "no_timeout"])) > 0) {
+        if(isset($data["sort"]) && isset($data["order"]) ){
+            if($data["order"]=="asc"){
+                $result = $result->sortBy($data["sort"]);
+            }else{
+                $result = $result->sortByDesc($data["sort"]);
+            }
+        }
+
+        $result = array_values(collect($result)->filter(function ($i)use($type) {
+            if (count(array_intersect($i->log_status, $type)) > 0) {
                 return $i;
             }
         })->toArray());
+        
         return $this->setResponse([
             "code" => 200,
             "title" => "successfully fetch missed logs",
