@@ -153,7 +153,7 @@ class BaseRepository
         }
 
         if (isset($data['sort']) && !in_array($data['sort'], $this->no_sort)) {
-            $model = $model->orderBy($data["sort"], $data['order']);
+            $model = $model->orderBy($data["sort"], $data['order'] ?? 'asc');
         }
 
         if (isset($data['with_count'])) {
@@ -180,6 +180,14 @@ class BaseRepository
             $result = $model->get()->first();
         } else if (isset($data['no_all_method']) && $data['no_all_method'] === true) {
             $result = $model->get();
+
+            if (isset($data['sort']) && in_array($data['sort'], $this->no_sort)) {
+                if (isset($data['order']) && $data['order'] == 'desc') {
+                    $result = $result->sortByDesc($data['sort']);
+                } else {
+                    $result = $result->sortBy($data['sort']);
+                }
+            }
         } else if (isset($data['sort']) && in_array($data['sort'], $this->no_sort)) {
             $result = $model->get();
 
@@ -317,7 +325,8 @@ class BaseRepository
                                 $q->whereNotNull($value['column']);
                             } else if ($value['operator'] == 'wherein') {
                                 $q->whereIn($value['column'], $value['value']);
-                            } else {
+                            }
+                             else {
                                 $q->where($value['column'], $value['operator'], $value['value']);
                             }
 

@@ -4,6 +4,7 @@ namespace App\Data\Repositories;
 use App\Data\Models\RequestSchedule;
 use App\Data\Models\EventTitle;
 use App\User;
+use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
 
 class RequestScheduleRepository extends BaseRepository
@@ -16,7 +17,7 @@ class RequestScheduleRepository extends BaseRepository
 
     public function __construct(
         RequestSchedule $requestSchedule,
-        User $user,
+        UserInfo $user,
         EventTitle $eventTitle
     ) {
         $this->request_schedule = $requestSchedule;

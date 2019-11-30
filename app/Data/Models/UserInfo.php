@@ -5,7 +5,10 @@ namespace App\Data\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Data\Models\UserBenefit;
+use App\Data\Models\HierarchyLog;
 use App\Data\Models\BaseModel;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserInfo extends BaseModel
 {
@@ -30,11 +33,11 @@ class UserInfo extends BaseModel
         'birthdate', 'gender', 'contact_number',
         'address', 'image', 'salary_rate','image_url',
         'status', 'hired_date', 'separation_date', 'excel_hash',
-        'p_email','created_at','updated_at','full_name'
+        'p_email','created_at','updated_at','full_name','access.id'
     ];
 
     protected $appends = [
-        'full_name','count','image'
+        'full_name','count','image', 'current_head_id'
     ];
 
     protected $hidden = [
@@ -47,22 +50,22 @@ class UserInfo extends BaseModel
      //Mutator
     public function setFirstnameAttribute($value)
     {
-        $this->attributes['firstname'] = strtolower($value);
+        $this->attributes['firstname'] = strtolower(trim($value));
     }
 
     public function setMiddlenameAttribute($value)
     {
-        $this->attributes['middlename'] = strtolower($value);
+        $this->attributes['middlename'] = strtolower(trim($value));
     }
 
     public function setLastnameAttribute($value)
     {
-        $this->attributes['lastname'] = strtolower($value);
+        $this->attributes['lastname'] = strtolower(trim($value));
     }
 
     public function setSuffixAttribute($value)
     {
-        $this->attributes['suffix'] = strtolower($value);
+        $this->attributes['suffix'] = strtolower(trim($value));
     }
 
     public function setAddressAttribute($value)
@@ -106,6 +109,19 @@ class UserInfo extends BaseModel
         $name = null;
         $name = ucwords($this->firstname) . ' ' .ucwords($this->middlename) . ' ' . ucwords($this->lastname). ' ' . ucwords($this->suffix);
         return $name;
+    }
+
+    public function getCurrentHeadIdAttribute(){
+        $result = HierarchyLog::where("child_id", $this->id)->get();
+        $result = collect($result)
+        ->where('start_date',"<=",Carbon::now())
+        ->where('tmp_end_date',">=",Carbon::now());
+        if(isset($result[0])){
+            $result = $result[0]->parent_id;
+        }else{
+            $result = null;
+        }
+        return $result;
     }
 
 

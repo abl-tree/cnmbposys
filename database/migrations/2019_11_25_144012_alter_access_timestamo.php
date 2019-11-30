@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterAttendanceTableWithSoftDeletes extends Migration
+class AlterAccessTimestamo extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AlterAttendanceTableWithSoftDeletes extends Migration
      */
     public function up()
     {
-        Schema::table('attendances', function (Blueprint $table) {
-            $table->softDeletes();
+        Schema::table('access_levels', function (Blueprint $table) {
+            $table->timestamps();
         });
     }
 
@@ -25,8 +25,8 @@ class AlterAttendanceTableWithSoftDeletes extends Migration
      */
     public function down()
     {
-        Schema::table('attendances', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+        Schema::table('access_levels', function (Blueprint $table) {
+            $table->dropTimestamps();
         });
     }
 }

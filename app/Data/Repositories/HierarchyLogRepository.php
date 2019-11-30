@@ -33,6 +33,10 @@ class HierarchyLogRepository extends BaseRepository
         $this->hierarchy_log = $hierarchy_log;
         $this->logs = $logs_repo;
         $this->notification_repo = $notificationRepository;
+        $this->no_sort = [
+            'parent_details.full_name',
+            'child_details.full_name',
+        ];
     }
 
     public function fetchAll($data = []){

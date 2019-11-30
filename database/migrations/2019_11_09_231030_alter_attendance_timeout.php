@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterAttendanceTable extends Migration
+class AlterAttendanceTimeout extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class AlterAttendanceTable extends Migration
      */
     public function up()
     {
-        Schema::table('attendances', function (Blueprint $table) {
-            $table->timestamps();
-        });
+        // Schema::table('attendances', function (Blueprint $table) {
+        //     $table->timestamp('raw_time_out')->nullable()->after('time_out')->nullable();
+        // });
     }
-
+ 
     /**
      * Reverse the migrations.
      *
@@ -26,7 +26,7 @@ class AlterAttendanceTable extends Migration
     public function down()
     {
         Schema::table('attendances', function (Blueprint $table) {
-            $table->dropTimestamps();
+            $table->dropColumn('raw_time_out');
         });
     }
 }

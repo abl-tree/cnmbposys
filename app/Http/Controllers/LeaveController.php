@@ -63,7 +63,7 @@ class LeaveController extends BaseController
     public function create(Request $request)
     {
         $data = $request->all();
-        $data['generated_by'] = $request->user()->id;
+        $data['generated_by'] = $request->user()->uid;
         $data['allowed_access'] = $request->user()->access->id;
         if (isset($data['status']) && strtolower($data['status']) == 'approved') {
             unset($data['status']);

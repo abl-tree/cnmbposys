@@ -422,22 +422,23 @@ class AttendanceRepository extends BaseRepository
             ]);
         }
 
+        
+        // allow timein 2hours before the scheduled time incident
+        //  deduct 2hours from scheduled timein
+        $scheduled_timein = Carbon::parse($schedule->start_event);
+        $allowed_timein = $scheduled_timein->subHours(2);
+        $now = Carbon::now();
         if(!$check_attendance){
             if(!Carbon::now()->isBetween(Carbon::parse($schedule->start_event)->subHours(2),Carbon::parse($schedule->end_event),true)){
+                if($allowed_timein->isAfter($now)){
+                    return $this->setResponse([
+                        "code" => 422,
+                        "title" => "You are only allowed to time-in 2 hours before the schedule.",
+                    ]);
+                }
                 return $this->setResponse([
                     "code" => 422,
                     "title" => "Schedule no longer available.",
-                ]);
-            }
-            // allow timein 2hours before the scheduled time incident
-            //  deduct 2hours from scheduled timein
-            $scheduled_timein = Carbon::parse($schedule->start_event);
-            $allowed_timein = $scheduled_timein->subHours(2);
-            $now = Carbon::now();
-            if($allowed_timein->isAfter($now)){
-                return $this->setResponse([
-                    "code" => 422,
-                    "title" => "You are only allowed to time-in 2 hours before the schedule.",
                 ]);
             }
 

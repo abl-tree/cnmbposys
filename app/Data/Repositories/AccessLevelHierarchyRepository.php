@@ -151,4 +151,241 @@ class AccessLevelHierarchyRepository extends BaseRepository
             
         ]);
     }
+
+    public function fetchLevels($data = [])
+    {
+        $meta_index = "access_levels";
+        $parameters = [];
+        $count      = 0;
+
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
+
+            $meta_index     = "positions";
+            $data['single'] = false;
+            $data['where']  = [
+                [
+                    "target"   => "id",
+                    "operator" => "=",
+                    "value"    => $data['id'],
+                ],
+            ];
+
+            $parameters['position'] = $data['id'];
+
+        }
+        if (isset($data['target'])) {
+            $result = $this->access;
+            // $data['relations'] = ["user_info", "accesslevel", "benefits"];
+            foreach ((array) $data['target'] as $index => $column) {
+                if (str_contains($column, "code")) {
+                    $data['target'][] = 'firstname';
+                    unset($data['target'][$index]);
+                }
+                if (str_contains($column, "name")) {
+                    $data['target'][] = 'name';
+                    unset($data['target'][$index]);
+                }
+                $count_data = $data;
+                $result = $this->genericSearch($data, $result)->get()->all();
+    
+                if ($result == null) {
+                    return $this->setResponse([
+                        'code' => 404,
+                        'title' => "No position are found",
+                        "meta" => [
+                            $meta_index => $result,
+                        ],
+                        "parameters" => $parameters,
+                    ]);
+                }
+    
+                // $count_data['search'] = true;
+                $count = $this->countData($count_data, refresh_model($this->access->getModel()));
+    
+                return $this->setResponse([
+                    "code" => 200,
+                    "title" => "Successfully searched position",
+                    "meta" => [
+                        $meta_index => $result,
+                        "count" => $count,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+
+            }
+        }
+
+        $count_data = $data;
+
+        //  $data['relations'] = ["schedule",'verified_by','filed_to','filed_by'];     
+
+        $result = $this->fetchGeneric($data, $this->access);
+
+        if (!$result) {
+            return $this->setResponse([
+                'code'       => 404,
+                'title'      => "No position found",
+                "meta"       => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $count = $this->countData($count_data, refresh_model($this->access->getModel()));
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully retrieved access levels",
+            "meta"       => [
+                $meta_index => $result,
+                "count"     => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+
+    public function addPosition($data = [])
+    {
+        // data validation
+        $result = $this->fetchGeneric($data, $this->access); 
+        foreach ($result as $key => $value) {
+          if($value->code==$data['code']){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Position already used.",
+            ]);
+          }
+        }
+            if (!isset($data['code'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "code is not set.",
+                ]);
+            }
+            if (!isset($data['name'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "description  is not set.",
+                ]);
+            }
+            if (!isset($data['parent'])) {
+                return $this->setResponse([
+                    'code'  => 500,
+                    'title' => "supervising head is not set.",
+                ]);
+            }
+            $data['flag']=1;
+            $position = $this->access->init($this->access->pullFillable($data));
+        if (!$position->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $position->errors(),
+                ],
+            ]);
+        }
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Position Added Successfully",
+            "description" => "Access Level",
+            "meta"       => [
+                "metadata" => $position,
+            ],
+        ]);
+        
+    }
+
+    public function updatePosition($data = [])
+    {
+        $positionData = $this->access->find($data['id']);
+        if($positionData==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Access Level not found.",
+            ]);
+        }
+        if($positionData->flag == null){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action not processed, Not allowed to update this access.",
+            ]);
+        }
+
+        if($positionData->id == $data['parent']){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action not processed, Parent not applicable.",
+            ]);
+        }
+        
+        
+        
+
+        $positionData->save($data);
+        if (!$positionData->save($data)) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $positionData->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully updated a Position.",
+            "meta"        => [
+                "status" => $positionData,
+            ]
+        ]);
+            
+        
+    }
+
+
+    public function deletePosition($data = [])
+    {
+        $positionData = $this->access->find($data['id']);
+        if($positionData==null){
+            return $this->setResponse([
+                'code'  => 500,
+                'title' => "Access Level not found.",
+            ]);
+        }
+        if($positionData->flag == null){
+            return $this->setResponse([
+                "code"       => 422,
+                "title"      => "Action can't be processed. Position Can't be Deleted ",
+            ]);
+        }
+        
+        if (!$positionData->delete()) {
+            return $this->setResponse([
+                "code"        => 500,
+                "title"       => "Data Validation Error.",
+                "description" => "An error was detected on one of the inputted data.",
+                "meta"        => [
+                    "errors" => $positionData->errors(),
+                ],
+            ]);
+        }
+
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Successfully deleted a position.",
+            "meta"        => [
+                "status" => $positionData,
+            ]
+        ]);
+            
+        
+    }
+
 }

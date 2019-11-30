@@ -148,7 +148,7 @@ class UserController extends BaseController
         }
         $data = $request->all();
         $userInfo = UsersUpdate::where('uid', '=', $request->id)->first();
-        $data['password'] = bcrypt($userInfo->firstlast_name);
+        $data['password'] = bcrypt("123456");
         $data['id'] = $userInfo->id;
         return $this->absorb($this->user_info->resetPass($data))->json();
     }
@@ -235,6 +235,30 @@ class UserController extends BaseController
         $data = $request->all();
         return $this->absorb($this->import_user_repo->addUser($data))->json();
     }
+
+
+    public function addPosition(Request $request)
+    {   
+        $data = $request->all();
+        return $this->absorb($this->access->addPosition($data))->json();
+    }
+    public function updatePosition(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->updatePosition($data))->json();
+    }
+    public function deletePosition(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->deletePosition($data))->json();
+    }
+
+    public function fetchLevels(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->access->fetchLevels($data))->json();
+    }
+
 
     /**
      * Store a newly created resource in storage.

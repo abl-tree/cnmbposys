@@ -124,7 +124,7 @@ class LeaveCreditRepository extends BaseRepository
         }
 
         if (isset($data['user_id'])) {
-            $does_exist = $this->user->find($data['user_id']);
+            $does_exist = $this->user->where("uid",$data['user_id'])->first();
 
             if (!$does_exist) {
                 return $this->setResponse([

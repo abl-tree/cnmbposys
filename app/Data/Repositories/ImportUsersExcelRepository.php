@@ -78,7 +78,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $parameters = [];
         $auth_id=auth()->user()->id;  
         $auth = $this->user->find($auth_id);
-        $position = $this->genericSearch($data, $this->access_level)->get()->all();
+        $position =  $result = $this->fetchGeneric($data, $this->access_level);
         $stat = $this->genericSearch($data, $this->status_list)->get()->all();
         
         $firstPage = $excel[0];
@@ -91,20 +91,21 @@ class ImportUsersExcelRepository extends BaseRepository
             $birthdate=null;
             if (isset($firstPage[$x + 1])) {
                 if ($firstPage[$x + 1][1] != null) {  
-                    $parent = UserInfo::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
+                    $parent = DB::table('users')->where('email', $firstPage[$x + 1][12])->get();
+                    // $parent = User::where(DB::raw('concat(firstname," ",lastname)') , 'LIKE' , '%'.$firstPage[$x + 1][12].'%')->get();
+                   
                     if($parent!='[]'){
-                        $parent_id=$parent[0]->id;
+                        $parent_id=$parent[0]->uid;
                     }
-                
-                        foreach ($position as $key => $value) {
-                            if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
-                            $access_id=$value->id;
-                            }
+                    foreach ($position as $key => $value) {
+                        if(strtolower($firstPage[$x + 1][11])==strtolower($value->name)){
+                        $access_id=$value->id;
                         }
-                        foreach ($stat as $key => $value) {
-                        if(strtolower($firstPage[$x + 1][13])==strtolower($value->type)){
-                            $status=$value->status;
-                        }
+                    }
+                    foreach ($stat as $key => $value) {
+                    if(strtolower($firstPage[$x + 1][13])==strtolower($value->type)){
+                        $status=$value->status;
+                    }
                     }
                         
                         array_push($benefits,strval($firstPage[$x + 1][16]));
@@ -121,6 +122,10 @@ class ImportUsersExcelRepository extends BaseRepository
                         $birthdate=date("m/d/Y", strtotime($this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6])));
                     }
                     
+                    // $password_combi = strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][3]);
+                    // $password_combi = str_replace('ñ','n',$password_combi);
+                    // $password = trim(preg_replace('/[^A-Za-z0-9-]/', '', $password_combi)," ");
+                    $password = "123456";
                     $userInfo[] = array(
                         "firstname" => $firstPage[$x + 1][1],
                         "middlename" => $firstPage[$x + 1][2],
@@ -139,7 +144,7 @@ class ImportUsersExcelRepository extends BaseRepository
                         //"status_reason" => $firstPage[$x + 1][19],
                         "excel_hash" =>  strtolower($firstPage[$x + 1][1]. $firstPage[$x + 1][2]. $firstPage[$x + 1][3]. $firstPage[$x + 1][4]),
                         "email"=> $firstPage[$x + 1][9],
-                        "password"=> bcrypt($firstPage[$x + 1][1]. $firstPage[$x + 1][3]),
+                        "password"=> bcrypt($password),
                         "company_id"=> $firstPage[$x + 1][0],
                         "contract"=> $firstPage[$x + 1][14],
                         "login_flag"=> 0,
@@ -248,7 +253,7 @@ class ImportUsersExcelRepository extends BaseRepository
             $hierarchy_log = $this->hierarchy_log;
             $hierarchy_log->parent_id = $hierarchy['parent_id'];
             $hierarchy_log->child_id = $hierarchy['child_id'];
-            $hierarchy_log->start_date = $user_information['hired_date'];
+            $hierarchy_log->start_date = Carbon::parse($user_information['hired_date'])->startOfDay();
             $hierarchy_log->save();
 
 

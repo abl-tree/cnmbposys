@@ -17,9 +17,12 @@ class AccessLevel extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'code', 'name','parent'
+        'code', 'name','parent','flag'
     ];
     
+    protected $searchable = [
+       'name','code'
+    ];
     /**
      * Set the access level's name.
      *
@@ -40,7 +43,11 @@ class AccessLevel extends BaseModel
     }
 
     public function parents() {
-        return $this->hasMany('\App\Data\Models\\AccessLevelHierarchy', 'child_id', 'id');
+        return $this->hasMany('\App\Data\Models\AccessLevelHierarchy', 'child_id', 'id');
+    }
+    
+    public function parent() {
+        return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'parent');
     }
 
     public function getParentLevel($position){
