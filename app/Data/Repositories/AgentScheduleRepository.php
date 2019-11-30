@@ -149,6 +149,8 @@ class AgentScheduleRepository extends BaseRepository
         return $result;
     }
 
+    //
+
     public function defineAgentSchedule($data = [])
     {
         // data validation
@@ -163,8 +165,8 @@ class AgentScheduleRepository extends BaseRepository
 
                 if (isset($data['email'])) {
                     $user = $this->user->where('email', $data['email'])->first();
-                    $om = $this->user->where('email', $data['om_id'])->first();
-                    $tl = $this->user->where('email', $data['tl_id'])->first();
+                    $om = $this->user->where('id', $data['om_id'])->first();
+                    $tl = $this->user->where('id', $data['tl_id'])->first();
                     if (isset($user->uid)) {
                         $data['user_id'] = $user->uid;
                         $data['info'] = $this->user_info->find($user->uid);
@@ -226,7 +228,7 @@ class AgentScheduleRepository extends BaseRepository
         // existence check
 
         if (isset($data['user_id'])) {
-            if (!$this->user_info->find($data['user_id'])) {
+            if (!$user = $this->user_info->find($data['user_id'])->user()->first()) {
                 $data['email'] = "UserID# " . $data['user_id'];
                 return $this->setResponse([
                     'code' => 500,
@@ -235,6 +237,18 @@ class AgentScheduleRepository extends BaseRepository
                 ]);
             } else {
                 $data['email'] = $this->user->where('uid', $data['user_id'])->first()->email;
+            }
+
+            if(!isset($data['om_id']) && $user) {
+
+                $data['om_id'] = $user->operations_manager ? $user->operations_manager['id'] : null;
+
+            }
+
+            if(!isset($data['tl_id']) && $user) {
+
+                $data['tl_id'] = $user->team_leader ? $user->team_leader['id'] : null;
+
             }
         }
 
@@ -372,6 +386,8 @@ class AgentScheduleRepository extends BaseRepository
         ]);
 
     }
+
+    //
 
     public function deleteAgentSchedule($data = [])
     {

@@ -329,6 +329,7 @@ Route::group([
     ], function () {
         Route::get('export_report', 'excelController@report');
         Route::get('export_sva', 'excelController@svaReport');
+        Route::get('export_sva_payroll', 'excelController@svaPayrollReport');
         Route::get('export_add_template', 'excelController@Addtemplate');
         Route::get('reassign_template', 'excelController@Reassigntemplate');
         Route::post('import_to_array', 'excelController@importToArray');
