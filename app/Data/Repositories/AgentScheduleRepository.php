@@ -165,8 +165,8 @@ class AgentScheduleRepository extends BaseRepository
 
                 if (isset($data['email'])) {
                     $user = $this->user->where('email', $data['email'])->first();
-                    $om = $this->user->where('id', $data['om_id'])->first();
-                    $tl = $this->user->where('id', $data['tl_id'])->first();
+                    $om = $this->user->where('email', $data['om_id'])->first();
+                    $tl = $this->user->where('email', $data['tl_id'])->first();
                     if (isset($user->uid)) {
                         $data['user_id'] = $user->uid;
                         $data['info'] = $this->user_info->find($user->uid);

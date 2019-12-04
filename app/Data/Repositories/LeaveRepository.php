@@ -518,6 +518,22 @@ class LeaveRepository extends BaseRepository
                         ]);
                     }
                 }
+
+                //limit leave requests per week
+                $start_week = $current_date->startOfWeek()->format('Y-m-d H:i');
+                $end_week = $current_date->endOfWeek()->format('Y-m-d H:i');
+
+                $current_leaves = refresh_model($this->leave->getModel())
+                    ->where('user_id', $data['user_id'])
+                    ->whereBetween('created_at', [$start_week, $end_week])
+                    ->get()->all();
+
+                if (count($current_leaves) >= 3 && !isset($data['isApproved'])) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "You have reached the maximum leave requests for this week.",
+                    ]);
+                };
             }
 
             if (!isset($data['end_event'])) {
