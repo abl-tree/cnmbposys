@@ -3,6 +3,7 @@
 namespace App\Data\Models;
 
 use App\Data\Models\BaseModel;
+use Carbon\Carbon;
 
 class Leave extends BaseModel
 {
@@ -47,6 +48,10 @@ class Leave extends BaseModel
 
     protected $hidden = ['deleted_at'];
 
+    protected $appends = [
+        "leave_days"
+    ];
+
     /**
      * Relations
      */
@@ -80,5 +85,11 @@ class Leave extends BaseModel
             ->where('status', 'approved')
             ->orderBy('updated_at', 'desc')
             ->first();
+    }
+
+    public function getLeaveDaysAttribute(){
+        $start = Carbon::parse($this->start_event);
+        $end = Carbon::parse($this->end_event);
+        return $start->diffInDays($end) +1;
     }
 }
