@@ -77,7 +77,7 @@ class LeaveRepository extends BaseRepository
         ) {
 
             //fetch user data
-            $operations_manager = refresh_model($this->user->getModel())->find($data['om_id']);
+            $operations_manager = refresh_model($this->user->getModel())->where("uid",$data['om_id'])->first();
 
             //fetch all schedules
             $schedule_slots = refresh_model($this->agent_schedule->getModel())

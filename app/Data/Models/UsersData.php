@@ -3,10 +3,13 @@
 namespace App\Data\Models;
 
 use App\Data\Models\AccessLevelHierarchy;
+use App\Data\Models\HierarchyLog;
 use App\Data\Models\BaseModel;
 use App\Data\Models\UserInfo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Crypt;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class UsersData extends BaseModel
 {
@@ -14,7 +17,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'user_infos';
     protected $appends = [
-        'full_name', 'email', 'company_id', 'contract', 'contact', 'access_id', 'position', 'parent_id', 'child_id', 'crypted_id', 'head_name','position',
+        'full_name', 'email', 'company_id', 'contract', 'contact', 'access_id', 'position', 'parent_id', 'child_id', 'crypted_id', 'head_name','position','current_cluster',
     ];
 
     // public $status_color = [
@@ -302,6 +305,35 @@ class UsersData extends BaseModel
 
     // //     return $name;
     // // }
+    
+
+    
+    public function getCurrentClusterAttribute(){
+        $result = null;
+        $access = $this->access_id;
+        if($access == 17){
+            $head = HierarchyLog::where("child_id", $this->id)->get();
+            $head = collect($head)
+            ->where('start_date',"<=",Carbon::now())
+            ->where('tmp_end_date',">=",Carbon::now());
+            if(isset($head[0])){
+                $head = $head[0]->parent_id;
+                $cluster = HierarchyLog::where("child_id", $head)->get();
+                $cluster = collect($cluster)
+                ->where('start_date',"<=",Carbon::now())
+                ->where('tmp_end_date',">=",Carbon::now());
+                if(isset($cluster[0])){
+                    $result = UserInfo::find($cluster[0]->parent_id);
+                }else{
+                $result = null;
+                }
+            }else{
+                $result = null;
+            }
+        }
+        return $result;
+    }
+
     public function getCryptedIdAttribute()
     {
         $name = null;

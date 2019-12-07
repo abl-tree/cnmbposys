@@ -5,6 +5,7 @@ namespace App\Data\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Data\Models\UserBenefit;
+use App\User;
 use App\Data\Models\HierarchyLog;
 use App\Data\Models\BaseModel;
 use Carbon\Carbon;
@@ -37,7 +38,7 @@ class UserInfo extends BaseModel
     ];
 
     protected $appends = [
-        'full_name','count','image', 'current_head_id'
+        'full_name','count','image', 'current_head_id', 
     ];
 
     protected $hidden = [
@@ -123,7 +124,6 @@ class UserInfo extends BaseModel
         }
         return $result;
     }
-
 
 
     //Relationships
