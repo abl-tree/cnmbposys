@@ -809,9 +809,7 @@ class LeaveRepository extends BaseRepository
 
             //raw schedules (query builder format)
             $schedules = $this->agent_schedule
-                ->where('leave_id', $leave->id)
-                ->where('start_event', '>=', $data['start_leave'])
-                ->where('end_event', '<=', $leave->end_event);
+                ->where('leave_id', $leave->id);
 
             //remove attendance
             // foreach ($schedules->get()->all() as $schedule) {
@@ -881,6 +879,15 @@ class LeaveRepository extends BaseRepository
                     'value' => $leave_credits->value + $credits_needed,
                 ]);
             }
+        } else if ($leave->status == 'pending') {
+            /**
+             * delete all leave tie on schedule
+             */
+            refresh_model($this->agent_schedule->getModel())
+                ->where('leave_id', $leave->id)
+                ->update([
+                    'leave_id' => null,
+                ]);
         }
         $cancel_event = new DateTime($data['cancel_event'] ?? $leave->start_event);
         $cancel_event = $cancel_event->setTime(00, 00, 00);
