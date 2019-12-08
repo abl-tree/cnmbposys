@@ -292,7 +292,7 @@ class User extends BaseAuthModel
                 $upcoming_count++;
             }
 
-            if ($value->leave_id) {
+            if ($value->leave) {
                 if($value->leave->status == "approved"){
                     $leave_count++;
                 } else $absent_count++;
