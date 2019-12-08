@@ -696,6 +696,13 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
+        if (strtolower($leave->status) != 'pending') {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "You can only delete pending leaves!",
+            ]);
+        }
+
         //revert leave data
         $this->revertLeave($data);
 
