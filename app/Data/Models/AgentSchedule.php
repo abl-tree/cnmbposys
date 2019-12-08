@@ -447,7 +447,7 @@ class AgentSchedule extends BaseModel
 
     public function getLeaveAttribute()
     {
-        return $this->leave();
+        return $this->leave()->find($this->leave_id);
     }
 
     public function getTimeInAttribute()
