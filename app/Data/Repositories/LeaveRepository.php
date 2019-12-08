@@ -484,6 +484,20 @@ class LeaveRepository extends BaseRepository
                 ]);
             }
 
+            if (!isset($data['leave_type'])) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "Leave type is not set.",
+                ]);
+            }
+
+            if (!isset($data['end_event'])) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "End leave is not set.",
+                ]);
+            }
+
             if (!isset($data['start_event'])) {
                 return $this->setResponse([
                     'code' => 500,
@@ -534,20 +548,24 @@ class LeaveRepository extends BaseRepository
                         'title' => "You have reached the maximum leave requests for this week.",
                     ]);
                 };
-            }
 
-            if (!isset($data['end_event'])) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'title' => "End leave is not set.",
-                ]);
-            }
+                //fetch date hit
+                $hit_leave = refresh_model($this->leave->getModel())
+                    ->where('user_id', $data['user_id'])
+                    ->whereBetween('created_at', [$start_week, $end_week])
+                    ->where('leave_type', $data['leave_type'])
+                    ->where(function ($query) use ($data) {
+                        $query
+                            ->whereBetween('start_event', [$data['start_event'], $data['end_event']])
+                            ->orWhereBetween('end_event', [$data['start_event'], $data['end_event']]);
+                    })->first();
 
-            if (!isset($data['leave_type'])) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'title' => "Leave type is not set.",
-                ]);
+                if ($hit_leave && !isset($data['isApproved'])) {
+                    return $this->setResponse([
+                        'code' => 500,
+                        'title' => "You have already requested a {$data['leave_type']} within the dates {$data['start_event']} to {$data['end_event']}.",
+                    ]);
+                };
             }
 
         }
