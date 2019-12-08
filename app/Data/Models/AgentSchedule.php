@@ -411,7 +411,7 @@ class AgentSchedule extends BaseModel
     {
         if ($this->start_event->isFuture()) {
 
-            if ($this->leave_id) {
+            if ($this->leave) {
                 if ($this->leave->status == "approved") {
                     return "On-Leave";
                 }
@@ -427,7 +427,7 @@ class AgentSchedule extends BaseModel
 
         if ($this->attendances->where('is_leave', 0)->count()) {
 
-            if ($this->leave_id) {
+            if ($this->leave) {
                 if ($this->leave->status == "approved") {
                     return "On-Leave";
                 }
@@ -436,7 +436,7 @@ class AgentSchedule extends BaseModel
 
         }
 
-        if ($this->leave_id) {
+        if ($this->leave) {
             if ($this->leave->status == "approved") {
                 return "On-Leave";
             }
@@ -447,7 +447,7 @@ class AgentSchedule extends BaseModel
 
     public function getLeaveAttribute()
     {
-        return $this->leave()->find($this->leave_id);
+        return $this->leave();
     }
 
     public function getTimeInAttribute()
