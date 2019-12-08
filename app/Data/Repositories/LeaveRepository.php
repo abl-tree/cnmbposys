@@ -76,8 +76,23 @@ class LeaveRepository extends BaseRepository
             (strtolower($leave->leave_type) == "leave_of_absence" || strtolower($leave->leave_type) == "vacation_leave")
         ) {
 
+            /**
+             * Check if leave is within current week
+             */
+
+            $created_date = $leave->created_at;
+            $current_date = Carbon::now();
+            $start_week = $current_date->startOfWeek()->format('Y-m-d H:i');
+            $end_week = $current_date->endOfWeek()->format('Y-m-d H:i');
+            if ($created_date->isBefore($start_week) || $created_date->isAfter($end_week)) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "Leave is to be approved are only those filed within the week.",
+                ]);
+            };
+
             //fetch user data
-            $operations_manager = refresh_model($this->user->getModel())->where("uid",$data['om_id'])->first();
+            $operations_manager = refresh_model($this->user->getModel())->where("uid", $data['om_id'])->first();
 
             //fetch all schedules
             $schedule_slots = refresh_model($this->agent_schedule->getModel())
