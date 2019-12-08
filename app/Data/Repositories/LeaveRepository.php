@@ -76,8 +76,23 @@ class LeaveRepository extends BaseRepository
             (strtolower($leave->leave_type) == "leave_of_absence" || strtolower($leave->leave_type) == "vacation_leave")
         ) {
 
+            /**
+             * Check if leave is within current week
+             */
+
+            $created_date = $leave->created_at;
+            $current_date = Carbon::now();
+            $start_week = $current_date->startOfWeek()->format('Y-m-d H:i');
+            $end_week = $current_date->endOfWeek()->format('Y-m-d H:i');
+            if ($created_date->isBefore($start_week) || $created_date->isAfter($end_week)) {
+                return $this->setResponse([
+                    'code' => 500,
+                    'title' => "Leave is to be approved are only those filed within the week.",
+                ]);
+            };
+
             //fetch user data
-            $operations_manager = refresh_model($this->user->getModel())->where("uid",$data['om_id'])->first();
+            $operations_manager = refresh_model($this->user->getModel())->where("uid", $data['om_id'])->first();
 
             //fetch all schedules
             $schedule_slots = refresh_model($this->agent_schedule->getModel())
@@ -681,6 +696,13 @@ class LeaveRepository extends BaseRepository
             ]);
         }
 
+        if (strtolower($leave->status) != 'pending') {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "You can only delete pending leaves!",
+            ]);
+        }
+
         //revert leave data
         $this->revertLeave($data);
 
@@ -787,9 +809,7 @@ class LeaveRepository extends BaseRepository
 
             //raw schedules (query builder format)
             $schedules = $this->agent_schedule
-                ->where('leave_id', $leave->id)
-                ->where('start_event', '>=', $data['start_leave'])
-                ->where('end_event', '<=', $leave->end_event);
+                ->where('leave_id', $leave->id);
 
             //remove attendance
             // foreach ($schedules->get()->all() as $schedule) {
@@ -859,6 +879,15 @@ class LeaveRepository extends BaseRepository
                     'value' => $leave_credits->value + $credits_needed,
                 ]);
             }
+        } else if ($leave->status == 'pending') {
+            /**
+             * delete all leave tie on schedule
+             */
+            refresh_model($this->agent_schedule->getModel())
+                ->where('leave_id', $leave->id)
+                ->update([
+                    'leave_id' => null,
+                ]);
         }
         $cancel_event = new DateTime($data['cancel_event'] ?? $leave->start_event);
         $cancel_event = $cancel_event->setTime(00, 00, 00);
