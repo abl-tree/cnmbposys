@@ -394,6 +394,8 @@ class AgentScheduleRepository extends BaseRepository
                     'end_event' => $replicate_end_date,
                     'title_id' => $data['title_id'],
                     'auth_id' => $auth_id,
+                    'tl_id' => $data['tl_id'] ?? null,
+                    'om_id' => $data['om_id'] ?? null
                 ]);
 
                 $replicate_start_date->addWeek();
