@@ -61,7 +61,7 @@ class AgentScheduleRepository extends BaseRepository
         $this->leave = $leave;
 
         $this->no_sort = [
-            'full_name'
+            'full_name',
         ];
     }
 
@@ -239,13 +239,13 @@ class AgentScheduleRepository extends BaseRepository
                 $data['email'] = $this->user->where('uid', $data['user_id'])->first()->email;
             }
 
-            if(!isset($data['om_id']) && $user) {
+            if (!isset($data['om_id']) && $user) {
 
                 $data['om_id'] = $user->operations_manager ? $user->operations_manager['id'] : null;
 
             }
 
-            if(!isset($data['tl_id']) && $user) {
+            if (!isset($data['tl_id']) && $user) {
 
                 $data['tl_id'] = $user->team_leader ? $user->team_leader['id'] : null;
 
@@ -367,8 +367,11 @@ class AgentScheduleRepository extends BaseRepository
 
         //leave checker
         $leave = $this->leave->where('user_id', $agent_schedule->user_id)
-            ->where('start_event', '>=', $agent_schedule->start_event)
-            ->where('end_event', '<=', $agent_schedule->end_event)
+            ->where(function ($query) use ($agent_schedule) {
+                $query
+                    ->whereBetween('start_event', [$agent_schedule->start_event, $agent_schedule->end_event])
+                    ->orWhereBetween('end_event', [$agent_schedule->start_event, $agent_schedule->end_event]);
+            })
             ->first();
 
         if ($leave) {
@@ -1737,7 +1740,7 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
-        $user = $user->where('uid',$data['userid'])->first();
+        $user = $user->where('uid', $data['userid'])->first();
 
         if (!$user) {
             return $this->setResponse([
@@ -1870,7 +1873,7 @@ class AgentScheduleRepository extends BaseRepository
         $type = "";
         if (!isset($data['type'])) {
             $type = ["tardy", "undertime", "no_timeout"];
-        }else{
+        } else {
             $type = [$data["type"]];
         }
 
@@ -1896,31 +1899,30 @@ class AgentScheduleRepository extends BaseRepository
             });
         }
 
-
         if (isset($data["query"]) && $data["query"]) {
             $result = collect($result)->filter(function ($i) use ($data) {
                 if (strpos(strtolower($i['user_info']['full_name']), strtolower($data['query'])) !== false ||
-                strpos(strtolower($i['date']['ymd']), strtolower($data['query'])) !== false ||
-                strpos(strtolower($i['date']['day']), strtolower($data['query'])) !== false) {
+                    strpos(strtolower($i['date']['ymd']), strtolower($data['query'])) !== false ||
+                    strpos(strtolower($i['date']['day']), strtolower($data['query'])) !== false) {
                     return $i;
                 }
             });
         }
 
-        if(isset($data["sort"]) && isset($data["order"]) ){
-            if($data["order"]=="asc"){
+        if (isset($data["sort"]) && isset($data["order"])) {
+            if ($data["order"] == "asc") {
                 $result = $result->sortBy($data["sort"]);
-            }else{
+            } else {
                 $result = $result->sortByDesc($data["sort"]);
             }
         }
 
-        $result = array_values(collect($result)->filter(function ($i)use($type) {
+        $result = array_values(collect($result)->filter(function ($i) use ($type) {
             if (count(array_intersect($i->log_status, $type)) > 0) {
                 return $i;
             }
         })->toArray());
-        
+
         return $this->setResponse([
             "code" => 200,
             "title" => "successfully fetch missed logs",
