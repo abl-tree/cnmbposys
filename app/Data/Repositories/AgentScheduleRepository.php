@@ -380,6 +380,27 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
+        //recreate schedule for three months
+        if (isset($data['replicate'])) {
+            $base_start_date = Carbon::parse($agent_schedule->start_event);
+            $base_end_date = Carbon::parse($agent_schedule->end_event);
+            $replicate_start_date = Carbon::parse($agent_schedule->start_event);
+            $replicate_end_date = Carbon::parse($agent_schedule->end_event);
+
+            while ($base_start_date->diffInMonths($replicate_start_date) <= 3) {
+                $this->defineAgentSchedule([
+                    'user_id' => $data['user_id'],
+                    'start_event' => $replicate_start_date,
+                    'end_event' => $replicate_end_date,
+                    'title_id' => $data['title_id'],
+                    'auth_id' => $auth_id,
+                ]);
+
+                $replicate_start_date->addWeek();
+                $replicate_end_date->addWeek();
+            }
+        }
+
         return $this->setResponse([
             "code" => 200,
             "title" => "Successfully defined an agent schedule.",
