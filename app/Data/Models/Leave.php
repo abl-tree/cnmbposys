@@ -3,6 +3,7 @@
 namespace App\Data\Models;
 
 use App\Data\Models\BaseModel;
+use App\Data\Models\AgentSchedule;
 use Carbon\Carbon;
 
 class Leave extends BaseModel
@@ -49,7 +50,7 @@ class Leave extends BaseModel
     protected $hidden = ['deleted_at'];
 
     protected $appends = [
-        "leave_days"
+        "leave_days", 'has_schedule_tag'
     ];
 
     /**
@@ -91,5 +92,9 @@ class Leave extends BaseModel
         $start = Carbon::parse($this->start_event);
         $end = Carbon::parse($this->end_event);
         return $start->diffInDays($end) +1;
+    }
+
+    public function getHasScheduleTagAttribute(){
+        return AgentSchedule::where('leave_id',$this->id)->first()? true:false;
     }
 }
