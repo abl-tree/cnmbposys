@@ -2,11 +2,9 @@
 
 namespace App\Data\Repositories;
 
-ini_set('max_execution_time', 180);
-ini_set('memory_limit', '-1');
-
 use App\Data\Models\HierarchyLog;
 use App\Data\Models\UserInfo;
+use App\Data\Models\User;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
@@ -171,7 +169,7 @@ class HierarchyLogRepository extends BaseRepository
 
         // column validation
 
-        if(!isset($data["parent_id"])){
+        if(!isset($data["parent_id"]) && !isset($data["parent_email"])){
             return $this->setResponse([
                 "code" => 422,
                 "title" => "Head(parent_id) field is required.",
@@ -180,13 +178,22 @@ class HierarchyLogRepository extends BaseRepository
             ]);
         }
 
-        if(!isset($data["child_id"])){
+        if(isset($data["parent_email"])){
+            $data["parent_id"] = User::where('email',$data["parent_email"])->first()->uid;
+        }
+        
+        if(!isset($data["child_id"])  && !isset($data["child_email"])){
             return $this->setResponse([
                 "code" => 422,
                 "title" => "Subordinate(child_id) field is required.",
                 "meta" => [],
                 "parameters" => $data,
             ]);
+        }
+
+        
+        if(isset($data["child_email"])){
+            $data["child_id"] = User::where('email',$data["child_email"])->first()->uid;
         }
 
         if(!isset($data["start_date"])){
