@@ -81,6 +81,7 @@ class AgentScheduleRepository extends BaseRepository
                             "title_id" => 1,
                             "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
                             "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][6]),
+                            'replicate' => true
                         ];
                     }
                 }
