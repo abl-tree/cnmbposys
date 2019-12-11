@@ -61,7 +61,7 @@ class AgentScheduleRepository extends BaseRepository
         $this->leave = $leave;
 
         $this->no_sort = [
-            'full_name'
+            'full_name',
         ];
     }
 
@@ -240,13 +240,13 @@ class AgentScheduleRepository extends BaseRepository
                 $data['email'] = $this->user->where('uid', $data['user_id'])->first()->email;
             }
 
-            if(!isset($data['om_id']) && $user) {
+            if (!isset($data['om_id']) && $user) {
 
                 $data['om_id'] = $user->operations_manager ? $user->operations_manager['id'] : null;
 
             }
 
-            if(!isset($data['tl_id']) && $user) {
+            if (!isset($data['tl_id']) && $user) {
 
                 $data['tl_id'] = $user->team_leader ? $user->team_leader['id'] : null;
 
@@ -368,14 +368,40 @@ class AgentScheduleRepository extends BaseRepository
 
         //leave checker
         $leave = $this->leave->where('user_id', $agent_schedule->user_id)
-            ->where('start_event', '>=', $agent_schedule->start_event)
-            ->where('end_event', '<=', $agent_schedule->end_event)
+            ->where(function ($query) use ($agent_schedule) {
+                $query
+                    ->whereBetween('start_event', [$agent_schedule->start_event, $agent_schedule->end_event])
+                    ->orWhereBetween('end_event', [$agent_schedule->start_event, $agent_schedule->end_event]);
+            })
             ->first();
 
         if ($leave) {
             $agent_schedule->update([
                 'leave_id' => $leave->id,
             ]);
+        }
+
+        //recreate schedule for three months
+        if (isset($data['replicate'])) {
+            $base_start_date = Carbon::parse($agent_schedule->start_event);
+            $base_end_date = Carbon::parse($agent_schedule->end_event);
+            $replicate_start_date = Carbon::parse($agent_schedule->start_event);
+            $replicate_end_date = Carbon::parse($agent_schedule->end_event);
+
+            while ($base_start_date->diffInMonths($replicate_start_date) <= 3) {
+                $this->defineAgentSchedule([
+                    'user_id' => $data['user_id'],
+                    'start_event' => $replicate_start_date,
+                    'end_event' => $replicate_end_date,
+                    'title_id' => $data['title_id'],
+                    'auth_id' => $auth_id,
+                    'tl_id' => $data['tl_id'] ?? null,
+                    'om_id' => $data['om_id'] ?? null
+                ]);
+
+                $replicate_start_date->addWeek();
+                $replicate_end_date->addWeek();
+            }
         }
 
         return $this->setResponse([
@@ -1738,7 +1764,7 @@ class AgentScheduleRepository extends BaseRepository
             ]);
         }
 
-        $user = $user->where('uid',$data['userid'])->first();
+        $user = $user->where('uid', $data['userid'])->first();
 
         if (!$user) {
             return $this->setResponse([
@@ -1871,7 +1897,7 @@ class AgentScheduleRepository extends BaseRepository
         $type = "";
         if (!isset($data['type'])) {
             $type = ["tardy", "undertime", "no_timeout"];
-        }else{
+        } else {
             $type = [$data["type"]];
         }
 
@@ -1897,31 +1923,30 @@ class AgentScheduleRepository extends BaseRepository
             });
         }
 
-
         if (isset($data["query"]) && $data["query"]) {
             $result = collect($result)->filter(function ($i) use ($data) {
                 if (strpos(strtolower($i['user_info']['full_name']), strtolower($data['query'])) !== false ||
-                strpos(strtolower($i['date']['ymd']), strtolower($data['query'])) !== false ||
-                strpos(strtolower($i['date']['day']), strtolower($data['query'])) !== false) {
+                    strpos(strtolower($i['date']['ymd']), strtolower($data['query'])) !== false ||
+                    strpos(strtolower($i['date']['day']), strtolower($data['query'])) !== false) {
                     return $i;
                 }
             });
         }
 
-        if(isset($data["sort"]) && isset($data["order"]) ){
-            if($data["order"]=="asc"){
+        if (isset($data["sort"]) && isset($data["order"])) {
+            if ($data["order"] == "asc") {
                 $result = $result->sortBy($data["sort"]);
-            }else{
+            } else {
                 $result = $result->sortByDesc($data["sort"]);
             }
         }
 
-        $result = array_values(collect($result)->filter(function ($i)use($type) {
+        $result = array_values(collect($result)->filter(function ($i) use ($type) {
             if (count(array_intersect($i->log_status, $type)) > 0) {
                 return $i;
             }
         })->toArray());
-        
+
         return $this->setResponse([
             "code" => 200,
             "title" => "successfully fetch missed logs",
