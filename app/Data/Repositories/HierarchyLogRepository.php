@@ -180,7 +180,7 @@ class HierarchyLogRepository extends BaseRepository
 
         if(isset($data["parent_email"])){
             $parent = User::where('email',$data["parent_email"])->first();
-            if($parent){
+            if(!$parent){
                 return $this->setResponse([
                     "code" => 422,
                     "title" => "Head(parent_id) field is required.",
@@ -203,7 +203,7 @@ class HierarchyLogRepository extends BaseRepository
         
         if(isset($data["child_email"])){
             $child = User::where('email',$data["child_email"])->first();
-            if($child){
+            if(!$child){
                 return $this->setResponse([
                     "code" => 422,
                     "title" => "Subordinate(child_id) field is required.",
