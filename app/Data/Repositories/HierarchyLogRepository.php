@@ -4,7 +4,7 @@ namespace App\Data\Repositories;
 
 use App\Data\Models\HierarchyLog;
 use App\Data\Models\UserInfo;
-use App\Data\Models\User;
+use App\User;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
@@ -179,7 +179,16 @@ class HierarchyLogRepository extends BaseRepository
         }
 
         if(isset($data["parent_email"])){
-            $data["parent_id"] = User::where('email',$data["parent_email"])->first()->uid;
+            $parent = User::where('email',$data["parent_email"])->first();
+            if($parent){
+                return $this->setResponse([
+                    "code" => 422,
+                    "title" => "Head(parent_id) field is required.",
+                    "meta" => [],
+                    "parameters" => $data,
+                ]);
+            }
+            $data["parent_id"] = $parent["uid"];
         }
         
         if(!isset($data["child_id"])  && !isset($data["child_email"])){
@@ -193,7 +202,16 @@ class HierarchyLogRepository extends BaseRepository
 
         
         if(isset($data["child_email"])){
-            $data["child_id"] = User::where('email',$data["child_email"])->first()->uid;
+            $child = User::where('email',$data["child_email"])->first();
+            if($child){
+                return $this->setResponse([
+                    "code" => 422,
+                    "title" => "Subordinate(child_id) field is required.",
+                    "meta" => [],
+                    "parameters" => $data,
+                ]);
+            }
+            $data["child_id"] = $child["uid"];
         }
 
         if(!isset($data["start_date"])){
