@@ -193,19 +193,9 @@ class excelController extends BaseController
                     })
                     ->get();
 
-            if($sheetNumber > 0) {
-                $myWorkSheet = new Worksheet($spreadsheet, $start->format('m.d.Y'));
-                $spreadsheet->addSheet($myWorkSheet, $sheetNumber);
-                $worksheet = $spreadsheet->getSheet($sheetNumber);
-            } else {
-                $worksheet = $spreadsheet->getSheet($sheetNumber);
-                $worksheet->setTitle($start->format('m.d.Y'));
-            }
-
-            $worksheet->fromArray($header, null, 'A2');
-            $worksheet->fromArray([$start->format('l'), $start->format('Y/m/d'), '', 'ACTUAL LOGS'],null,'E1');
-
             $row = 0;
+
+            $spreadsheetData = [];
             
             foreach ($agents as $agentkey => $agent) {
 
@@ -214,8 +204,8 @@ class excelController extends BaseController
                 if($value = $schedule) {
                     $cluster = $value->om_info ? $value->om_info : $agent->operations_manager;
                     $team_lead = $value->tl_info ? $value->tl_info : $agent->team_leader;
-        
-                    $worksheet->fromArray([
+
+                    array_push($spreadsheetData, [
                         $cluster ? $cluster->full_name : null, 
                         $agent->full_name, 
                         $agent->user_info->p_email, 
@@ -230,15 +220,7 @@ class excelController extends BaseController
                         (!$value->leave_id) ? implode(', ', $value->log_status) : null,
                         ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? null : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
                         $value->remarks
-                    ], null, 'A'.($row + 3), true);
-                
-                    $worksheet->getStyle('K'.($row + 3))
-                    ->getNumberFormat()
-                    ->setFormatCode(
-                        \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00
-                    );
-
-                    $row++;
+                    ]);
 
                     if(isset($summaryData[$agentkey])) {
 
@@ -260,8 +242,8 @@ class excelController extends BaseController
                 } else {
                     $cluster = $agent->operations_manager ? $agent->operations_manager : null;
                     $team_lead = $agent->team_leader ? $agent->team_leader : null;
-            
-                    $worksheet->fromArray([
+
+                    array_push($spreadsheetData, [
                         $cluster ? $cluster['full_name'] : null, 
                         $agent->full_name, 
                         $agent->user_info->p_email, 
@@ -276,9 +258,7 @@ class excelController extends BaseController
                         'OFF',
                         null,
                         null
-                    ], null, 'A'.($row + 3));
-
-                    $row++;
+                    ]);
 
                     if(isset($summaryData[$agentkey])) {
 
@@ -297,6 +277,28 @@ class excelController extends BaseController
                     }
                 }
             }
+
+            if($sheetNumber > 0) {
+                $myWorkSheet = new Worksheet($spreadsheet, $start->format('m.d.Y'));
+                $spreadsheet->addSheet($myWorkSheet, $sheetNumber);
+                $worksheet = $spreadsheet->getSheet($sheetNumber);
+            } else {
+                $worksheet = $spreadsheet->getSheet($sheetNumber);
+                $worksheet->setTitle($start->format('m.d.Y'));
+            }
+
+            $worksheet->fromArray($header, null, 'A2');
+            $worksheet->fromArray([$start->format('l'), $start->format('Y/m/d'), '', 'ACTUAL LOGS'],null,'E1');
+            
+            $worksheet->fromArray($spreadsheetData, null, 'A'.($row + 3));
+                
+            $worksheet->getStyle('K'.($row + 3))
+            ->getNumberFormat()
+            ->setFormatCode(
+                \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00
+            );
+
+            $row++;
     
             foreach (range('A', 'M') as $key => $column) {
                 $worksheet->getColumnDimension($column)
@@ -385,38 +387,19 @@ class excelController extends BaseController
         $sheetNumber = 0;
 
         $filename = "SVA-Payroll-".$start->format('F-Y').".xlsx"; //filename
-        $spreadsheet = new Spreadsheet();
-        //add template sheet
-        $header = [
-            'Cluster',
-            'Employee Name',
-            'Email Address',
-            'Team Lead',
-            'SCHEDULE',
-            'TIME-IN',
-            'TIME-OUT',
-            'TIME-IN',
-            'TIME-OUT',
-            'Rendered Time',
-            'Conformance',
-            'Status',
-            'Override Status',
-            'Remarks',
-        ];
 
         $summaryHeader = [
-            [null, null, null, null, null],
-            [null, null, null, null, null],
-            ['Cluster', 'Employee Name', 'Email Address', 'Team Lead', 'Ave Conformance']
+            [null, null, null, null],
+            [null, null, null, null],
+            ['Cluster', 'Employee Name', 'Email Address', 'Team Lead']
         ];
 
         $summayData = [];
 
         while($start->lte($end)) {
 
-            array_push($summaryHeader[0], $start->format('l, F d'), '');
-            array_push($summaryHeader[1], 'Conformance', 'Tagged');
-            array_push($summaryHeader[2], '', 'Status');
+            array_push($summaryHeader[0], $start->format('d-F'));
+            array_push($summaryHeader[1], $start->format('l'));
 
             $agents = User::with(['schedule' => function($q) use ($start){
                         $q->where(function($q) use ($start) {
@@ -433,58 +416,19 @@ class excelController extends BaseController
                     })
                     ->get();
 
-            if($sheetNumber > 0) {
-                $myWorkSheet = new Worksheet($spreadsheet, $start->format('m.d.Y'));
-                $spreadsheet->addSheet($myWorkSheet, $sheetNumber);
-                $worksheet = $spreadsheet->getSheet($sheetNumber);
-            } else {
-                $worksheet = $spreadsheet->getSheet($sheetNumber);
-                $worksheet->setTitle($start->format('m.d.Y'));
-            }
-
-            $worksheet->fromArray($header, null, 'A2');
-            $worksheet->fromArray([$start->format('l'), $start->format('Y/m/d'), '', 'ACTUAL LOGS'],null,'E1');
-
             $row = 0;
             
             foreach ($agents as $agentkey => $agent) {
-
+                
                 $schedule = $agent->schedule->first() ? $agent->schedule->first() : null;
 
                 if($value = $schedule) {
                     $cluster = $value->om_info ? $value->om_info : $agent->operations_manager;
                     $team_lead = $value->tl_info ? $value->tl_info : $agent->team_leader;
-        
-                    $worksheet->fromArray([
-                        $cluster ? $cluster->full_name : null, 
-                        $agent->full_name, 
-                        $agent->user_info->p_email, 
-                        $team_lead ? $team_lead->fullname : null,
-                        $value->start_event->format('h:i A').'-'.$value->end_event->format('h:i A'),
-                        $value->start_event,
-                        $value->end_event,
-                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_in : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
-                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->time_out : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
-                        $value->overtime_id ? $value->overtime['billable']['decimal'] : $value->rendered_hours['billable']['decimal'],
-                        (!$value->leave_id) ? $value->conformance / 100 : null,
-                        (!$value->leave_id) ? implode(', ', $value->log_status) : null,
-                        ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? null : (($value->leave->status === 'approved') ? 'LEAVE' : null)),
-                        $value->remarks
-                    ], null, 'A'.($row + 3), true);
-                
-                    $worksheet->getStyle('K'.($row + 3))
-                    ->getNumberFormat()
-                    ->setFormatCode(
-                        \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00
-                    );
-
-                    $row++;
 
                     if(isset($summaryData[$agentkey])) {
 
-                        array_push($summaryData[$agentkey], (!$value->leave_id) ? $value->conformance / 100 : null, ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->remarks : (($value->leave->status === 'approved') ? 'LEAVE' : null)));
-
-                        if(!$value->leave_id) $summaryData[$agentkey][4] += ((float)$value->conformance / 2 )/ 100;
+                        array_push($summaryData[$agentkey], ($value->leave && $value->leave->status === 'approved') ? $value->leave->leave_type : ($value->overtime_id ? $value->overtime['billable']['decimal'] : $value->rendered_hours['billable']['decimal']));
 
                     } else {
                         $summaryData[$agentkey] = [
@@ -492,37 +436,16 @@ class excelController extends BaseController
                             $agent->full_name, 
                             $agent->user_info->p_email, 
                             $team_lead ? $team_lead->fullname : null,
-                            0,
-                            (!$value->leave_id) ? $value->conformance / 100 : null, 
-                            ($agent->info->status === 'inactive') ? $agent->info->type : ((!$value->leave_id) ? $value->remarks : (($value->leave->status === 'approved') ? 'LEAVE' : null))
+                            ($value->leave && $value->leave->status === 'approved') ? $value->leave->leave_type : ($value->overtime_id ? $value->overtime['billable']['decimal'] : $value->rendered_hours['billable']['decimal'])
                         ];
                     }
                 } else {
                     $cluster = $agent->operations_manager ? $agent->operations_manager : null;
                     $team_lead = $agent->team_leader ? $agent->team_leader : null;
-            
-                    $worksheet->fromArray([
-                        $cluster ? $cluster['full_name'] : null, 
-                        $agent->full_name, 
-                        $agent->user_info->p_email, 
-                        $team_lead ? $team_lead['full_name'] : null,
-                        'OFF',
-                        'OFF',
-                        'OFF',
-                        'OFF',
-                        'OFF',
-                        'OFF',
-                        null,
-                        'OFF',
-                        null,
-                        null
-                    ], null, 'A'.($row + 3));
-
-                    $row++;
 
                     if(isset($summaryData[$agentkey])) {
 
-                        array_push($summaryData[$agentkey], 'OFF', 'OFF');
+                        array_push($summaryData[$agentkey], 0);
 
                     } else {
                         $summaryData[$agentkey] = [
@@ -530,17 +453,12 @@ class excelController extends BaseController
                             $agent->full_name, 
                             $agent->user_info->p_email, 
                             $team_lead ? $team_lead['full_name'] : null,
+                            // 'ave',
                             0,
-                            'OFF',
-                            'OFF'
+                            // 0
                         ];
                     }
                 }
-            }
-    
-            foreach (range('A', 'M') as $key => $column) {
-                $worksheet->getColumnDimension($column)
-                ->setAutoSize(true);
             }
 
             $start = $start->addDay();
@@ -549,40 +467,11 @@ class excelController extends BaseController
 
         }; 
         
-        $summaryWorkSheet = new Worksheet($spreadsheet, 'Summary');
-        $spreadsheet->addSheet($summaryWorkSheet, 0);
-        $worksheet = $spreadsheet->getSheet(0);
-
-        foreach ($summaryData as $key => $value) {
-            $worksheet->getStyle('E'.($key + 5))
-            ->getNumberFormat()
-            ->setFormatCode(
-                \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00
-            );
-        }
-
+        $spreadsheet = new Spreadsheet();
+        $worksheet = $spreadsheet->getActiveSheet(0);
+        $worksheet->setTitle("Summary");
         $worksheet->fromArray($summaryHeader, null, 'A1');
         $worksheet->fromArray($summaryData, null, 'A5', true);
-        
-        $column = 'F';
-        $step = $summaryHeader[0]; // number of columns to step by
-        for($i = 0; $i < count($step)/2; $i++) {
-
-            foreach ($summaryData as $key => $value) {         
-                $worksheet->getStyle($column.($key + 5))
-                ->getNumberFormat()
-                ->setFormatCode(
-                    \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00
-                );
-            }
-
-            $range1 = $column.'1';
-            $column++;
-            $range2 = $column.'1';
-            $column++;
-            
-            $worksheet->mergeCells("$range1:$range2");
-        }
         
         $column = 'A';
         $step = $summaryHeader[0]; // number of columns to step by
