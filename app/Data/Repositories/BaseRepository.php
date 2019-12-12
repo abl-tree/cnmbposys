@@ -173,7 +173,7 @@ class BaseRepository
         // dd( dump_query ( $model) );
 
         if (isset($data['count']) && $data['count'] === true) {
-            return $model->get()->count();
+            return $model->count();
         }
 
         if (isset($data['single']) && $data['single'] === true) {
