@@ -38,7 +38,7 @@ class UserInfo extends BaseModel
     ];
 
     protected $appends = [
-        'full_name','count','image', 'current_head_id', 
+        'full_name','count','image', 'current_head', 
     ];
 
     protected $hidden = [
@@ -112,13 +112,13 @@ class UserInfo extends BaseModel
         return $name;
     }
 
-    public function getCurrentHeadIdAttribute(){
+    public function getCurrentHeadAttribute(){
         $result = HierarchyLog::where("child_id", $this->id)->get();
         $result = collect($result)
         ->where('start_date',"<=",Carbon::now())
         ->where('tmp_end_date',">=",Carbon::now());
         if(isset($result[0])){
-            $result = $result[0]->parent_id;
+            $result = UserInfo::find($result[0]->parent_id);
         }else{
             $result = null;
         }
