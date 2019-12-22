@@ -17,17 +17,20 @@ class HierarchyLogRepository extends BaseRepository
 
     protected
     $user_info,
+    $user,
     $logs,
     $hierarchy_log,
     $notification_repo;
 
     public function __construct(
         UserInfo $userInfo,
+        User $user,
         LogsRepository $logs_repo,
         NotificationRepository $notificationRepository,
         HierarchyLog $hierarchy_log
     ) {
         $this->user_info = $userInfo;
+        $this->user = $user;
         $this->hierarchy_log = $hierarchy_log;
         $this->logs = $logs_repo;
         $this->notification_repo = $notificationRepository;
@@ -185,7 +188,10 @@ class HierarchyLogRepository extends BaseRepository
                     "code" => 422,
                     "title" => "Head(parent_id) field is required.",
                     "meta" => [],
-                    "parameters" => $data,
+                    "parameters" => [
+                        "user_input" => $data,
+                        "email" => $data["parent_email"]
+                    ],
                 ]);
             }
             $data["parent_id"] = $parent["uid"];
@@ -208,7 +214,10 @@ class HierarchyLogRepository extends BaseRepository
                     "code" => 422,
                     "title" => "Subordinate(child_id) field is required.",
                     "meta" => [],
-                    "parameters" => $data,
+                    "parameters" => [
+                        "user_input" => $data,
+                        "email" => $data["child_email"]
+                    ],
                 ]);
             }
             $data["child_id"] = $child["uid"];
@@ -246,7 +255,10 @@ class HierarchyLogRepository extends BaseRepository
                 "code" => 422,
                 "title" => "Subordinate has duplicate date.",
                 "meta" => $response,
-                "parameters" => $data,
+                "parameters" => [
+                    "user_input" => $data,
+                    "email" => $this->user->where("uid", $data["child_id"])->first()->email
+                ],
             ]);
         }
 
@@ -272,7 +284,10 @@ class HierarchyLogRepository extends BaseRepository
                     "code" => 422,
                     "title" => "Conflict date field please adjust date.",
                     "meta" => $response,
-                    "parameters" => $data,
+            "parameters" => [
+                "user_input" => $data,
+                "email" => $this->user->where("uid", $data["child_id"])->first()->email
+            ],
                 ]);
             }
 
@@ -295,7 +310,10 @@ class HierarchyLogRepository extends BaseRepository
                 "code" => 500,
                 "title" => "There is a problem with the input data.",
                 "meta" => $response,
-                "parameters" => $data,
+            "parameters" => [
+                "user_input" => $data,
+                "email" => $this->user->where("uid", $data["child_id"])->first()->email
+            ],
             ]);
         }
 
@@ -303,7 +321,10 @@ class HierarchyLogRepository extends BaseRepository
             "code" => 200,
             "title" => "Successfully defined hierarchy.",
             "meta" => $response,
-            "parameters" => $data,
+            "parameters" => [
+                "user_input" => $data,
+                "email" => $this->user->where("uid", $data["child_id"])->first()->email
+            ],
         ]);
     }
 
