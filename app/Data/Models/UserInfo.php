@@ -161,6 +161,11 @@ class UserInfo extends BaseModel
         return $this->hasOne('\App\Data\Models\AccessLevel', 'id', 'access_id');
      }
 
+    public function schedule()
+    {
+        return $this->hasMany('\App\Data\Models\AgentSchedule', 'user_id', 'id');
+    }
+
     public function getAllEmployee(){
         $query = DB::table('user_infos')
         ->join('users','users.uid','=','user_infos.id')

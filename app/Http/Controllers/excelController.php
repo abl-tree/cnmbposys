@@ -27,7 +27,8 @@ use Carbon\Carbon;
 use App\Http\Controllers\BaseController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
-
+use App\Exports\SVAExport;
+use App\Jobs\NotifyUserOfCompletedExport;
 
 class excelController extends BaseController
 {
@@ -122,8 +123,44 @@ class excelController extends BaseController
         // $streamedResponse->headers->set('Content-Disposition', 'attachment; filename='.$filename);
         // return $streamedResponse->send();
     }
+
+    function SVAReport(Request $request) {
+        
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date|date_format:Y-m-d',
+            'end_date' => 'required|date|date_format:Y-m-d|after_or_equal:start_date'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "Request validation error.",
+                "meta" => [
+                    "errors" => $validator->errors(),
+                ],
+            ])->json();
+        }
+
+        $start = Carbon::parse($request->start_date);
+        $end = Carbon::parse($request->end_date);
+
+        $realFilename = "Centralized-Data-for-SVA-".$start->copy()->format('F-Y').".xlsx"; //filename
+
+        $filename = 'SVA'.$request->user()->id.'.xlsx';
+
+        (new SVAExport($start->format('Y-m-d'), $end->format('Y-m-d')))->queue($filename)->chain([
+            new NotifyUserOfCompletedExport(request()->user(), $filename, $realFilename),
+        ]);
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Export Started! The file will be sent to your email.",
+            "parameters" => $request->all()
+        ])->json();
+
+    }
     
-    function SVAReport(Request $request){
+    function SVAReportBackup(Request $request){
         
         $validator = Validator::make($request->all(), [
             'start_date' => 'required|date|date_format:Y-m-d',
@@ -171,6 +208,7 @@ class excelController extends BaseController
         ];
 
         $summayData = [];
+        $svaData = [];
 
         while($start->lte($end)) {
 
@@ -428,7 +466,8 @@ class excelController extends BaseController
 
                     if(isset($summaryData[$agentkey])) {
 
-                        array_push($summaryData[$agentkey], ($value->leave && $value->leave->status === 'approved') ? $value->leave->leave_type : ($value->overtime_id ? $value->overtime['billable']['decimal'] : $value->rendered_hours['billable']['decimal']));
+                        array_push($summaryData[$agentkey], 
+                        ($value->leave && $value->leave->status === 'approved') ? $value->leave->leave_type : ($value->overtime_id ? $value->overtime['billable']['decimal'] : $value->rendered_hours['billable']['decimal']));
 
                     } else {
                         $summaryData[$agentkey] = [
