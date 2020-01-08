@@ -149,7 +149,7 @@ class excelController extends BaseController
         $filename = 'SVA'.$request->user()->id.'.xlsx';
 
         (new SVAExport($start->format('Y-m-d'), $end->format('Y-m-d'), $request->om_id ? $request->om_id : null))->queue($filename)->chain([
-            // new NotifyUserOfCompletedExport(request()->user(), $filename, $realFilename),
+             new NotifyUserOfCompletedExport(request()->user(), $filename, $realFilename),
         ]);
 
         return $this->setResponse([
