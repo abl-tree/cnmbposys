@@ -20,7 +20,7 @@ class SVAExport implements WithMultipleSheets
 
     protected $end;
 
-    protected $data;
+    protected $om_id;
     
     /**
     * It's required to define the fileName within
@@ -40,10 +40,12 @@ class SVAExport implements WithMultipleSheets
     //     'Content-Type' => 'text/csv',
     // ];
 
-    public function __construct($start, $end) {
+    public function __construct($start, $end, $om_id) {
         $this->start = $start;
 
         $this->end = $end;
+
+        $this->om_id = $om_id;
     }
 
     /**
@@ -59,13 +61,13 @@ class SVAExport implements WithMultipleSheets
 
         $end = Carbon::parse($this->end);
 
-        $summary = new SVASummary($start->format('Y-m-d'), $end->format('Y-m-d'));
+        $summary = new SVASummary($start->format('Y-m-d'), $end->format('Y-m-d'), $this->om_id);
 
         $sheets[] = $summary;
 
         while($start->lte($end)) {
 
-            $tmp = new SVAPerDay($start->format('Y-m-d'));
+            $tmp = new SVAPerDay($start->format('Y-m-d'), $this->om_id);
 
             $sheets[] = $tmp;
 

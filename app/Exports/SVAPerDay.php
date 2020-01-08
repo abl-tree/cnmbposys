@@ -9,20 +9,28 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\View\View;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Carbon\Carbon;
 use App\Data\Models\UserInfo;
 
-class SVAPerDay implements FromView, WithTitle, ShouldAutoSize
+class SVAPerDay implements FromView, WithTitle, ShouldAutoSize, WithColumnFormatting
 {
     protected $date;
 
-    public function __construct($date) {
+    protected $om_id;
+
+    public function __construct($date, $om_id) {
         $this->date = $date;
+
+        $this->om_id = $om_id;
     }
 
     public function view(): View
     {
         $start = $this->date;
+
+        $om_id = $this->om_id;
         
         $agents = UserInfo::with(['schedule' => function($q) use ($start){
             $q->where(function($q) use ($start) {
@@ -36,11 +44,12 @@ class SVAPerDay implements FromView, WithTitle, ShouldAutoSize
                 $q->where('code', 'representative_op');
             });
         })
-        // ->when($request->om_id, function($q) use ($request) {
-        //     $q->whereHas('schedule', function($q) use ($request){
-        //         $q->whereIn('om_id', $request->om_id);
-        //     });
-        // })
+        ->when($om_id, function($q) use ($om_id) {
+            $q->whereHas('schedule', function($q) use ($om_id){
+                $q->whereIn('om_id', $om_id);
+            });
+        })
+        ->orderBy('firstname')
         ->get();
 
         return view('exports.sva_report', [
@@ -54,5 +63,12 @@ class SVAPerDay implements FromView, WithTitle, ShouldAutoSize
     public function title(): string
     {
         return $this->date;
+    }
+    
+    public function columnFormats(): array
+    {
+        return [
+            'K' => NumberFormat::FORMAT_PERCENTAGE_00
+        ];
     }
 }

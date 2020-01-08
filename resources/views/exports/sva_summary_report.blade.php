@@ -16,6 +16,10 @@
             <th>Email Address</th>
             <th>Team Lead</th>
             <th>Average Conformance</th>
+            @foreach($summaries as $summary)
+            <th>Conformance</th>
+            <th>Tagged Status</th>
+            @endforeach
         </tr>
     </thead>
     <tbody>
@@ -31,9 +35,9 @@
                     
                     if(isset($summaryData[$agentkey])) {
 
-                        array_push($summaryData[$agentkey], (!$value->leave_id) ? $value->conformance / 100 : null, ($agent->status === 'inactive') ? $agent->type : ((!$value->leave_id) ? $value->remarks : (($value->leave->status === 'approved') ? 'LEAVE' : null)));
+                        array_push($summaryData[$agentkey], (!$value->leave_id) ? ($value->conformance / 100) * 100 : 0, ($agent->status === 'inactive') ? $agent->type : ((!$value->leave_id) ? $value->remarks : (($value->leave->status === 'approved') ? 'LEAVE' : null)));
 
-                        if(!$value->leave_id) $summaryData[$agentkey][4] += ((float)$value->conformance / 2 )/ 100;
+                        if(!$value->leave_id) $summaryData[$agentkey][4] += (($value->conformance / 100) * 100) / 2;
 
                     } else {
                         $summaryData[$agentkey] = [
@@ -41,8 +45,8 @@
                             $agent->full_name, 
                             $agent->p_email, 
                             $team_lead ? $team_lead->fullname : null,
-                            (!$value->leave_id) ? $value->conformance / 100 : 0,
-                            (!$value->leave_id) ? $value->conformance / 100 : null, 
+                            (!$value->leave_id) ? ($value->conformance / 100) * 100 : 0, 
+                            (!$value->leave_id) ? ($value->conformance / 100) * 100 : 0, 
                             ($agent->status === 'inactive') ? $agent->type : ((!$value->leave_id) ? $value->remarks : (($value->leave->status === 'approved') ? 'LEAVE' : null))
                         ];
                     }
@@ -53,8 +57,6 @@
                     if(isset($summaryData[$agentkey])) {
 
                         array_push($summaryData[$agentkey], 'OFF', 'OFF');
-                        
-                        $summaryData[$agentkey][4] += 0;
 
                     } else {
                         $summaryData[$agentkey] = [
@@ -62,7 +64,7 @@
                             $agent->full_name, 
                             $agent->p_email, 
                             $team_lead ? $team_lead['full_name'] : null,
-                            0,
+                            null,
                             'OFF',
                             'OFF'
                         ];

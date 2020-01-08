@@ -15,26 +15,40 @@ class SVASummary implements FromView, WithTitle, ShouldAutoSize
 
     protected $end;
 
-    public function __construct($start, $end) {
+    protected $om_id;
+
+    public function __construct($start, $end, $om_id = null) {
 
         $this->start = $start;
 
         $this->end = $end;
 
+        $this->om_id = $om_id;
+
     }
 
     public function view(): View
     {
-        $summary = [];
+        $summary = []; 
 
         $start = Carbon::parse($this->start);
 
         $end = Carbon::parse($this->end);
 
+        $om_id = $this->om_id;
+
         $agents = UserInfo::select('id')
         ->whereHas('user', function($q) {
             $q->whereHas('accesslevel', function($q) {
                 $q->where('code', 'representative_op');
+            });
+        })
+        ->when($om_id, function($q) use ($om_id, $start, $end) {
+            $q->whereHas('schedule', function($q) use ($om_id, $start, $end){
+                $q->whereIn('om_id', $om_id);
+                $q->whereDate('start_event', '>=', $start->copy()->format('Y-m-d'));
+                $q->whereDate('start_event', '<=', $end->copy()->format('Y-m-d'));
+
             });
         })
         ->get();
@@ -43,19 +57,18 @@ class SVASummary implements FromView, WithTitle, ShouldAutoSize
 
         while($start->lte($end)) {
 
-            $agents = UserInfo::with(['schedule' => function($q) use ($start){
+            $agents = UserInfo::with(['schedule' => function($q) use ($start, $om_id){
                 $q->where(function($q) use ($start) {
                     $q->whereDate('start_event', $start->copy()->format('Y-m-d'));
                     $q->whereDoesntHave('overtime_schedule');
                 });
+                $q->when($om_id, function($q) use ($om_id) {
+                    $q->whereIn('om_id', $om_id);
+                });
                 $q->with('om_info', 'tl_info');
             }])
             ->whereIn('id', $agent_ids)
-            // ->when($request->om_id, function($q) use ($request) {
-            //     $q->whereHas('schedule', function($q) use ($request){
-            //         $q->whereIn('om_id', $request->om_id);
-            //     });
-            // })
+            ->orderBy('firstname')
             ->get();
 
             array_push($summary, [
