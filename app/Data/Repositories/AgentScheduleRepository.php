@@ -71,16 +71,16 @@ class AgentScheduleRepository extends BaseRepository
         $arr = [];
         $firstPage = $excel[0];
         for ($x = 0; $x < count($firstPage); $x++) {
-            if (isset($firstPage[$x + 3])) {
-                if ($firstPage[$x + 3][1] != null) {
-                    if (strtoupper($firstPage[$x + 3][4]) != 'OFF') {
+            if (isset($firstPage[$x + 1])) {
+                if ($firstPage[$x + 1][1] != null) {
+                    if (strtoupper($firstPage[$x + 1][4]) != 'OFF') {
                         $arr[] = [
-                            "om_id" => $firstPage[$x + 3][2],
-                            "tl_id" => $firstPage[$x + 3][3],
-                            "email" => $firstPage[$x + 3][1],
+                            "om_id" => $firstPage[$x + 1][2],
+                            "tl_id" => $firstPage[$x + 1][3],
+                            "email" => $firstPage[$x + 1][1],
                             "title_id" => 1,
-                            "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][5]),
-                            "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 3][6]),
+                            "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][5]),
+                            "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]),
                             'replicate' => ($data["replicate"] ==='true')
                         ];
                     }
