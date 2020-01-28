@@ -183,9 +183,9 @@ class BaseRepository
 
             if (isset($data['sort']) && in_array($data['sort'], $this->no_sort)) {
                 if (isset($data['order']) && $data['order'] == 'desc') {
-                    $result = $result->sortByDesc($data['sort']);
+                    $result = $result->sortByDesc($data['sort'])->values();
                 } else {
-                    $result = $result->sortBy($data['sort']);
+                    $result = $result->sortBy($data['sort'])->values();
                 }
             }
         } else if (isset($data['sort']) && in_array($data['sort'], $this->no_sort)) {
