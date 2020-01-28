@@ -1335,6 +1335,13 @@ class AgentScheduleRepository extends BaseRepository
                 //     });
                 // }
 
+                if (isset($data['sort'])) {
+                    if ($data['sort'] == 'full_name') {
+                        $result = $result->join('user_infos', 'user_infos.id', '=', 'users.uid')
+                            ->orderBy('firstname', $data['order'] ?? 'asc');
+                    }
+                }
+
                 if (isset($data['tl_id']) && $data['tl_id'] != 'null') {
                     $result = $result->where(function ($q) use ($data) {
                         $q->whereHas('schedule', function ($q) use ($data) {
