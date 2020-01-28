@@ -1243,7 +1243,7 @@ class AgentScheduleRepository extends BaseRepository
                 $query->where([['start_event', '>=', $start], ['end_event', '<=', $end]]);
                 $query->orWhereHas('overtime_schedule', function ($ot_query) use ($start, $end) {
                     $ot_query->where('start_event', '>=', $start);
-                    $ot_query->where('end_event', '<=', $end);
+                    $ot_query->where('start_event', '<=', $end);
                 });
             },
             );
@@ -1254,7 +1254,7 @@ class AgentScheduleRepository extends BaseRepository
                     $query->where([['start_event', '>=', $start], ['end_event', '<=', $end]]);
                     $query->orWhereHas('overtime_schedule', function ($ot_query) use ($start, $end) {
                         $ot_query->where('start_event', '>=', $start);
-                        $ot_query->where('end_event', '<', $end);
+                        $ot_query->where('start_event', '<', $end);
                     });
                 },
             );
@@ -1340,7 +1340,7 @@ class AgentScheduleRepository extends BaseRepository
                         $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('tl_id', $data['tl_id']);
                             $q->where('start_event', '>=', $data['start']);
-                            $q->where('end_event', '<=', $data['end']);
+                            $q->where('start_event', '<=', $data['end']);
                         });
                     });
                 }
@@ -1350,7 +1350,7 @@ class AgentScheduleRepository extends BaseRepository
                         $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('om_id', $data['om_id']);
                             $q->where('start_event', '>=', $data['start']);
-                            $q->where('end_event', '<=', $data['end']);
+                            $q->where('start_event', '<=', $data['end']);
                         });
                     });
                 }
@@ -1361,7 +1361,7 @@ class AgentScheduleRepository extends BaseRepository
                     $result = $result->where(function ($q) use ($data) {
                         $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('start_event', '>=', $data['start']);
-                            $q->where('end_event', '<=', $data['end']);
+                            $q->where('start_event', '<=', $data['end']);
                         });
                     });
                 }
@@ -1374,7 +1374,7 @@ class AgentScheduleRepository extends BaseRepository
                         $query->where([['start_event', '>=', Carbon::parse($parameters['start'])], ['start_event', '<=', $end]]);
                         $query->orWhereHas('overtime_schedule', function ($ot_query) use ($parameters, $end) {
                             $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
-                            $ot_query->where('end_event', '<=', $end);
+                            $ot_query->where('start_event', '<=', $end);
                         });
                     });
 
@@ -1405,7 +1405,7 @@ class AgentScheduleRepository extends BaseRepository
                                     $end = $end->addDays(1);
 
                                     $ot_query->where('start_event', '>=', Carbon::parse($parameters['start']));
-                                    $ot_query->where('end_event', '<=', $end);
+                                    $ot_query->where('start_event', '<=', $end);
                                 });
                             });
                         });
