@@ -1357,7 +1357,7 @@ class AgentScheduleRepository extends BaseRepository
 
                 if ((!isset($data['om_id']) || $data['om_id'] == 'null') &&
                     (!isset($data['tl_id']) || $data['tl_id'] == 'null')) {
-                        
+
                     $result = $result->where(function ($q) use ($data) {
                         $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('start_event', '>=', $data['start']);
@@ -1436,7 +1436,7 @@ class AgentScheduleRepository extends BaseRepository
             ]),
         ]);
 
-        $result_count = $result;
+        $result_count = clone $result;
 
         if (isset($data['target'])) {
             if (!is_array($data['target'])) {
@@ -1453,6 +1453,7 @@ class AgentScheduleRepository extends BaseRepository
             }
 
             $result = $this->genericSearch($data, $result)->get();
+            $data['search'] = true;
         } else {
             $result = $this->fetchGeneric($data, $result);
         }

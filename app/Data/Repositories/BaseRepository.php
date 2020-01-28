@@ -358,6 +358,10 @@ class BaseRepository
             }
         }
 
+        if (isset($data['wherehas_by_relations'])) {
+            $model = $model->whereHas($data['wherehas_by_relations']['target'], $data['wherehas_by_relations']['query']);
+        }
+
         // Start WHERENULL clauses
         if (isset($data['where_null'])) {
             foreach ((array) $data['where_null'] as $key => $conditions) {
