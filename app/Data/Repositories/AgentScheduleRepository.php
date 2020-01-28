@@ -81,7 +81,7 @@ class AgentScheduleRepository extends BaseRepository
                             "title_id" => 1,
                             "start_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][5]),
                             "end_event" => $this->excel_date->excelDateToPHPDate($firstPage[$x + 1][6]),
-                            'replicate' => ($data["replicate"] ==='true')
+                            'replicate' => ($data["replicate"] === 'true'),
                         ];
                     }
                 }
@@ -396,7 +396,7 @@ class AgentScheduleRepository extends BaseRepository
                     'title_id' => $data['title_id'],
                     'auth_id' => $auth_id,
                     'tl_id' => $data['tl_id'] ?? null,
-                    'om_id' => $data['om_id'] ?? null
+                    'om_id' => $data['om_id'] ?? null,
                 ]);
 
                 $replicate_start_date->addWeek();
@@ -1349,6 +1349,17 @@ class AgentScheduleRepository extends BaseRepository
                     $result = $result->where(function ($q) use ($data) {
                         $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('om_id', $data['om_id']);
+                            $q->where('start_event', '>=', $data['start']);
+                            $q->where('end_event', '<=', $data['end']);
+                        });
+                    });
+                }
+
+                if ((!isset($data['om_id']) || $data['om_id'] == 'null') &&
+                    (!isset($data['tl_id']) || $data['tl_id'] == 'null')) {
+                        
+                    $result = $result->where(function ($q) use ($data) {
+                        $q->whereHas('schedule', function ($q) use ($data) {
                             $q->where('start_event', '>=', $data['start']);
                             $q->where('end_event', '<=', $data['end']);
                         });
