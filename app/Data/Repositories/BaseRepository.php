@@ -5,9 +5,9 @@ namespace App\Data\Repositories;
 use App\Data\Models\BaseModel;
 use Common\Traits\Response;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class BaseRepository
 {
@@ -325,8 +325,7 @@ class BaseRepository
                                 $q->whereNotNull($value['column']);
                             } else if ($value['operator'] == 'wherein') {
                                 $q->whereIn($value['column'], $value['value']);
-                            }
-                             else {
+                            } else {
                                 $q->where($value['column'], $value['operator'], $value['value']);
                             }
 
@@ -396,6 +395,18 @@ class BaseRepository
 
         if (isset($data['count']) && $data['count'] === true) {
             return $model->get()->count();
+        }
+
+        if (isset($data['sort']) && in_array($data['sort'], $this->no_sort) &&
+            isset($data['allow_sorting']) && $data['allow_sorting'] == true) {
+                
+            $model = $model->get();
+
+            if (isset($data['order']) && $data['order'] == 'desc') {
+                $model = $model->sortByDesc($data['sort'])->values();
+            } else {
+                $model = $model->sortBy($data['sort'])->values();
+            }
         }
 
         // dd( dump_query ( $model), $data );

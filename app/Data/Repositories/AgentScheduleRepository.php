@@ -1452,7 +1452,8 @@ class AgentScheduleRepository extends BaseRepository
                 }
             }
 
-            $result = $this->genericSearch($data, $result)->get();
+            $data['allow_sorting'] = true;
+            $result = $this->genericSearch($data, $result);
             $data['search'] = true;
         } else {
             $result = $this->fetchGeneric($data, $result);
