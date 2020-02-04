@@ -1511,6 +1511,10 @@ class AgentScheduleRepository extends BaseRepository
             $summary['absent'] += $value->summary['absent'];
         }
 
+        if(!$result instanceof \Illuminate\Database\Eloquent\Collection){
+            $result = $result->get();
+        }
+
         $result_data = $result->toArray();
 
         //sanitize result schedule data
