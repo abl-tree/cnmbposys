@@ -35,6 +35,32 @@ class PostLogs
             'auth_id' => $request->user()->id,
         ]);
 
+        $request_data = $request->all();
+        /**
+        TEMP: Data Cleanup
+        */
+        if(isset($request_data['sort']) && $request_data['sort'] == "null"){
+            $request_data['sort'] = null;
+        }
+        if(isset($request_data['order']) && $request_data['order'] == "null"){
+            $request_data['order'] = null;
+        }
+        if(isset($request_data['target']) && $request_data['target'] == "null"){
+            $request_data['target'] = null;
+        }
+        if(isset($request_data['query']) && $request_data['query'] == "null"){
+            $request_data['query'] = null;
+        }
+        if(isset($request_data['om_id']) && $request_data['om_id'] == "null"){
+            $request_data['om_id'] = null;
+        }
+        if(isset($request_data['tl_id']) && $request_data['tl_id'] == "null"){
+            $request_data['tl_id'] = null;
+        }
+
+        //merge clean request data
+        $request->merge($request_data);
+        
         $response = $next($request);
 
         if ($response->getStatusCode() != 200) {
