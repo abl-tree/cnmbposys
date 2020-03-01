@@ -13,6 +13,7 @@ use App\Exports\exportTemplateSheet;
 use App\Exports\exportReportSheet;
 use App\Imports\importEmployee;
 use App\Data\Models\UserInfo;
+use App\Data\Models\UsersData;
 use App\User;
 use App\Data\Models\UserBenefit;
 use App\Data\Models\AccessLevel;
@@ -673,8 +674,9 @@ class excelController extends BaseController
             'Last Name',
             'Name Ext.',
             'Position',
-            'Supervisor',
             'Email',
+            'Supervisor',
+            // 'Supervisor Email',
             'Status',
             'Contract',
             'Gender',
@@ -690,10 +692,12 @@ class excelController extends BaseController
         ];
         $worksheet = $spreadsheet->getActiveSheet(0);
         $worksheet->fromArray($header,null,'A1');
-        $userInfo = UserInfo::with(["user","benefits","accesslevelhierarchy.parentInfo"])->get();
+        $userInfo = UsersData::with(["user_info", "accesslevel", "benefits"])->get();
         // header('Content-type: application/json');
         // echo json_encode($userInfo);
         // $worksheet->setTitle("All employee");
+        // $worksheet->setCellValue('B1',$userInfo);
+
         foreach($userInfo as $k => $datum){
 
             if(!empty($datum->image_url)){
@@ -706,21 +710,18 @@ class excelController extends BaseController
                 $drawing->setHeight(50);
                 $drawing->setCoordinates('A'.($k+2));
                 $drawing->setWorksheet($worksheet);
-            }else{
-                $worksheet->setCellValue('A'.($k+2),"");
             }
-            $worksheet->setCellValue('B'.($k+2),$datum->user->company_id);
+            $worksheet->setCellValue('B'.($k+2),$datum->company_id);
             $worksheet->setCellValue('C'.($k+2),$datum->firstname);
             $worksheet->setCellValue('D'.($k+2),$datum->middlename);
             $worksheet->setCellValue('E'.($k+2),$datum->lastname);
             $worksheet->setCellValue('F'.($k+2),$datum->suffix);
-            $worksheet->setCellValue('G'.($k+2),$datum->user->access->name);
-            if($datum->accesslevelhierarchy->parent_info!=null){
-                $worksheet->setCellValue('H'.($k+2),$datum->accesslevelhierarchy->parent_info->full_name);
-            }
-            $worksheet->setCellValue('I'.($k+2),$datum->user->email);
+            $worksheet->setCellValue('G'.($k+2),$datum->position);
+            $worksheet->setCellValue('H'.($k+2),$datum->email);
+            $worksheet->setCellValue('I'.($k+2),$datum->head_name);
+            // $worksheet->setCellValue('J'.($k+2),$datum->head_email);
             $worksheet->setCellValue('J'.($k+2),$datum->type);
-            $worksheet->setCellValue('K'.($k+2),$datum->user->contract);
+            $worksheet->setCellValue('K'.($k+2),$datum->contract);
             $worksheet->setCellValue('L'.($k+2),$datum->gender);
             $worksheet->setCellValue('M'.($k+2),$datum->birthdate);
             $worksheet->setCellValue('N'.($k+2),$datum->address);

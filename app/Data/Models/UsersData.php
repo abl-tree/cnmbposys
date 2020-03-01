@@ -6,6 +6,7 @@ use App\Data\Models\AccessLevelHierarchy;
 use App\Data\Models\HierarchyLog;
 use App\Data\Models\BaseModel;
 use App\Data\Models\UserInfo;
+use App\User;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ class UsersData extends BaseModel
     protected $primaryKey = 'id';
     protected $table = 'user_infos';
     protected $appends = [
-        'full_name', 'email', 'company_id', 'contract', 'contact', 'access_id', 'position', 'parent_id', 'child_id', 'crypted_id', 'head_name','position','current_cluster',
+        'full_name', 'email', 'company_id', 'contract', 'contact', 'access_id', 'position', 'parent_id', 'child_id', 'crypted_id', 'head_name','position','current_cluster'
     ];
 
     // public $status_color = [
@@ -214,20 +215,35 @@ class UsersData extends BaseModel
 
         return $name;
     }
-    public function getHeadNameAttribute()
-    {
-        $name = null;
-        if (isset($this->accesslevelhierarchy)) {
-            if ($this->accesslevelhierarchy->parent_id) {
-                $head_details = UserInfo::find($this->accesslevelhierarchy->parent_id);
-                $name = $head_details->firstname . " " . $head_details->lastname;
-            } else {
-                $name = null;
-            }
-        }
 
-        return $name;
+    public function getHeadNameAttribute(){
+        $result = HierarchyLog::where("child_id", $this->id)->get();
+        $result = collect($result)
+        ->where('start_date',"<=",Carbon::now())
+        ->where('tmp_end_date',">=",Carbon::now())->values();
+        if(isset($result[0])){
+            $result = UserInfo::find($result[0]->parent_id);
+        }else{
+            $result = null;
+        }
+        $result = $result ? $result->firstname." ".$result->lastname:"";
+        return $result;
     }
+    // public function getHeadEmailAttribute(){
+    //     $result = HierarchyLog::where("child_id", $this->id)->get();
+    //     $result = collect($result)
+    //     ->where('start_date',"<=",Carbon::now())
+    //     ->where('tmp_end_date',">=",Carbon::now())->values();
+    //     if(isset($result[0])){
+    //         $result = User::where('uid',$result[0]->parent_id)->first();
+    //     }else{
+    //         $result = null;
+    //     }
+    //     $result = $result ? $result->email:"";
+    //     return $result;
+    // }
+
+
     public function getChildidAttribute()
     {
         $name = null;

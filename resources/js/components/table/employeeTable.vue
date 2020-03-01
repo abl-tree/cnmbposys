@@ -232,10 +232,10 @@
                     <div class="w-100">
                       <div class="text-center">
                         <span
-                          v-if="datum.head_name != null"
+                          v-if="datum.head.full_name != null"
                           class="c-grey-600"
                           style="font-weight:lighter;"
-                        >{{ datum.head_name }}</span>
+                        >{{ datum.head.full_name }}</span>
                         <span v-else class="c-grey-400" style="font-weight:normal;">
                           <i v-if="datum.id!=1">Not Assigned</i>
                           <i v-else>ADMIN</i>

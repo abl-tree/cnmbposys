@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Data\Models\UserInfo;
 
 /*
 |--------------------------------------------------------------------------
@@ -357,6 +358,8 @@ Route::group([
         Route::post('update', 'UserController@updatePosition');
         Route::post('delete', 'UserController@deletePosition');
     });
+
+    
 });
 
 Route::get("/", function () { //test lang kung working
