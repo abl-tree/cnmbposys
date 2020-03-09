@@ -592,7 +592,7 @@ class ImportUsersExcelRepository extends BaseRepository
         if(!$user){
             // create
             $row["uid"] = $info_id;
-            $row["password"] = "123456";
+            $row["password"] = bcrypt("123456");
             $user = $this->user_datum->init($this->user_datum->pullFillable($row));
         }
         return $user->save($row)? $info_id:null;
@@ -602,7 +602,7 @@ class ImportUsersExcelRepository extends BaseRepository
         $hierarchy = $this->access_level_hierarchy->where("child_id",$info_id)->first();
         $row = [
             "child_id" => $info_id,
-            "parent_id" => $this->user->where("email", $data[12])->first()->id,
+            "parent_id" => $this->user->where("email", $data[12])->first()->uid,
         ];
         if(!$hierarchy){
             $hierarchy = $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($row));
