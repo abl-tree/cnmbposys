@@ -181,6 +181,7 @@ class ImportUsersExcelRepository extends BaseRepository
         // return $result;
 
     }
+
     public function addUser($data = [])
     {   
         // data validation
@@ -400,5 +401,280 @@ class ImportUsersExcelRepository extends BaseRepository
        
     }
     }
+
+    public function excelImportUserV2($data = []){
+        $report=[];
+        $fields= $data[0];
+        foreach($data as $k => $datum){
+            $row_error="";
+            if($k > 0){
+
+                // validate null fields and email fields
+                $error_row = $this->validateUserRow($datum, $fields);
+                $report[$k-1] = $datum;
+                if($error_row!=""){
+                    $report[$k-1]["import_result"] =[
+                        "code" => "500",
+                        "action" => "validating",
+                        "description" => $error_row
+                    ];
+                }else{
+                    $user = $this->user->where("email", $datum[9])->first();
+                    $action = $user==null?"create":"update";
+                    $info_id = $user?$user->uid:null;
+
+                    // saving info details
+                    $save_info = $this->saveInfo($datum,$info_id);
+
+                    if(!$save_info){
+                        $report[$k-1]["import_result"]=$this->importRowError("info",$action);
+                    }
+
+                    // saving user details
+                    $save_user = $this->saveUser($datum, $save_info);
+
+                    if(!$save_user){
+                        if(!$user){
+                            $this->user_infos->find($save_info)?$this->user_infos->find($save_info)->delete():null;
+                        }
+                        $report[$k-1]["import_result"]=$this->importRowError("user",$action);
+                    }
+
+                    $save_hierarchy = $this->saveHierarchy($datum, $save_info);
+
+                    if(!$save_hierarchy){
+                        if(!$user){
+                            $this->user_infos->find($save_info)?$this->user_infos->find($save_info)->delete():null;
+                            $this->user->where("uid", $save_info)->first()?$this->user->where("uid", $save_info)->first()->delete():null;
+                        }
+                        $report[$k-1]["import_result"]=$this->importRowError("hierarchy",$action);
+                    }
+
+                    $save_hierarchy_log = $this->saveHierarchyLog($datum, $save_info);
+
+                    if(!$save_hierarchy_log){
+                        if(!$user){
+                            $this->user_infos->find($save_info)?$this->user_infos->find($save_info)->delete():null;
+                            $this->user->where("uid", $save_info)->first()? $this->user->where("uid", $save_info)->first()->delete():null;
+                            $this->access_level_hierarchy->where("child_id", $save_info)->first()?$this->access_level_hierarchy->where("child_id", $save_info)->first()->delete():null;
+                        }
+                        $report[$k-1]["import_result"]=$this->importRowError("hierarchy_log",$action);
+                    }
+
+                    $save_benefits = $this->saveBenefits($datum, $save_info);
+
+                    if(!$save_benefits){
+                        if(!$user){
+                            $this->user_infos->find($save_info)?$this->user_infos->find($save_info)->delete():null;
+                            $this->user->where("uid", $save_info)->first()?$this->user->where("uid", $save_info)->first()->delete():null;
+                            $this->access_level_hierarchy->where("child_id", $save_info)->first()?$this->access_level_hierarchy->where("child_id", $save_info)->first()->delete():null;
+                            $this->hierarchy_log->where("child_id", $save_info)->first()?$this->hierarchy_log->where("child_id", $save_info)->first()->delete():null;
+                            $this->user_benefits->where("user_info_id", $save_info)->first()? $this->user_benefits->where("user_info_id", $save_info)->delete():null;
+                        }
+                        $report[$k-1]["import_result"] = $this->importRowError("benefit",$action);
+                    }else{
+                        $report[$k-1]["import_result"] = [
+                            "code" => "200",
+                            "action" => $action,
+                            "description" => "success"
+                        ];
+                    }
+                }
+            }    
+        }
+        return $this->setResponse([
+            "code"       => 200,
+            "title"      => "Import employees v2",
+            "description" => "Import Status",
+            "meta"        => [
+                "data"        => $data,
+                "report"        => $report,
+            ],
+        ]);
+    }
     
+    public function validateUserRow($data=[],$fields=[]){
+        $required_index = [1,2,3,5,6,7,8,9,11,12,13,20];
+        $email_index = [9,12];
+        $error="";
+        foreach($required_index as $required){
+            $error = $this->validateRequired($data[$required], $fields[$required]);
+        }
+
+        if($error==""){
+            foreach($email_index as $required){
+                $error = $this->validateEmail($data[$required], $fields[$required]);
+            }
+        }
+
+        if($error==""){
+            $error = $this->validatePosition($data[11]);
+        }
+        
+        if($error==""){
+            // company email must not equal to supervisor email
+            if($data[9] == $data[12]){
+                $error = "Invalid supervisor input.";
+            }
+        }
+
+        // validate supervisor email
+        $head = $this->validateEmailExistence($data[12]);
+        if($error==""){
+            if(!$head){
+                $error = "Supervisor email not found.";
+            }
+        }
+
+        return $error;
+    }
+
+    public function validateEmail($email, $prop){
+        $error = "";
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = $prop." is an invalid email format.";
+        }
+        return $error;
+    }
+
+    public function validateRequired($data, $prop){
+        $error = "";
+        if($data==null){
+            $error = $prop."Field is required.";
+        }
+        return $error;
+    }
+
+    public function validatePosition($position){
+        $error="";
+        if(!$this->access_level->where("name","like","%".$position."%")->first()){
+            $error = "Position Invalid";
+        }
+        return $error;
+    }
+
+    public function validateEmailExistence($email){
+        return $this->user->where("email", $email)->first();
+    }
+
+
+    public function saveInfo($data,$info_id){
+        $info = [
+            "firstname" => $data[1],
+            "middlename"=> $data[2],
+            "lastname"=> $data[3],
+            "suffix"=> $data[4],
+            "birthdate"=> $data[6]?Carbon::parse($data[6])->format("m/d/Y"):null,
+            "gender"=> $data[5],
+            "contact_number"=> $data[10],
+            "address"=> $data[7],
+            "salary_rate"=> doubleval($data[15]),
+            "status"=> $this->getStatusByType($data[13]),
+            "type"=> $data[13],
+            "hired_date"=> Carbon::parse($data[20])->format("m/d/Y"),
+            "separation_date"=> $data[21]?Carbon::parse($data[21])->format("m/d/Y"):null,
+             "excel_hash"=> strtolower(str_replace(" ", "",$data[1].$data[2].$data[3].$data[4])),
+             "p_email"=> $data[8],
+            //  "status_reason"=> $data[1]
+            ];
+        $user_info = ($info_id ? $this->user_infos->find($info_id) : $this->user_infos->init($this->user_infos->pullFillable($info)));
+        return $user_info->save($info)?$user_info->id:null;
+    }
+
+    public function saveUser($data, $info_id){
+        $user = $this->user->where("uid",$info_id)->first();
+        $row=[
+            "email" => $data[9],
+            "company_id" => $data[0],
+            "contract" => $data[14],
+            "access_id" => $this->access_level->where("name","like","%".$data[11]."%")->first()->id,
+        ];
+        if(!$user){
+            // create
+            $row["uid"] = $info_id;
+            $row["password"] = "123456";
+            $user = $this->user_datum->init($this->user_datum->pullFillable($row));
+        }
+        return $user->save($row)? $info_id:null;
+    }
+
+    public function saveHierarchy($data, $info_id){
+        $hierarchy = $this->access_level_hierarchy->where("child_id",$info_id)->first();
+        $row = [
+            "child_id" => $info_id,
+            "parent_id" => $this->user->where("email", $data[12])->first()->id,
+        ];
+        if(!$hierarchy){
+            $hierarchy = $this->access_level_hierarchy->init($this->access_level_hierarchy->pullFillable($row));
+        }
+
+        return $hierarchy->save($row)? $info_id:null;
+    }
+
+    public function saveHierarchyLog($data, $info_id){
+        $hierarchy_log = $this->hierarchy_log->where("child_id",$info_id)->first();
+        $row = [
+            "child_id" => $info_id,
+            "parent_id" => $this->user->where("email", $data[12])->first()->uid,
+            'start_date' => Carbon::parse($data[20])->format("Y-m-d H:i:s")
+        ];
+        if(!$hierarchy_log){
+            $hierarchy_log = $this->hierarchy_log->init($this->hierarchy_log->pullFillable($row));
+        }
+
+        return $hierarchy_log->save($row)? $info_id:null;
+    }
+
+    public function saveBenefits($data, $info_id){
+        $error_count=0;
+        $user_benefits = $this->user_benefits->where("user_info_id",$info_id)->first();
+        $benefit_index = [16,17,18,19];
+        if(!$user_benefits){
+            foreach($benefit_index as $k => $index){
+                $row = [
+                    "user_info_id" => $info_id,
+                    "id_number" => $data[$index],
+                    "benefit_id" => $k+1
+                ];
+                $benefit = $this->user_benefits->init($this->user_benefits->pullFillable($row));
+                if(!$benefit->save($row)){
+                    $error_count = 1;
+                }
+            }
+        }else{
+            foreach($benefit_index as $k => $index){
+                $row = [
+                    "id_number" => $data[$index],
+                    "benefit_id" => $k+1
+                ];
+
+                $benefit = $this->user_benefits->where("user_info_id", $info_id)->where("benefit_id", $k+1)->first();
+
+                if(!$benefit->save($row)){
+                    $error_count = 1;
+                }
+            }
+        }
+
+        return $error_count?null:$info_id;
+    }
+
+    public function getStatusByType($type){
+        $status = "";
+        switch(strtolower($type)){
+            case "terminated":
+            case "resigned":
+            case "suspended":
+            $status = "inactive";
+            break;
+            default:
+            $status = "active";
+            break;
+        }
+        return $status;
+    }
+
+    public function importRowError($section, $action){
+        return ["code" => "500", "action"=>$action,"description" => "Something is wrong upon ". ($action == "create"? "creating": "updating") ." the data. section: ".$section];
+    }
 }

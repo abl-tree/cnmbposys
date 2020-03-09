@@ -305,6 +305,7 @@ Route::group([
         Route::get("search", "UserController@search");
         Route::post("excel_to_array", "UserController@excelImportuser");
         Route::post("import_user", "UserController@addUserImport");
+        Route::post("import_user_v2", "excelController@excelImportEmployee");
         Route::post("update_user_status/{id}", "UserController@updateUserStatus");
         Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
         Route::get("remote", "UserController@remote");

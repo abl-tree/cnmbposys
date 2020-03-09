@@ -30,6 +30,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Exports\SVAExport;
 use App\Jobs\NotifyUserOfCompletedExport;
+use App\Data\Repositories\ImportUsersExcelRepository;
+
 
 class excelController extends BaseController
 {
@@ -39,6 +41,15 @@ class excelController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    
+    protected $import_user_repo;
+
+    public function __construct(
+        ImportUsersExcelRepository $import_user_repo
+    ) {
+        $this->import_user_repo = $import_user_repo;
+    }
+
 
     function Addtemplate(){
         // $streamedResponse = new StreamedResponse();
@@ -970,7 +981,7 @@ class excelController extends BaseController
         exit;
     }
 
-    function createMultisheetExcel(Request $request){
+    public function createMultisheetExcel(Request $request){
         // with multiple sheets
         $data = json_decode($request->obj,true);
         $spreadsheet = new Spreadsheet();
@@ -992,4 +1003,11 @@ class excelController extends BaseController
         $writer->save('php://output');
         exit;
     }
+
+    public function excelImportEmployee(Request $request){
+        $data = $request->all();
+        return $this->absorb($this->import_user_repo->excelImportUserV2($data))->json();
+    }
+
+
 }
