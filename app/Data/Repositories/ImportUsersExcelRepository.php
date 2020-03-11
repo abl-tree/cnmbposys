@@ -510,6 +510,10 @@ class ImportUsersExcelRepository extends BaseRepository
         if($error==""){
             $error = $this->validatePosition($data[11]);
         }
+
+        if ($error == "") {
+            $error = $this->validateDates([$data[6], $data[20], $data[21]]);
+        }
         
         if($error==""){
             // company email must not equal to supervisor email
@@ -551,6 +555,17 @@ class ImportUsersExcelRepository extends BaseRepository
             $error = "Position Invalid";
         }
         return $error;
+    }
+
+    public function validateDates($dates)
+    {
+        try {
+            foreach ($dates as $date) {
+                Carbon::parse($date)->format("m/d/Y");
+            }
+        } catch (\Exception $e) {
+            return "Invalid date format";
+        }
     }
 
     public function validateEmailExistence($email){
