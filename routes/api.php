@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Data\Models\UserInfo;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +98,7 @@ Route::group([
         Route::get('agents', 'AgentScheduleController@fetchAllAgentsWithSchedule');
         Route::get('agents/{agent_id}', 'AgentScheduleController@fetchAgentWithSchedule');
         Route::post("create", "AgentScheduleController@create");
+        Route::post("import", "AgentScheduleController@import");
         Route::post("excel_to_array", "AgentScheduleController@excel_to_array");
         Route::post("create/bulk", "AgentScheduleController@bulkScheduleInsertion");
         Route::post("create/bulk/excel", "AgentScheduleController@excelData");
@@ -310,7 +310,6 @@ Route::group([
         Route::post("delete_user_status/{id}", "UserController@deleteUserStatus");
         Route::get("remote", "UserController@remote");
 
-
     });
 
     Route::group([
@@ -360,7 +359,6 @@ Route::group([
         Route::post('delete', 'UserController@deletePosition');
     });
 
-    
 });
 
 Route::get("/", function () { //test lang kung working

@@ -253,16 +253,16 @@ class AgentScheduleRepository extends BaseRepository
             }
         }
 
-        if (isset($data['title_id'])) {
-            if (!$this->event_title->find($data['title_id'])) {
-                return $this->setResponse([
-                    'code' => 500,
-                    'parameters' => $data,
+        // if (isset($data['title_id'])) {
+        //     if (!$this->event_title->find($data['title_id'])) {
+        //         return $this->setResponse([
+        //             'code' => 500,
+        //             'parameters' => $data,
 
-                    'title' => "Title ID is not available.",
-                ]);
-            }
-        }
+        //             'title' => "Title ID is not available.",
+        //         ]);
+        //     }
+        // }
 
         $does_exist = null;
         if (isset($data['id'])) {
@@ -345,13 +345,15 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         // insertion
-
-        $notification = $this->notification_repo->triggerNotification([
-            'sender_id' => $auth_id,
-            'recipient_id' => isset($data['user_id']) ? $data['user_id'] : $agent_schedule->user_id,
-            'type' => 'schedules.assign',
-            'type_id' => $agent_schedule->id,
-        ]);
+        /**
+         * TEMPORARILY REMOVE (FOR NEXT PHASE)
+         */
+        // $notification = $this->notification_repo->triggerNotification([
+        //     'sender_id' => $auth_id,
+        //     'recipient_id' => isset($data['user_id']) ? $data['user_id'] : $agent_schedule->user_id,
+        //     'type' => 'schedules.assign',
+        //     'type_id' => $agent_schedule->id,
+        // ]);
 
         // insertion of cluster
         if (isset($data['cluster']) && isset($data['tl_id'])) {
@@ -408,10 +410,60 @@ class AgentScheduleRepository extends BaseRepository
             "code" => 200,
             "title" => "Successfully defined an agent schedule.",
             "meta" => $agent_schedule,
-            'parameters' => $data,
-
+            'parameters' => array_merge($data, ['is_update' => $does_exist ?? null]),
         ]);
 
+    }
+
+    /**
+     * Import agent schedule
+     *
+     * @param array $data
+     * @return void
+     */
+    public function importAgentSchedule($data = [])
+    {
+        $response_report = [];
+        $fields = $data[0] ?? null;
+
+        foreach ($data as $key => $schedule) {
+            $post_data = [
+                "email" => $schedule[1],
+                "om_id" => $schedule[2],
+                "tl_id" => $schedule[3],
+                "title_id" => 1,
+                "start_event" => $schedule[5],
+                "end_event" => $schedule[6],
+            ];
+
+            $define_schedule = $this->defineAgentSchedule($post_data);
+            $action = "validating";
+
+            if (
+                is_code_success($define_schedule->code) &&
+                $define_schedule->parameters['is_update'] != null
+            ) {
+                $action = 'update';
+            } else {
+                $action = 'create';
+            }
+
+            $response_report = array_merge($schedule, [
+                'code' => $define_schedule->code,
+                'action' => $action,
+                'description' => $define_schedule->title,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Import schedules v2",
+            "description" => "Import Schedules Status",
+            "parameters" => [
+                "data" => $data,
+                "report" => $response_report,
+            ],
+        ]);
     }
 
     //
@@ -1511,7 +1563,7 @@ class AgentScheduleRepository extends BaseRepository
             $summary['absent'] += $value->summary['absent'];
         }
 
-        if(!$result instanceof \Illuminate\Database\Eloquent\Collection){
+        if (!$result instanceof \Illuminate\Database\Eloquent\Collection) {
             $result = $result->get();
         }
 
