@@ -434,6 +434,7 @@ class AgentScheduleRepository extends BaseRepository
                 "title_id" => 1,
                 "start_event" => $schedule[5],
                 "end_event" => $schedule[6],
+                "replicate" => $schedule[7] ?? false,
             ];
 
             $define_schedule = $this->defineAgentSchedule($post_data);
