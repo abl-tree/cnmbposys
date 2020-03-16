@@ -1391,8 +1391,12 @@ class AgentScheduleRepository extends BaseRepository
                 if (isset($data['sort'])) {
                     if ($data['sort'] == 'full_name') {
                         $result = $result->join('user_infos', 'user_infos.id', '=', 'users.uid')
-                            ->orderBy('firstname', $data['order'] ?? 'asc');
+                            ->orderBy('firstname', $data['order'] ?? 'asc')
+                            ->whereRaw('LOWER(`status`) = "active"');
                     }
+                } else {
+                    $result = $result->join('user_infos', 'user_infos.id', '=', 'users.uid')
+                        ->whereRaw('LOWER(`status`) = "active"');
                 }
 
                 if (isset($data['tl_id']) && $data['tl_id'] != 'null') {
