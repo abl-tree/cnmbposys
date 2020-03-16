@@ -9,8 +9,6 @@ class HierarchyLog extends BaseModel
     protected $fillable = [
         'parent_id', 'child_id',
         'start_date', 'end_date',
-        'parent_details', 'child_details',
-        'parent_user_details', 'child_user_details'
     ];
 
     protected $appends = ["tmp_end_date"];
@@ -47,7 +45,7 @@ class HierarchyLog extends BaseModel
     }
 
     public function setEndDateAttribute($value){
-        $this->attributes["end_date"] = Carbon::parse($value)->endOfDay()->toDateTimeString();
+        $this->attributes["end_date"] = $value? Carbon::parse($value)->endOfDay()->toDateTimeString():null;
     }
 
 

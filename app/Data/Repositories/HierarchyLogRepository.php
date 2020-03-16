@@ -365,4 +365,119 @@ class HierarchyLogRepository extends BaseRepository
         ]);
     }
 
+    public function scheduleToHLog($schedule = []){
+        $save1=null;$save2=null;
+        $user["agent"] = $this->validateEmail($schedule["email"],"Agent");
+        $user["tl"] = $this->validateEmail($schedule["tl_id"],"Team Leader");
+        $user["om"] = $this->validateEmail($schedule["om_id"],"Operations Manager");
+        $action="create";
+        $result= null;
+
+        if($schedule["email"] && $schedule["tl_id"]){
+            if($user["agent"]["result"] && $user["tl"]["result"]){
+                $data1 = [
+                    "child_id" => $user["agent"]["exists"]["uid"],
+                    "parent_id" => $user["tl"]["exists"]["uid"],
+                    "start_date" => Carbon::parse($schedule["start_event"])->startOfDay()->format("Y-m-d H:i:s")
+                ];
+                $save1=$this->defineV2($data1);
+            }
+        }
+
+        if($schedule["om_id"]){
+            if($user["tl"]["result"] && $user["om"]["result"]){
+                $data2 = [
+                    "child_id" => $user["tl"]["exists"]["uid"],
+                    "parent_id" => $user["om"]["exists"]["uid"],
+                    "start_date" => Carbon::parse($schedule["start_event"])->startOfDay()->format("Y-m-d H:i:s")
+                ];
+                $save2=$this->defineV2($data2);
+            }
+        }else{
+            $save2 = true;
+        }
+
+
+
+        if($save1 && $save2){
+            $result = [
+                "code" => 200,
+                "description" => "Hierarchy ". ($action=="create"? "created.": "updated."),
+            ];
+        }else{
+            if(!$save1){
+                $result = [
+                    "code" => 500,
+                    "description" => "Error on saving hierarchy log. (1)",
+                ];
+            }
+            if(!$save2){
+                $result = [
+                    "code" => 500,
+                    "description" => "Error on saving hierarchy log. (2)",
+                ];
+            }
+        }
+
+        
+        $result["details"][] = $save1;
+        $result["details"][] = ($save2===true? "no 2nd level.": $save2);
+
+        return $result;
+    }
+
+    public function defineV2($data = []){
+        $exists = $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date",$data["start_date"])->first();
+        $next =  $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date",">",$data["start_date"])->first();
+        $prev =  $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date","<",$data["start_date"])->first();
+
+        if($next){
+            $data["end_date"] = Carbon::parse($next->start_date)->subDays(1)->endOfDay()->format("Y-m-d H:i:s");
+        }else{
+            $data["end_date"] = null;
+        }
+
+        $hl = $exists? $exists:$this->hierarchy_log->init($this->hierarchy_log->pullFillable($data));
+        
+        return [
+            "code" => $hl->save($data)?200:500,
+            "exists" => $exists,
+            "next" => $next,
+            "prev" => [
+                "query" => $prev,
+                "saved" => $prev->save(["end_date"=>Carbon::parse($data["start_date"])->subDays(1)->endOfDay()->format("Y-m-d H:i:s")]),
+            ],
+            "input" => $data,
+            "action" => $exists ? "update":"create",
+            "saved" => $hl
+        ];
+    }
+
+    public function isEmail($email){
+        return (filter_var($email, FILTER_VALIDATE_EMAIL));
+    }
+
+    public function validateEmail($email, $prop){
+        $result = null;
+        $result["isEmail"] = $this->isEmail($email); 
+        $result["exists"] = $this->user->where("email", $email)->first();
+
+        $error = null;
+
+        !$result["isEmail"] ? $error = $prop." is an invalid email.": ""; 
+
+        if($error==null){
+            !$result["exists"]? $error = $prop." does not exist.":"";
+        }
+
+
+        if($error){
+            $result["result"] = false;
+            $result["description"] = $error;
+        }else{
+            $result["result"] = true;
+            $result["description"] = "validated";
+        }
+        return $result;
+    }
 }

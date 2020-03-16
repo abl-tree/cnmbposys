@@ -336,8 +336,6 @@ class ImportUsersExcelRepository extends BaseRepository
                         "data"        => $data,
                         "error"        => $error_array,
                     ],
-                   
-                   
                 ]);
              }
             
@@ -533,6 +531,10 @@ class ImportUsersExcelRepository extends BaseRepository
         return $error;
     }
 
+    public function validateEmailExistence($email){
+        return $this->user->where("email", $email)->first();
+    }
+
     public function validateEmail($email, $prop){
         $error = "";
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -566,10 +568,6 @@ class ImportUsersExcelRepository extends BaseRepository
         } catch (\Exception $e) {
             return "Invalid date format";
         }
-    }
-
-    public function validateEmailExistence($email){
-        return $this->user->where("email", $email)->first();
     }
 
 

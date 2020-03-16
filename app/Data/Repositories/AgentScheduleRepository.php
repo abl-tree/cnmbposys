@@ -8,12 +8,14 @@ ini_set('memory_limit', '-1');
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\EventTitle;
 use App\Data\Models\Leave;
+use App\Data\Models\HierarchyLog;
 use App\Data\Models\OvertimeSchedule;
 use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\ClusterRepository;
 use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\LogsRepository;
+use App\Data\Repositories\HierarchyLogRepository;
 use App\Data\Repositories\NotificationRepository;
 use App\Services\ExcelDateService;
 use App\User;
@@ -35,7 +37,9 @@ class AgentScheduleRepository extends BaseRepository
     $access_level_repo,
     $clusters,
     $notification_repo,
-        $overtime_schedule;
+    $overtime_schedule,
+    $hierarchy_log_repo,
+    $hierarchy_log;
 
     public function __construct(
         AgentSchedule $agentSchedule,
@@ -47,6 +51,8 @@ class AgentScheduleRepository extends BaseRepository
         LogsRepository $logs_repo,
         NotificationRepository $notificationRepository,
         OvertimeSchedule $overtimeSchedule,
+        HierarchyLog $hierarchy_log,
+        HierarchyLogRepository $hierarchy_log_repo,
         Leave $leave
     ) {
         $this->agent_schedule = $agentSchedule;
@@ -58,6 +64,8 @@ class AgentScheduleRepository extends BaseRepository
         $this->clusters = $cluster;
         $this->notification_repo = $notificationRepository;
         $this->overtime_schedule = $overtimeSchedule;
+        $this->hierarchy_log = $hierarchy_log;
+        $this->hierarchy_log_repo = $hierarchy_log_repo;
         $this->leave = $leave;
 
         $this->no_sort = [
@@ -425,7 +433,7 @@ class AgentScheduleRepository extends BaseRepository
     {
         $response_report = [];
         $fields = $data[0] ?? null;
-
+        unset($data["auth_id"]);
         foreach ($data as $key => $schedule) {
             $post_data = [
                 "email" => $schedule[1],
@@ -434,8 +442,12 @@ class AgentScheduleRepository extends BaseRepository
                 "title_id" => 1,
                 "start_event" => $schedule[5],
                 "end_event" => $schedule[6],
+                "replicate" => $schedule[7],
+                "auth_id" => auth()->user()->id,
             ];
 
+            
+            $hierarchy_log = $this->hierarchy_log_repo->scheduleToHLog($post_data);
             $define_schedule = $this->defineAgentSchedule($post_data);
             $action = "validating";
 
@@ -448,11 +460,13 @@ class AgentScheduleRepository extends BaseRepository
                 $action = 'create';
             }
 
-            $response_report = array_merge($schedule, [
+           $post_data["import_result"] =  [
                 'code' => $define_schedule->code,
                 'action' => $action,
                 'description' => $define_schedule->title,
-            ]);
+                "hierarchy_details" => $hierarchy_log
+            ];
+            $response_report[] = $post_data;
         }
 
         return $this->setResponse([
