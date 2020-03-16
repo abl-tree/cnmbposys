@@ -85,7 +85,13 @@ class UsersInfoRepository extends BaseRepository
             ];
             $parameters['id'] = $data['id'];
         }
-        $data['single'] = false;
+
+        $data['where'][] = [
+            "target" => "status",
+            "operator" => "=",
+            "value" => 'active',
+        ];
+
         if (isset($data['leaves'])) {
             if (isset($data['start_date']) && isset($data['end_date'])) {
                 if (isset($data['leave_type'])) {
@@ -513,7 +519,12 @@ class UsersInfoRepository extends BaseRepository
             $parameters['id'] = $data['id'];
 
         }
-        $data['single'] = false;
+
+        $data['where'][] = [
+            "target" => "status",
+            "operator" => "=",
+            "value" => 'active',
+        ];
 
         if (isset($data['leaves'])) {
             $target_data = [];
@@ -680,7 +691,12 @@ class UsersInfoRepository extends BaseRepository
             $parameters['id'] = $data['id'];
 
         }
-        $data['single'] = false;
+
+        $data['where'][] = [
+            "target" => "status",
+            "operator" => "=",
+            "value" => 'active',
+        ];
 
         if (isset($data['leaves'])) {
             $target_data = [];
@@ -953,6 +969,7 @@ class UsersInfoRepository extends BaseRepository
             $parameters['id'] = $data['id'];
 
         }
+
         $data['where'][] = [
             "target" => "status",
             "operator" => "=",
