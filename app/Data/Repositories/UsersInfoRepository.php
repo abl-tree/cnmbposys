@@ -85,7 +85,13 @@ class UsersInfoRepository extends BaseRepository
             ];
             $parameters['id'] = $data['id'];
         }
-        $data['single'] = false;
+
+        $data['where'][] = [
+            "target" => "status",
+            "operator" => "=",
+            "value" => 'active',
+        ];
+
         if (isset($data['leaves'])) {
             if (isset($data['start_date']) && isset($data['end_date'])) {
                 if (isset($data['leave_type'])) {
@@ -513,7 +519,12 @@ class UsersInfoRepository extends BaseRepository
             $parameters['id'] = $data['id'];
 
         }
-        $data['single'] = false;
+
+        $data['where'][] = [
+            "target" => "status",
+            "operator" => "=",
+            "value" => 'active',
+        ];
 
         if (isset($data['leaves'])) {
             $target_data = [];
@@ -680,7 +691,12 @@ class UsersInfoRepository extends BaseRepository
             $parameters['id'] = $data['id'];
 
         }
-        $data['single'] = false;
+
+        $data['where'][] = [
+            "target" => "status",
+            "operator" => "=",
+            "value" => 'active',
+        ];
 
         if (isset($data['leaves'])) {
             $target_data = [];
@@ -953,6 +969,12 @@ class UsersInfoRepository extends BaseRepository
             $parameters['id'] = $data['id'];
 
         }
+
+        $data['where'][] = [
+            "target" => "status",
+            "operator" => "=",
+            "value" => 'active',
+        ];
 
         //where_relations data
         $target_where_relations = [];
@@ -1385,11 +1407,11 @@ class UsersInfoRepository extends BaseRepository
             if (isset($data['contract'])) {
                 $user_data['contract'] = $data['contract'];
             }
-            
+
             // $password_combi = strtolower($data['firstname'] . $data['lastname']);
             // $password_combi = str_replace('ñ','n',$password_combi);
             // $password = trim(preg_replace('/[^A-Za-z0-9-]/', '', $password_combi)," ");
-            $password="123456";
+            $password = "123456";
             // dd($password);
             $user_data['password'] = bcrypt($password);
             $users_data = $this->user_datum->init($this->user_datum->pullFillable($user_data));
@@ -1812,7 +1834,7 @@ class UsersInfoRepository extends BaseRepository
             ]);
         }
 
-        $user_information = $this->user->where('uid',$data['id'])->first();
+        $user_information = $this->user->where('uid', $data['id'])->first();
         if ($user_information) {
             // $hashPass=bcrypt($data['password']);
             $user_information['password'] = $data['password'];
