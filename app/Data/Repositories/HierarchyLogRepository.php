@@ -445,7 +445,7 @@ class HierarchyLogRepository extends BaseRepository
             "next" => $next,
             "prev" => [
                 "query" => $prev,
-                "saved" => $prev->save(["end_date"=>Carbon::parse($data["start_date"])->subDays(1)->endOfDay()->format("Y-m-d H:i:s")]),
+                "saved" => $prev ? $prev->save(["end_date"=>Carbon::parse($data["start_date"])->subDays(1)->endOfDay()->format("Y-m-d H:i:s")]) : null,
             ],
             "input" => $data,
             "action" => $exists ? "update":"create",
