@@ -433,6 +433,7 @@ class AgentScheduleRepository extends BaseRepository
     {
         $response_report = [];
         $fields = $data[0] ?? null;
+        $schedule_hit = null;
         unset($data["auth_id"]);
         foreach ($data as $key => $schedule) {
             $post_data = [
@@ -462,8 +463,8 @@ class AgentScheduleRepository extends BaseRepository
 
                 $schedule_hit = $this->agent_schedule
                     ->where('user_id', $user->uid)
-                    ->where('start_event', '>=', $post_data['start_event'])
-                    ->where('end_event', '<=', $post_data['start_event'])
+                    ->where('start_event', '>=', Carbon::parse($post_data['start_event'])->startOfDay())
+                    ->where('end_event', '<=', Carbon::parse($post_data['start_event'])->endOfDay())
                     ->first();
 
                 if ($schedule_hit) {
@@ -509,6 +510,7 @@ class AgentScheduleRepository extends BaseRepository
             "parameters" => [
                 "data" => $data,
                 "report" => $response_report,
+                "clear_hit" => $schedule_hit
             ],
         ]);
     }
