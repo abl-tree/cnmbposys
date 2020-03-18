@@ -7,15 +7,15 @@ ini_set('memory_limit', '-1');
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\EventTitle;
-use App\Data\Models\Leave;
 use App\Data\Models\HierarchyLog;
+use App\Data\Models\Leave;
 use App\Data\Models\OvertimeSchedule;
 use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\ClusterRepository;
 use App\Data\Repositories\ExcelRepository;
-use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\HierarchyLogRepository;
+use App\Data\Repositories\LogsRepository;
 use App\Data\Repositories\NotificationRepository;
 use App\Services\ExcelDateService;
 use App\User;
@@ -39,7 +39,7 @@ class AgentScheduleRepository extends BaseRepository
     $notification_repo,
     $overtime_schedule,
     $hierarchy_log_repo,
-    $hierarchy_log;
+        $hierarchy_log;
 
     public function __construct(
         AgentSchedule $agentSchedule,
@@ -446,7 +446,29 @@ class AgentScheduleRepository extends BaseRepository
                 "auth_id" => auth()->user()->id,
             ];
 
-            
+            if (isset($schedule[4]) && strtolower($schedule[4]) == 'off') {
+                $user = $this->user->where('email', $post_data['email'])->first();
+
+                $schedule_hit = $this->agent_schedule
+                    ->where('user_id', $user->uid)
+                    ->where('start_event', '>=', $post_data['start_event'])
+                    ->where('end_event', '<=', $post_data['start_event'])
+                    ->first();
+
+                if ($schedule_hit) {
+                    $schedule_hit->delete();
+                }
+
+                $post_data["import_result"] = [
+                    'code' => 200,
+                    'action' => 'delete',
+                    'description' => 'Deleted existing schedule',
+                ];
+
+                $response_report[] = $post_data;
+                continue;
+            }
+
             $hierarchy_log = $this->hierarchy_log_repo->scheduleToHLog($post_data);
             $define_schedule = $this->defineAgentSchedule($post_data);
             $action = "validating";
@@ -460,11 +482,11 @@ class AgentScheduleRepository extends BaseRepository
                 $action = 'create';
             }
 
-           $post_data["import_result"] =  [
+            $post_data["import_result"] = [
                 'code' => $define_schedule->code,
                 'action' => $action,
                 'description' => $define_schedule->title,
-                "hierarchy_details" => $hierarchy_log
+                "hierarchy_details" => $hierarchy_log,
             ];
             $response_report[] = $post_data;
         }
