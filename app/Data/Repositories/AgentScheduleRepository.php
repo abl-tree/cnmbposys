@@ -449,6 +449,17 @@ class AgentScheduleRepository extends BaseRepository
             if (isset($schedule[4]) && strtolower($schedule[4]) == 'off') {
                 $user = $this->user->where('email', $post_data['email'])->first();
 
+                if (!$user) {
+                    $post_data["import_result"] = [
+                        'code' => 500,
+                        'action' => 'validating',
+                        'description' => 'Employee not found.',
+                    ];
+
+                    $response_report[] = $post_data;
+                    continue;
+                }
+
                 $schedule_hit = $this->agent_schedule
                     ->where('user_id', $user->uid)
                     ->where('start_event', '>=', $post_data['start_event'])
