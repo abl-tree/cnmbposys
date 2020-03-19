@@ -463,10 +463,11 @@ class AgentScheduleRepository extends BaseRepository
 
                 $schedule_hit = $this->agent_schedule
                     ->where('user_id', $user->uid)
-                    ->where('start_event', '>=', Carbon::parse($post_data['start_event'])->startOfDay())
-                    ->where('end_event', '<=', Carbon::parse($post_data['start_event'])->endOfDay())
+                    ->where("title_id",1)
+                    ->where('start_event', '>=', $post_data['start_event'])
+                    ->where('end_event', '<=', $post_data['start_event'])
                     ->first();
-
+                    
                 if ($schedule_hit) {
                     $schedule_hit->delete();
                 }
