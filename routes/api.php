@@ -111,8 +111,9 @@ Route::group([
         Route::post('conformance/{id}', 'AgentScheduleController@conformance');
         Route::post('conformance/bulk/update', 'AgentScheduleController@conformanceBulkUpdate');
         Route::post('remarks/{id}', 'AgentScheduleController@remarks');
-        Route::get('today', 'AgentScheduleController@noTimeOut');
+        Route::get('today', 'AgentScheduleController@scheduleBoard');
         Route::get('missed_logs', 'AgentScheduleController@missedLogs');
+        Route::get('previous', 'AgentScheduleController@previous');
 
     });
 
@@ -358,6 +359,15 @@ Route::group([
         Route::post('update', 'UserController@updatePosition');
         Route::post('delete', 'UserController@deletePosition');
     });
+
+    
+    Route::group([
+        "prefix" => "charts",
+    ], function () {
+        Route::get('daily_agent_schedule_stats', 'ChartsController@dailyAgentScheduleStats');
+    });
+
+    
 
 });
 

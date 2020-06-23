@@ -19,6 +19,8 @@ class OvertimeSchedule extends BaseModel
 
     protected $appends = [
         'overtime_hours',
+        'display_time',
+        "date",
     ];
 
     protected $cascadeDeletes = ['schedules'];
@@ -37,6 +39,20 @@ class OvertimeSchedule extends BaseModel
             'time' => $day.gmdate('H:i:s', $sched_hours),
             'second' => $sched_hours
         );
+    }
+
+    public function getDisplayTimeAttribute(){
+        return [
+            "start" => Carbon::parse($this->start_event)->subMinutes(30),
+            "end" => Carbon::parse($this->start_event)->addMinutes(30),
+        ];
+    }
+
+    public function getDateAttribute(){
+        return [
+            "ymd" => Carbon::parse($this->start_event)->format("Y-m-d"),
+            "day" => Carbon::parse($this->start_event)->format("l"),
+        ];
     }
 
     public function schedules() {

@@ -7,6 +7,7 @@ ini_set('memory_limit', '-1');
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\EventTitle;
+use App\Data\Models\Attendance;
 use App\Data\Models\HierarchyLog;
 use App\Data\Models\Leave;
 use App\Data\Models\OvertimeSchedule;
@@ -28,9 +29,10 @@ class AgentScheduleRepository extends BaseRepository
 {
 
     protected $agent_schedule,
+    $attendance,
     $user,
     $user_info,
-    $event_title,
+    $event_title,   
     $excel_date,
     $leave,
     $logs,
@@ -44,6 +46,7 @@ class AgentScheduleRepository extends BaseRepository
     public function __construct(
         AgentSchedule $agentSchedule,
         User $user,
+        Attendance $attendance,
         UserInfo $userInfo,
         EventTitle $eventTitle,
         ExcelDateService $excelDate,
@@ -67,6 +70,7 @@ class AgentScheduleRepository extends BaseRepository
         $this->hierarchy_log = $hierarchy_log;
         $this->hierarchy_log_repo = $hierarchy_log_repo;
         $this->leave = $leave;
+        $this->attendance = $attendance;
 
         $this->no_sort = [
             'full_name',
@@ -2012,8 +2016,8 @@ class AgentScheduleRepository extends BaseRepository
             "meta" => [
                 'agent' => $user,
                 $meta_index => $schedule,
-                "leave" => $leave,
-                "overtime" => $ot_schedule,
+                // "leave" => $leave,
+                // "overtime" => $ot_schedule,
             ],
             "parameters" => $data,
         ]);
@@ -2085,4 +2089,119 @@ class AgentScheduleRepository extends BaseRepository
             ],
         ]);
     }
+
+    public function scheduleBoard($data = []){
+        // check for ongoing work
+        // else-> check for incoming work (ot & regular)
+        // if there is an ot schedule then compare
+
+        // test id
+        $data["userid"] = 393;
+
+        $ongoing = null;
+        $incoming = null;
+        $schedule = null;
+        $ot_schedule = null;
+        $leave = null;
+        $now = Carbon::now();
+        $ongoing = $this->agent_schedule
+        ->where("user_id", $data["userid"])
+        ->where("start_event", "<=", $now)
+        ->where("end_event", ">=", Carbon::parse($now)->subMinutes(5))
+        ->first();
+
+        $leave = $this->leave
+            ->where("user_id", $data["userid"])
+            ->where("start_event", "<=", $now)
+            ->where("end_event", ">=", $now)
+            ->where("status", "approved")
+            ->first();
+        
+        if($ongoing){
+            // check attendance
+            $attendance = $this->attendance
+            ->where("schedule_id", $ongoing->id)
+            ->first();
+            if($attendance){
+                // check if timed_out
+                if(!$attendance->time_out){
+                    $schedule = $ongoing;
+                }
+            }else{
+                $schedule = $ongoing;
+            }
+        }else{
+            $incoming = $this->agent_schedule
+            ->where("user_id", $data["userid"])
+            ->where('start_event', '>', $now)
+            ->orderBy('start_event','asc')
+            ->first();
+
+            if($incoming){
+                $schedule = $incoming;
+            }
+
+            $ot_schedule = $this->overtime_schedule
+            ->where("start_event", "<=", Carbon::parse($now)->addMinutes(10))
+            ->where("end_event", ">=", Carbon::parse($now)->subMinutes(5))
+            ->first();
+
+            if ($ot_schedule && $schedule) {
+                if (Carbon::parse($ot_schedule->start_event)->isBetween(Carbon::parse($schedule->start_event)->subHours(2), Carbon::parse($schedule->end_event)->addHour(), true)) {
+                    $ot_schedule = null;
+                }
+                if ($ot_schedule) {
+                    if (Carbon::parse($ot_schedule->end_event)->isBetween(Carbon::parse($schedule->start_event)->subHours(2), Carbon::parse($schedule->end_event)->addHour(), true)) {
+                        $ot_schedule = null;
+                    }
+                }
+                // if fetched schedule is an ot schedule
+                if ($ot_schedule) {
+                    if ($ot_schedule->id == $schedule->overtime_id) {
+                        $ot_schedule = null;
+                    }
+                }
+            }
+
+
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Today's schedule.",
+            "meta" => [
+                "schedule" => $schedule,
+                "ot_schedule" => $ot_schedule,
+                "leave" => $leave,
+            ],
+            "parameters" => $data,
+        ]);
+    }
+
+    public function previous($data = []){
+
+        if(!isset($data["user_id"])){
+            return $this->setResponse([
+                "code" => 500,
+                "title" => "user_id field is required.",
+                "meta" => [],
+                "parameters" => $data,
+            ]);
+        }
+
+        $schedules = $this->agent_schedule
+        ->where("user_id",$data["user_id"])
+        ->orderBy("start_event","desc")
+        ->get()
+        ->take(10);
+        
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Previous Schedules.",
+            "meta" => $schedules,
+            "parameters" => $data,
+        ]);
+    }
+
+
 }

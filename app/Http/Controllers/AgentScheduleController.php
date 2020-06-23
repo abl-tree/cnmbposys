@@ -147,11 +147,11 @@ class AgentScheduleController extends BaseController
         return $this->absorb($this->agent_schedule_repo->excelData($data))->json();
     }
 
-    public function noTimeOut(Request $request)
+    public function scheduleBoard(Request $request)
     {
         $data = $request->all();
 
-        return $this->absorb($this->agent_schedule_repo->noTimeOut($data))->json();
+        return $this->absorb($this->agent_schedule_repo->scheduleBoard($data))->json();
     }
 
     public function missedLogs(Request $request)
@@ -164,6 +164,12 @@ class AgentScheduleController extends BaseController
     {
         $data = $request->all();
         return $this->absorb($this->agent_schedule_repo->importAgentSchedule($data))->json();
+    }
+
+    public function previous(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->agent_schedule_repo->previous($data))->json();
     }
 
 }

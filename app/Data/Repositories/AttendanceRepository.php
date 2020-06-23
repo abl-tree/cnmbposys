@@ -408,10 +408,6 @@ class AttendanceRepository extends BaseRepository
             ]);
         }
 
-        if(!Carbon::now()->isBetween(Carbon::parse($schedule->start_event)->subHours(2),Carbon::parse($schedule->end_event),true)){
-            
-        }
-
         $check_attendance = $this->attendance_repo->where('schedule_id',$data['schedule_id'])->first();
 
         if($check_attendance){
@@ -429,7 +425,7 @@ class AttendanceRepository extends BaseRepository
         $allowed_timein = $scheduled_timein->subHours(2);
         $now = Carbon::now();
         if(!$check_attendance){
-            if(!Carbon::now()->isBetween(Carbon::parse($schedule->start_event)->subHours(2),Carbon::parse($schedule->end_event),true)){
+            if(!Carbon::now()->isBetween($allowed_timein,Carbon::parse($schedule->end_event),true)){
                 if($allowed_timein->isAfter($now)){
                     return $this->setResponse([
                         "code" => 422,
@@ -504,25 +500,25 @@ class AttendanceRepository extends BaseRepository
         $schedule = $this->agent_schedule->find($attendance->schedule_id);
 
         // define time_out with current date and time
-        if($isRta) {
-            if(!isset($data['time_out'])) {
-                return $this->setResponse([
-                    "code" => 500,
-                    "title" => "Timeout parameter not set.",
-                    "parameters" => $data
-                ]);
-            }
+        // if($isRta) {
+        //     if(!isset($data['time_out'])) {
+        //         return $this->setResponse([
+        //             "code" => 500,
+        //             "title" => "Timeout parameter not set.",
+        //             "parameters" => $data
+        //         ]);
+        //     }
 
-            if(!Carbon::parse($attendance->time_in)->lt(Carbon::parse($data['time_out']))) {
-                return $this->setResponse([
-                    "code" => 500,
-                    "title" => "Timeout parameter should be greater than time-in stamp ".$attendance->time_in.".",
-                    "parameters" => $data
-                ]);
-            }
+        //     if(!Carbon::parse($attendance->time_in)->lt(Carbon::parse($data['time_out']))) {
+        //         return $this->setResponse([
+        //             "code" => 500,
+        //             "title" => "Timeout parameter should be greater than time-in stamp ".$attendance->time_in.".",
+        //             "parameters" => $data
+        //         ]);
+        //     }
 
-            $data['time_out_by'] = $auth->id;
-        } else {
+        //     $data['time_out_by'] = $auth->id;
+        // } else {
             // 
             $delay = Carbon::parse($schedule->end_event)->addMinutes(15);
             if(Carbon::now()->isAfter($delay)){
@@ -532,7 +528,7 @@ class AttendanceRepository extends BaseRepository
                 ]);
             }
             $data['time_out'] = Carbon::now();
-        }
+        // }
 
         // if not saved throw error
         if(!$attendance->save($data)){
