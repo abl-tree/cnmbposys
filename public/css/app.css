@@ -82474,7 +82474,8 @@ table tr {
 }
 
 pre.ir_description {
-  font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont,
+ "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   line-height: 1.9;
   font-size: 14px;
   color: #72777a;
@@ -82497,12 +82498,20 @@ pre.ir_description {
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out,
+ background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+ -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+ border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+ border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+ border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+ border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+ border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+ -webkit-box-shadow 0.15s ease-in-out;
 }
 
 .loader-12 {

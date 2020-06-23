@@ -2094,10 +2094,6 @@ class AgentScheduleRepository extends BaseRepository
         // check for ongoing work
         // else-> check for incoming work (ot & regular)
         // if there is an ot schedule then compare
-
-        // test id
-        $data["userid"] = 393;
-
         $ongoing = null;
         $incoming = null;
         $schedule = null;
@@ -2191,9 +2187,10 @@ class AgentScheduleRepository extends BaseRepository
 
         $schedules = $this->agent_schedule
         ->where("user_id",$data["user_id"])
+        ->where("start_event","<", Carbon::now())
+        ->where("end_event","<", Carbon::now())
         ->orderBy("start_event","desc")
-        ->get()
-        ->take(10);
+        ->get()->take(5);
         
         return $this->setResponse([
             "code" => 200,

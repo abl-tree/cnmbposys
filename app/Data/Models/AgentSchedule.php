@@ -217,6 +217,9 @@ class AgentSchedule extends BaseModel
         return array(
             'ymd' => Carbon::parse($this->start_event)->format('Y-m-d'),
             'day' => Carbon::parse($this->start_event)->format('l'),
+            'day1' => Carbon::parse($this->start_event)->format('D'),
+            'd' => Carbon::parse($this->start_event)->format('d'),
+            'm' => Carbon::parse($this->start_event)->format('M'),
         );
     }
 

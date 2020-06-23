@@ -21,6 +21,7 @@ class Attendance extends BaseModel
         'rendered_time', 
         'timeout_origin',
         'system_timeout',
+        'timelog'
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'raw_time_out'];
@@ -30,6 +31,12 @@ class Attendance extends BaseModel
         return Carbon::parse($value);
     }
 
+    public function getTimelogAttribute(){
+        return [
+            "timein" => $this->time_in? Carbon::parse($this->time_in)->format("h:iA"):null,
+            "timeout" => $this->time_out?Carbon::parse($this->time_out)->format("h:iA"):null,
+        ];
+    }
     
     public function getTimeoutOriginAttribute(){
         
