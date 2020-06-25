@@ -44,11 +44,36 @@ class SVASummary implements FromView, WithTitle, ShouldAutoSize
             });
         })
         ->when($om_id, function($q) use ($om_id, $start, $end) {
-            $q->whereHas('schedule', function($q) use ($om_id, $start, $end){
-                $q->whereIn('om_id', $om_id);
-                $q->whereDate('start_event', '>=', $start->copy()->format('Y-m-d'));
-                $q->whereDate('start_event', '<=', $end->copy()->format('Y-m-d'));
-
+            $q->where(function($q) use ($om_id, $start, $end) {
+                $q->whereHas('schedule', function($q) use ($om_id, $start, $end){
+                    $q->whereIn('om_id', $om_id);
+                    $q->whereDate('start_event', '>=', $start->copy()->format('Y-m-d'));
+                    $q->whereDate('start_event', '<=', $end->copy()->format('Y-m-d'));
+                });
+                $q->orWhereDoesntHave('schedule', function($q) use ($start, $end, $om_id) {
+                    $q->whereDate('start_event', '>=', $start->copy()->format('Y-m-d'));
+                    $q->whereDate('start_event', '<=', $end->copy()->format('Y-m-d'));
+                    $q->whereHas('user_info', function($q) use ($om_id) {
+                        $q->whereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                            $q->whereHas('parentInfo', function($q) use ($om_id) {
+                                $q->whereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                                    $q->whereHas('parentInfo', function($q) use ($om_id) {
+                                        $q->whereIn('id', $om_id);
+                                    });
+                                });
+                            });
+                        });
+                    });
+                    // $tmpUser->orWhereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                    //     $q->whereHas('parentInfo', function($q) use ($om_id) {
+                    //         $q->whereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                    //             $q->whereHas('parentInfo', function($q) use ($om_id) {
+                    //                 $q->whereIn('id', $om_id);
+                    //             });
+                    //         });
+                    //     });
+                    // });
+                });
             });
         })
         ->get();

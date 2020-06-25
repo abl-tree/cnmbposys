@@ -144,17 +144,75 @@ class excelController extends BaseController
         $start = Carbon::parse($request->start_date);
         $end = Carbon::parse($request->end_date);
 
+        // $om_id = [10];
+        
+        // $agents = UserInfo::select('id')
+        // ->whereHas('user', function($q) {
+        //     $q->whereHas('accesslevel', function($q) {
+        //         $q->where('code', 'representative_op');
+        //     });
+        // })
+        // ->when($om_id, function($q) use ($om_id, $start, $end) {
+        //     $q->where(function($q) use ($om_id, $start, $end) {
+        //         $q->whereHas('schedule', function($q) use ($om_id, $start, $end){
+        //             $q->whereIn('om_id', $om_id);
+        //             $q->whereDate('start_event', '>=', $start->copy()->format('Y-m-d'));
+        //             $q->whereDate('start_event', '<=', $end->copy()->format('Y-m-d'));
+        //         });
+        //         $q->orWhereDoesntHave('schedule', function($q) use ($start, $end, $om_id) {
+        //             $q->whereDate('start_event', '>=', $start->copy()->format('Y-m-d'));
+        //             $q->whereDate('start_event', '<=', $end->copy()->format('Y-m-d'));
+        //             $q->whereHas('user_info', function($q) use ($om_id) {
+        //                 $q->whereHas('accesslevelhierarchy', function($q) use ($om_id) {
+        //                     $q->whereHas('parentInfo', function($q) use ($om_id) {
+        //                         $q->whereHas('accesslevelhierarchy', function($q) use ($om_id) {
+        //                             $q->whereHas('parentInfo', function($q) use ($om_id) {
+        //                                 $q->whereIn('ids', $om_id);
+        //                             });
+        //                         });
+        //                     });
+        //                 });
+        //             });
+                    // $tmpUser->orWhereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                    //     $q->whereHas('parentInfo', function($q) use ($om_id) {
+                    //         $q->whereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                    //             $q->whereHas('parentInfo', function($q) use ($om_id) {
+                    //                 $q->whereIn('id', $om_id);
+                    //             });
+                    //         });
+                    //     });
+                    // });
+                // });
+                // $q->when($q->whereDoesntHave('schedule', function($q) use ($start, $end) {
+                //     $q->whereDate('start_events', '>=', $start->copy()->format('Y-m-d'));
+                //     $q->whereDate('start_event', '<=', $end->copy()->format('Y-m-d'));
+                // }), function($q) use ($om_id) {
+                //     $q->orWhereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                //         $q->whereHas('parentInfo', function($q) use ($om_id) {
+                //             $q->whereHas('accesslevelhierarchy', function($q) use ($om_id) {
+                //                 $q->whereHas('parentInfo', function($q) use ($om_id) {
+                //                     $q->whereIn('id', $om_id);
+                //                 });
+                //             });
+                //         });
+                //     });
+                // });
+        //     });
+        // })
+        // ->get();
+
         $realFilename = "Centralized-Data-for-SVA-".$start->copy()->format('F-Y').".xlsx"; //filename
 
         $filename = 'SVA'.$request->user()->id.'.xlsx';
 
         (new SVAExport($start->format('Y-m-d'), $end->format('Y-m-d'), $request->om_id ? $request->om_id : null))->queue($filename)->chain([
-            // new NotifyUserOfCompletedExport(request()->user(), $filename, $realFilename),
+            new NotifyUserOfCompletedExport(request()->user(), $filename, $realFilename),
         ]);
 
         return $this->setResponse([
             "code" => 200,
             "title" => "Export Started! The file will be sent to your email ".$request->user()->email,
+            // "description" => $agents,
             "parameters" => $request->all()
         ])->json();
 
