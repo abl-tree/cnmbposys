@@ -165,6 +165,9 @@ class ReportsRepository extends BaseRepository
                     'title' => "Incident Date is not set.",
                 ]);
             }
+            if (!isset($data['description'])) {
+                $data['description'] = 'N/A';
+            }
             if (isset($data['sanction_type_id'])) {
                 $sanctiont = $this->sanction_type->find($data['sanction_type_id']);
     
