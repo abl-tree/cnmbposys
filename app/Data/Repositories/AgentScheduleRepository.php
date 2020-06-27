@@ -396,7 +396,7 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         //recreate schedule for three months
-        if (isset($data['replicate'])) {
+        if (isset($data['replicate']) && $data['replicate'] == true) {
             $base_start_date = Carbon::parse($agent_schedule->start_event);
             $base_end_date = Carbon::parse($agent_schedule->end_event);
             $replicate_start_date = Carbon::parse($agent_schedule->start_event);
