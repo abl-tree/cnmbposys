@@ -656,4 +656,9 @@ class AgentSchedule extends BaseModel
     {
         return $this->hasOne('App\Data\Models\Coaching', 'sched_id', 'id');
     }
+
+    public function schedule_log_status()
+    {
+        return $this->hasMany('App\Data\Models\ScheduleLogStatus', 'schedule_id');
+    }
 }

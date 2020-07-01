@@ -2036,7 +2036,7 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         if (isset($data["id"]) && $data["id"]) {
-            $result = $result->whereHas('user_info', function($query) use ($data){
+            $result = $result->whereHas('user_info', function ($query) use ($data) {
                 $query->where('id', $data["id"]);
             });
         }
@@ -2067,19 +2067,18 @@ class AgentScheduleRepository extends BaseRepository
         if (isset($data["sort"]) && isset($data["order"])) {
             if (strpos($data['sort'], 'date') !== false) {
                 $data['sort'] = 'start_event';
+            } else {
+                $data['sort'] = 'info.firstname';
             }
-            $result = $result->orderBy($data['sort'], $data['order']);
+
+            $result = $result->join('user_infos as info', 'info.id', '=', 'agent_schedules.user_id')
+                ->orderBy($data['sort'], $data['order'])
+                ->select('agent_schedules.*');
         }
 
-        //set result to collection
-        $result = $result->get();
-
-        //TODO: refactor para mas ok
-        $result = array_values($result->filter(function ($i) use ($type) {
-            if (count(array_intersect($i->log_status, $type)) > 0) {
-                return $i;
-            }
-        })->toArray());
+        $result = $result->whereHas('schedule_log_status', function($query) use ($type){
+            $query->whereIn('status', $type);
+        })->get();
 
         return $this->setResponse([
             "code" => 200,

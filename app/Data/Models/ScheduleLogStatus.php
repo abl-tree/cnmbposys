@@ -2,9 +2,9 @@
 
 namespace App\Data\Models;
 
-use App\Data\Models\BaseModel;
+use Illuminate\Database\Eloquent\Model;
 
-class ScheduleLogStatus extends BaseModel
+class ScheduleLogStatus extends Model
 {
     protected $fillable = [
         'schedule_id',
@@ -12,7 +12,7 @@ class ScheduleLogStatus extends BaseModel
     ];
 
     protected $rules = [
-        'status' => 'required|max:100',
+        'status' => 'required|in:punctual,tardy,no_timeout,timed_out,undertime,overtime',
     ];
 
     public function agent_schedule()
