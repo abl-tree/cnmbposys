@@ -541,6 +541,14 @@ class AttendanceRepository extends BaseRepository
             ]);
         }
 
+        //save sched log status
+        foreach ($schedule->log_status as $status) {
+            $this->schedule_log_status->create([
+                "schedule_id" => $schedule->id,
+                "status" => $status,
+            ]);
+        }
+
         // if saved thow success error
         return $this->setResponse([
             "code" => 200,
