@@ -7,15 +7,16 @@ ini_set('memory_limit', '-1');
 
 use App\Data\Models\AgentSchedule;
 use App\Data\Models\Attendance;
+use App\Data\Models\ScheduleLogStatus;
 use App\Data\Models\UserInfo;
 use App\Data\Repositories\BaseRepository;
 use App\Data\Repositories\ExcelRepository;
 use App\Data\Repositories\LogsRepository;
 use App\Services\ExcelDateService;
 use App\User;
-use Maatwebsite\Excel\Facades\Excel;
-use Carbon\Carbon;
 use Auth;
+use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceRepository extends BaseRepository
 {
@@ -24,14 +25,16 @@ class AttendanceRepository extends BaseRepository
     $logs,
     $excel_date,
     $user_info,
-        $user;
+    $user,
+        $schedule_log_status;
     public function __construct(
         AgentSchedule $agentSchedule,
         Attendance $attendance,
         ExcelDateService $excelDate,
         LogsRepository $logs_repo,
         User $user,
-        UserInfo $userInfo
+        UserInfo $userInfo,
+        ScheduleLogStatus $scheduleLogStatus
     ) {
         $this->agent_schedule = $agentSchedule;
         $this->user = $user;
@@ -39,6 +42,7 @@ class AttendanceRepository extends BaseRepository
         $this->excel_date = $excelDate;
         $this->user_info = $userInfo;
         $this->logs = $logs_repo;
+        $this->schedule_log_status = $scheduleLogStatus;
     }
 
     public function bulkScheduleInsertion($data = [])
@@ -130,8 +134,8 @@ class AttendanceRepository extends BaseRepository
                     'code' => 500,
                     'title' => "Time in is not set.",
                     'meta' => [
-                        'agent_schedule' => $schedule
-                    ]
+                        'agent_schedule' => $schedule,
+                    ],
                 ]);
             }
 
@@ -179,8 +183,8 @@ class AttendanceRepository extends BaseRepository
                 'code' => 404,
                 'title' => "Attendance not found.",
                 'meta' => [
-                    'agent_schedule' => $schedule
-                ]
+                    'agent_schedule' => $schedule,
+                ],
             ]);
         }
 
@@ -191,7 +195,7 @@ class AttendanceRepository extends BaseRepository
                 "description" => "An error was detected on one of the inputted data.",
                 "meta" => [
                     "errors" => $attendance->errors(),
-                    'agent_schedule' => $schedule
+                    'agent_schedule' => $schedule,
                 ],
             ]);
         }
@@ -220,7 +224,7 @@ class AttendanceRepository extends BaseRepository
             "code" => 200,
             "title" => "Successfully defined an attendance.",
             'meta' => [
-                'agent_schedule' => $schedule
+                'agent_schedule' => $schedule,
             ],
             "parameters" => $attendance,
         ]);
@@ -312,9 +316,9 @@ class AttendanceRepository extends BaseRepository
 
         }
 
-        if(isset($data['time_out']) && $data['time_out'] === 'false') {
+        if (isset($data['time_out']) && $data['time_out'] === 'false') {
 
-            $result = $result->where(function($q) {
+            $result = $result->where(function ($q) {
                 $q->whereNull('time_out')->orWhereNotNull('time_out_by');
             });
 
@@ -390,43 +394,42 @@ class AttendanceRepository extends BaseRepository
     public function timeIn($data)
     {
 
-        if(!isset($data['schedule_id'])){
+        if (!isset($data['schedule_id'])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Schedule ID not set",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
         $schedule = $this->agent_schedule->find($data['schedule_id']);
 
-        if(!$schedule){
+        if (!$schedule) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Unknown schedule ID.",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
-        $check_attendance = $this->attendance_repo->where('schedule_id',$data['schedule_id'])->first();
+        $check_attendance = $this->attendance_repo->where('schedule_id', $data['schedule_id'])->first();
 
-        if($check_attendance){
+        if ($check_attendance) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "You already have existing time in stamp.",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
-        
         // allow timein 2hours before the scheduled time incident
         //  deduct 2hours from scheduled timein
         $scheduled_timein = Carbon::parse($schedule->start_event);
         $allowed_timein = $scheduled_timein->subHours(2);
         $now = Carbon::now();
-        if(!$check_attendance){
-            if(!Carbon::now()->isBetween($allowed_timein,Carbon::parse($schedule->end_event),true)){
-                if($allowed_timein->isAfter($now)){
+        if (!$check_attendance) {
+            if (!Carbon::now()->isBetween($allowed_timein, Carbon::parse($schedule->end_event), true)) {
+                if ($allowed_timein->isAfter($now)) {
                     return $this->setResponse([
                         "code" => 422,
                         "title" => "You are only allowed to time-in 2 hours before the schedule.",
@@ -438,22 +441,21 @@ class AttendanceRepository extends BaseRepository
                 ]);
             }
 
-
             $time_in = $this->attendance_repo->init($this->attendance_repo->pullFillable($data));
             $data['time_in'] = Carbon::now();
-            if(!$time_in->save($data)){
+            if (!$time_in->save($data)) {
                 return $this->setResponse([
                     "code" => 500,
                     "title" => "There's a problem with your input data.",
-                    "parameters" => $data
+                    "parameters" => $data,
                 ]);
             }
 
             return $this->setResponse([
                 "code" => 200,
-                "title" => "Successfully timed in at ".$data['time_in'].".",
+                "title" => "Successfully timed in at " . $data['time_in'] . ".",
                 'meta' => [
-                    'agent_schedule' => $schedule
+                    'agent_schedule' => $schedule,
                 ],
                 "parameters" => $data,
             ]);
@@ -464,14 +466,14 @@ class AttendanceRepository extends BaseRepository
     {
         $auth = Auth::user();
 
-        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' ||$auth->accesslevel()->first()->code === 'rtasupervisor' ||$auth->accesslevel()->first()->code === 'rtaanalyst'  ? true : false;
+        $isRta = $auth->accesslevel()->first()->code === 'rtamanager' || $auth->accesslevel()->first()->code === 'rtasupervisor' || $auth->accesslevel()->first()->code === 'rtaanalyst' ? true : false;
 
         // validate if request doesn't have attendance_id then throw error
-        if(!isset($data['attendance_id'])){
+        if (!isset($data['attendance_id'])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Attendance ID not set",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
@@ -479,20 +481,20 @@ class AttendanceRepository extends BaseRepository
         $attendance = $this->attendance_repo->find($data['attendance_id']);
 
         // validate if find attendance is null then throw error
-        if(!$attendance){
+        if (!$attendance) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "You don't have timein stamp.",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
         // validate if attendance have time_out value then throw error
-        if($attendance->time_out){
+        if ($attendance->time_out) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "You already have timeout stamp.",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
@@ -519,32 +521,32 @@ class AttendanceRepository extends BaseRepository
 
         //     $data['time_out_by'] = $auth->id;
         // } else {
-            // 
-            $delay = Carbon::parse($schedule->end_event)->addMinutes(15);
-            if(Carbon::now()->isAfter($delay)){
-                return $this->setResponse([
-                    "code" => 422,
-                    "title" => "Schedule is expired.",
-                ]);
-            }
-            $data['time_out'] = Carbon::now();
+        //
+        $delay = Carbon::parse($schedule->end_event)->addMinutes(15);
+        if (Carbon::now()->isAfter($delay)) {
+            return $this->setResponse([
+                "code" => 422,
+                "title" => "Schedule is expired.",
+            ]);
+        }
+        $data['time_out'] = Carbon::now();
         // }
 
         // if not saved throw error
-        if(!$attendance->save($data)){
+        if (!$attendance->save($data)) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "There's a problem with your input data.",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
         // if saved thow success error
         return $this->setResponse([
             "code" => 200,
-            "title" => "Successfully timed out at ".$data['time_out'].".",
+            "title" => "Successfully timed out at " . $data['time_out'] . ".",
             'meta' => [
-                'agent_schedule' => $schedule
+                'agent_schedule' => $schedule,
             ],
             "parameters" => $data,
         ]);
@@ -558,11 +560,11 @@ class AttendanceRepository extends BaseRepository
         $isRta = $auth->accesslevel()->first()->code === 'rtamanager' || $auth->accesslevel()->first()->code === 'rtasupervisor' || $auth->accesslevel()->first()->code === 'rtaanalyst' ? true : false;
 
         // validate if request doesn't have attendance_id then throw error
-        if(!isset($data['attendance_id'])){
+        if (!isset($data['attendance_id'])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Attendance ID not set",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
@@ -570,11 +572,11 @@ class AttendanceRepository extends BaseRepository
         $attendance = $this->attendance_repo->find($data['attendance_id']);
 
         // validate if attendance exists
-        if(!$attendance){
+        if (!$attendance) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "Attendance does not exist.",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
@@ -582,7 +584,7 @@ class AttendanceRepository extends BaseRepository
         $schedule = $this->agent_schedule->find($attendance->schedule_id);
 
         // define time_out with current date and time
-        if($isRta) {
+        if ($isRta) {
 
             $data['time_out'] = null;
 
@@ -593,17 +595,17 @@ class AttendanceRepository extends BaseRepository
             return $this->setResponse([
                 "code" => 500,
                 "title" => "You are not allowed to remove timeout stamp",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
 
         }
 
         // if not saved throw error
-        if(!$attendance->save($data)){
+        if (!$attendance->save($data)) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "There's a problem with your input data.",
-                "parameters" => $data
+                "parameters" => $data,
             ]);
         }
 
@@ -612,7 +614,7 @@ class AttendanceRepository extends BaseRepository
             "code" => 200,
             "title" => "Successfully removed timeout.",
             'meta' => [
-                'agent_schedule' => $schedule
+                'agent_schedule' => $schedule,
             ],
             "parameters" => $data,
         ]);
