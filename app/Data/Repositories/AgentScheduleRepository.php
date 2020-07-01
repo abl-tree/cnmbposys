@@ -2036,7 +2036,9 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         if (isset($data["id"]) && $data["id"]) {
-            $result = $result->where('user_info.id', $data["id"]);
+            $result = $result->whereHas('user_info', function($query) use ($data){
+                $query->where('id', $data["id"]);
+            });
         }
 
         if (isset($data["tl_id"]) && $data["tl_id"]) {
