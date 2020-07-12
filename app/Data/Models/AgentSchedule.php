@@ -92,42 +92,49 @@ class AgentSchedule extends BaseModel
         $data = null;
         $dates = [];
         $interval = [];
-        foreach ($this->user as $key => $value) {
-            if ($value->hired_date != null) {
-                array_push($dates, date("Y-m-d", strtotime($value->hired_date)));
-            } else {
-                array_push($dates, date("Y-m-d", strtotime($value->separation_date)));
-            }
+        $user_info = $this->user_info;
+
+        if ($user_info->hired_date != null) {
+            array_push($dates, date("Y-m-d", strtotime($user_info->hired_date)));
+        } else {
+            array_push($dates, date("Y-m-d", strtotime($user_info->separation_date)));
         }
 
-        foreach ($dates as $day) {
-            if (strtotime($this->date['ymd']) >= strtotime($day)) {
-                //$interval[$count] = abs(strtotime($date) - strtotime($day));
-                array_push($interval, abs(strtotime($this->date['ymd']) - strtotime($day)));
-                //$count++;
-            }
-        }
-        if (count($interval) != 0) {
-            asort($interval);
-            $closest = key($interval);
-            foreach ($this->user as $key => $value) {
-                if (date("Y-m-d", strtotime($value->hired_date)) == $dates[$closest]) {
-                    return array(
-                        'hired_date' => date("Y-m-d", strtotime($value->hired_date)),
-                        'status' => $value->status,
-                        'type' => $value->type,
-                    );
-                } else if (date("Y-m-d", strtotime($value->separation_date)) == $dates[$closest]) {
-                    return array(
-                        'hired_date' => date("Y-m-d", strtotime($value->separation_date)),
-                        'status' => $value->status,
-                        'type' => $value->type,
-                    );
-                }
-            }
-        } else {
-            return "Not Yet Hired ";
-        }
+        // foreach ($dates as $day) {
+        //     if (strtotime($this->date['ymd']) >= strtotime($day)) {
+        //         //$interval[$count] = abs(strtotime($date) - strtotime($day));
+        //         array_push($interval, abs(strtotime($this->date['ymd']) - strtotime($day)));
+        //         //$count++;
+        //     }
+        // }
+
+        return array(
+            'hired_date' => $user_info ? date("Y-m-d", strtotime($user_info->hired_date ? $user_info->hired_date : $user_info->separation_date)) : null,
+            'status' => $user_info->status,
+            'type' => $user_info->type,
+        );
+
+        // if (count($interval) != 0) {
+        //     asort($interval);
+        //     $closest = key($interval);
+        //     foreach ($this->user as $key => $value) {
+        //         if (date("Y-m-d", strtotime($value->hired_date)) == $dates[$closest]) {
+        //             return array(
+        //                 'hired_date' => date("Y-m-d", strtotime($value->hired_date)),
+        //                 'status' => $value->status,
+        //                 'type' => $value->type,
+        //             );
+        //         } else if (date("Y-m-d", strtotime($value->separation_date)) == $dates[$closest]) {
+        //             return array(
+        //                 'hired_date' => date("Y-m-d", strtotime($value->separation_date)),
+        //                 'status' => $value->status,
+        //                 'type' => $value->type,
+        //             );
+        //         }
+        //     }
+        // } else {
+        //     return "Not Yet Hired ";
+        // }
 
         //  return $dates[$closest];
         //  return  $this->date['ymd'];
