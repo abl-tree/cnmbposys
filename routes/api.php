@@ -44,6 +44,7 @@ Route::group([
     ], function () {
 
         Route::get("/", "HierarchyLogController@all");
+        Route::get("subordinates", "HierarchyLogController@subordinates");
         Route::post("create", "HierarchyLogController@create");
         Route::delete('delete/{id}', 'HierarchyLogController@destroy');
 

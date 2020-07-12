@@ -480,4 +480,81 @@ class HierarchyLogRepository extends BaseRepository
         }
         return $result;
     }
+
+    public function subordinates($data = []){
+        $meta_index = "subordinates";
+        $parameters = [];
+        $count = 0;
+
+        if (!isset($data['date'])) {
+            $data["date"] = Carbon::now();
+        }
+
+        // table column filters
+        // filter by parent_id
+        if (isset($data['parent_id'])) {
+            $data['where'][] = [
+                "target" => "parent_id",
+                "operator" => "=",
+                "value" => $data['parent_id'],
+            ];
+        }
+
+        $data["groupby"] = ["child_id"]; 
+
+        $data["relations"][] = 'parent_details';
+        $data["relations"][] = 'child_details';
+
+        // $result = $this->fetchGeneric($data, $this->hierarchy_log);
+
+        if(isset($data['query'])){
+            $data['target'] = ['child_details.firstname','child_details.middlename','child_details.lastname'];
+            $result = $this->genericSearch($data, $this->hierarchy_log);
+        }else{
+            $result = $this->fetchGeneric($data, $this->hierarchy_log);
+        }
+
+        //  result in distinct list form base on filter_by value
+        // if (isset($data['list']) && isset($data['filter_by'])) {
+            // $result = 
+            // array_values(
+            //     $result->groupBy("child_details.full_name")
+            //     ->map(function($i){
+            //     return $i[0];
+            // })->toArray());
+            // ;
+        // }
+
+        
+        // if(isset($data['search'])) {
+        //     $result = collect($result)->filter(function($v,$i)use($data){
+        //         if(strpos(strtolower($v['child_details']["full_name"]),strtolower($data["search"])) !== false){
+        //             return $v;
+        //         }
+        //     });
+        // }
+
+        // $count = collect($result)->count();
+
+        if(!$result){
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No Subordinates found.",
+                "meta" => [
+                    $meta_index => $result,
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully retrieved subordinates.",
+            "meta" => [
+                $meta_index => isset($data["page"])? $this->paginate($result,$data["perpage"],$data["page"]):$result,
+                "count" => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
 }
