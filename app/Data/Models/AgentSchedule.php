@@ -237,17 +237,17 @@ class AgentSchedule extends BaseModel
                 'time' => '00:00:00',
                 'second' => 0,
                 'decimal' => number_format(0, 2),
-                'night_difference' => 0
+                'night_difference' => 0,
             ),
             'nonbillable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
                 'decimal' => number_format(0, 2),
-                'night_difference' => 0
+                'night_difference' => 0,
             ),
             'time' => '00:00:00',
             'second' => 0,
-            'night_difference' => 0
+            'night_difference' => 0,
         );
     }
 
@@ -258,17 +258,17 @@ class AgentSchedule extends BaseModel
                 'time' => '00:00:00',
                 'second' => 0,
                 'decimal' => number_format(0, 2),
-                'night_difference' => 0
+                'night_difference' => 0,
             ),
             'nonbillable' => array(
                 'time' => '00:00:00',
                 'second' => 0,
                 'decimal' => number_format(0, 2),
-                'night_difference' => 0
+                'night_difference' => 0,
             ),
             'time' => '00:00:00',
             'second' => 0,
-            'night_difference' => 0
+            'night_difference' => 0,
         );
     }
 
@@ -344,19 +344,19 @@ class AgentSchedule extends BaseModel
         $start_billable = Carbon::parse($start_billable);
         $end_billable = Carbon::parse($end_billable);
 
-        while($diff_start->lte($diff_end)) {
+        while ($diff_start->lte($diff_end)) {
 
             $tmp_diff_start = $diff_start->copy()->setTime(22, 0, 0);
 
             $tmp_diff_end = $diff_start->copy()->addDay()->setTime(6, 0, 0);
 
-            if($time_in->lt($tmp_diff_end) && $time_out->gt($tmp_diff_start)) {
+            if ($time_in->lt($tmp_diff_end) && $time_out->gt($tmp_diff_start)) {
 
-                if(!$time_in->lt($tmp_diff_start)) {
+                if (!$time_in->lt($tmp_diff_start)) {
                     $tmp_diff_start = $time_in->copy();
                 }
 
-                if($time_out->lt($tmp_diff_end)) {
+                if ($time_out->lt($tmp_diff_end)) {
                     $tmp_diff_end = $time_out->copy();
                 }
 
@@ -364,13 +364,13 @@ class AgentSchedule extends BaseModel
 
             }
 
-            if($start_billable->lt($tmp_diff_end) && $end_billable->gt($tmp_diff_start)) {
+            if ($start_billable->lt($tmp_diff_end) && $end_billable->gt($tmp_diff_start)) {
 
-                if(!$start_billable->lt($tmp_diff_start)) {
+                if (!$start_billable->lt($tmp_diff_start)) {
                     $tmp_diff_start = $start_billable->copy();
                 }
 
-                if($end_billable->lt($tmp_diff_end)) {
+                if ($end_billable->lt($tmp_diff_end)) {
                     $tmp_diff_end = $end_billable->copy();
                 }
 
@@ -381,26 +381,26 @@ class AgentSchedule extends BaseModel
             $diff_start->addDay();
         }
 
-        $night_dif_nonbillable = number_format((float) (($night_dif - $night_dif_billable)/3600), 2);
-        $night_dif = number_format((float) ($night_dif/3600), 2);
-        $night_dif_billable = number_format((float) ($night_dif_billable/3600), 2);
+        $night_dif_nonbillable = number_format((float) (($night_dif - $night_dif_billable) / 3600), 2);
+        $night_dif = number_format((float) ($night_dif / 3600), 2);
+        $night_dif_billable = number_format((float) ($night_dif_billable / 3600), 2);
 
         return array(
             'billable' => array(
                 'time' => $day_billable . gmdate('H:i:s', $rendered_time_billable),
                 'second' => $rendered_time_billable,
                 'decimal' => number_format($rendered_time_billable_in_decimal, 2),
-                'night_difference' => $night_dif_billable
+                'night_difference' => $night_dif_billable,
             ),
             'nonbillable' => array(
                 'time' => $day_nonbillable . gmdate('H:i:s', $rendered_time_nonbillable),
                 'second' => $rendered_time_nonbillable,
                 'decimal' => number_format($rendered_time_nonbillable_in_decimal, 2),
-                'night_difference' => $night_dif_nonbillable
+                'night_difference' => $night_dif_nonbillable,
             ),
             'time' => $day . gmdate('H:i:s', $rendered_time),
             'second' => $rendered_time,
-            'night_difference' => $night_dif
+            'night_difference' => $night_dif,
         );
     }
 
@@ -662,5 +662,10 @@ class AgentSchedule extends BaseModel
     public function coaching()
     {
         return $this->hasOne('App\Data\Models\Coaching', 'sched_id', 'id');
+    }
+
+    public function schedule_log_status()
+    {
+        return $this->hasMany('App\Data\Models\ScheduleLogStatus', 'schedule_id');
     }
 }

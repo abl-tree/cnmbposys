@@ -6,8 +6,8 @@ ini_set('max_execution_time', 180);
 ini_set('memory_limit', '-1');
 
 use App\Data\Models\AgentSchedule;
-use App\Data\Models\EventTitle;
 use App\Data\Models\Attendance;
+use App\Data\Models\EventTitle;
 use App\Data\Models\HierarchyLog;
 use App\Data\Models\Leave;
 use App\Data\Models\OvertimeSchedule;
@@ -32,7 +32,7 @@ class AgentScheduleRepository extends BaseRepository
     $attendance,
     $user,
     $user_info,
-    $event_title,   
+    $event_title,
     $excel_date,
     $leave,
     $logs,
@@ -396,7 +396,7 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         //recreate schedule for three months
-        if (isset($data['replicate'])) {
+        if (isset($data['replicate']) && $data['replicate'] == true) {
             $base_start_date = Carbon::parse($agent_schedule->start_event);
             $base_end_date = Carbon::parse($agent_schedule->end_event);
             $replicate_start_date = Carbon::parse($agent_schedule->start_event);
@@ -467,11 +467,11 @@ class AgentScheduleRepository extends BaseRepository
 
                 $schedule_hit = $this->agent_schedule
                     ->where('user_id', $user->uid)
-                    ->where("title_id",1)
+                    ->where("title_id", 1)
                     ->where('start_event', '>=', $post_data['start_event'])
                     ->where('end_event', '<=', $post_data['start_event'])
                     ->first();
-                    
+
                 if ($schedule_hit) {
                     $schedule_hit->delete();
                 }
@@ -515,7 +515,7 @@ class AgentScheduleRepository extends BaseRepository
             "parameters" => [
                 "data" => $data,
                 "report" => $response_report,
-                "clear_hit" => $schedule_hit
+                "clear_hit" => $schedule_hit,
             ],
         ]);
     }
@@ -2027,7 +2027,7 @@ class AgentScheduleRepository extends BaseRepository
     public function missedLogs($data = [])
     {
         // filter params id, tl_id, om_id
-        $result = $this->agent_schedule->with("coaching", "coaching.filed_by", "coaching.verified_by")->where("title_id", 1)->orderBy("start_event", "desc")->get();
+        $result = $this->agent_schedule->with("coaching", "coaching.filed_by", "coaching.verified_by")->where("title_id", 1)->orderBy("start_event", "desc");
         $type = "";
         if (!isset($data['type'])) {
             $type = ["tardy", "undertime", "no_timeout"];
@@ -2036,50 +2036,49 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         if (isset($data["id"]) && $data["id"]) {
-            $result = collect($result)->where('user_info.id', $data["id"]);
+            $result = $result->whereHas('user_info', function ($query) use ($data) {
+                $query->where('id', $data["id"]);
+            });
         }
 
         if (isset($data["tl_id"]) && $data["tl_id"]) {
-            $result = collect($result)->where('tl_id', $data["tl_id"]);
+            $result = $result->where('tl_id', $data["tl_id"]);
         }
 
         if (isset($data["om_id"]) && $data["om_id"]) {
-            $result = collect($result)->where('om_id', $data["om_id"]);
+            $result = $result->where('om_id', $data["om_id"]);
         }
 
         if (isset($data['status'])) {
-            $result = collect($result)->filter(function ($i) use ($data) {
-                if ($i['coaching']) {
-                    if (strtolower($i['coaching']['status']) == strtolower($data["status"])) {
-                        return $i;
-                    }
-                }
+            $result = $result->whereHas('coaching', function ($query) use ($data) {
+                return $query->where('status', strtolower($data["status"]));
             });
         }
 
-        if (isset($data["query"]) && $data["query"]) {
-            $result = collect($result)->filter(function ($i) use ($data) {
-                if (strpos(strtolower($i['user_info']['full_name']), strtolower($data['query'])) !== false ||
-                    strpos(strtolower($i['date']['ymd']), strtolower($data['query'])) !== false ||
-                    strpos(strtolower($i['date']['day']), strtolower($data['query'])) !== false) {
-                    return $i;
-                }
-            });
+        if (isset($data['query']) && $data['query']) {
+            $search_data = [
+                'target' => ['user_info.firstname', 'user_info.middlename', 'user_info.lastname', 'start_event'],
+                'query' => $data['query'],
+            ];
+
+            $result = $this->genericSearch($search_data, $result);
         }
 
         if (isset($data["sort"]) && isset($data["order"])) {
-            if ($data["order"] == "asc") {
-                $result = $result->sortBy($data["sort"]);
+            if (strpos($data['sort'], 'date') !== false) {
+                $data['sort'] = 'start_event';
             } else {
-                $result = $result->sortByDesc($data["sort"]);
+                $data['sort'] = 'info.firstname';
             }
+
+            $result = $result->join('user_infos as info', 'info.id', '=', 'agent_schedules.user_id')
+                ->orderBy($data['sort'], $data['order'])
+                ->select('agent_schedules.*');
         }
 
-        $result = array_values(collect($result)->filter(function ($i) use ($type) {
-            if (count(array_intersect($i->log_status, $type)) > 0) {
-                return $i;
-            }
-        })->toArray());
+        $result = $result->whereHas('schedule_log_status', function($query) use ($type){
+            $query->whereIn('status', $type);
+        })->get();
 
         return $this->setResponse([
             "code" => 200,
@@ -2090,7 +2089,8 @@ class AgentScheduleRepository extends BaseRepository
         ]);
     }
 
-    public function scheduleBoard($data = []){
+    public function scheduleBoard($data = [])
+    {
         // check for ongoing work
         // else-> check for incoming work (ot & regular)
         // if there is an ot schedule then compare
@@ -2101,10 +2101,10 @@ class AgentScheduleRepository extends BaseRepository
         $leave = null;
         $now = Carbon::now();
         $ongoing = $this->agent_schedule
-        ->where("user_id", $data["userid"])
-        ->where("start_event", "<=", $now)
-        ->where("end_event", ">=", Carbon::parse($now)->subMinutes(5))
-        ->first();
+            ->where("user_id", $data["userid"])
+            ->where("start_event", "<=", $now)
+            ->where("end_event", ">=", Carbon::parse($now)->subMinutes(5))
+            ->first();
 
         $leave = $this->leave
             ->where("user_id", $data["userid"])
@@ -2112,35 +2112,35 @@ class AgentScheduleRepository extends BaseRepository
             ->where("end_event", ">=", $now)
             ->where("status", "approved")
             ->first();
-        
-        if($ongoing){
+
+        if ($ongoing) {
             // check attendance
             $attendance = $this->attendance
-            ->where("schedule_id", $ongoing->id)
-            ->first();
-            if($attendance){
+                ->where("schedule_id", $ongoing->id)
+                ->first();
+            if ($attendance) {
                 // check if timed_out
-                if(!$attendance->time_out){
+                if (!$attendance->time_out) {
                     $schedule = $ongoing;
                 }
-            }else{
+            } else {
                 $schedule = $ongoing;
             }
-        }else{
+        } else {
             $incoming = $this->agent_schedule
-            ->where("user_id", $data["userid"])
-            ->where('start_event', '>', $now)
-            ->orderBy('start_event','asc')
-            ->first();
+                ->where("user_id", $data["userid"])
+                ->where('start_event', '>', $now)
+                ->orderBy('start_event', 'asc')
+                ->first();
 
-            if($incoming){
+            if ($incoming) {
                 $schedule = $incoming;
             }
 
             $ot_schedule = $this->overtime_schedule
-            ->where("start_event", "<=", Carbon::parse($now)->addMinutes(10))
-            ->where("end_event", ">=", Carbon::parse($now)->subMinutes(5))
-            ->first();
+                ->where("start_event", "<=", Carbon::parse($now)->addMinutes(10))
+                ->where("end_event", ">=", Carbon::parse($now)->subMinutes(5))
+                ->first();
 
             if ($ot_schedule && $schedule) {
                 if (Carbon::parse($ot_schedule->start_event)->isBetween(Carbon::parse($schedule->start_event)->subHours(2), Carbon::parse($schedule->end_event)->addHour(), true)) {
@@ -2159,7 +2159,6 @@ class AgentScheduleRepository extends BaseRepository
                 }
             }
 
-
         }
 
         return $this->setResponse([
@@ -2174,9 +2173,10 @@ class AgentScheduleRepository extends BaseRepository
         ]);
     }
 
-    public function previous($data = []){
+    public function previous($data = [])
+    {
 
-        if(!isset($data["user_id"])){
+        if (!isset($data["user_id"])) {
             return $this->setResponse([
                 "code" => 500,
                 "title" => "user_id field is required.",
@@ -2186,12 +2186,12 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         $schedules = $this->agent_schedule
-        ->where("user_id",$data["user_id"])
-        ->where("start_event","<", Carbon::now())
-        ->where("end_event","<", Carbon::now())
-        ->orderBy("start_event","desc")
-        ->get()->take(5);
-        
+            ->where("user_id", $data["user_id"])
+            ->where("start_event", "<", Carbon::now())
+            ->where("end_event", "<", Carbon::now())
+            ->orderBy("start_event", "desc")
+            ->get()->take(5);
+
         return $this->setResponse([
             "code" => 200,
             "title" => "Previous Schedules.",
@@ -2199,6 +2199,5 @@ class AgentScheduleRepository extends BaseRepository
             "parameters" => $data,
         ]);
     }
-
 
 }
