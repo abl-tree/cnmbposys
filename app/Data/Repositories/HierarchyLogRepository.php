@@ -427,26 +427,37 @@ class HierarchyLogRepository extends BaseRepository
     }
 
     public function defineV2($data = []){
+        $data['start_date'] = Carbon::parse($data['start_date'])->startOfDay()->format("Y-m-d H:i:s");
         $exists = $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date",$data["start_date"])->first();
-        $next =  $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date",">",$data["start_date"])->first();
-        $prev =  $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date","<",$data["start_date"])->first();
+        // $next =  $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date",">",$data["start_date"])->first();
+        // $prev =  $this->hierarchy_log->where("child_id", $data["child_id"])->where("start_date","<",$data["start_date"])->first();
 
-        if($next){
-            $data["end_date"] = Carbon::parse($next->start_date)->subDays(1)->endOfDay()->format("Y-m-d H:i:s");
-        }else{
-            $data["end_date"] = null;
-        }
+        // if($next){
+        //     $data["end_date"] = Carbon::parse($next->start_date)->subDays(1)->endOfDay()->format("Y-m-d H:i:s");
+        // }else{
+        //     $data["end_date"] = null;
+        // }
 
-        $hl = $exists? $exists:$this->hierarchy_log->init($this->hierarchy_log->pullFillable($data));
+
+        // redefine end_date value
+        $latest = $this->hierarchy_log->where('child_id', $data['child_id'])->whereNull('end_date')->orderBy('start_date','desc')->first();
+            // if input start date > latest start date
+            if(Carbon::parse($latest->start_date)->isBefore(Carbon::parse($data['start_date']))){
+                // asign value to latest end_date
+                $latest->end_date = Carbon::parse($latest->start_date)->endOfDay()->format("Y-m-d H:i:s");
+                $latest->save($latest);
+                // assign end_date value for new instance
+                $data['end_date'] = null;
+            }else{
+                // 
+                $data['end_date'] = Carbon::parse($data['start_date'])->endOfDay()->format("Y-m-d H:i:s");
+            }
+        // save new instance
+        $hl = $this->hierarchy_log->init($this->hierarchy_log->pullFillable($data));
         
         return [
             "code" => $hl->save($data)?200:500,
             "exists" => $exists,
-            "next" => $next,
-            "prev" => [
-                "query" => $prev,
-                "saved" => $prev ? $prev->save(["end_date"=>Carbon::parse($data["start_date"])->subDays(1)->endOfDay()->format("Y-m-d H:i:s")]) : null,
-            ],
             "input" => $data,
             "action" => $exists ? "update":"create",
             "saved" => $hl
@@ -486,11 +497,10 @@ class HierarchyLogRepository extends BaseRepository
         $parameters = [];
         $count = 0;
 
-        if (!isset($data['date'])) {
-            $data["date"] = Carbon::now();
-        }
+        $date = Carbon::parse($data["date"])->format('Ymd');
 
         // table column filters
+        $data["where_null"][]='end_date';
         // filter by parent_id
         if (isset($data['parent_id'])) {
             $data['where'][] = [
@@ -504,37 +514,21 @@ class HierarchyLogRepository extends BaseRepository
 
         $data["relations"][] = 'parent_details';
         $data["relations"][] = 'child_details';
+        $data["relations"][] = 'parent_user_details';
+        $data["relations"][] = 'child_user_details';
 
         // $result = $this->fetchGeneric($data, $this->hierarchy_log);
-
+        $count_data = null;
         if(isset($data['query'])){
             $data['target'] = ['child_details.firstname','child_details.middlename','child_details.lastname'];
             $result = $this->genericSearch($data, $this->hierarchy_log)->get()->all();
+            $count_data = $data;
+            $count_data["search"] = true;
+            $count = $this->countData($count_data, refresh_model($this->hierarchy_log->getModel()));
         }else{
             $result = $this->fetchGeneric($data, $this->hierarchy_log);
+            $count = $this->countData($data, refresh_model($this->hierarchy_log->getModel()));
         }
-
-        //  result in distinct list form base on filter_by value
-        // if (isset($data['list']) && isset($data['filter_by'])) {
-            // $result = 
-            // array_values(
-            //     $result->groupBy("child_details.full_name")
-            //     ->map(function($i){
-            //     return $i[0];
-            // })->toArray());
-            // ;
-        // }
-
-        
-        // if(isset($data['search'])) {
-        //     $result = collect($result)->filter(function($v,$i)use($data){
-        //         if(strpos(strtolower($v['child_details']["full_name"]),strtolower($data["search"])) !== false){
-        //             return $v;
-        //         }
-        //     });
-        // }
-
-        // $count = collect($result)->count();
 
         if(!$result){
             return $this->setResponse([
