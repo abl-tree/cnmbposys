@@ -509,7 +509,7 @@ class HierarchyLogRepository extends BaseRepository
 
         if(isset($data['query'])){
             $data['target'] = ['child_details.firstname','child_details.middlename','child_details.lastname'];
-            $result = $this->genericSearch($data, $this->hierarchy_log);
+            $result = $this->genericSearch($data, $this->hierarchy_log)->get()->all();
         }else{
             $result = $this->fetchGeneric($data, $this->hierarchy_log);
         }
