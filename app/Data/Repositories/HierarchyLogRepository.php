@@ -445,7 +445,7 @@ class HierarchyLogRepository extends BaseRepository
             if(Carbon::parse($latest->start_date)->isBefore(Carbon::parse($data['start_date']))){
                 // asign value to latest end_date
                 $latest->end_date = Carbon::parse($latest->start_date)->endOfDay()->format("Y-m-d H:i:s");
-                $latest->save($latest);
+                $latest->save((array)$latest);
                 // assign end_date value for new instance
                 $data['end_date'] = null;
             }else{
@@ -547,6 +547,53 @@ class HierarchyLogRepository extends BaseRepository
             "meta" => [
                 $meta_index => isset($data["page"])? $this->paginate($result,$data["perpage"],$data["page"]):$result,
                 "count" => $count,
+            ],
+            "parameters" => $parameters,
+        ]);
+    }
+
+    
+    public function supervisor($data = []){
+        $meta_index = "supervisor";
+        $parameters = $data;
+
+        if(!isset($data["date"])){
+            return $this->setResponse([
+                "code" => 401,
+                "title" => "date field required.",
+                "meta" => null,
+                "parameters" => $parameters,
+            ]);
+        }
+        if(!isset($data["child_id"])){
+            return $this->setResponse([
+                "code" => 401,
+                "title" => "child_id field required.",
+                "meta" => null,
+                "parameters" => $parameters,
+            ]);
+        }
+
+        $meta_data = null;
+        $same_date = $this->hierarchy_log
+        ->where("start_date","<=",$data['date'])
+        ->where("end_date",">=",$data['date'])
+        ->where("child_id",$data["child_id"])
+        ->first();
+        $latest_date = $this->hierarchy_log
+        ->where("start_date","<",$data['date'])
+        ->where("child_id",$data["child_id"])
+        ->orderBy("start_date","desc")
+        ->first();
+
+        $meta_data = $same_date ? $same_date : $latest_date;
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully retrieved supervisor.",
+            "meta" => [
+                $meta_index => $meta_data,
+                // "count" => $meta_data?1:0,
             ],
             "parameters" => $parameters,
         ]);

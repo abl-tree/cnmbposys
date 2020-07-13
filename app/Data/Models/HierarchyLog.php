@@ -48,5 +48,7 @@ class HierarchyLog extends BaseModel
         $this->attributes["end_date"] = $value? Carbon::parse($value)->endOfDay()->toDateTimeString():null;
     }
 
-
+    public function setStartDateAttribute($value){
+        $this->attributes["start_date"] = $value? Carbon::parse($value)->startOfDay()->toDateTimeString():null;
+    }
 }

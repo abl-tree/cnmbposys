@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Data\Models\UserInfo;
 use App\Data\Models\HierarchyLog;
-use App\Data\Models\UserStatusLog;
+use App\Data\Models\UpdateStatus;
 use Carbon\Carbon;
 
 class UserInfosTableSeeder extends Seeder
@@ -66,7 +66,7 @@ class UserInfosTableSeeder extends Seeder
             'start_date' => Carbon::now()->startOfDay(),
         ]);
 
-        UserStatusLog::create([
+        UpdateStatus::create([
             'user_id' => 2,
             'status' =>'active',
             'type' => 'active',
