@@ -198,11 +198,15 @@ class AgentScheduleRepository extends BaseRepository
                     }
 
                     if (!isset($data['om_id'])) {
-                        return $this->setResponse([
-                            'code' => 500,
-                            'title' => "Unknown OM email.",
-                            'parameters' => $data,
-                        ]);
+                        $data['om_id'] = $user->operations_manager['id'] ?? null;
+
+                        if (!$data['om_id']) {
+                            return $this->setResponse([
+                                'code' => 500,
+                                'title' => "Unknown OM email.",
+                                'parameters' => $data,
+                            ]);
+                        }
                     }
 
                     if (isset($tl->id)) {
@@ -210,11 +214,15 @@ class AgentScheduleRepository extends BaseRepository
                     }
 
                     if (!isset($data['tl_id'])) {
-                        return $this->setResponse([
-                            'code' => 500,
-                            'title' => "Unknown TL email.",
-                            'parameters' => $data,
-                        ]);
+                        $data['tl_id'] = $user->team_leader['id'] ?? null;
+
+                        if (!$data['tl_id']) {
+                            return $this->setResponse([
+                                'code' => 500,
+                                'title' => "Unknown TL email.",
+                                'parameters' => $data,
+                            ]);
+                        }
                     }
                 }
             }
@@ -2076,7 +2084,7 @@ class AgentScheduleRepository extends BaseRepository
                 ->select('agent_schedules.*');
         }
 
-        $result = $result->whereHas('schedule_log_status', function($query) use ($type){
+        $result = $result->whereHas('schedule_log_status', function ($query) use ($type) {
             $query->whereIn('status', $type);
         })->get();
 
