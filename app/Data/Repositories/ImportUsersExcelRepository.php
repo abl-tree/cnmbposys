@@ -426,6 +426,10 @@ class ImportUsersExcelRepository extends BaseRepository
 
                     if(!$save_info){
                         $report[$k-1]["import_result"]=$this->importRowError("info",$action);
+                    } else {
+                        $save_user_status_logs = $this->saveUserStatus($datum, $save_info);
+
+                        if(!$save_user_status_logs) $report[$k-1]["import_result"]=$this->importRowError("user_info", 'create');
                     }
 
                     // saving user details
@@ -592,6 +596,19 @@ class ImportUsersExcelRepository extends BaseRepository
             ];
         $user_info = ($info_id ? $this->user_infos->find($info_id) : $this->user_infos->init($this->user_infos->pullFillable($info)));
         return $user_info->save($info)?$user_info->id:null;
+    }
+
+    public function saveUserStatus($data, $user_id){
+        $status_logs = [
+            "user_id"=> $user_id,
+            "status"=> $this->getStatusByType($data[13]),
+            "type"=> $data[13],
+            "hired_date"=> Carbon::parse($data[20])->format("m/d/Y"),
+            "separation_date"=> $data[21]?Carbon::parse($data[21])->format("m/d/Y"):null
+        ];
+
+        $user_status = $this->user_status->init($this->user_status->pullFillable($status_logs));
+        return $user_status->save($status_logs)?$user_status->id:null;
     }
 
     public function saveUser($data, $info_id){

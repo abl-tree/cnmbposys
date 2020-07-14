@@ -113,15 +113,7 @@ class UserInfo extends BaseModel
     }
 
     public function getCurrentHeadAttribute(){
-        $result = HierarchyLog::where("child_id", $this->id)->get();
-        $result = collect($result)
-        ->where('start_date',"<=",Carbon::now())
-        ->where('tmp_end_date',">=",Carbon::now());
-        if(isset($result[0])){
-            $result = UserInfo::find($result[0]->parent_id);
-        }else{
-            $result = null;
-        }
+        $result = HierarchyLog::with(["parent_details"])->where("child_id", $this->id)->whereNull('end_date')->first();
         return $result;
     }
 

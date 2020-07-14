@@ -48,6 +48,12 @@ class HierarchyLogController extends BaseController
         return $this->absorb($this->hierarchy_log_repo->subordinates($data))->json();
     }
 
+    public function supervisor(Request $request)
+    {
+        $data = $request->all();
+        return $this->absorb($this->hierarchy_log_repo->supervisor($data))->json();
+    }
+
     // public function count(Request $request)
     // {
     //     $data = $request->all();

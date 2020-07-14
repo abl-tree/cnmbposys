@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Data\Models\UserInfo;
 use App\Data\Models\HierarchyLog;
+use App\Data\Models\UpdateStatus;
 use Carbon\Carbon;
 
 class UserInfosTableSeeder extends Seeder
@@ -24,7 +25,7 @@ class UserInfosTableSeeder extends Seeder
             'gender' => 'Female', 
             'status' => 'active',
             'type' => 'active',
-            'hired_date' => '2/9/2015',
+            'hired_date' => '02/09/2015',
             'excel_hash' =>strtolower('maricelramalesobsiana'),
             ],
             [
@@ -36,7 +37,7 @@ class UserInfosTableSeeder extends Seeder
             'gender' => 'Male', 
             'status' => 'active',
             'type' => 'active',
-            'hired_date' => '12/1/2017',
+            'hired_date' => '12/01/2017',
             'excel_hash' =>strtolower('kennethpulverallanos'),
             ],
             [
@@ -63,6 +64,13 @@ class UserInfosTableSeeder extends Seeder
             'parent_id' => 1,
             'child_id' => 2,
             'start_date' => Carbon::now()->startOfDay(),
+        ]);
+
+        UpdateStatus::create([
+            'user_id' => 2,
+            'status' =>'active',
+            'type' => 'active',
+            'hired_date' => '12/01/2017'
         ]);
     }
 }

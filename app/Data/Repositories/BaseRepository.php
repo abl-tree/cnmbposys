@@ -173,7 +173,11 @@ class BaseRepository
         // dd( dump_query ( $model) );
 
         if (isset($data['count']) && $data['count'] === true) {
-            return $model->count();
+            if(!isset($data['groupby'])){
+                return $model->count();
+            }else{
+                return $model->get()->count();
+            }
         }
 
         if (isset($data['single']) && $data['single'] === true) {
@@ -391,6 +395,12 @@ class BaseRepository
             $model = $model->with($data['relations']);
         }
 
+        
+        if (isset($data['groupby'])) {
+            foreach ((array) $data['groupby'] as $key => $value) {
+                $model = $model->groupBy($value);
+            }
+        }
         // dd( dump_query ( $model) );
 
         if (isset($data['count']) && $data['count'] === true) {
@@ -408,6 +418,7 @@ class BaseRepository
                 $model = $model->sortBy($data['sort'])->values();
             }
         }
+
 
         // dd( dump_query ( $model), $data );
         return $model;
