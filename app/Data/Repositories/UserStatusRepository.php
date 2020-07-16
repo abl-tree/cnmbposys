@@ -26,7 +26,7 @@ class UserStatusRepository extends BaseRepository
         $this->update_status = $update_status;
 
         $this->no_sort = [
-            'type',
+            'type','status'
         ];
     } 
 
