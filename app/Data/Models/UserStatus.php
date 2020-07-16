@@ -21,7 +21,10 @@ class UserStatus extends BaseModel
     protected $fillable = [
         'status', 'type', 'description','created_at','updated_at'
     ];
-
+    protected $searchable = [
+        'type','status'
+        
+    ];
     // public function info() {
     //     return $this->belongsTo('\App\Data\Models\UserInfo', 'id', 'user_info_id')->with('id_number','benefit_id');
     // }

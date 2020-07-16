@@ -24,6 +24,10 @@ class UserStatusRepository extends BaseRepository
         $this->user_info = $user_info;
         $this->user_status = $user_status;
         $this->update_status = $update_status;
+
+        $this->no_sort = [
+            'type',
+        ];
     } 
 
     public function getStatus($data = [])
@@ -45,6 +49,67 @@ class UserStatusRepository extends BaseRepository
 
             //$parameters['user_id'] = $data['id'];
 
+        }
+        if (isset($data['target']) || isset($data['query'])) {
+            if (!isset($data['query'])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "Query is not set",
+                    "parameters" => $data,
+                ]);
+            }
+            if (!isset($data['target'])) {
+                return $this->setResponse([
+                    "code" => 500,
+                    "title" => "target is not set",
+                    "parameters" => $data,
+                ]);
+            }
+
+            $result = $this->user_status;
+            //$data['relations'] = ['filedby','user'];
+
+            $meta_index = "statuses";
+            $parameters = [
+                "query" => $data['query'],
+            ];
+
+            // foreach ((array) $data['target'] as $index => $column) {
+            //     if (str_contains($column, "type")) {
+
+            //         $data['target'][] = 'filedby.firstname';
+            //         $data['target'][] = 'filedby.middlename';
+            //         $data['target'][] = 'filedby.lastname';
+            //         unset($data['target'][$index]);
+            //     }
+            // }
+
+            $count_data = $data;
+            $result = $this->genericSearch($data, $result)->get()->all();
+            if (!$result) {
+                return $this->setResponse([
+                    'code' => 404,
+                    'title' => "No status are found",
+                    "meta" => [
+                        $meta_index => $result,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+
+            $count = count($result);
+
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "Successfully retrieved statuses",
+                "description" => "status",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $count,
+                ],
+                "parameters" => $parameters,
+
+            ]);
         }
         $count_data = $data;
         //$data['relations'] = ["user_logs","accesslevelhierarchy"];        
