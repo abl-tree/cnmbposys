@@ -598,4 +598,100 @@ class HierarchyLogRepository extends BaseRepository
             "parameters" => $parameters,
         ]);
     }
+
+
+    public function table($data = []){
+        $meta_index = "hierarchy_log";
+        $parameters = [];
+        $count = 0;
+
+        
+        //  filter by operations dept
+        if (isset($data['operations'])) {
+            $data['wherehas'][] = [
+                'relation' => 'parent_user_details',
+                'target' => [
+                    [
+                        'column' => 'access_id',
+                        'operator' => "wherein",
+                        'value' => [15,16],
+                    ],
+                ],
+            ];
+        }
+
+        // filter date
+        if (!isset($data['date'])) {
+            $data["date"] = Carbon::parse()->startOfDay();
+        }else{
+            $data["date"] = Carbon::parse($data['date'])->startOfDay();
+        }
+        $data["where"][]= [
+            "target" => "start_date",
+            "operator" => "<=",
+            "value" => $data["date"]
+        ];
+
+        // search targets
+        $data["target"]=["parent_details.firstname", "child_details.firstname"];
+
+        // relations
+        $data["relations"][] = 'parent_details';
+        $data["relations"][] = 'child_details';
+        $data["relations"][] = 'parent_user_details';
+        $data["relations"][] = 'child_user_details';
+        // orderBy
+        $data["order"] = [
+            "start_date" => "desc"
+        ];
+        if(isset($data['sort']) && isset($data['sort_order'])){
+            $data["order"][$data["sort"]] = $data["sort_order"];
+        }
+        // groupBy
+        $data["groupby"] = ["child_id","parent_id"];
+        // pagination
+        if(isset($data['perpage'])){
+            if(!isset($data['page'])){
+                $data["page"] = 1;
+            }
+            $data["limit"] = $data["perpage"];
+            $data["offset"] = ($data["page"] - 1) * $data["perpage"];
+        }
+
+
+        // final query
+        if(isset($data["query"])){
+            $result = $this->genericSearch($data, $this->hierarchy_log)->get()->all();
+            $data["count"] = true;
+            $data["search"] = true;
+        }else{  
+            $result = $this->fetchGeneric($data, $this->hierarchy_log);
+            $data['count'] = true;
+        }
+        
+        $count = $this->countData($data, refresh_model($this->hierarchy_log->getModel()));
+
+        if(!$result){
+            return $this->setResponse([
+                'code' => 404,
+                'title' => "No logs are found",
+                "meta" => [
+                    $meta_index => array_values($result),
+                    "count" => $count
+                ],
+                "parameters" => $parameters,
+            ]);
+        }
+
+        return $this->setResponse([
+            "code" => 200,
+            "title" => "Successfully retrieved hierarchy logs.",
+            "meta" => [
+                $meta_index => $result,
+                "count" => $count,
+            ],  
+            // "parameters" => $parameters,
+            "parameters" => $data,
+        ]);
+    }
 }
