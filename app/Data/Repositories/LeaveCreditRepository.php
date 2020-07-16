@@ -18,6 +18,9 @@ class LeaveCreditRepository extends BaseRepository
     ) {
         $this->leave_credit = $leaveCredit;
         $this->user = $user;
+        $this->no_sort = [
+            'user.firstname',
+        ];
     }
 
     public function defineLeaveCreditForAgents($data)
@@ -255,10 +258,16 @@ class LeaveCreditRepository extends BaseRepository
                 "value" => $data['leave_type'],
             ];
         }
-
-        $count_data = $data;
-
-        $result = $this->fetchGeneric($data, $this->leave_credit);
+        
+        if(isset($data["query"])){
+            $data["target"] = ["user.firstname"];
+            $result = $this->genericSearch($data, $this->leave_credit)->get()->all();
+            $data["search"] = true;
+        }else{
+            $result = $this->fetchGeneric($data, $this->leave_credit);
+        }
+        $data["count"] = true;
+        $count = $this->countData($data, refresh_model($this->leave_credit->getModel()));
 
         if (!$result) {
             return $this->setResponse([
@@ -271,7 +280,6 @@ class LeaveCreditRepository extends BaseRepository
             ]);
         }
 
-        $count = $this->countData($count_data, refresh_model($this->leave_credit->getModel()));
 
         return $this->setResponse([
             "code" => 200,
