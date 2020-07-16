@@ -38,7 +38,7 @@ class UserInfo extends BaseModel
     ];
 
     protected $appends = [
-        'full_name','count','image', 'current_head', 
+        'full_name','count','image', 'current_head', 'email'
     ];
 
     protected $hidden = [
@@ -105,6 +105,9 @@ class UserInfo extends BaseModel
         return ucwords($value);
     }
 
+    public function getEmailAttribute(){
+        return User::where("uid",$this->id)->first()->email;
+    }
 
     public function getFullNameAttribute(){
         $name = null;
