@@ -65,6 +65,14 @@ class ReportsRepository extends BaseRepository
         $this->incident_report = $incident_report;
         $this->logs = $logs_repo;
         $this->notification_repo = $notificationRepository;
+
+         $this->no_sort = [
+            'full_name',
+            'email',
+            'position',
+            'issued_to.full_name',
+            'issued_by.full_name'
+        ];
     }
 
     public function getAllReports($data = [])

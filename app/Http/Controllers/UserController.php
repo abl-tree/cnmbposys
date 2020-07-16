@@ -109,7 +109,7 @@ class UserController extends BaseController
     public function updateUser(Request $request, $id)
     {
 
-        $data = $request->all();
+       
         $data['id'] = $id;
         if (isset($data['image'])) {
             request()->validate([
@@ -120,7 +120,7 @@ class UserController extends BaseController
             $imageName = time() . '.' . request()->image->getClientOriginalExtension();
             $data['imageName'] = $imageName;
         }
-
+        $data = $request->all();
         return $this->absorb($this->user_info->addUser($data))->json();
     }
     public function changePass(Request $request, $id)

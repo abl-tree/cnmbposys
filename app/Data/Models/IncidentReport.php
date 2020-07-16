@@ -26,6 +26,11 @@ class incidentReport extends BaseModel
         'issued_to','issued_by','report_details'
     ];
 
+    protected $searchable = [
+        'user.firstname','user.middlename', 'user.lastname',
+        'filedby.firstname','filedby.middlename', 'filedby.lastname',
+        
+    ];
 
 
      public function user() {
