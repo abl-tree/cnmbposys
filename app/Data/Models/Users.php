@@ -24,7 +24,7 @@ class Users extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'uid','email', 'password', 'access_id','loginFlag','company_id','created_at','updated_at'
+        'uid','email', 'password', 'access_id','loginFlag','company_id','created_at','updated_at','password_updated'
     ];
 
     protected $searchable = [

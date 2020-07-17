@@ -1839,6 +1839,7 @@ class UsersInfoRepository extends BaseRepository
             // $hashPass=bcrypt($data['password']);
             $user_information['password'] = $data['password'];
             $user_information['loginFlag'] = 0;
+            $user_information['password_updated'] = Carbon::now()->toDateTimeString();
             if (!$user_information->save($data)) {
                 return $this->setResponse([
                     "code" => 500,
