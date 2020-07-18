@@ -34,10 +34,10 @@ class HierarchyLogRepository extends BaseRepository
         $this->hierarchy_log = $hierarchy_log;
         $this->logs = $logs_repo;
         $this->notification_repo = $notificationRepository;
-        $this->no_sort = [
-            'parent_details.full_name',
-            'child_details.full_name',
-        ];
+        // $this->no_sort = [
+        //     'parent_details.full_name',
+        //     'child_details.full_name',
+        // ];
     }
 
     public function fetchAll($data = []){
@@ -634,6 +634,7 @@ class HierarchyLogRepository extends BaseRepository
 
 
     public function table($data = []){
+        $hierarchy_log = $this->hierarchy_log;
         $meta_index = "hierarchy_log";
         $parameters = [];
         $count = 0;
@@ -707,11 +708,11 @@ class HierarchyLogRepository extends BaseRepository
         $data["relations"][] = 'parent_user_details';
         $data["relations"][] = 'child_user_details';
         // orderBy
-        $data["order"] = [
-            "start_date" => "desc"
-        ];
+
+        $data["order"] = 'desc';
+
         if(isset($data['sort']) && isset($data['sort_order'])){
-            $data["order"][$data["sort"]] = $data["sort_order"];
+            $data["order"] = $data["sort_order"];
         }
         // groupBy
         $data["groupby"] = ["child_id","parent_id"];
@@ -724,17 +725,33 @@ class HierarchyLogRepository extends BaseRepository
             $data["offset"] = ($data["page"] - 1) * $data["perpage"];
         }
 
+        if(isset($data['sort'])){
+            if($data['sort'] == 'child_details.full_name'){
+                $data['sort'] = 'firstname';
+                $data['sort_key'] = 'hierarchy_logs.child_id';
+            } else {
+                $data['sort'] = 'firstname';
+                $data['sort_key'] = 'hierarchy_logs.parent_id';
+            }
+
+            //join tables for sorting
+            $hierarchy_log = $this->hierarchy_log
+                ->join('user_infos as child', 'child.id', '=', $data['sort_key'])
+                ->orderBy($data['sort'], $data['order'] ?? 'desc');
+
+            unset($data['sort']);
+        }
 
         // final query
         if(isset($data["query"])){
-            $result = $this->genericSearch($data, $this->hierarchy_log)->get()->all();
+            $result = $this->genericSearch($data, $hierarchy_log)->get()->all();
             $data["count"] = true;
             $data["search"] = true;
         }else{  
-            $result = $this->fetchGeneric($data, $this->hierarchy_log);
+            $result = $this->fetchGeneric($data, $hierarchy_log);
             $data['count'] = true;
         }
-        
+
         $count = $this->countData($data, refresh_model($this->hierarchy_log->getModel()));
 
         if(!$result){
