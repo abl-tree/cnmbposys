@@ -1768,6 +1768,14 @@ class UsersInfoRepository extends BaseRepository
 
                     $user_information->child_logs()->whereNull('end_date')->update(['end_date' => Carbon::now()]);
                     $user_information->parent_logs()->whereNull('end_date')->update(['end_date' => Carbon::now()]);
+                } else if (strtolower($data['status']) == 'active') {
+                    if (!$user_information->parent_logs()->whereNull('end_date')->first()) {
+                        $this->hierarchy_log->save([
+                            'parent_id' => $this->access_level_hierarchy->where('child_id', $Users->id)->first()->parent_id,
+                            'child_id' => $Users->id,
+                            'start_date' => $data['hired_date'],
+                        ]);
+                    }
                 }
 
                 return $this->setResponse([
