@@ -2014,7 +2014,10 @@ class UsersInfoRepository extends BaseRepository
                 ]);
             }
 
-            if (strtolower($data['status']) == 'inactive' && strtolower($data['type']) == 'terminated') {
+            if (strtolower($data['status']) == 'inactive' &&
+                (strtolower($data['type']) == 'terminated' ||
+                    strtolower($data['type']) == 'resigned')) {
+
                 $Users->child_logs()->whereNull('end_date')->update(['end_date' => $data['separation_date']]);
                 $Users->parent_logs()->whereNull('end_date')->update(['end_date' => $data['separation_date']]);
             }
