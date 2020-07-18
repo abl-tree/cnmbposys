@@ -104,7 +104,6 @@ class LoginController extends Controller
             $now = Carbon::now();
             $diff = $date->diffInDays($now)+1;
             if(strtolower($status)=="active"){
-                dd(Carbon::now()->toDateTimeString());
                 if($loginflag!==0&&$diff>31){
                     $success['access_token'] = $user->createToken('CNM')->accessToken;
                     if ($user) {
