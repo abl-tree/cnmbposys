@@ -37,6 +37,7 @@ class HierarchyLogRepository extends BaseRepository
         $this->no_sort = [
             'parent_details.full_name',
             'child_details.full_name',
+            'updated_at'
         ];
     }
 
@@ -511,6 +512,17 @@ class HierarchyLogRepository extends BaseRepository
         }
 
         $data["groupby"] = ["child_id"]; 
+        
+        $data["order"] = [
+            "start_date" => "desc"
+        ];
+        
+        if(isset($data['sort_order']) && isset($data['sort'])){
+            $data["order"][$data["sort"]] = $data["sort_order"];
+        }else{
+            unset($data["sort"]);
+        }
+
 
         $data["relations"][] = 'parent_details';
         $data["relations"][] = 'child_details';
@@ -518,16 +530,16 @@ class HierarchyLogRepository extends BaseRepository
         $data["relations"][] = 'child_user_details';
 
         // $result = $this->fetchGeneric($data, $this->hierarchy_log);
-        $count_data = null;
+        $count_data = $data;
+        $count_data["count"] = true;
         if(isset($data['query'])){
             $data['target'] = ['child_details.firstname','child_details.middlename','child_details.lastname'];
             $result = $this->genericSearch($data, $this->hierarchy_log)->get()->all();
-            $count_data = $data;
             $count_data["search"] = true;
             $count = $this->countData($count_data, refresh_model($this->hierarchy_log->getModel()));
         }else{
             $result = $this->fetchGeneric($data, $this->hierarchy_log);
-            $count = $this->countData($data, refresh_model($this->hierarchy_log->getModel()));
+            $count = $this->countData($count_data, refresh_model($this->hierarchy_log->getModel()));
         }
 
         if(!$result){
@@ -545,10 +557,10 @@ class HierarchyLogRepository extends BaseRepository
             "code" => 200,
             "title" => "Successfully retrieved subordinates.",
             "meta" => [
-                $meta_index => isset($data["page"])? $this->paginate($result,$data["perpage"],$data["page"]):$result,
+                $meta_index => $result,
                 "count" => $count,
             ],
-            "parameters" => $parameters,
+            "parameters" => $data,
         ]);
     }
 
@@ -618,8 +630,18 @@ class HierarchyLogRepository extends BaseRepository
                     ],
                 ],
             ];
+        }else{
+            $data['wherehas'][] = [
+                'relation' => 'parent_user_details',
+                'target' => [
+                    [
+                        'column' => 'access_id',
+                        'operator' => "wherenotin",
+                        'value' => [15,16],
+                    ],
+                ],
+            ];
         }
-
         // filter date
         if (!isset($data['date'])) {
             $data["date"] = Carbon::parse()->startOfDay();
@@ -644,9 +666,12 @@ class HierarchyLogRepository extends BaseRepository
         $data["order"] = [
             "start_date" => "desc"
         ];
-        if(isset($data['sort']) && isset($data['sort_order'])){
+        if(isset($data['sort_order'])){
             $data["order"][$data["sort"]] = $data["sort_order"];
+        }else{
+            unset($data["sort"]);
         }
+
         // groupBy
         $data["groupby"] = ["child_id","parent_id"];
         // pagination
