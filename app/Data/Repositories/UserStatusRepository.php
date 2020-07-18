@@ -1,20 +1,18 @@
 <?php
-
 namespace App\Data\Repositories;
 
-use App\Data\Models\UserInfo;
-use App\User;
-use App\Data\Models\UserStatus;
 use App\Data\Models\UpdateStatus;
+use App\Data\Models\UserInfo;
+use App\Data\Models\UserStatus;
 use App\Data\Repositories\BaseRepository;
+use App\User;
 
 class UserStatusRepository extends BaseRepository
 {
 
-    protected
-        $user_info,
-        $user,
-        $update_status,
+    protected $user_info,
+    $user,
+    $update_status,
         $user_status;
 
     public function __construct(
@@ -27,7 +25,7 @@ class UserStatusRepository extends BaseRepository
         $this->update_status = $update_status;
 
         $this->no_sort = [
-            'type', 'status'
+            'type', 'status',
         ];
     }
 
@@ -36,55 +34,93 @@ class UserStatusRepository extends BaseRepository
         $meta_index = "statuses";
         $parameters = [];
         $count = 0;
-        $result = null;
-        $count_data = null;
-
         if (isset($data['type'])) {
-            $meta_index     = "metadata";
+
             $data['single'] = false;
-            $data['where']  = [
+            $data['where'] = [
                 [
-                    "target"   => "type",
+                    "target" => "type",
                     "operator" => "=",
-                    "value"    => $data['type'],
+                    "value" => $data['type'],
                 ],
             ];
+
+            //$parameters['user_id'] = $data['id'];
+
         }
+        if (isset($data['target']) && isset($data['query'])) {
+            $result = $this->user_status;
+            //$data['relations'] = ['filedby','user'];
 
-        // if query is set then
-        $count_data = $data;
-
-        if (isset($data['query'])) {
             $parameters = [
                 "query" => $data['query'],
             ];
-            $result = $this->genericSearch($data, $this->user_status)->get()->all();
-            $count_data["search"] = true;
-        }else{
-            $result = $this->fetchGeneric($data, $this->user_status);
+
+            // foreach ((array) $data['target'] as $index => $column) {
+            //     if (str_contains($column, "type")) {
+
+            //         $data['target'][] = 'filedby.firstname';
+            //         $data['target'][] = 'filedby.middlename';
+            //         $data['target'][] = 'filedby.lastname';
+            //         unset($data['target'][$index]);
+            //     }
+            // }
+
+            $count_data = $data;
+            $result = $this->genericSearch($data, $result)->get()->all();
+            if (!$result) {
+                return $this->setResponse([
+                    'code' => 404,
+                    'title' => "No status are found",
+                    "meta" => [
+                        $meta_index => $result,
+                    ],
+                    "parameters" => $parameters,
+                ]);
+            }
+
+            $count = count($result);
+
+            return $this->setResponse([
+                "code" => 200,
+                "title" => "Successfully retrieved statuses",
+                "description" => "status",
+                "meta" => [
+                    $meta_index => $result,
+                    "count" => $count,
+                ],
+                "parameters" => $parameters,
+
+            ]);
         }
+        $count_data = $data;
+        //$data['relations'] = ["user_logs","accesslevelhierarchy"];
+        $count_data = $data;
+        $result = $this->fetchGeneric($data, $this->user_status);
 
         if (!$result) {
             return $this->setResponse([
-                'code'       => 404,
-                'title'      => "No status are found",
-                "meta"       => [
+                'code' => 404,
+                'title' => "No status are found",
+                "meta" => [
                     $meta_index => $result,
                 ],
                 "parameters" => $parameters,
             ]);
         }
-        $count_data["count"] = true;
+
         $count = $this->countData($count_data, refresh_model($this->user_status->getModel()));
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully retrieved statuses",
-            "description" => "maoni",
-            "meta"       => [
+            "code" => 200,
+            "title" => "Successfully retrieved statuses",
+            "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
+            "count" => $count,
+            //"parameters" => $data['user_id'],
+
         ]);
     }
 
@@ -92,16 +128,16 @@ class UserStatusRepository extends BaseRepository
     {
         $meta_index = "metadata";
         $parameters = [];
-        $count      = 0;
+        $count = 0;
         if (isset($data['user_id'])) {
 
-            $meta_index     = "metadata";
+            $meta_index = "metadata";
             $data['single'] = false;
-            $data['where']  = [
+            $data['where'] = [
                 [
-                    "target"   => "user_id",
+                    "target" => "user_id",
                     "operator" => "=",
-                    "value"    => $data['user_id'],
+                    "value" => $data['user_id'],
                 ],
             ];
 
@@ -109,15 +145,15 @@ class UserStatusRepository extends BaseRepository
 
         }
         $count_data = $data;
-        //$data['relations'] = ["user_logs","accesslevelhierarchy"];        
+        //$data['relations'] = ["user_logs","accesslevelhierarchy"];
         $count_data = $data;
         $result = $this->fetchGeneric($data, $this->update_status);
 
         if (!$result) {
             return $this->setResponse([
-                'code'       => 404,
-                'title'      => "No status are found",
-                "meta"       => [
+                'code' => 404,
+                'title' => "No status are found",
+                "meta" => [
                     $meta_index => $result,
                 ],
                 "parameters" => $parameters,
@@ -127,14 +163,13 @@ class UserStatusRepository extends BaseRepository
         $count = $this->countData($count_data, refresh_model($this->update_status->getModel()));
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully retrieved status logs",
-            "description" => "maoni",
-            "meta"       => [
+            "code" => 200,
+            "title" => "Successfully retrieved status logs",
+            "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
-            "count"     => $count,
+            "count" => $count,
             //"parameters" => $data['user_id'],
 
         ]);
@@ -145,41 +180,41 @@ class UserStatusRepository extends BaseRepository
 
         if (!isset($data['status'])) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "status is not set.",
             ]);
         }
 
         if (!isset($data['type'])) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Type  is not set.",
             ]);
         }
-
 
         $stat = $this->user_status->init($this->user_status->pullFillable($data));
         $stat->save($data);
 
         if (!$stat->save($data)) {
             return $this->setResponse([
-                "code"        => 500,
-                "title"       => "Data Validation Error.",
+                "code" => 500,
+                "title" => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
-                "meta"        => [
+                "meta" => [
                     "errors" => $stat->errors(),
                 ],
             ]);
         }
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully defined an user status",
+            "code" => 200,
+            "title" => "Successfully defined an user status",
             "description" => "Status",
-            "meta"       => [
+            "meta" => [
                 "metadata" => $stat,
             ],
         ]);
+
     }
     public function updateUserStatus($data = [])
     {
@@ -187,18 +222,17 @@ class UserStatusRepository extends BaseRepository
 
         if (!isset($data['status'])) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "status is not set.",
             ]);
         }
 
         if (!isset($data['type'])) {
             return $this->setResponse([
-                'code'  => 500,
+                'code' => 500,
                 'title' => "Type  is not set.",
             ]);
         }
-
 
         $stat = $this->user_status->find($data['id']);
         // $stat->type=$data['status'];
@@ -207,22 +241,23 @@ class UserStatusRepository extends BaseRepository
 
         if (!$stat->save($data)) {
             return $this->setResponse([
-                "code"        => 500,
-                "title"       => "Data Validation Error.",
+                "code" => 500,
+                "title" => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
-                "meta"        => [
+                "meta" => [
                     "errors" => $stat->errors(),
                 ],
             ]);
         }
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully updated a Status.",
-            "meta"        => [
+            "code" => 200,
+            "title" => "Successfully updated a Status.",
+            "meta" => [
                 "status" => $stat,
-            ]
+            ],
         ]);
+
     }
 
     public function deleteUserStatus($data = [])
@@ -231,46 +266,46 @@ class UserStatusRepository extends BaseRepository
 
         if (!$stat->delete()) {
             return $this->setResponse([
-                "code"        => 500,
-                "title"       => "Data Validation Error.",
+                "code" => 500,
+                "title" => "Data Validation Error.",
                 "description" => "An error was detected on one of the inputted data.",
-                "meta"        => [
+                "meta" => [
                     "errors" => $stat->errors(),
                 ],
             ]);
         }
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully deleted a Status.",
-            "meta"        => [
+            "code" => 200,
+            "title" => "Successfully deleted a Status.",
+            "meta" => [
                 "status" => $stat,
-            ]
+            ],
         ]);
+
     }
 
     public function fetchUserLog($data = [])
     {
         $meta_index = "User";
         $parameters = [];
-        $count      = 0;
+        $count = 0;
 
-        if (
-            isset($data['id']) &&
-            is_numeric($data['id'])
-        ) {
+        if (isset($data['id']) &&
+            is_numeric($data['id'])) {
 
-            $meta_index     = "User";
+            $meta_index = "User";
             $data['single'] = false;
-            $data['where']  = [
+            $data['where'] = [
                 [
-                    "target"   => "id",
+                    "target" => "id",
                     "operator" => "=",
-                    "value"    => $data['id'],
+                    "value" => $data['id'],
                 ],
             ];
 
             $parameters['user_id'] = $data['id'];
+
         }
 
         $count_data = $data;
@@ -281,9 +316,9 @@ class UserStatusRepository extends BaseRepository
 
         if (!$result) {
             return $this->setResponse([
-                'code'       => 404,
-                'title'      => "No agent logs are found",
-                "meta"       => [
+                'code' => 404,
+                'title' => "No agent logs are found",
+                "meta" => [
                     $meta_index => $result,
                 ],
                 "parameters" => $parameters,
@@ -293,13 +328,14 @@ class UserStatusRepository extends BaseRepository
         $count = $this->countData($count_data, refresh_model($this->user->getModel()));
 
         return $this->setResponse([
-            "code"       => 200,
-            "title"      => "Successfully retrieved agent logs",
-            "meta"       => [
+            "code" => 200,
+            "title" => "Successfully retrieved agent logs",
+            "meta" => [
                 $meta_index => $result,
-                "count"     => $count,
+                "count" => $count,
             ],
             "parameters" => $parameters,
         ]);
     }
+
 }
