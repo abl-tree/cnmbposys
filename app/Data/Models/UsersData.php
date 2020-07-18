@@ -217,17 +217,12 @@ class UsersData extends BaseModel
     }
 
     public function getHeadNameAttribute(){
-        $result = HierarchyLog::where("child_id", $this->id)->get();
-        $result = collect($result)
-        ->where('start_date',"<=",Carbon::now())
-        ->where('tmp_end_date',">=",Carbon::now())->values();
-        if(isset($result[0])){
-            $result = UserInfo::find($result[0]->parent_id);
+        $hl = HierarchyLog::with('parent_details')->where("child_id", $this->id)->whereNull('end_date')->first();
+        if(!$hl){
+            return null;
         }else{
-            $result = null;
+            return $hl->parent_details->full_name;
         }
-        $result = $result ? $result->firstname." ".$result->lastname:"";
-        return $result;
     }
     // public function getHeadEmailAttribute(){
     //     $result = HierarchyLog::where("child_id", $this->id)->get();

@@ -169,17 +169,12 @@ class SelectUsers extends BaseModel
         return $name;
     }
     public function getHeadNameAttribute(){
-        $name = null;
-        if(isset($this->accesslevelhierarchy)){
-            if($this->accesslevelhierarchy->parent_id){
-                $head_details = UserInfo::find($this->accesslevelhierarchy->parent_id);
-                $name = $head_details->firstname." ".$head_details->lastname;
-            }else{
-                $name = null;
-            }
+        $hl = HierarchyLog::with('parent_details')->where("child_id", $this->id)->whereNull('end_date')->first();
+        if(!$hl){
+            return null;
+        }else{
+            return $hl->parent_details->full_name;
         }
-        
-        return $name;
     }
     public function getChildidAttribute(){
         $name = null;
