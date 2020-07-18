@@ -1760,6 +1760,16 @@ class UsersInfoRepository extends BaseRepository
                     "affected_data" => $auth->full_name . "[" . $auth->access->name . "] Updated a User [" . $user_information->full_name . "]",
                 ];
                 $this->logs->logsInputCheck($logged_data);
+
+                // update hierarchy log
+                if (strtolower($data['status']) == 'inactive' &&
+                    (strtolower($data['type']) == 'terminated' ||
+                        strtolower($data['type']) == 'resigned')) {
+
+                    $user_information->child_logs()->whereNull('end_date')->update(['end_date' => Carbon::now()]);
+                    $user_information->parent_logs()->whereNull('end_date')->update(['end_date' => Carbon::now()]);
+                }
+
                 return $this->setResponse([
                     "code" => 200,
                     "title" => "Successfully " . $action . " a User.",
