@@ -8,6 +8,7 @@ use App\Data\Models\UserInfo;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
@@ -97,7 +98,41 @@ class LoginController extends Controller
         if (Auth::attempt(['email' => $data['username'], 'password' => $data['password']])) {
             $user = Auth::user();
             $status = UserInfo::find($user->uid)->status;
+            $password_updated=Auth::user()->password_updated;
+            $loginflag=Auth::user()->loginflag;
+            $date = Carbon::parse($password_updated);
+            $now = Carbon::now();
+            $diff = $date->diffInDays($now)+1;
             if(strtolower($status)=="active"){
+                if($loginflag!==0&&$diff>31){
+                    $success['access_token'] = $user->createToken('CNM')->accessToken;
+                    if ($user) {
+                        $user['loginFlag'] = 0;
+                        $user['password_updated'] = Carbon::now()->toDateTimeString();
+                        if (!$user->save($data)) {
+                            return $this->setResponse([
+                                "code" => 500,
+                                "title" => "Data Validation Error on User.",
+                                "description" => "An error was detected on one of the inputted data.",
+                                "meta" => [
+                                    "errors" => $user->errors(),
+                                ],
+                            ]);
+                        } else {
+                            return response()->json(
+                                [
+                                    'code' => 200,
+                                    "title" => 'Successfully logged in',
+                                    'meta' => [
+                                        'token' => $success,
+                                        'user' => $user,
+                                        'days_difference'=>$diff
+                                    ],
+                                ], 200);
+                        }
+                    }
+    
+                }else{
                 $success['access_token'] = $user->createToken('CNM')->accessToken;
                 return response()->json(
                     [
@@ -108,7 +143,7 @@ class LoginController extends Controller
                             'user' => $user,
                         ],
                     ], 200);
-
+                }
             }else{
                 return response()->json(
                     [

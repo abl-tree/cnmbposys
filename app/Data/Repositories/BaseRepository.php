@@ -101,6 +101,28 @@ class BaseRepository
             }
         }
 
+        // Start WHEREDOESNTHAVE clauses
+        if (isset($data['wheredoesnthave'])) {
+            foreach ((array) $data['wheredoesnthave'] as $key => $conditions) {
+                $model = $model->whereDoesntHave($conditions['relation'], function ($q) use ($conditions) {
+                    foreach ((array) $conditions['target'] as $key => $value) {
+                        if (isset($value['operator'])) {
+                            if ($value['operator'] == 'not_null') {
+                                $q->whereNotNull($value['column']);
+                            } else if ($value['operator'] == 'wherein') {
+                                $q->whereIn($value['column'], $value['value']);
+                            } else {
+                                $q->where($value['column'], $value['operator'], $value['value']);
+                            }
+
+                        } else {
+                            $q->where($value['column'], $value['value']);
+                        }
+                    }
+                });
+            }
+        }
+
         // add where query on relations
         if (isset($data['where_relations'])) {
             foreach ((array) $data['where_relations'] as $key => $conditions) {
@@ -333,6 +355,28 @@ class BaseRepository
                                 $q->whereIn($value['column'], $value['value']);
                             }else if($value['operator'] == 'wherenotin'){
                                 $q->whereNotIn($value['column'], $value['value']);
+                            } else {
+                                $q->where($value['column'], $value['operator'], $value['value']);
+                            }
+
+                        } else {
+                            $q->where($value['column'], $value['value']);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Start WHEREDOESNTHAVE clauses
+        if (isset($data['wheredoesnthave'])) {
+            foreach ((array) $data['wheredoesnthave'] as $key => $conditions) {
+                $model = $model->whereDoesntHave($conditions['relation'], function ($q) use ($conditions) {
+                    foreach ((array) $conditions['target'] as $key => $value) {
+                        if (isset($value['operator'])) {
+                            if ($value['operator'] == 'not_null') {
+                                $q->whereNotNull($value['column']);
+                            } else if ($value['operator'] == 'wherein') {
+                                $q->whereIn($value['column'], $value['value']);
                             } else {
                                 $q->where($value['column'], $value['operator'], $value['value']);
                             }

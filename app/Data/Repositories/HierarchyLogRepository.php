@@ -109,6 +109,39 @@ class HierarchyLogRepository extends BaseRepository
             ];
         }
 
+        // filter active
+        $data['wheredoesnthave'][] = [
+            'relation' => 'parent_details.status_logs',
+            'target' => [
+                [
+                    'column' => 'separation_date',
+                    'operator' => "<=",
+                    'value' => $data['date'],
+                ],
+                [
+                    'column' => 'type',
+                    'operator' => "wherein",
+                    'value' => ["Terminated", "Resigned"],
+                ],
+            ],
+        ];
+
+        $data['wheredoesnthave'][] = [
+            'relation' => 'child_details.status_logs',
+            'target' => [
+                [
+                    'column' => 'separation_date',
+                    'operator' => "<=",
+                    'value' => $data['date'],
+                ],
+                [
+                    'column' => 'type',
+                    'operator' => "wherein",
+                    'value' => ["Terminated", "Resigned"],
+                ],
+            ],
+        ];
+
         // i
 
         $data["relations"][] = 'parent_details';
@@ -652,6 +685,39 @@ class HierarchyLogRepository extends BaseRepository
             "target" => "start_date",
             "operator" => "<=",
             "value" => $data["date"]
+        ];
+
+        // filter active
+        $data['wheredoesnthave'][] = [
+            'relation' => 'parent_details.status_logs',
+            'target' => [
+                [
+                    'column' => 'separation_date',
+                    'operator' => "<=",
+                    'value' => $data['date'],
+                ],
+                [
+                    'column' => 'type',
+                    'operator' => "wherein",
+                    'value' => ["Terminated", "Resigned"],
+                ],
+            ],
+        ];
+
+        $data['wheredoesnthave'][] = [
+            'relation' => 'child_details.status_logs',
+            'target' => [
+                [
+                    'column' => 'separation_date',
+                    'operator' => "<=",
+                    'value' => $data['date'],
+                ],
+                [
+                    'column' => 'type',
+                    'operator' => "wherein",
+                    'value' => ["Terminated", "Resigned"],
+                ],
+            ],
         ];
 
         // search targets

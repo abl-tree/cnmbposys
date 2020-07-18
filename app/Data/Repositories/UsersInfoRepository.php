@@ -1839,6 +1839,7 @@ class UsersInfoRepository extends BaseRepository
             // $hashPass=bcrypt($data['password']);
             $user_information['password'] = $data['password'];
             $user_information['loginFlag'] = 0;
+            $user_information['password_updated'] = Carbon::now()->toDateTimeString();
             if (!$user_information->save($data)) {
                 return $this->setResponse([
                     "code" => 500,
@@ -2012,6 +2013,15 @@ class UsersInfoRepository extends BaseRepository
                     ],
                 ]);
             }
+
+            if (strtolower($data['status']) == 'inactive' &&
+                (strtolower($data['type']) == 'terminated' ||
+                    strtolower($data['type']) == 'resigned')) {
+
+                $Users->child_logs()->whereNull('end_date')->update(['end_date' => $data['separation_date']]);
+                $Users->parent_logs()->whereNull('end_date')->update(['end_date' => $data['separation_date']]);
+            }
+
             array_push($all_users, $Users);
         }
         $logged_data = [
