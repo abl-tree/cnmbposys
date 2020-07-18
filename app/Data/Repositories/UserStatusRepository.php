@@ -32,12 +32,11 @@ class UserStatusRepository extends BaseRepository
 
     public function getStatus($data = [])
     {
-        $meta_index = "metadata";
+        $meta_index = "statuses";
         $parameters = [];
         $count      = 0;
         if (isset($data['type'])) {
 
-            $meta_index     = "metadata";
             $data['single'] = false;
             $data['where']  = [
                 [
@@ -54,7 +53,6 @@ class UserStatusRepository extends BaseRepository
             $result = $this->user_status;
             //$data['relations'] = ['filedby','user'];
 
-            $meta_index = "statuses";
             $parameters = [
                 "query" => $data['query'],
             ];
