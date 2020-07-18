@@ -50,22 +50,7 @@ class UserStatusRepository extends BaseRepository
             //$parameters['user_id'] = $data['id'];
 
         }
-        if (isset($data['target']) || isset($data['query'])) {
-            if (!isset($data['query'])) {
-                return $this->setResponse([
-                    "code" => 500,
-                    "title" => "Query is not set",
-                    "parameters" => $data,
-                ]);
-            }
-            if (!isset($data['target'])) {
-                return $this->setResponse([
-                    "code" => 500,
-                    "title" => "target is not set",
-                    "parameters" => $data,
-                ]);
-            }
-
+        if (isset($data['target']) && isset($data['query'])) {
             $result = $this->user_status;
             //$data['relations'] = ['filedby','user'];
 
