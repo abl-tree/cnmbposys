@@ -117,7 +117,6 @@ class UserStatusRepository extends BaseRepository
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved statuses",
-            "description"=>"maoni",
             "meta"       => [
                 $meta_index => $result,
                 "count"     => $count,
@@ -169,7 +168,6 @@ class UserStatusRepository extends BaseRepository
         return $this->setResponse([
             "code"       => 200,
             "title"      => "Successfully retrieved status logs",
-            "description"=>"maoni",
             "meta"       => [
                 $meta_index => $result,
                 "count"     => $count,
