@@ -543,6 +543,41 @@ class HierarchyLogRepository extends BaseRepository
             ];
         }
 
+        
+        // filter active
+        $data['wheredoesnthave'][] = [
+            'relation' => 'parent_details.status_logs',
+            'target' => [
+                [
+                    'column' => 'separation_date',
+                    'operator' => "<=",
+                    'value' => $data['date'],
+                ],
+                [
+                    'column' => 'type',
+                    'operator' => "wherein",
+                    'value' => ["Terminated", "Resigned"],
+                ],
+            ],
+        ];
+
+        $data['wheredoesnthave'][] = [
+            'relation' => 'child_details.status_logs',
+            'target' => [
+                [
+                    'column' => 'separation_date',
+                    'operator' => "<=",
+                    'value' => $data['date'],
+                ],
+                [
+                    'column' => 'type',
+                    'operator' => "wherein",
+                    'value' => ["Terminated", "Resigned"],
+                ],
+            ],
+        ];
+
+        
         $data["groupby"] = ["child_id"]; 
         
         $data["order"] = [
