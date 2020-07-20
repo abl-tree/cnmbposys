@@ -526,6 +526,7 @@ class HierarchyLogRepository extends BaseRepository
     }
 
     public function subordinates($data = []){
+        $hierarchy_log = $this->hierarchy_log;
         $meta_index = "subordinates";
         $parameters = [];
         $count = 0;
@@ -579,34 +580,48 @@ class HierarchyLogRepository extends BaseRepository
 
         
         $data["groupby"] = ["child_id"]; 
-        
-        $data["order"] = [
-            "start_date" => "desc"
-        ];
-        
-        if(isset($data['sort_order']) && isset($data['sort'])){
-            $data["order"][$data["sort"]] = $data["sort_order"];
-        }else{
-            unset($data["sort"]);
+
+        // orderBy
+        if(isset($data['sort']) && isset($data['sort_order'])){
+            $data["order"] = $data["sort_order"];
         }
 
+        if(isset($data['sort'])){
+            if($data['sort'] == 'child_details.full_name'){
+                $data['sort'] = 'firstname';
+                $data['sort_key'] = 'hierarchy_logs.child_id';
+            } else {
+                $data['sort'] = 'firstname';
+                $data['sort_key'] = 'hierarchy_logs.parent_id';
+            }
+
+            //join tables for sorting
+            $hierarchy_log = $this->hierarchy_log
+                ->join('user_infos', 'user_infos.id', '=', $data['sort_key'])
+                ->orderBy($data['sort'], $data['order'] ?? 'desc');
+
+            unset($data['sort']);
+        }
+
+        $data['sort'] = 'start_date';
+        $data['order'] = 'desc';
 
         $data["relations"][] = 'parent_details';
         $data["relations"][] = 'child_details';
         $data["relations"][] = 'parent_user_details';
         $data["relations"][] = 'child_user_details';
 
-        // $result = $this->fetchGeneric($data, $this->hierarchy_log);
         $count_data = $data;
         $count_data["count"] = true;
+        
         if(isset($data['query'])){
             $data['target'] = ['child_details.firstname','child_details.middlename','child_details.lastname'];
-            $result = $this->genericSearch($data, $this->hierarchy_log)->get()->all();
+            $result = $this->genericSearch($data, $hierarchy_log)->get()->all();
             $count_data["search"] = true;
-            $count = $this->countData($count_data, refresh_model($this->hierarchy_log->getModel()));
+            $count = $this->countData($count_data, refresh_model($hierarchy_log->getModel()));
         }else{
-            $result = $this->fetchGeneric($data, $this->hierarchy_log);
-            $count = $this->countData($count_data, refresh_model($this->hierarchy_log->getModel()));
+            $result = $this->fetchGeneric($data, $hierarchy_log);
+            $count = $this->countData($count_data, refresh_model($hierarchy_log->getModel()));
         }
 
         if(!$result){
@@ -716,6 +731,7 @@ class HierarchyLogRepository extends BaseRepository
         }else{
             $data["date"] = Carbon::parse($data['date'])->startOfDay();
         }
+        
         $data["where"][]= [
             "target" => "start_date",
             "operator" => "<=",
@@ -763,10 +779,8 @@ class HierarchyLogRepository extends BaseRepository
         $data["relations"][] = 'child_details';
         $data["relations"][] = 'parent_user_details';
         $data["relations"][] = 'child_user_details';
+
         // orderBy
-
-        $data["order"] = 'desc';
-
         if(isset($data['sort']) && isset($data['sort_order'])){
             $data["order"] = $data["sort_order"];
         }
@@ -793,11 +807,14 @@ class HierarchyLogRepository extends BaseRepository
 
             //join tables for sorting
             $hierarchy_log = $this->hierarchy_log
-                ->join('user_infos as child', 'child.id', '=', $data['sort_key'])
+                ->join('user_infos', 'user_infos.id', '=', $data['sort_key'])
                 ->orderBy($data['sort'], $data['order'] ?? 'desc');
 
             unset($data['sort']);
         }
+
+        $data['sort'] = 'start_date';
+        $data['order'] = 'desc';
 
         // final query
         if(isset($data["query"])){
