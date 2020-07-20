@@ -758,11 +758,14 @@ class HierarchyLogRepository extends BaseRepository
 
             //join tables for sorting
             $hierarchy_log = $this->hierarchy_log
-                ->join('user_infos as child', 'child.id', '=', $data['sort_key'])
+                ->join('user_infos', 'user_infos.id', '=', $data['sort_key'])
                 ->orderBy($data['sort'], $data['order'] ?? 'desc');
 
             unset($data['sort']);
         }
+
+        $data['sort'] = 'start_date';
+        $data['order'] = 'desc';
 
         // final query
         if(isset($data["query"])){
