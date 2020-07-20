@@ -643,7 +643,7 @@ class AgentScheduleRepository extends BaseRepository
             $data['where'][] = [
                 "target" => "start_event",
                 "operator" => ">=",
-                "value" => $data['start_date'],
+                "value" => Carbon::parse($data['start_date'])->startOfDay()->format("Y-m-d H:i:s"),
             ];
         }
 
@@ -652,13 +652,23 @@ class AgentScheduleRepository extends BaseRepository
             $data['where'][] = [
                 "target" => "end_event",
                 "operator" => "<=",
-                "value" => $data['end_date'],
+                "value" => Carbon::parse($data['end_date'])->endOfDay()->format("Y-m-d H:i:s"),
+            ];
+        }
+
+        // filter by user_id
+        if(isset($data['user_id'])){
+            // use user info id
+            $data['where'][] = [
+                "target" => "user_id",
+                "operator" => "=",
+                "value" => $data['user_id'],
             ];
         }
 
         $count_data = $data;
 
-        $data['relations'] = ['user_info.user', 'tl_info.user', 'om_info.user', 'title', 'leave'];
+        $data['relations'] = ['user_info', 'tl_info.user', 'om_info.user', 'title', 'leave'];
 
         $result = $this->fetchGeneric($data, $this->agent_schedule);
 
