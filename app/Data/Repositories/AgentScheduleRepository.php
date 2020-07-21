@@ -657,7 +657,7 @@ class AgentScheduleRepository extends BaseRepository
         }
 
         // filter by user_id
-        if(isset($data['user_id'])){
+        if (isset($data['user_id'])) {
             // use user info id
             $data['where'][] = [
                 "target" => "user_id",
@@ -2042,11 +2042,38 @@ class AgentScheduleRepository extends BaseRepository
 
     }
 
+    // update logs for no_timeout schedules
+    public function updateScheduleLogs()
+    {
+        $schedules = $this->agent_schedule
+            ->where("title_id", 1)
+            ->where("end_event", '<=', Carbon::now()->addMinutes(15))
+            ->whereNull("vto_at")
+            ->whereHas('attendances', function ($query) {
+                return $query->whereNull('time_out');
+            })
+            ->doesntHave('schedule_log_status')
+            ->get();
+
+        foreach ($schedules as $schedule) {
+            $schedule->schedule_log_status()->create([
+                'schedule_id' => $schedule->id,
+                'status' => 'no_timeout',
+            ]);
+        }
+    }
+
     public function missedLogs($data = [])
     {
+        $this->updateScheduleLogs();
+
         // filter params id, tl_id, om_id
-        $result = $this->agent_schedule->with("coaching", "coaching.filed_by", "coaching.verified_by")->where("title_id", 1)->orderBy("start_event", "desc");
-        $type = "";
+        $result = refresh_model($this->agent_schedule->getModel())
+            ->with("coaching", "coaching.filed_by", "coaching.verified_by")
+            ->where("title_id", 1)
+            ->whereNull("vto_at")
+            ->orderBy("start_event", "desc");
+
         if (!isset($data['type'])) {
             $type = ["tardy", "undertime", "no_timeout"];
         } else {
