@@ -2068,20 +2068,12 @@ class AgentScheduleRepository extends BaseRepository
         $this->updateScheduleLogs();
 
         // filter params id, tl_id, om_id
-<<<<<<< HEAD
         $result = refresh_model($this->agent_schedule->getModel())
             ->with("coaching", "coaching.filed_by", "coaching.verified_by")
             ->where("title_id", 1)
             ->whereNull("vto_at")
             ->orderBy("start_event", "desc");
 
-=======
-        $result = $this->agent_schedule->with("coaching", "coaching.filed_by", "coaching.verified_by")
-        ->where("title_id", 1) // only for regular work
-        // ->whereNull("vto_at") // with no vto
-        ->orderBy("start_event", "desc");
-        $type = "";
->>>>>>> 61389d73f5045d89c395340490a2ab5865b3c4a1
         if (!isset($data['type'])) {
             $type = ["tardy", "undertime", "no_timeout"];
         } else {
