@@ -2068,12 +2068,20 @@ class AgentScheduleRepository extends BaseRepository
         $this->updateScheduleLogs();
 
         // filter params id, tl_id, om_id
+<<<<<<< HEAD
         $result = refresh_model($this->agent_schedule->getModel())
             ->with("coaching", "coaching.filed_by", "coaching.verified_by")
             ->where("title_id", 1)
             ->whereNull("vto_at")
             ->orderBy("start_event", "desc");
 
+=======
+        $result = $this->agent_schedule->with("coaching", "coaching.filed_by", "coaching.verified_by")
+        ->where("title_id", 1) // only for regular work
+        // ->whereNull("vto_at") // with no vto
+        ->orderBy("start_event", "desc");
+        $type = "";
+>>>>>>> 61389d73f5045d89c395340490a2ab5865b3c4a1
         if (!isset($data['type'])) {
             $type = ["tardy", "undertime", "no_timeout"];
         } else {
@@ -2129,7 +2137,7 @@ class AgentScheduleRepository extends BaseRepository
             "code" => 200,
             "title" => "successfully fetch missed logs",
             "meta" => [
-                'missed_logs' => isset($data["page"]) ? $this->paginate($result, $data["perpage"], $data["page"]) : $result,
+                'missed_logs' => $result,
             ],
         ]);
     }
@@ -2186,19 +2194,20 @@ class AgentScheduleRepository extends BaseRepository
                 ->where("start_event", "<=", Carbon::parse($now)->addMinutes(10))
                 ->where("end_event", ">=", Carbon::parse($now)->subMinutes(5))
                 ->first();
-
+            // if fetched schedule is an ot schedule
+            if ($ot_schedule) {
+                $ot = $this->agent_schedule->where("overtime_id", $ot_schedule->id)->where('user_id',$data['userid'])->first();
+                if ($ot) {
+                    $ot_schedule = null;
+                    $schedule = $ot;
+                }
+            }
             if ($ot_schedule && $schedule) {
                 if (Carbon::parse($ot_schedule->start_event)->isBetween(Carbon::parse($schedule->start_event)->subHours(2), Carbon::parse($schedule->end_event)->addHour(), true)) {
                     $ot_schedule = null;
                 }
                 if ($ot_schedule) {
                     if (Carbon::parse($ot_schedule->end_event)->isBetween(Carbon::parse($schedule->start_event)->subHours(2), Carbon::parse($schedule->end_event)->addHour(), true)) {
-                        $ot_schedule = null;
-                    }
-                }
-                // if fetched schedule is an ot schedule
-                if ($ot_schedule) {
-                    if ($ot_schedule->id == $schedule->overtime_id) {
                         $ot_schedule = null;
                     }
                 }
