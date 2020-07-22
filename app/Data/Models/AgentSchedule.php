@@ -400,7 +400,7 @@ class AgentSchedule extends BaseModel
             ),
             'time' => $day . gmdate('H:i:s', $rendered_time),
             'second' => $rendered_time,
-            'night_difference' => $night_dif,
+            'night_difference' => $night_dif_billable,
         );
     }
 
