@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
         'api' => [
             // 'throttle:60,1',
             'bindings',
+            'permission',
             'post_logs'
         ],
         
@@ -67,6 +68,7 @@ class Kernel extends HttpKernel
         'pageAccess' => \App\Http\Middleware\pageAccess::class,
         'Role' => \App\Http\Middleware\Role::class,
         'post_logs' => \App\Http\Middleware\PostLogs::class,
+        'permission' => \App\Http\Middleware\Permission::class,
 
     ];
 
