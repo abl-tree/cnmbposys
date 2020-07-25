@@ -2071,8 +2071,7 @@ class AgentScheduleRepository extends BaseRepository
         $result = refresh_model($this->agent_schedule->getModel())
             ->with("coaching", "coaching.filed_by", "coaching.verified_by")
             ->where("title_id", 1)
-            ->whereNull("vto_at")
-            ->orderBy("start_event", "desc");
+            ->whereNull("vto_at");
 
         if (!isset($data['type'])) {
             $type = ["tardy", "undertime", "no_timeout"];
@@ -2122,6 +2121,8 @@ class AgentScheduleRepository extends BaseRepository
 
             unset($data['sort']);
         }
+
+        $result = $result->orderBy('start_event', 'desc');
 
         $result = $result->whereHas('schedule_log_status', function ($query) use ($type) {
             $query->whereIn('status', $type);
