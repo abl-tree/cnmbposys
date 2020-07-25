@@ -2094,19 +2094,19 @@ class AgentScheduleRepository extends BaseRepository
             $result = $result->where('om_id', $data["om_id"]);
         }
 
+        if (isset($data['perpage'])) {
+            if (!isset($data['page'])) {
+                $data["page"] = 1;
+            }
+
+            $data["limit"] = $data["perpage"];
+            $data["offset"] = ($data["page"] - 1) * $data["perpage"];
+        }
+
         if (isset($data['status'])) {
             $result = $result->whereHas('coaching', function ($query) use ($data) {
                 return $query->where('status', strtolower($data["status"]));
             });
-        }
-
-        if (isset($data['query']) && $data['query']) {
-            $search_data = [
-                'target' => ['user_info.firstname', 'user_info.middlename', 'user_info.lastname', 'start_event'],
-                'query' => $data['query'],
-            ];
-
-            $result = $this->genericSearch($search_data, $result);
         }
 
         if (isset($data["sort"]) && isset($data["order"])) {
@@ -2119,17 +2119,34 @@ class AgentScheduleRepository extends BaseRepository
             $result = $result->join('user_infos as info', 'info.id', '=', 'agent_schedules.user_id')
                 ->orderBy($data['sort'], $data['order'])
                 ->select('agent_schedules.*');
+
+            unset($data['sort']);
         }
 
         $result = $result->whereHas('schedule_log_status', function ($query) use ($type) {
             $query->whereIn('status', $type);
-        })->get();
+        });
+
+        $count = $this->countData($data, $result);
+
+        if (isset($data['query']) && $data['query']) {
+            $search_data = [
+                'target' => ['user_info.firstname', 'user_info.middlename', 'user_info.lastname', 'start_event'],
+                'query' => $data['query'],
+            ];
+
+            $result = $this->genericSearch($search_data, $result)->get();
+        } else {
+
+            $result = $this->fetchGeneric($data, $result);
+        }
 
         return $this->setResponse([
             "code" => 200,
             "title" => "successfully fetch missed logs",
             "meta" => [
                 'missed_logs' => $result,
+                'count' => $count,
             ],
         ]);
     }
@@ -2188,7 +2205,7 @@ class AgentScheduleRepository extends BaseRepository
                 ->first();
             // if fetched schedule is an ot schedule
             if ($ot_schedule) {
-                $ot = $this->agent_schedule->where("overtime_id", $ot_schedule->id)->where('user_id',$data['userid'])->first();
+                $ot = $this->agent_schedule->where("overtime_id", $ot_schedule->id)->where('user_id', $data['userid'])->first();
                 if ($ot) {
                     $ot_schedule = null;
                     $schedule = $ot;
